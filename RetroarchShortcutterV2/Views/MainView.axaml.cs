@@ -35,6 +35,8 @@ public partial class MainView : UserControl
         rdoIconDef.IsChecked = true;
         comboICONDir.ItemsSource = FileOps.IconsDir;
         comboICONDir.SelectedIndex = 0;
+        comboConfig.ItemsSource = FileOps.ConfigDir;
+        comboConfig.SelectedIndex = 0;
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -73,8 +75,22 @@ public partial class MainView : UserControl
     {
         if ((bool)chkContentless.IsChecked) { panelROMDirControl.IsEnabled = false; }
         else { panelROMDirControl.IsEnabled = true; }
+        ROMenable = !(bool)chkContentless.IsChecked;
     }
 
+
+    // Usuario llenando statics del Icono
+    async void btnICONDir_Click(object sender, RoutedEventArgs e)
+    {
+        string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
+        if (dir != null)
+        {
+            ICONfile = dir;
+            FileOps.IconsDir.Add(ICONfile);
+            //comboICONDir.Items.Add(ICONfile);
+            comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
+        }
+    }
 
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -102,19 +118,85 @@ public partial class MainView : UserControl
     }
 
 
-    async void btnICONDir_Click(object sender, RoutedEventArgs e)
+    // Usuario llenando statics del link
+    async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
-        string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
-        if (dir != null)
+        string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
+        if (file != null)
         {
-            ICONfile = dir;
-            FileOps.IconsDir.Add(ICONfile);
-            //comboICONDir.Items.Add(ICONfile);
-            comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
+            RAdir = file;
+            txtRADir.Text = file;
         }
     }
 
+    async void btnROMDir_Click(object sender, RoutedEventArgs e)
+    {
+        string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
+        if (file != null)
+        {
+            ROMdir = file;
+            txtROMDir.Text = file;
+        }
+    }
 
+    void btnPatches_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    void comboCore_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (comboCore.SelectedIndex >= 0)
+        {
+            ROMcore = comboCore.SelectedItem.ToString();
+        }
+    }
+
+    void btnSubSys_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        switch (comboConfig.SelectedIndex)
+        {
+            case -1:
+                comboConfig.SelectedIndex = 0;
+                break;
+            case 0:
+                CONFfile = null;
+                break;
+            default:
+                CONFfile = comboConfig.SelectedItem.ToString();
+                break;
+        }
+    }
+
+    async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
+    {
+        var file = await FileOps.OpenFileAsync(2, TopLevel.GetTopLevel(this));
+        if (file != null)
+        {
+            CONFfile = file;
+            FileOps.ConfigDir.Add(CONFfile);
+            comboConfig.SelectedIndex = comboConfig.ItemCount - 1;
+        }
+    }
+
+    void btnAppendConfig_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    async void btnLINKDir_Click(object sender, RoutedEventArgs e)
+    {
+        var file = await FileOps.SaveFileAsync(0, TopLevel.GetTopLevel(this));
+        if (file != null)
+        {
+            LNKdir = file;
+        }
+    }
 
 
 

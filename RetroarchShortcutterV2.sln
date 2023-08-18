@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroarchShortcutterV2", "R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroarchShortcutterV2.Desktop", "RetroarchShortcutterV2.Desktop\RetroarchShortcutterV2.Desktop.csproj", "{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFunc", "WinFunc\WinFunc.csproj", "{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

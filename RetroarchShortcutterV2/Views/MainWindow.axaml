@@ -8,6 +8,7 @@
 		Width="800" Height="500" MinWidth="790" MinHeight="490"
         x:Class="RetroarchShortcutterV2.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="RetroarchShortcutterV2">
+        Title="RetroarchShortcutterV2"
+		WindowStartupLocation="CenterScreen">
         <views:MainView />
 </Window>

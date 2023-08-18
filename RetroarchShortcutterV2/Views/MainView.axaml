@@ -35,8 +35,8 @@
 				<StackPanel Name="panelRADir" Grid.Row="1">
 					<Label Margin="0,5,0,0" Content="Ejecutable de RetroArch*"/>
 					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
-						<Button Content="..."/>
-						<TextBox TextAlignment="Left" IsReadOnly="False" Watermark="retroarch.exe"/>
+						<Button Name="btnRADir" Content="..." Click="btnRADir_Click"/>
+						<TextBox Name="txtRADir" TextAlignment="Left" IsReadOnly="True" Watermark="retroarch.exe"/>
 					</DockPanel>
 				</StackPanel>
 
@@ -48,8 +48,8 @@
 					</StackPanel>
 					<DockPanel Name="panelROMDirControl" FlowDirection="RightToLeft" Margin="3,0,3,10">
 						<Button Name="btnPatches" Content="Patches" IsEnabled="False"/>
-						<Button Name="btnROMDir" Content="..."/>
-						<TextBox Name="txtROMDir" TextAlignment="Left" IsReadOnly="False" Watermark="supermariobros.nes"/>
+						<Button Name="btnROMDir" Content="..." Click="btnROMDir_Click"/>
+						<TextBox Name="txtROMDir" TextAlignment="Left" IsReadOnly="True" Watermark="supermariobros.nes"/>
 					</DockPanel>
 				</StackPanel>
 
@@ -58,7 +58,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
 						<Label Content="Core*"/>
 						<StackPanel Orientation="Vertical">
-							<ComboBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch" Loaded="comboCore_Loaded"/>
+							<ComboBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch" 
+									  Loaded="comboCore_Loaded" SelectionChanged="comboCore_SelectionChanged"/>
 						</StackPanel>
 					</StackPanel>
 					<StackPanel Grid.Column="1">
@@ -71,15 +72,13 @@
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
 						<Label Content="Config"/>
 						<StackPanel Orientation="Vertical">
-								<ComboBox Name="comboConfig" HorizontalAlignment="Stretch" SelectedIndex="0">
-									<ComboBoxItem>Default</ComboBoxItem>
-								</ComboBox>
+								<ComboBox Name="comboConfig" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 						</StackPanel>
 					</StackPanel>
 					<StackPanel Grid.Column="3">
 						<Rectangle Fill="Transparent" Height="28"/>
 						<StackPanel Orientation="Horizontal" Spacing="4">
-							<Button Name="btnCONFIGDir" Content="..."/>
+							<Button Name="btnCONFIGDir" Content="..." Click=""/>
 							<Button Name="btnAppendConfig" Content="Extras" IsEnabled="False"/>
 						</StackPanel>
 					</StackPanel>
@@ -95,8 +94,8 @@
 					</StackPanel>
 					<Label Margin="3,10,0,0" Content="Directorio del Link"/>
 					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
-						<Button Name="btnLINKDir" Content="..."/>
-						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="False" Watermark="Super Mario Bros.lnk"/>
+						<Button Name="btnLINKDir" Content="..." Click="btnLINKDir_Click"/>
+						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
 					</DockPanel>	
 				</StackPanel>
 

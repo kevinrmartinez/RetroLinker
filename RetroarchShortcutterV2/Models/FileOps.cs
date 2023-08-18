@@ -13,6 +13,7 @@ namespace RetroarchShortcutterV2.Models
     public class FileOps
     {
         public static List<string> IconsDir = new List<string>{ "Default", "Default Alt Light", "Default Alt Dark" };
+        public static List<string> ConfigDir = new List<string> { "Default" };
         public static string writeIcoDIR;
         public const string UserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
@@ -26,7 +27,17 @@ namespace RetroarchShortcutterV2.Models
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
             string dir;
-            if (file.Count > 0) { dir = Path.Combine(file[0].Path.AbsolutePath); }
+            if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.AbsolutePath); }
+            else { return null; }
+            return dir;
+        }
+
+        public static async Task<string> SaveFileAsync(int template, TopLevel topLevel)
+        {
+            var opt = PickerOpt.SavePickerOpt(template);
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
+            string dir;
+            if (file != null) { dir = file.Path.LocalPath; }
             else { return null; }
             return dir;
         }
