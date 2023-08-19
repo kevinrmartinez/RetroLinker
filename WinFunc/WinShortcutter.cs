@@ -2,9 +2,9 @@
 
 namespace WinFunc
 {
-    public class WinShhortcutter
+    public class WinShortcutter
     {
-        public static void CreateShortcut(string Link, string Exec, string Path, string command, string Iconfile)
+        public static void CreateShortcut(string Link, string Exec, string Path, string command, string? Iconfile)
         {
 
             var shell = new WshShell();

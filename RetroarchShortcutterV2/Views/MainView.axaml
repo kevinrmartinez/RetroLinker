@@ -111,7 +111,7 @@
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
 							Height="65" 
 							Content="Realizar"
-							Click="testing1"/>
+							Click="btnEXECUTE_Click"/>
 				</Panel>
 			</Grid>
 

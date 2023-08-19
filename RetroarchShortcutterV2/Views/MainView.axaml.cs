@@ -5,11 +5,15 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+using WinFunc;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -18,12 +22,13 @@ public partial class MainView : UserControl
     public static string RAdir;
     public static string RApath;
     public static string ROMdir;
+    public static string ROMfile;
     public static bool ROMenable = true;
     public static string ROMcore;
     public static string CONFfile;
     public static string ICONfile;
     public static string LNKdir;
-    public Bitmap ICONimage;
+    public Avalonia.Media.Imaging.Bitmap ICONimage;
 
     public MainView()
     { InitializeComponent(); }
@@ -49,6 +54,8 @@ public partial class MainView : UserControl
         else { msbox.ShowAsync(); }
      }
 
+
+
     void FillIconBoxes(string DIR)
     {
         ICONimage = FileOps.GetBitmap(DIR);
@@ -58,7 +65,17 @@ public partial class MainView : UserControl
         pic128.Source = ICONimage;
     }
 
-
+    private void nullStatics()
+    {
+        RAdir = null;
+        RApath = null;
+        ROMdir = null;
+        ROMcore = null;
+        CONFfile = null;
+        ICONfile = null;
+        LNKdir = null;
+        //IconConvert.writeIcoDIR = null;
+    }
 
 
     void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
@@ -71,13 +88,6 @@ public partial class MainView : UserControl
         else { gridIconControl.IsEnabled = true; }
     }
 
-    void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
-    {
-        if ((bool)chkContentless.IsChecked) { panelROMDirControl.IsEnabled = false; }
-        else { panelROMDirControl.IsEnabled = true; }
-        ROMenable = !(bool)chkContentless.IsChecked;
-    }
-
 
     // Usuario llenando statics del Icono
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
@@ -87,7 +97,6 @@ public partial class MainView : UserControl
         {
             ICONfile = dir;
             FileOps.IconsDir.Add(ICONfile);
-            //comboICONDir.Items.Add(ICONfile);
             comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
         }
     }
@@ -129,12 +138,20 @@ public partial class MainView : UserControl
         }
     }
 
+    void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
+    {
+        if ((bool)chkContentless.IsChecked) { panelROMDirControl.IsEnabled = false; }
+        else { panelROMDirControl.IsEnabled = true; }
+        ROMenable = !(bool)chkContentless.IsChecked;
+    }
+
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
+        string file = await FileOps.OpenFileAsync(1, TopLevel.GetTopLevel(this));
         if (file != null)
         {
             ROMdir = file;
+            ROMfile = file;
             txtROMDir.Text = file;
         }
     }
@@ -195,11 +212,69 @@ public partial class MainView : UserControl
         if (file != null)
         {
             LNKdir = file;
+            txtLINKDir.Text = LNKdir;
         }
     }
 
 
+    /* La accion ocurre aqui */
+    void btnEXECUTE_Click(object sender, RoutedEventArgs e)
+    {
+        const string comilla = "\"";
+        string command;
+        bool ShortcutPosible;
+        var msbox_params = new MessageBoxStandardParams();
+        var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
+        // CHECKS!
+        Commander.verboseB = (bool)chkVerb.IsChecked;
+        Commander.fullscreenB = (bool)chkFull.IsChecked;
+        Commander.accessibilityB = (bool)chkAccessi.IsChecked;
+
+        // Validando si sera contentless o no
+        if (!ROMenable) { ROMdir = Commander.contentless; }
+        else { ROMdir = ROMfile; }
+
+        // REQUIERED FIELDS VALIDATION!
+        if ((RAdir != null) && (ROMdir != null) && (ROMcore != null) && (LNKdir != null))
+        { ShortcutPosible = true; }
+        else
+        {
+            ShortcutPosible = false;
+            msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
+            msbox.ShowAsync();
+        }
+
+        while (ShortcutPosible)
+        {
+            RApath = Path.GetDirectoryName(RAdir);
+
+            // Adicion de comillas para manejo no directorios inusuales
+            if (RApath.ElementAt(0) != comilla.ElementAt(0))
+            { RApath = RApath.Insert(0, comilla); }
+            if (RApath.ElementAt(RApath.Length - 1) != comilla.ElementAt(0))
+            { RApath = RApath + comilla; }
+
+            if (RAdir.ElementAt(0) != comilla.ElementAt(0))
+            { RAdir = RAdir.Insert(0, comilla); }
+            if (RAdir.ElementAt(RAdir.Length - 1) != comilla.ElementAt(0))
+            { RAdir = RAdir + comilla; }
+
+            if (ROMdir.ElementAt(0) != comilla.ElementAt(0))
+            { ROMdir = ROMdir.Insert(0, comilla); }
+            if (ROMdir.ElementAt(ROMdir.Length - 1) != comilla.ElementAt(0))
+            { ROMdir = ROMdir + comilla; }
+
+            command = Commander.CommandBuilder(ROMcore, ROMdir);
+            WinShortcutter.CreateShortcut(LNKdir, RAdir, RApath, command, null);
+            //try { WinShortcutter.CreateShortcut(LNKdir, RAdir, RApath, command, ICONfile); MessageBox.Show("El shortcut fue creado con exito.", "Listo"); }
+            //catch { MessageBox.Show("Hubo un error al crear el shortcut. Verifique los campos que ha llenado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); ; }
+
+
+            nullStatics();
+            ShortcutPosible = false;
+        }
+    }
 
     async void testing1(object sender, RoutedEventArgs e)
     {

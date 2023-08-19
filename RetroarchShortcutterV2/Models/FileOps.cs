@@ -27,7 +27,7 @@ namespace RetroarchShortcutterV2.Models
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
             string dir;
-            if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.AbsolutePath); }
+            if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.LocalPath); }
             else { return null; }
             return dir;
         }
