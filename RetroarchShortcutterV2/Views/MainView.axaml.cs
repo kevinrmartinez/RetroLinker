@@ -30,6 +30,10 @@ public partial class MainView : UserControl
     public static string LNKdir;
     public Avalonia.Media.Imaging.Bitmap ICONimage;
 
+    // true = Windows. false = Linux.
+    // Esto es asumiendo que solo podra correr en Windows y Linux.
+    public bool DesktopOS = OperatingSystem.IsWindows();
+
     public MainView()
     { InitializeComponent(); }
 
@@ -220,8 +224,6 @@ public partial class MainView : UserControl
     /* La accion ocurre aqui */
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
-        const string comilla = "\"";
-        string command;
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
         var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
@@ -247,29 +249,7 @@ public partial class MainView : UserControl
 
         while (ShortcutPosible)
         {
-            RApath = Path.GetDirectoryName(RAdir);
-
-            // Adicion de comillas para manejo no directorios inusuales
-            if (RApath.ElementAt(0) != comilla.ElementAt(0))
-            { RApath = RApath.Insert(0, comilla); }
-            if (RApath.ElementAt(RApath.Length - 1) != comilla.ElementAt(0))
-            { RApath = RApath + comilla; }
-
-            if (RAdir.ElementAt(0) != comilla.ElementAt(0))
-            { RAdir = RAdir.Insert(0, comilla); }
-            if (RAdir.ElementAt(RAdir.Length - 1) != comilla.ElementAt(0))
-            { RAdir = RAdir + comilla; }
-
-            if (ROMdir.ElementAt(0) != comilla.ElementAt(0))
-            { ROMdir = ROMdir.Insert(0, comilla); }
-            if (ROMdir.ElementAt(ROMdir.Length - 1) != comilla.ElementAt(0))
-            { ROMdir = ROMdir + comilla; }
-
-            command = Commander.CommandBuilder(ROMcore, ROMdir);
-            WinShortcutter.CreateShortcut(LNKdir, RAdir, RApath, command, null);
-            //try { WinShortcutter.CreateShortcut(LNKdir, RAdir, RApath, command, ICONfile); MessageBox.Show("El shortcut fue creado con exito.", "Listo"); }
-            //catch { MessageBox.Show("Hubo un error al crear el shortcut. Verifique los campos que ha llenado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); ; }
-
+            
 
             nullStatics();
             ShortcutPosible = false;
