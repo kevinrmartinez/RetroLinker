@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroarchShortcutterV2", "RetroarchShortcutterV2\RetroarchShortcutterV2.csproj", "{A472D081-AD70-414B-B973-01F7189EF9ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B} = {761FA82D-DACA-4DDA-B4A9-1A0270108B3B}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroarchShortcutterV2.Desktop", "RetroarchShortcutterV2.Desktop\RetroarchShortcutterV2.Desktop.csproj", "{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFunc", "WinFunc\WinFunc.csproj", "{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFunc", "WinFunc\WinFunc.csproj", "{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

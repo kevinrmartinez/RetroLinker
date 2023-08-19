@@ -19,15 +19,8 @@ namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
-    public static string RAdir;
-    public static string RApath;
-    public static string ROMdir;
-    public static string ROMfile;
+    public Shortcutter shortcut = new();
     public static bool ROMenable = true;
-    public static string ROMcore;
-    public static string CONFfile;
-    public static string ICONfile;
-    public static string LNKdir;
     public Avalonia.Media.Imaging.Bitmap ICONimage;
 
     // true = Windows. false = Linux.
@@ -69,19 +62,6 @@ public partial class MainView : UserControl
         pic128.Source = ICONimage;
     }
 
-    private void nullStatics()
-    {
-        RAdir = null;
-        RApath = null;
-        ROMdir = null;
-        ROMcore = null;
-        CONFfile = null;
-        ICONfile = null;
-        LNKdir = null;
-        //IconConvert.writeIcoDIR = null;
-    }
-
-
     void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
     {
         if ((bool)rdoIconDef.IsChecked) 
@@ -99,8 +79,8 @@ public partial class MainView : UserControl
         string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
-            ICONfile = dir;
-            FileOps.IconsDir.Add(ICONfile);
+            shortcut.ICONfile = dir;
+            FileOps.IconsDir.Add(shortcut.ICONfile);
             comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
         }
     }
@@ -109,24 +89,24 @@ public partial class MainView : UserControl
     {
         if (comboICONDir.SelectedIndex > 2)
         {
-            ICONfile = comboICONDir.SelectedItem.ToString();
-            FillIconBoxes(ICONfile);
+            shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
+            FillIconBoxes(shortcut.ICONfile);
         }
         else
         {
             switch (comboICONDir.SelectedIndex)
             {
                 case 0:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
                     break;
                 case 1:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
                     break;
                 case 2:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
                     break;
             }
-            FillIconBoxes(ICONfile);
+            FillIconBoxes(shortcut.ICONfile);
         }
     }
 
@@ -137,7 +117,7 @@ public partial class MainView : UserControl
         string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            RAdir = file;
+            shortcut.RAdir = file;
             txtRADir.Text = file;
         }
     }
@@ -154,8 +134,8 @@ public partial class MainView : UserControl
         string file = await FileOps.OpenFileAsync(1, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            ROMdir = file;
-            ROMfile = file;
+            shortcut.ROMdir = file;
+            shortcut.ROMfile = file;
             txtROMDir.Text = file;
         }
     }
@@ -169,7 +149,7 @@ public partial class MainView : UserControl
     {
         if (comboCore.SelectedIndex >= 0)
         {
-            ROMcore = comboCore.SelectedItem.ToString();
+            shortcut.ROMcore = comboCore.SelectedItem.ToString();
         }
     }
 
@@ -186,10 +166,10 @@ public partial class MainView : UserControl
                 comboConfig.SelectedIndex = 0;
                 break;
             case 0:
-                CONFfile = null;
+                shortcut.CONFfile = null;
                 break;
             default:
-                CONFfile = comboConfig.SelectedItem.ToString();
+                shortcut.CONFfile = comboConfig.SelectedItem.ToString();
                 break;
         }
     }
@@ -199,8 +179,8 @@ public partial class MainView : UserControl
         var file = await FileOps.OpenFileAsync(2, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            CONFfile = file;
-            FileOps.ConfigDir.Add(CONFfile);
+            shortcut.CONFfile = file;
+            FileOps.ConfigDir.Add(shortcut.CONFfile);
             comboConfig.SelectedIndex = comboConfig.ItemCount - 1;
         }
     }
@@ -215,8 +195,8 @@ public partial class MainView : UserControl
         var file = await FileOps.SaveFileAsync(0, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            LNKdir = file;
-            txtLINKDir.Text = LNKdir;
+            shortcut.LNKdir = file;
+            txtLINKDir.Text = shortcut.LNKdir;
         }
     }
 
@@ -234,11 +214,11 @@ public partial class MainView : UserControl
         Commander.accessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validando si sera contentless o no
-        if (!ROMenable) { ROMdir = Commander.contentless; }
-        else { ROMdir = ROMfile; }
+        if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
+        else { shortcut.ROMdir = shortcut.ROMfile; }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((RAdir != null) && (ROMdir != null) && (ROMcore != null) && (LNKdir != null))
+        if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
         { ShortcutPosible = true; }
         else
         {
@@ -249,9 +229,8 @@ public partial class MainView : UserControl
 
         while (ShortcutPosible)
         {
-            
+            Shortcutter.BuildShortcut(shortcut, DesktopOS);
 
-            nullStatics();
             ShortcutPosible = false;
         }
     }

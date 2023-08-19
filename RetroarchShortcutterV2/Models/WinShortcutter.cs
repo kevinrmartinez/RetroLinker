@@ -1,4 +1,6 @@
 ﻿using IWshRuntimeLibrary; // > Ref > COM > Windows Script Host Object;
+using RetroarchShortcutterV2.Models;
+using System;
 
 namespace WinFunc
 {
@@ -29,6 +31,20 @@ namespace WinFunc
             shortcut.Description = Desc;
             shortcut.WorkingDirectory = Path;
             shortcut.Arguments = command;
+            shortcut.Save();
+        }
+
+        public static void CreateShortcut(Shortcutter _shortcut)
+        {
+
+            var shell = new WshShell();
+            //var shortcut = shell.CreateShortcut(System.IO.Path.GetFullPath(Dest)) as IWshShortcut;
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(_shortcut.LNKdir);
+            if (_shortcut.ICONfile != null) { shortcut.IconLocation = _shortcut.ICONfile; }
+            shortcut.TargetPath = _shortcut.RAdir;
+            shortcut.Description = _shortcut.Comment;
+            shortcut.WorkingDirectory = _shortcut.RApath;
+            shortcut.Arguments = _shortcut.Command;
             shortcut.Save();
         }
 

@@ -22,7 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinFunc\WinFunc.csproj" />
+    <Reference Include="Interop.IWshRuntimeLibrary">
+      <HintPath>..\WinFunc\obj\Debug\net7.0\Interop.IWshRuntimeLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
