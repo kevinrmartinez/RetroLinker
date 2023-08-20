@@ -1,19 +1,10 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using WinFunc;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -48,7 +39,7 @@ public partial class MainView : UserControl
         var msbox = MessageBoxManager.GetMessageBoxStandard("Error", "Archivo '" + cores + "' no encontrado!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
         if (Path.Exists(cores)) { comboCore.ItemsSource = File.ReadAllLines(cores); }
         //else { Console.Out.WriteLine("Archivo '" + cores + "' no encontrado!"); }
-        else { msbox.ShowAsync(); }
+        else { await msbox.ShowAsync(); }
      }
 
 
@@ -206,7 +197,7 @@ public partial class MainView : UserControl
     {
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
-        var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+        //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
         // CHECKS!
         Commander.verboseB = (bool)chkVerb.IsChecked;
@@ -224,12 +215,28 @@ public partial class MainView : UserControl
         {
             ShortcutPosible = false;
             msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
+            var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
             msbox.ShowAsync();
         }
 
         while (ShortcutPosible)
         {
-            Shortcutter.BuildShortcut(shortcut, DesktopOS);
+            if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
+            {
+                msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success; msbox_params.ShowInCenter = true;
+                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+                msbox.ShowAsync();
+            }
+            else
+            {
+                msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; msbox_params.ShowInCenter = true;
+                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+                msbox.ShowAsync();
+            }
+                
+            
 
             ShortcutPosible = false;
         }
