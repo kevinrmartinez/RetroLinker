@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if !LIN
 using WinFunc;
+#endif
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -18,26 +20,29 @@ namespace RetroarchShortcutterV2.Models
         public string? Comment { get; set; }    // 8
         public string LNKdir { get; set; }      // 9
 
+        const string comilla = "\"";
+
 
         public static bool BuildWinShortcut(Shortcutter shortcut, bool OS)
         {
             if (!OS) { return false; }
-            const string comilla = "\"";
-            
 
             shortcut.RApath = Path.GetDirectoryName(shortcut.RAdir);
 
-            // Adicion de comillas para manejo no directorios inusuales
+            // Adicion de comillas para manejo de directorios no inusuales...
+            // para el WorkingDirectory de RetroArch
             if (shortcut.RApath.ElementAt(0) != comilla.ElementAt(0))
             { shortcut.RApath = shortcut.RApath.Insert(0, comilla); }
             if (shortcut.RApath.ElementAt(shortcut.RApath.Length - 1) != comilla.ElementAt(0))
             { shortcut.RApath = shortcut.RApath + comilla; }
 
+            // para el ejecutable de RetroArch
             if (shortcut.RAdir.ElementAt(0) != comilla.ElementAt(0))
             { shortcut.RAdir = shortcut.RAdir.Insert(0, comilla); }
             if (shortcut.RAdir.ElementAt(shortcut.RAdir.Length - 1) != comilla.ElementAt(0))
             { shortcut.RAdir = shortcut.RAdir + comilla; }
 
+            // para el directorio de la ROM
             if (shortcut.ROMdir.ElementAt(0) != comilla.ElementAt(0))
             { shortcut.ROMdir = shortcut.ROMdir.Insert(0, comilla); }
             if (shortcut.ROMdir.ElementAt(shortcut.ROMdir.Length - 1) != comilla.ElementAt(0))
@@ -63,6 +68,12 @@ namespace RetroarchShortcutterV2.Models
         public static bool BuildLinShorcut(Shortcutter shortcut, bool OS)
         {
             if (OS) { return false; }
+
+            // para el directorio de la ROM
+            if (shortcut.ROMdir.ElementAt(0) != comilla.ElementAt(0))
+            { shortcut.ROMdir = shortcut.ROMdir.Insert(0, comilla); }
+            if (shortcut.ROMdir.ElementAt(shortcut.ROMdir.Length - 1) != comilla.ElementAt(0))
+            { shortcut.ROMdir = shortcut.ROMdir + comilla; }
 
             shortcut.Command = Commander.CommandBuilder(shortcut.ROMcore, shortcut.ROMdir);
             // Llamar al creador de shortcut de Linux

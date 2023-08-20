@@ -10,6 +10,7 @@ namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
+
     public Shortcutter shortcut = new();
     public static bool ROMenable = true;
     public Avalonia.Media.Imaging.Bitmap ICONimage;
@@ -30,6 +31,10 @@ public partial class MainView : UserControl
         comboICONDir.SelectedIndex = 0;
         comboConfig.ItemsSource = FileOps.ConfigDir;
         comboConfig.SelectedIndex = 0;
+#if LIN
+        Console.Out.WriteLine("Esto es Linux");
+        Console.Beep();
+#endif
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)

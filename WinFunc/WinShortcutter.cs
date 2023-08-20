@@ -1,4 +1,6 @@
 ﻿using IWshRuntimeLibrary; // > Ref > COM > Windows Script Host Object
+using System;
+using System.Collections.Generic;
 
 namespace WinFunc
 {
