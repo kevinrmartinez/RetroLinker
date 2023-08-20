@@ -1,33 +1,18 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using WinFunc;
 
 namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
-    public static string RAdir;
-    public static string RApath;
-    public static string ROMdir;
-    public static string ROMfile;
+
+    public Shortcutter shortcut = new();
     public static bool ROMenable = true;
-    public static string ROMcore;
-    public static string CONFfile;
-    public static string ICONfile;
-    public static string LNKdir;
     public Avalonia.Media.Imaging.Bitmap ICONimage;
 
     // true = Windows. false = Linux.
@@ -46,6 +31,10 @@ public partial class MainView : UserControl
         comboICONDir.SelectedIndex = 0;
         comboConfig.ItemsSource = FileOps.ConfigDir;
         comboConfig.SelectedIndex = 0;
+#if LIN
+        Console.Out.WriteLine("Esto es Linux");
+        Console.Beep();
+#endif
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -55,7 +44,7 @@ public partial class MainView : UserControl
         var msbox = MessageBoxManager.GetMessageBoxStandard("Error", "Archivo '" + cores + "' no encontrado!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
         if (Path.Exists(cores)) { comboCore.ItemsSource = File.ReadAllLines(cores); }
         //else { Console.Out.WriteLine("Archivo '" + cores + "' no encontrado!"); }
-        else { msbox.ShowAsync(); }
+        else { await msbox.ShowAsync(); }
      }
 
 
@@ -68,19 +57,6 @@ public partial class MainView : UserControl
         pic64.Source = ICONimage;
         pic128.Source = ICONimage;
     }
-
-    private void nullStatics()
-    {
-        RAdir = null;
-        RApath = null;
-        ROMdir = null;
-        ROMcore = null;
-        CONFfile = null;
-        ICONfile = null;
-        LNKdir = null;
-        //IconConvert.writeIcoDIR = null;
-    }
-
 
     void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
     {
@@ -99,8 +75,8 @@ public partial class MainView : UserControl
         string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
-            ICONfile = dir;
-            FileOps.IconsDir.Add(ICONfile);
+            shortcut.ICONfile = dir;
+            FileOps.IconsDir.Add(shortcut.ICONfile);
             comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
         }
     }
@@ -109,24 +85,24 @@ public partial class MainView : UserControl
     {
         if (comboICONDir.SelectedIndex > 2)
         {
-            ICONfile = comboICONDir.SelectedItem.ToString();
-            FillIconBoxes(ICONfile);
+            shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
+            FillIconBoxes(shortcut.ICONfile);
         }
         else
         {
             switch (comboICONDir.SelectedIndex)
             {
                 case 0:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
                     break;
                 case 1:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
                     break;
                 case 2:
-                    ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
+                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
                     break;
             }
-            FillIconBoxes(ICONfile);
+            FillIconBoxes(shortcut.ICONfile);
         }
     }
 
@@ -137,7 +113,7 @@ public partial class MainView : UserControl
         string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            RAdir = file;
+            shortcut.RAdir = file;
             txtRADir.Text = file;
         }
     }
@@ -154,8 +130,8 @@ public partial class MainView : UserControl
         string file = await FileOps.OpenFileAsync(1, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            ROMdir = file;
-            ROMfile = file;
+            shortcut.ROMdir = file;
+            shortcut.ROMfile = file;
             txtROMDir.Text = file;
         }
     }
@@ -169,7 +145,7 @@ public partial class MainView : UserControl
     {
         if (comboCore.SelectedIndex >= 0)
         {
-            ROMcore = comboCore.SelectedItem.ToString();
+            shortcut.ROMcore = comboCore.SelectedItem.ToString();
         }
     }
 
@@ -186,10 +162,10 @@ public partial class MainView : UserControl
                 comboConfig.SelectedIndex = 0;
                 break;
             case 0:
-                CONFfile = null;
+                shortcut.CONFfile = null;
                 break;
             default:
-                CONFfile = comboConfig.SelectedItem.ToString();
+                shortcut.CONFfile = comboConfig.SelectedItem.ToString();
                 break;
         }
     }
@@ -199,8 +175,8 @@ public partial class MainView : UserControl
         var file = await FileOps.OpenFileAsync(2, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            CONFfile = file;
-            FileOps.ConfigDir.Add(CONFfile);
+            shortcut.CONFfile = file;
+            FileOps.ConfigDir.Add(shortcut.CONFfile);
             comboConfig.SelectedIndex = comboConfig.ItemCount - 1;
         }
     }
@@ -215,8 +191,8 @@ public partial class MainView : UserControl
         var file = await FileOps.SaveFileAsync(0, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            LNKdir = file;
-            txtLINKDir.Text = LNKdir;
+            shortcut.LNKdir = file;
+            txtLINKDir.Text = shortcut.LNKdir;
         }
     }
 
@@ -226,7 +202,7 @@ public partial class MainView : UserControl
     {
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
-        var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+        //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
         // CHECKS!
         Commander.verboseB = (bool)chkVerb.IsChecked;
@@ -234,24 +210,39 @@ public partial class MainView : UserControl
         Commander.accessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validando si sera contentless o no
-        if (!ROMenable) { ROMdir = Commander.contentless; }
-        else { ROMdir = ROMfile; }
+        if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
+        else { shortcut.ROMdir = shortcut.ROMfile; }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((RAdir != null) && (ROMdir != null) && (ROMcore != null) && (LNKdir != null))
+        if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
         { ShortcutPosible = true; }
         else
         {
             ShortcutPosible = false;
             msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
+            var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
             msbox.ShowAsync();
         }
 
         while (ShortcutPosible)
         {
+            if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
+            {
+                msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success; msbox_params.ShowInCenter = true;
+                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+                msbox.ShowAsync();
+            }
+            else
+            {
+                msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; msbox_params.ShowInCenter = true;
+                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
+                msbox.ShowAsync();
+            }
+                
             
 
-            nullStatics();
             ShortcutPosible = false;
         }
     }

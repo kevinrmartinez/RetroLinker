@@ -1,4 +1,6 @@
-﻿using IWshRuntimeLibrary; // > Ref > COM > Windows Script Host Object;
+﻿using IWshRuntimeLibrary; // > Ref > COM > Windows Script Host Object
+using System;
+using System.Collections.Generic;
 
 namespace WinFunc
 {
@@ -29,6 +31,20 @@ namespace WinFunc
             shortcut.Description = Desc;
             shortcut.WorkingDirectory = Path;
             shortcut.Arguments = command;
+            shortcut.Save();
+        }
+
+        public static void CreateShortcut(IList<object> _shortcut)
+        {
+            // Los indices estan relacionados a las propiedades del objeto 'shortcut'
+            // Estos se pueden ver comentado en la clase 'Shortcutter'
+            var shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(_shortcut[9].ToString());
+            if (_shortcut[6] != null) { shortcut.IconLocation = _shortcut[6].ToString(); }
+            shortcut.TargetPath = _shortcut[0].ToString();
+            if (_shortcut[8] != null) { shortcut.Description = _shortcut[8].ToString(); }
+            shortcut.WorkingDirectory = _shortcut[1].ToString();
+            shortcut.Arguments = _shortcut[7].ToString();
             shortcut.Save();
         }
 
