@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:RetroarchShortcutterV2.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="500"
+             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.MainView"
              x:DataType="vm:MainViewModel"
 			 Name="View1" Loaded="View1_Loaded">
@@ -58,8 +58,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
 						<Label Content="Core*"/>
 						<StackPanel Orientation="Vertical">
-							<ComboBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch" 
-									  Loaded="comboCore_Loaded" SelectionChanged="comboCore_SelectionChanged"/>
+							<AutoCompleteBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
+									  Loaded="comboCore_Loaded" SelectionChanged=""/>
 						</StackPanel>
 					</StackPanel>
 					<StackPanel Grid.Column="1">
@@ -68,21 +68,21 @@
 							<Button Name="btnSubSys" Margin="3,0,0,0" Content="Subsystem" IsEnabled="False"/>
 						</StackPanel>
 					</StackPanel>
-					
+
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
 						<Label Content="Config"/>
 						<StackPanel Orientation="Vertical">
-								<ComboBox Name="comboConfig" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
+							<ComboBox Name="comboConfig" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged" IsTextSearchEnabled="False"/>
 						</StackPanel>
 					</StackPanel>
 					<StackPanel Grid.Column="3">
 						<Rectangle Fill="Transparent" Height="28"/>
 						<StackPanel Orientation="Horizontal" Spacing="4">
-							<Button Name="btnCONFIGDir" Content="..." Click=""/>
+							<Button Name="btnCONFIGDir" Content="..." Click="btnCONFIGDir_Click"/>
 							<Button Name="btnAppendConfig" Content="Extras" IsEnabled="False"/>
 						</StackPanel>
 					</StackPanel>
-					
+
 				</Grid>
 
 				<!-- ROW4 - Link Save Directory & other arguments -->
@@ -92,11 +92,13 @@
 						<CheckBox Name="chkVerb" Content="Verbose"/>
 						<CheckBox Name="chkAccessi" Content="Accessibility"/>
 					</StackPanel>
-					<Label Margin="3,10,0,0" Content="Directorio del Link"/>
+					<Label Margin="3,10,0,0" Content="Directorio del Link*"/>
 					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
 						<Button Name="btnLINKDir" Content="..." Click="btnLINKDir_Click"/>
 						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
-					</DockPanel>	
+					</DockPanel>
+					<Label Margin="3,0" Content="Descripcion del Link"/>
+					<TextBox Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch"></TextBox>
 				</StackPanel>
 
 
@@ -109,7 +111,7 @@
 					<Button Name="btnEXECUTE" 
 							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
-							Height="65" 
+							Height="55" 
 							Content="Realizar"
 							Click="btnEXECUTE_Click"/>
 				</Panel>

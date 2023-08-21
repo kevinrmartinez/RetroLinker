@@ -26,15 +26,17 @@ public partial class MainView : UserControl
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
         //comboCore.ItemsSource = File.ReadAllLines("cores.txt");
-        rdoIconDef.IsChecked = true;
-        comboICONDir.ItemsSource = FileOps.IconsDir;
-        comboICONDir.SelectedIndex = 0;
-        comboConfig.ItemsSource = FileOps.ConfigDir;
-        comboConfig.SelectedIndex = 0;
-#if LIN
+        
+        
+#if LINUX
         Console.Out.WriteLine("Esto es Linux");
         Console.Beep();
 #endif
+        if (!DesktopOS)
+        {
+            txtRADir.IsReadOnly = false;
+            txtRADir.Text = "retroarch";
+        }
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -47,6 +49,25 @@ public partial class MainView : UserControl
         else { await msbox.ShowAsync(); }
      }
 
+    void comboConfig_Loaded(object sender, RoutedEventArgs e)
+    {
+        for (int i = 0; i < FileOps.ConfigDir.Count; i++)
+        {
+            comboConfig.Items.Add(FileOps.ConfigDir[i]);
+        }
+        comboConfig.SelectedIndex++;
+    }
+
+
+    void MyEventHandler(object sender, RoutedEventArgs e)
+    {
+        for (int i = 0; i < FileOps.IconsDir.Count; i++)
+        {
+            comboICONDir.Items.Add(FileOps.IconsDir[i]);
+        }
+        comboICONDir.SelectedIndex++;
+        rdoIconDef.IsChecked = true;
+    }
 
 
     void FillIconBoxes(string DIR)
@@ -69,14 +90,17 @@ public partial class MainView : UserControl
     }
 
 
-    // Usuario llenando statics del Icono
+    // Usuario llenando object del Icono
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
+        int template;
+        if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
+        else { template = 5; }                  // FilePicker Option para iconos de Linux
         string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
-            shortcut.ICONfile = dir;
-            FileOps.IconsDir.Add(shortcut.ICONfile);
+            FileOps.IconsDir.Add(dir);
+            comboICONDir.Items.Add(dir);
             comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
         }
     }
@@ -107,10 +131,13 @@ public partial class MainView : UserControl
     }
 
 
-    // Usuario llenando statics del link
+    // Usuario llenando object del link
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(0, TopLevel.GetTopLevel(this));
+        int template;
+        if (DesktopOS) { template = 0; }        // FilePicker Option para .exe de Windows
+        else { template = 4; }                  // FilePicker Option para .AppImage de Windows
+        string file = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
         if (file != null)
         {
             shortcut.RAdir = file;
@@ -143,10 +170,10 @@ public partial class MainView : UserControl
 
     void comboCore_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (comboCore.SelectedIndex >= 0)
+        /*if (comboCore.SelectedIndex >= 0)
         {
             shortcut.ROMcore = comboCore.SelectedItem.ToString();
-        }
+        }*/
     }
 
     void btnSubSys_Click(object sender, RoutedEventArgs e)
@@ -159,7 +186,7 @@ public partial class MainView : UserControl
         switch (comboConfig.SelectedIndex)
         {
             case -1:
-                comboConfig.SelectedIndex = 0;
+                //comboConfig.SelectedIndex = 0;
                 break;
             case 0:
                 shortcut.CONFfile = null;
@@ -175,8 +202,9 @@ public partial class MainView : UserControl
         var file = await FileOps.OpenFileAsync(2, TopLevel.GetTopLevel(this));
         if (file != null)
         {
-            shortcut.CONFfile = file;
-            FileOps.ConfigDir.Add(shortcut.CONFfile);
+            //shortcut.CONFfile = file;
+            FileOps.ConfigDir.Add(file);
+            comboConfig.Items.Add(file);
             comboConfig.SelectedIndex = comboConfig.ItemCount - 1;
         }
     }
@@ -188,7 +216,10 @@ public partial class MainView : UserControl
 
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileOps.SaveFileAsync(0, TopLevel.GetTopLevel(this));
+        int template;
+        if (DesktopOS) { template = 0; }        // Salvar link como un .lnk de Windows
+        else { template = 1; }                  // Salvar link como un .desktop de Linux
+        var file = await FileOps.SaveFileAsync(template, TopLevel.GetTopLevel(this));
         if (file != null)
         {
             shortcut.LNKdir = file;
@@ -212,6 +243,10 @@ public partial class MainView : UserControl
         // Validando si sera contentless o no
         if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
         else { shortcut.ROMdir = shortcut.ROMfile; }
+
+        // Validando que haya un core
+        if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
+        else { shortcut.ROMcore = comboCore.Text; }
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
