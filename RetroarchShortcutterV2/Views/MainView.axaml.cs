@@ -5,7 +5,6 @@ using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -234,15 +233,16 @@ public partial class MainView : UserControl
      */
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
-        const string comilla = "\"";
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
+        msbox_params.ShowInCenter = true; 
+        msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
         // CHECKS!
-        Commander.verboseB = (bool)chkVerb.IsChecked;
-        Commander.fullscreenB = (bool)chkFull.IsChecked;
-        Commander.accessibilityB = (bool)chkAccessi.IsChecked;
+        shortcut.verboseB = (bool)chkVerb.IsChecked;
+        shortcut.fullscreenB = (bool)chkFull.IsChecked;
+        shortcut.accessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validando si sera contentless o no
         if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
@@ -271,22 +271,22 @@ public partial class MainView : UserControl
         {
             // Comillas para directorios comunes...
             // para el directorio de la ROM
-            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) { Utils.FixUnusualDirectories(shortcut.ROMdir); }
+            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
-            if (shortcut.CONFfile != null) { Utils.FixUnusualDirectories(shortcut.CONFfile); }
+            if (shortcut.CONFfile != null) { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success; msbox_params.ShowInCenter = true;
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
                 msbox.ShowAsync();
             }
             else
             {
                 msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; msbox_params.ShowInCenter = true;
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
                 msbox.ShowAsync();
             }

@@ -48,6 +48,7 @@ namespace WinFunc
             shortcut.Save();
         }
 
+#if DEBUG
         public static void NotepadShortcut()
         {
             object shDesktop = (object)"Desktop";
@@ -59,5 +60,6 @@ namespace WinFunc
             shortcut.TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.System) + @"\notepad.exe";
             shortcut.Save();
         }
+#endif
     }
 }
