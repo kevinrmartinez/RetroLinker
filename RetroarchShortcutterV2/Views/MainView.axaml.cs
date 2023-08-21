@@ -5,6 +5,7 @@ using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -228,9 +229,12 @@ public partial class MainView : UserControl
     }
 
 
-    /* La accion ocurre aqui */
+    /* La accion ocurre aqui
+     *  
+     */
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
+        const string comilla = "\"";
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
         //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
@@ -248,6 +252,10 @@ public partial class MainView : UserControl
         if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
         else { shortcut.ROMcore = comboCore.Text; }
 
+        // Validando que haya descripcion o no
+        if (txtDesc.Text == null || txtDesc.Text == string.Empty) { shortcut.Desc = null; }
+        else { shortcut.Desc = txtDesc.Text; }
+
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
         { ShortcutPosible = true; }
@@ -261,6 +269,13 @@ public partial class MainView : UserControl
 
         while (ShortcutPosible)
         {
+            // Comillas para directorios comunes...
+            // para el directorio de la ROM
+            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) { Utils.FixUnusualDirectories(shortcut.ROMdir); }
+
+            // para el archivo config
+            if (shortcut.CONFfile != null) { Utils.FixUnusualDirectories(shortcut.CONFfile); }
+
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
@@ -275,15 +290,14 @@ public partial class MainView : UserControl
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
                 msbox.ShowAsync();
             }
-                
-            
-
             ShortcutPosible = false;
         }
     }
 
+#if DEBUG
     async void testing1(object sender, RoutedEventArgs e)
     {
         Testing.FilePickerTesting(TopLevel.GetTopLevel(this));
     }
+#endif
 }

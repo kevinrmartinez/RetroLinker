@@ -99,7 +99,7 @@
 						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
 					</DockPanel>
 					<Label Margin="3,0" Content="Descripcion del Link"/>
-					<TextBox Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch"></TextBox>
+					<TextBox Name="txtDesc" Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch"></TextBox>
 				</StackPanel>
 
 

@@ -16,10 +16,11 @@ namespace RetroarchShortcutterV2.Models
         public string? CONFfile { get; set; }   // 5
         public string? ICONfile { get; set; }   // 6
         public string Command { get; set; }     // 7
-        public string? Comment { get; set; }    // 8
+        public string? Desc { get; set; }       // 8
         public string LNKdir { get; set; }      // 9
-
-        const string comilla = "\"";
+        public bool verboseB = false;           // 10
+        public bool fullscreenB = false;        // 11
+        public bool accessibilityB = false;     // 12
 
 
         public static bool BuildWinShortcut(Shortcutter shortcut, bool OS)
@@ -30,24 +31,12 @@ namespace RetroarchShortcutterV2.Models
 
             // Adicion de comillas para manejo de directorios no inusuales...
             // para el WorkingDirectory de RetroArch
-            if (shortcut.RApath.ElementAt(0) != comilla.ElementAt(0))
-            { shortcut.RApath = shortcut.RApath.Insert(0, comilla); }
-            if (shortcut.RApath.ElementAt(shortcut.RApath.Length - 1) != comilla.ElementAt(0))
-            { shortcut.RApath = shortcut.RApath + comilla; }
+            Utils.FixUnusualDirectories(shortcut.RApath);
 
             // para el ejecutable de RetroArch
-            if (shortcut.RAdir.ElementAt(0) != comilla.ElementAt(0))
-            { shortcut.RAdir = shortcut.RAdir.Insert(0, comilla); }
-            if (shortcut.RAdir.ElementAt(shortcut.RAdir.Length - 1) != comilla.ElementAt(0))
-            { shortcut.RAdir = shortcut.RAdir + comilla; }
+            Utils.FixUnusualDirectories(shortcut.RAdir);
 
-            // para el directorio de la ROM
-            if (shortcut.ROMdir.ElementAt(0) != comilla.ElementAt(0))
-            { shortcut.ROMdir = shortcut.ROMdir.Insert(0, comilla); }
-            if (shortcut.ROMdir.ElementAt(shortcut.ROMdir.Length - 1) != comilla.ElementAt(0))
-            { shortcut.ROMdir = shortcut.ROMdir + comilla; }
-
-            shortcut.Command = Commander.CommandBuilder(shortcut.ROMcore, shortcut.ROMdir);
+            shortcut = Commander.CommandBuilder(shortcut);
 
             /* Como WinFunc es otro proyecto, no puedo mandar el objuto 'shortcut'
              * Asi que em vez lo arreglo en forma de lista, y mando la lsita a WinFunc*/
@@ -68,13 +57,7 @@ namespace RetroarchShortcutterV2.Models
         {
             if (OS) { return false; }
 
-            // para el directorio de la ROM
-            if (shortcut.ROMdir.ElementAt(0) != comilla.ElementAt(0))
-            { shortcut.ROMdir = shortcut.ROMdir.Insert(0, comilla); }
-            if (shortcut.ROMdir.ElementAt(shortcut.ROMdir.Length - 1) != comilla.ElementAt(0))
-            { shortcut.ROMdir = shortcut.ROMdir + comilla; }
-
-            shortcut.Command = Commander.CommandBuilder(shortcut.ROMcore, shortcut.ROMdir);
+            shortcut = Commander.CommandBuilder(shortcut);
             // Llamar al creador de shortcut de Linux
             return true;
         }
