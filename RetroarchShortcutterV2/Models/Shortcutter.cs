@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if !LIN
 using WinFunc;
-#endif
+
 
 namespace RetroarchShortcutterV2.Models
 {
