@@ -51,7 +51,8 @@ namespace RetroarchShortcutterV2.Models
             shortcut = Commander.CommandBuilder(shortcut);
             // Llamar al creador de shortcut de Linux
             IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
-            try { LinFunc.LinShortcutter.CreateShortcut(shortcut_props); return true; }
+            string name = Path.GetFileNameWithoutExtension(shortcut.LNKdir);
+            try { LinFunc.LinShortcutter.CreateShortcut(shortcut_props, name, shortcut.verboseB); return true; }
             catch { return false; }
         }
 
