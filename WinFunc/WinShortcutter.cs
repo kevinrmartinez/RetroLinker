@@ -20,7 +20,7 @@ namespace WinFunc
             shortcut.Save();
         }
 
-        public static void CreateShortcut(string Link, string Exec, string Path, string command, string Iconfile, string Desc)
+        public static void CreateShortcut(string Link, string? Iconfile, string Exec, string? Desc, string Path, string command)
         {
 
             var shell = new WshShell();
@@ -28,7 +28,7 @@ namespace WinFunc
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Link);
             if (Iconfile != null) { shortcut.IconLocation = Iconfile; }
             shortcut.TargetPath = Exec;
-            shortcut.Description = Desc;
+            if (Desc != null) { shortcut.Description = Desc; }
             shortcut.WorkingDirectory = Path;
             shortcut.Arguments = command;
             shortcut.Save();

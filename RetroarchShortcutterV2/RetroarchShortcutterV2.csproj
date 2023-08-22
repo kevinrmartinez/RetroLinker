@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LinFunc\LinFunc.csproj" />
-    <ProjectReference Include="..\WinFunc\WinFunc.csproj" />
   </ItemGroup>
 
   <ItemGroup>
