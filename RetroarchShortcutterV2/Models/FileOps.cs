@@ -20,6 +20,31 @@ namespace RetroarchShortcutterV2.Models
         public static string UserSettings = Path.Combine(Environment.SpecialFolder.UserProfile.ToString() + ".RetroarchShortcutterV2");
         public static string writeIcoDIR;
 
+        public static string[] LoadCores()
+        {
+            string file = Path.Combine(FileOps.UserAssetsDir, FileOps.CoresFile);
+            if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
+            else { return new string[] { }; }
+        }
+
+        public static string picFillWithDefault(int index) 
+        {
+            string icon_file = string.Empty;
+            switch (index)
+            {
+                case 0:
+                    icon_file = Path.Combine(UserAssetsDir, DEFicon1);
+                    break;
+                case 1:
+                    icon_file = Path.Combine(UserAssetsDir, DEFicon2);
+                    break;
+                case 2:
+                    icon_file = Path.Combine(UserAssetsDir, DEFicon3);
+                    break;
+            }
+            return icon_file;
+        }
+
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);

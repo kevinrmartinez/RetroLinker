@@ -3,8 +3,6 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
-using System;
-using System.IO;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -17,7 +15,7 @@ public partial class MainView : UserControl
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
-    public bool DesktopOS = OperatingSystem.IsWindows();
+    public bool DesktopOS = System.OperatingSystem.IsWindows();
 
     public MainView()
     { InitializeComponent(); }
@@ -41,12 +39,9 @@ public partial class MainView : UserControl
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
     {
-        string cores = Path.Combine(FileOps.UserAssetsDir, FileOps.CoresFile);
-        //string cores = Path.Combine("coress.txt");
-        var msbox = MessageBoxManager.GetMessageBoxStandard("Error", "Archivo '" + cores + "' no encontrado!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
-        if (Path.Exists(cores)) { comboCore.ItemsSource = File.ReadAllLines(cores); }
-        //else { Console.Out.WriteLine("Archivo '" + cores + "' no encontrado!"); }
-        else { await msbox.ShowAsync(); }
+        var cores = FileOps.LoadCores();
+        if (cores.Length < 1) { lblNoCores.IsVisible = true; }
+        else { comboCore.ItemsSource = cores; }
      }
 
     void comboConfig_Loaded(object sender, RoutedEventArgs e)
@@ -57,7 +52,6 @@ public partial class MainView : UserControl
         }
         comboConfig.SelectedIndex++;
     }
-
 
     void comboICONDir_Loaded(object sender, RoutedEventArgs e)
     {
@@ -114,18 +108,7 @@ public partial class MainView : UserControl
         }
         else
         {
-            switch (comboICONDir.SelectedIndex)
-            {
-                case 0:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
-                    break;
-                case 1:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
-                    break;
-                case 2:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
-                    break;
-            }
+            shortcut.ICONfile = FileOps.picFillWithDefault(comboICONDir.SelectedIndex);
             FillIconBoxes(shortcut.ICONfile);
         }
     }
@@ -263,13 +246,10 @@ public partial class MainView : UserControl
                 default:
                     shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile);
                     break;
-
+                    
             }
         }
-        else
-        {
-
-        }
+        else { /* setting que deje al usuario copiar sus iconos al UserSetting */ }
 
 
         // REQUIERED FIELDS VALIDATION!
