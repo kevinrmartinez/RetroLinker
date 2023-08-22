@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,15 +9,16 @@ namespace RetroarchShortcutterV2.Models
 {
     public class FileOps
     {
-        public static List<string> IconsDir = new List<string>{ "Default", "Default Alt Light", "Default Alt Dark" };
-        public static List<string> ConfigDir = new List<string> { "Default" };
-        public static string writeIcoDIR;
         public const string UserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "retroarch.ico";
         public const string DEFicon2 = "icon_light.ico";
         public const string DEFicon3 = "icon_dark.ico";
+        public static List<string> IconsDir = new List<string> { "Default", "Default Alt Light", "Default Alt Dark" };
+        public static List<string> ConfigDir = new List<string> { "Default" };
+        public static string UserSettings = Path.Combine(Environment.SpecialFolder.UserProfile.ToString() + ".RetroarchShortcutterV2");
+        public static string writeIcoDIR;
 
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
@@ -38,6 +40,17 @@ namespace RetroarchShortcutterV2.Models
             return dir;
         }
 
+        public static string CpyIconToUsrSet(string path)
+        {
+            string name = Path.GetFileName(path);
+            string newpath = Path.Combine(UserSettings, name);
+            if (File.Exists(newpath)) { return newpath; }
+            else 
+            {
+                File.Copy(path, newpath);
+                return newpath;
+            }
+        }
 
         public static Bitmap GetBitmap(string path)
         {

@@ -96,7 +96,7 @@ public partial class MainView : UserControl
         int template;
         if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
         else { template = 5; }                  // FilePicker Option para iconos de Linux
-        string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
+        string dir = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
             FileOps.IconsDir.Add(dir);
@@ -165,20 +165,12 @@ public partial class MainView : UserControl
 
     void btnPatches_Click(object sender, RoutedEventArgs e)
     {
-
-    }
-
-    void comboCore_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        /*if (comboCore.SelectedIndex >= 0)
-        {
-            shortcut.ROMcore = comboCore.SelectedItem.ToString();
-        }*/
+        // PENDIENTE
     }
 
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
-
+        // PENDIENTE
     }
 
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -248,6 +240,10 @@ public partial class MainView : UserControl
         if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
         else { shortcut.ROMdir = shortcut.ROMfile; }
 
+        // Validar que haya ejecutable (LINUX)
+        if (shortcut.RAdir == null && !txtRADir.IsReadOnly)
+        { shortcut.RAdir = txtRADir.Text; }
+
         // Validando que haya un core
         if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
         else { shortcut.ROMcore = comboCore.Text; }
@@ -255,6 +251,26 @@ public partial class MainView : UserControl
         // Validando que haya descripcion o no
         if (txtDesc.Text == null || txtDesc.Text == string.Empty) { shortcut.Desc = null; }
         else { shortcut.Desc = txtDesc.Text; }
+
+        // Manejo de iconos
+        if (comboICONDir.SelectedIndex < 3)
+        {
+            switch (comboICONDir.SelectedIndex)
+            {
+                case 0:
+                    shortcut.ICONfile = null;
+                    break;
+                default:
+                    shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile);
+                    break;
+
+            }
+        }
+        else
+        {
+
+        }
+
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
@@ -269,12 +285,14 @@ public partial class MainView : UserControl
 
         while (ShortcutPosible)
         {
-            // Comillas para directorios comunes...
+            // Comillas para directorios que iran de parametros...
             // para el directorio de la ROM
-            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
+            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) 
+            { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
-            if (shortcut.CONFfile != null) { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
+            if (shortcut.CONFfile != null) 
+            { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
