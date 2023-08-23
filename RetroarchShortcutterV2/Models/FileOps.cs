@@ -118,6 +118,7 @@ namespace RetroarchShortcutterV2.Models
         {
             string name = Path.GetFileName(path);
             string newpath = Path.Combine(UserSettings, name);
+            CheckUsrSetDir();
             if (File.Exists(newpath)) { return newpath; }
             else 
             {
