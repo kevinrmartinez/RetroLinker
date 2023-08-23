@@ -270,7 +270,7 @@ public partial class MainView : UserControl
         }
         else if (comboICONDir.SelectedIndex > 2 && DesktopOS) /* setting que deje al usuario copiar sus iconos al UserSetting */
         {
-            shortcut.ICONfile = FileOps.WorkWinIcon(shortcut.ICONfile);
+            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile);
         }
 
         // REQUIERED FIELDS VALIDATION!

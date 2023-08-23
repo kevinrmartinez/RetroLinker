@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using RetroarchShortcutterV2.Models.WinIco;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +23,7 @@ namespace RetroarchShortcutterV2.Models
         public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");
         public static string writeIcoDIR;
 
+
         public static string[] LoadCores()
         {
             string file = Path.Combine(UserAssetsDir, CoresFile);
@@ -31,13 +33,8 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool CheckUsrSetDir()
         {
-            if (Path.Exists(UserSettings)) { return true; }
-            else 
-            { 
-                try { Directory.CreateDirectory(UserSettings); return true; }
-                catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
-            }
-            
+            try { Directory.CreateDirectory(UserSettings); return true; }
+            catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
         }
 
         public static string picFillWithDefault(int index) 
@@ -58,7 +55,14 @@ namespace RetroarchShortcutterV2.Models
             return icon_file;
         }
 
-        public static string WorkWinIcon(string icondir)
+        public static void GetWinIco(string icondir, int index)
+        {
+            var iconstream = IconProc.IcoExtraction(icondir);
+            var objicon = new WinIcoStream(icondir, iconstream, index);
+            IconProc.IcoStreams.Add(objicon);
+        }
+
+        public static string SaveWinIco(string icondir)
         {
             var icon_stream = new MemoryStream();
             string icoExt = Path.GetExtension(icondir);

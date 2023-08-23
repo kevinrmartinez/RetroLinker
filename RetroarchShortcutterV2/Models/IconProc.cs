@@ -1,11 +1,15 @@
 ﻿using ImageMagick;
+using RetroarchShortcutterV2.Models.WinIco;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace RetroarchShortcutterV2.Models
 {
     public class IconProc
     {
+        public static ICollection<WinIcoStream> IcoStreams { get; set; }
+
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
         static WinFuncImport.WinFuncMethods ExtractIco; 
 
