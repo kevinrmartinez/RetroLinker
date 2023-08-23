@@ -38,10 +38,10 @@ namespace RetroarchShortcutterV2.Models
 
         public static MemoryStream IcoExtraction(string DIR)
         {
-            var iconStream = new MemoryStream();
+            //var iconStream = new MemoryStream();
             var Args = new object[]
                 { DIR };
-            iconStream = ExtractIco.mInfo.Invoke(ExtractIco.objInstance, Args) as MemoryStream;
+            MemoryStream iconStream = ExtractIco.mInfo.Invoke(ExtractIco.objInstance, Args) as MemoryStream;
             return iconStream;
         }
 

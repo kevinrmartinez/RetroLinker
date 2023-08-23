@@ -55,7 +55,7 @@ namespace RetroarchShortcutterV2.Models
             return icon_file;
         }
 
-        public static void GetWinIco(string icondir, int index)
+        public static void GetEXEWinIco(string icondir, int index)
         {
             var iconstream = IconProc.IcoExtraction(icondir);
             var objicon = new WinIcoStream(icondir, iconstream, index);
