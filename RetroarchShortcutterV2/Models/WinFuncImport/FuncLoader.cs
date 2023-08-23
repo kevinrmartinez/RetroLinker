@@ -10,9 +10,13 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
     public class FuncLoader
     {
 
-        const string WinFunc = "C:\\Users\\force\\source\\C#\\RetroarchShortcutterV2\\WinFunc\\bin\\Debug\\net7.0\\\\WinFunc.dll";
-        static Assembly DLL = Assembly.LoadFrom(WinFunc);
+        const string WinFunc = "WinFunc.dll";           // Este dll de estar presente junto al ejecutable! (Windows)
+        static Assembly DLL;
 
+        public static void ImportWinFunc()
+        {
+            DLL = Assembly.LoadFrom(WinFunc);
+        }
 
         public static WinFuncMethods GetShortcutMethod()
         {
@@ -43,6 +47,7 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
             return ExtractIco;
         }
 
+#if DEBUG
         public static WinFuncMethods GetIcoExecuterMethod()
         {
             const string mName = "Main";
@@ -53,5 +58,6 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
             var ExecuteIco = new WinFuncMethods(mName, objWinShortcutter, method);
             return ExecuteIco;
         }
+#endif
     }
 }

@@ -14,6 +14,7 @@ namespace WinFunc
             int index = IcoExtracr.Count - 1;
             Icon exeIco = IcoExtracr.GetIcon(index);          
             exeIco.Save(stream);
+            stream.Position = 0;
             return stream;
         }
     }

@@ -1,11 +1,6 @@
 ﻿using ImageMagick;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -16,7 +11,7 @@ namespace RetroarchShortcutterV2.Models
 
         public static void StartImport()
         {
-            ExtractIco = WinFuncImport.FuncLoader.GetIcoExecuterMethod();
+            ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
         }
 
         public static MemoryStream PngConvert(string DIR)
@@ -53,12 +48,16 @@ namespace RetroarchShortcutterV2.Models
             return iconStream;
         }
 
-        public static string SaveIcoToFile(string filename, string saveDir, MemoryStream iconStream)
+        public static string SaveIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
         {
-            var ico = new MagickImage(iconStream);
-            string DIR = Path.Combine(saveDir, filename);
-            ico.Write(DIR);
-            return DIR;
+            var ico = new MagickImage(iconStream, MagickFormat.Ico);
+            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
+            else 
+            { 
+                Console.WriteLine("No existe la carpeta para escribir, alternando..."); 
+                ico.Write(altPath); return altPath;
+            }
+            return savePath;
         }
 
 

@@ -16,4 +16,10 @@
   <ItemGroup>
     <ProjectReference Include="..\RetroarchShortcutterV2\RetroarchShortcutterV2.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="WinFunc.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

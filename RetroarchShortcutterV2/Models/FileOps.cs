@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -17,7 +18,8 @@ namespace RetroarchShortcutterV2.Models
         public const string DEFicon3 = "icon_dark.ico";
         public static List<string> IconsDir = new List<string> { "Default", "Default Alt Light", "Default Alt Dark" };
         public static List<string> ConfigDir = new List<string> { "Default" };
-        public static string UserSettings = Path.Combine(Environment.SpecialFolder.UserProfile.ToString() + ".RetroarchShortcutterV2");
+        public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");
         public static string writeIcoDIR;
 
         public static string[] LoadCores()
@@ -25,6 +27,17 @@ namespace RetroarchShortcutterV2.Models
             string file = Path.Combine(UserAssetsDir, CoresFile);
             if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
             else { return new string[] { }; }
+        }
+
+        public static bool CheckUsrSetDir()
+        {
+            if (Path.Exists(UserSettings)) { return true; }
+            else 
+            { 
+                try { Directory.CreateDirectory(UserSettings); return true; }
+                catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
+            }
+            
         }
 
         public static string picFillWithDefault(int index) 
@@ -50,17 +63,19 @@ namespace RetroarchShortcutterV2.Models
             var icon_stream = new MemoryStream();
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
+            string newfile = Path.Combine(UserSettings, icoName);
+            string altfile = Path.Combine(UserProfile, icoName);
             switch (icoExt)
             {
                 case ".ico":
                     break;
                 case ".png":
                     icon_stream = IconProc.PngConvert(icondir);
-                    icondir = IconProc.SaveIcoToFile(icoName, UserSettings, icon_stream);
+                    icondir = IconProc.SaveIcoToFile(newfile, icon_stream, altfile);
                     break;
                 case ".exe":
                     icon_stream = IconProc.IcoExtraction(icondir);
-                    icondir = IconProc.SaveIcoToFile(icoName, UserSettings, icon_stream);
+                    icondir = IconProc.SaveIcoToFile(newfile, icon_stream, altfile);
                     break;
             }
 
@@ -114,12 +129,15 @@ namespace RetroarchShortcutterV2.Models
 
 
 #if DEBUG
-        public static Bitmap IconExtractTest()
+        public static string IconExtractTest()
         {
             string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
+            string name = Path.GetFileNameWithoutExtension(file) + ".ico";
             var icoStream = IconProc.IcoExtraction(file);
-            var bitm = GetBitmap(icoStream);
-            return bitm;
+            string newfile = Path.Combine(UserSettings, name);
+            string altfile = Path.Combine(UserProfile, name);
+            newfile = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
+            return newfile;
         }
 #endif
     }

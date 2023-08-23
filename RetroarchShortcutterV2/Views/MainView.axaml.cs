@@ -4,6 +4,7 @@ using Avalonia.Media.Imaging;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
+using RetroarchShortcutterV2.Models.WinFuncImport;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -28,7 +29,7 @@ public partial class MainView : UserControl
         
         
 #if LINUX
-        Console.Out.WriteLine("Esto es Linux");
+        Console.WriteLine("Esto es Linux");
         Console.Beep();
 #endif
         if (!DesktopOS)
@@ -38,7 +39,8 @@ public partial class MainView : UserControl
         }
         else
         {
-           IconProc.StartImport();
+            FuncLoader.ImportWinFunc();
+            IconProc.StartImport();
         }
     }
 
@@ -215,7 +217,7 @@ public partial class MainView : UserControl
             txtLINKDir.Text = shortcut.LNKdir;
         }
 #if DEBUG
-        else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
+        //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
 #endif
     }
 
