@@ -9,18 +9,22 @@ namespace RetroarchShortcutterV2.Models.WinIco
         public MemoryStream IconStream { get; set; }
         public int? comboIconIndex { get; set; }
 
-       
+        public WinIcoStream()
+        {
+
+        }
+
         public WinIcoStream(string exeDir, MemoryStream iconStream)
         {
             ExeDir = exeDir;
             IconStream = iconStream;
         }
 
-        public WinIcoStream(string exeDir, MemoryStream iconStream, int comboIconIndex)
+        public WinIcoStream(string exeDir, MemoryStream iconStream, int comboIndex)
         {
             ExeDir = exeDir;
             IconStream = iconStream;
-            this.comboIconIndex = comboIconIndex;
+            comboIconIndex = comboIndex;
         }
 
         public bool Equals(WinIcoStream other)

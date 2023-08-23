@@ -8,7 +8,7 @@ namespace RetroarchShortcutterV2.Models
 {
     public class IconProc
     {
-        public static ICollection<WinIcoStream> IcoStreams { get; set; }
+        public static List<WinIcoStream> IcoStreams { get; set; }
 
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
         static WinFuncImport.WinFuncMethods ExtractIco; 
@@ -16,6 +16,7 @@ namespace RetroarchShortcutterV2.Models
         public static void StartImport()
         {
             ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
+            IcoStreams = new List<WinIcoStream>();
         }
 
         public static MemoryStream PngConvert(string DIR)

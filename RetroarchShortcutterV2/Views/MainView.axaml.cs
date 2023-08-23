@@ -5,6 +5,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.WinFuncImport;
+using RetroarchShortcutterV2.Models.WinIco;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -13,7 +14,8 @@ public partial class MainView : UserControl
 
     public Shortcutter shortcut = new();
     public static bool ROMenable = true;
-    public Avalonia.Media.Imaging.Bitmap ICONimage;
+    public Bitmap ICONimage;
+    public static WinIcoStream icoStream;
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
@@ -41,6 +43,7 @@ public partial class MainView : UserControl
         {
             FuncLoader.ImportWinFunc();
             IconProc.StartImport();
+            icoStream = new WinIcoStream();
         }
     }
 
@@ -117,14 +120,33 @@ public partial class MainView : UserControl
 
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (comboICONDir.SelectedIndex > 2)
+        int index = comboICONDir.SelectedIndex;
+        if (index > 2)
         {
             shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
-            FillIconBoxes(shortcut.ICONfile);
+            if (DesktopOS) 
+            { 
+                if (FileOps.IsWinEXE(shortcut.ICONfile))
+                {
+                    int x = IconProc.IcoStreams.FindIndex(finder => finder.comboIconIndex == index);
+                    if (x >= 0) 
+                    { icoStream = IconProc.IcoStreams[x]; }
+                    else 
+                    { icoStream = FileOps.GetEXEWinIco(shortcut.ICONfile, index); }
+
+                    icoStream.IconStream.Position = 0;
+                    var bitm = FileOps.GetBitmap(icoStream.IconStream);
+                    FillIconBoxes(bitm);
+
+                }
+                else { FillIconBoxes(shortcut.ICONfile); }
+            }
+            
+            else { FillIconBoxes(shortcut.ICONfile); }
         }
         else
-        {
-            shortcut.ICONfile = FileOps.picFillWithDefault(comboICONDir.SelectedIndex);
+        {   // llena los controles pic con uno de los iconos default (Indices del 0 al 2)
+            shortcut.ICONfile = FileOps.picFillWithDefault(index);
             FillIconBoxes(shortcut.ICONfile);
         }
     }
@@ -231,7 +253,6 @@ public partial class MainView : UserControl
         var msbox_params = new MessageBoxStandardParams();
         msbox_params.ShowInCenter = true; 
         msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
         // CHECKS!
         shortcut.verboseB = (bool)chkVerb.IsChecked;
@@ -268,9 +289,9 @@ public partial class MainView : UserControl
                     
             }
         }
-        else if (comboICONDir.SelectedIndex > 2 && DesktopOS) /* setting que deje al usuario copiar sus iconos al UserSetting */
-        {
-            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile);
+        else if (comboICONDir.SelectedIndex > 2 && DesktopOS)
+        {   /* Falta setting que deje al usuario copiar sus iconos al UserSetting */
+            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, icoStream.IconStream);
         }
 
         // REQUIERED FIELDS VALIDATION!

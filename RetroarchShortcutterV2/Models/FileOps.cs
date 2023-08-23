@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -55,34 +54,43 @@ namespace RetroarchShortcutterV2.Models
             return icon_file;
         }
 
-        public static void GetEXEWinIco(string icondir, int index)
+        public static bool IsWinEXE(string exe)
+        {
+            return (Path.GetExtension(exe) == ".exe");
+        }
+
+        public static void WorkWinEXE(string exe, int index)
+        {
+
+        }
+
+        public static WinIcoStream GetEXEWinIco(string icondir, int index)
         {
             var iconstream = IconProc.IcoExtraction(icondir);
             var objicon = new WinIcoStream(icondir, iconstream, index);
             IconProc.IcoStreams.Add(objicon);
+            return objicon;
         }
 
-        public static string SaveWinIco(string icondir)
+        public static string SaveWinIco(string icondir, MemoryStream icoStream)
         {
-            var icon_stream = new MemoryStream();
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
             string newfile = Path.Combine(UserSettings, icoName);
             string altfile = Path.Combine(UserProfile, icoName);
+            if (icoStream != null) { icoStream.Position = 0; }
             switch (icoExt)
             {
-                case ".ico":
-                    break;
                 case ".png":
-                    icon_stream = IconProc.PngConvert(icondir);
+                    var icon_stream = IconProc.PngConvert(icondir);
                     icondir = IconProc.SaveIcoToFile(newfile, icon_stream, altfile);
                     break;
                 case ".exe":
-                    icon_stream = IconProc.IcoExtraction(icondir);
-                    icondir = IconProc.SaveIcoToFile(newfile, icon_stream, altfile);
+                    icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
+                    break;
+                default:
                     break;
             }
-
             return icondir;
         }
 
