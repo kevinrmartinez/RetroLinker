@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
@@ -35,6 +36,10 @@ public partial class MainView : UserControl
             txtRADir.IsReadOnly = false;
             txtRADir.Text = "retroarch";
         }
+        else
+        {
+            IconProc.StartImport();
+        }
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -67,6 +72,15 @@ public partial class MainView : UserControl
     void FillIconBoxes(string DIR)
     {
         ICONimage = FileOps.GetBitmap(DIR);
+        pic16.Source = ICONimage;
+        pic32.Source = ICONimage;
+        pic64.Source = ICONimage;
+        pic128.Source = ICONimage;
+    }
+
+    void FillIconBoxes(Bitmap bitmap)
+    {
+        ICONimage = bitmap;
         pic16.Source = ICONimage;
         pic32.Source = ICONimage;
         pic64.Source = ICONimage;
@@ -200,6 +214,9 @@ public partial class MainView : UserControl
             shortcut.LNKdir = file;
             txtLINKDir.Text = shortcut.LNKdir;
         }
+#if DEBUG
+        else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
+#endif
     }
 
 
@@ -249,8 +266,10 @@ public partial class MainView : UserControl
                     
             }
         }
-        else { /* setting que deje al usuario copiar sus iconos al UserSetting */ }
-
+        else if (comboICONDir.SelectedIndex > 2 && DesktopOS) /* setting que deje al usuario copiar sus iconos al UserSetting */
+        {
+            shortcut.ICONfile = FileOps.WorkWinIcon(shortcut.ICONfile);
+        }
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))

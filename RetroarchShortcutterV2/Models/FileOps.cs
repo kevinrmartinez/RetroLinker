@@ -22,7 +22,7 @@ namespace RetroarchShortcutterV2.Models
 
         public static string[] LoadCores()
         {
-            string file = Path.Combine(FileOps.UserAssetsDir, FileOps.CoresFile);
+            string file = Path.Combine(UserAssetsDir, CoresFile);
             if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
             else { return new string[] { }; }
         }
@@ -43,6 +43,28 @@ namespace RetroarchShortcutterV2.Models
                     break;
             }
             return icon_file;
+        }
+
+        public static string WorkWinIcon(string icondir)
+        {
+            var icon_stream = new MemoryStream();
+            string icoExt = Path.GetExtension(icondir);
+            string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
+            switch (icoExt)
+            {
+                case ".ico":
+                    break;
+                case ".png":
+                    icon_stream = IconProc.PngConvert(icondir);
+                    icondir = IconProc.SaveIcoToFile(icoName, UserSettings, icon_stream);
+                    break;
+                case ".exe":
+                    icon_stream = IconProc.IcoExtraction(icondir);
+                    icondir = IconProc.SaveIcoToFile(icoName, UserSettings, icon_stream);
+                    break;
+            }
+
+            return icondir;
         }
 
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
@@ -82,5 +104,23 @@ namespace RetroarchShortcutterV2.Models
             Bitmap bitmap = new Bitmap(path);
             return bitmap;
         }
+
+        public static Bitmap GetBitmap(Stream stream)
+        {
+            Bitmap bitmap = new Bitmap(stream);
+            return bitmap;
+        }
+
+
+
+#if DEBUG
+        public static Bitmap IconExtractTest()
+        {
+            string file = "\"F:\\Zero Fox\\Anime Icon Matcher.exe\"";
+            var icoStream = IconProc.IcoExtraction(file);
+            var bitm = GetBitmap(icoStream);
+            return bitm;
+        }
+#endif
     }
 }
