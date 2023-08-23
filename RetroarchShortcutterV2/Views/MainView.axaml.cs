@@ -38,7 +38,7 @@ public partial class MainView : UserControl
         }
         else
         {
-            IconProc.StartImport();
+           IconProc.StartImport();
         }
     }
 

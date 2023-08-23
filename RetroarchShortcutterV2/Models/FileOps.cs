@@ -116,7 +116,7 @@ namespace RetroarchShortcutterV2.Models
 #if DEBUG
         public static Bitmap IconExtractTest()
         {
-            string file = "\"F:\\Zero Fox\\Anime Icon Matcher.exe\"";
+            string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
             var icoStream = IconProc.IcoExtraction(file);
             var bitm = GetBitmap(icoStream);
             return bitm;

@@ -16,7 +16,7 @@ namespace RetroarchShortcutterV2.Models
 
         public static void StartImport()
         {
-            ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
+            ExtractIco = WinFuncImport.FuncLoader.GetIcoExecuterMethod();
         }
 
         public static MemoryStream PngConvert(string DIR)
