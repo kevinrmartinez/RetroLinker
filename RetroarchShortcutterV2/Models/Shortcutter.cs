@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 
 namespace RetroarchShortcutterV2.Models
@@ -60,27 +59,9 @@ namespace RetroarchShortcutterV2.Models
             if (OS) { return false; }
 
             shortcut = Commander.CommandBuilder(shortcut);
-            // Llamar al creador de shortcut de Linux
-            IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
-            string name = Path.GetFileNameWithoutExtension(shortcut.LNKdir);
-            try { LinFunc.LinShortcutter.CreateShortcut(shortcut_props, name, shortcut.verboseB); return true; }
+            
+            try { LinFunc.LinShortcutter.CreateShortcut(shortcut); return true; }
             catch { return false; }
-        }
-
-
-
-        public static IList<object> CreateObjList(Shortcutter shortcut)
-        {
-            /* Como WinFunc es otro proyecto, no puedo mandar el objuto 'shortcut'
-             * Asi que em vez lo arreglo en forma de lista, y mando la lsita a WinFunc*/
-
-            IList<object>? props = new List<object>();
-            var properties = typeof(Shortcutter).GetProperties();       // Consigue las propiedades de la clase, retorna PropertyInfo[]
-            foreach (var propertyInfo in properties)                    // Recorre cada elemento del array 'properties', guardandolo en 'propertyInfo'
-            {
-                props.Add(propertyInfo.GetValue(shortcut));  // Añade a la lista 'shortcut_members' el valor obtenido del objeto 'shortcut' en la propiedad indicada por 'propertyInfo'
-            }
-            return props;
         }
     }
 }

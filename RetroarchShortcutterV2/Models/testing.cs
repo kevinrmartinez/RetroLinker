@@ -1,12 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models
 {

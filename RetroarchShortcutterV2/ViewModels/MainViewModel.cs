@@ -9,12 +9,4 @@ namespace RetroarchShortcutterV2.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     public string Greeting => "Welcome to Avalonia!";
-    public Bitmap TestBitmap => Testing.bitmap;
-
-    //public void fillPicTest()
-    //{
-    //    pic128.Source = Testing.bitmap;
-    //    pic64.Source = Testing.bitmap;
-    //    pic32.Source = Testing.bitmap;
-    //}
 }
