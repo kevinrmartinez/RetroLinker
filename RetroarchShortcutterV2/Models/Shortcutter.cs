@@ -20,26 +20,37 @@ namespace RetroarchShortcutterV2.Models
         public bool fullscreenB = false;        // 11
         public bool accessibilityB = false;     // 12
 
-
+        
         // Windows
         public static bool BuildWinShortcut(Shortcutter shortcut, bool OS)
         {
             if (!OS) { return false; }
+            WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
 
             shortcut.RApath = Path.GetDirectoryName(shortcut.RAdir);
 
             // Adicion de comillas para manejo de directorios no inusuales...
             // para el WorkingDirectory de RetroArch
-            Utils.FixUnusualDirectories(shortcut.RApath);
+            shortcut.RApath = Utils.FixUnusualDirectories(shortcut.RApath);
 
             // para el ejecutable de RetroArch
-            Utils.FixUnusualDirectories(shortcut.RAdir);
+            shortcut.RAdir = Utils.FixUnusualDirectories(shortcut.RAdir);
+
+            // para el icono del link
+            if (shortcut.ICONfile != null) 
+            { shortcut.ICONfile = Utils.FixUnusualDirectories(shortcut.ICONfile); }
 
             shortcut = Commander.CommandBuilder(shortcut);
 
-            IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
-            //WinFunc.WinShortcutter.CreateShortcut(shortcut_members);
-            try { WinFunc.WinShortcutter.CreateShortcut(shortcut_props); return true; }
+            //IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
+
+            var CreateShortcutArgs = new object[]
+            {
+                shortcut.LNKdir, shortcut.ICONfile, shortcut.RAdir,
+                shortcut.Desc, shortcut.RApath, shortcut.Command
+            };
+            
+            try { CreateShortcut.mInfo.Invoke(CreateShortcut.objInstance, CreateShortcutArgs); return true; }
             catch { return false; }                                     // El metodo es bool; true si tuvo exito, false en caso contrario
         }
 

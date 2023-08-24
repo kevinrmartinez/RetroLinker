@@ -26,7 +26,7 @@
 		<Grid Name="gridBODY" Grid.Row="1" Background="Red" ColumnDefinitions="*, Auto">
 			
 			<!--Main Operations-->
-			<Grid Name="gridOPS" Grid.Column="0" Background="DarkRed" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto" ShowGridLines="False">
+			<Grid Name="gridOPS" Grid.Column="0" Background="RosyBrown" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto" ShowGridLines="False">
 
 				<!-- ROW0 - Spacing -->
 				<Rectangle Grid.Row="0" Height="8"/>
@@ -60,6 +60,7 @@
 						<StackPanel Orientation="Vertical">
 							<AutoCompleteBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
 									  Loaded="comboCore_Loaded" SelectionChanged=""/>
+							<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="'cores.txt' No encontrado!" IsVisible="False"/>
 						</StackPanel>
 					</StackPanel>
 					<StackPanel Grid.Column="1">

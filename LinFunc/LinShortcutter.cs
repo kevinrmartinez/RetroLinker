@@ -1,5 +1,4 @@
-﻿using System.Security.AccessControl;
-using System.Text;
+﻿using System.Text;
 
 namespace LinFunc
 {
@@ -21,12 +20,12 @@ namespace LinFunc
             };
 
             if (_shortcut[8] != null) { shortcut.Add("Comment=" + _shortcut[8].ToString()); }
-            //else { shortcut.Add("Comment="); }
+            else { shortcut.Add("Comment="); }
 
             shortcut.Add("Exec=" + _shortcut[0].ToString() + " " + _shortcut[7].ToString());
 
             if (_shortcut[6] != null) { shortcut.Add("Icon=" + _shortcut[6].ToString()); }
-            //else { shortcut.Add("Icon="); }
+            else { shortcut.Add("Icon="); }
 
             shortcut.Add("Name=" + name);
             shortcut.Add(notify);

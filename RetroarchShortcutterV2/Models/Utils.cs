@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace RetroarchShortcutterV2.Models
 {
     public class Utils
     {
-
+        const string comilla = "\"";
         public static string FixUnusualDirectories(string dir)
         {
-            const string comilla = "\"";
             string newdir = dir;
             if (newdir.ElementAt(0) != comilla.ElementAt(0))                    // Si la primera letra de newdir no es ", entonces se le agrega
             { newdir = newdir.Insert(0, comilla); }

@@ -5,20 +5,20 @@ namespace RetroarchShortcutterV2.Models
 {
     public class PickerOpt
     {
-        static FilePickerFileType ejecutable = new FilePickerFileType("Ejecutables") { Patterns = new string[] { "*.exe" } };
-        static FilePickerFileType appimage = new FilePickerFileType("AppImage") { Patterns = new string[] { "*.AppImage" } };
-        static FilePickerFileType config_file = new FilePickerFileType("Config Files") { Patterns = new string[] { "*.cfg" } };
-        static FilePickerFileType icon_files = new FilePickerFileType("Windows Icons") { Patterns = new string[] { "*.ico" } };
-        static FilePickerFileType comp_icon = new FilePickerFileType("Convertible Images") { Patterns = new string[] { "*.png", "*.jpg" } };
-        static FilePickerFileType png_only = new FilePickerFileType("Convertible Images") { Patterns = new string[] { "*.png" } };
-        static FilePickerFileType win_lnk = new FilePickerFileType("Windows Shortcut") { Patterns = new string[] { "*.lnk"} };
-        static FilePickerFileType lin_lnk = new FilePickerFileType("Desktop link") { Patterns = new string[] { "*.desktop" } };
+        static readonly FilePickerFileType ejecutable = new("Ejecutables") { Patterns = new string[] { "*.exe" } };
+        static readonly FilePickerFileType appimage = new("AppImage") { Patterns = new string[] { "*.AppImage" } };
+        static readonly FilePickerFileType config_file = new("Config Files") { Patterns = new string[] { "*.cfg" } };
+        static readonly FilePickerFileType win_icon_files = new("Windows Icons") { Patterns = new string[] { "*.ico" } };
+        static readonly FilePickerFileType comp_icon = new("Convertible Images") { Patterns = new string[] { "*.png", "*.jpg" } };
+        static readonly FilePickerFileType lin_icon_files = new("Icon Files") { Patterns = new string[] { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" } };
+        static readonly FilePickerFileType win_lnk = new("Windows Shortcut") { Patterns = new string[] { "*.lnk"} };
+        static readonly FilePickerFileType lin_lnk = new("Desktop link") { Patterns = new string[] { "*.desktop" } };
 
         static List<FilePickerFileType> RADirFileTypes { get; } = new List<FilePickerFileType> { ejecutable, FilePickerFileTypes.All };
         static List<FilePickerFileType> RADirFileTypes2 { get; } = new List<FilePickerFileType> { appimage, FilePickerFileTypes.All };
         static List<FilePickerFileType> CONFIGDirFileTypes { get; } = new List<FilePickerFileType> { config_file, FilePickerFileTypes.TextPlain };
-        static List<FilePickerFileType> ICONfileTypes { get; } = new List<FilePickerFileType> { icon_files, ejecutable, comp_icon };
-        static List<FilePickerFileType> ICONfileTypes2 { get; } = new List<FilePickerFileType> { png_only, icon_files, FilePickerFileTypes.ImageAll };
+        static List<FilePickerFileType> ICONfileTypes { get; } = new List<FilePickerFileType> { win_icon_files, ejecutable, comp_icon };
+        static List<FilePickerFileType> ICONfileTypes2 { get; } = new List<FilePickerFileType> { lin_icon_files };
         static List<FilePickerFileType> WinShorTypes { get; } = new List<FilePickerFileType> { win_lnk };
         static List<FilePickerFileType> LinShorTypes { get; } = new List<FilePickerFileType> { lin_lnk };
 

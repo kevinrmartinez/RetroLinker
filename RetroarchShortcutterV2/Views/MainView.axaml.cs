@@ -1,10 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
-using System;
-using System.IO;
+using RetroarchShortcutterV2.Models.WinFuncImport;
+using RetroarchShortcutterV2.Models.WinIco;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -13,11 +14,12 @@ public partial class MainView : UserControl
 
     public Shortcutter shortcut = new();
     public static bool ROMenable = true;
-    public Avalonia.Media.Imaging.Bitmap ICONimage;
+    public Bitmap ICONimage;
+    public static WinIcoStream icoStream;
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
-    public bool DesktopOS = OperatingSystem.IsWindows();
+    public bool DesktopOS = System.OperatingSystem.IsWindows();
 
     public MainView()
     { InitializeComponent(); }
@@ -29,7 +31,7 @@ public partial class MainView : UserControl
         
         
 #if LINUX
-        Console.Out.WriteLine("Esto es Linux");
+        Console.WriteLine("Esto es Linux");
         Console.Beep();
 #endif
         if (!DesktopOS)
@@ -37,16 +39,19 @@ public partial class MainView : UserControl
             txtRADir.IsReadOnly = false;
             txtRADir.Text = "retroarch";
         }
+        else
+        {
+            FuncLoader.ImportWinFunc();
+            IconProc.StartImport();
+            icoStream = new WinIcoStream();
+        }
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
     {
-        string cores = Path.Combine(FileOps.UserAssetsDir, FileOps.CoresFile);
-        //string cores = Path.Combine("coress.txt");
-        var msbox = MessageBoxManager.GetMessageBoxStandard("Error", "Archivo '" + cores + "' no encontrado!", MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
-        if (Path.Exists(cores)) { comboCore.ItemsSource = File.ReadAllLines(cores); }
-        //else { Console.Out.WriteLine("Archivo '" + cores + "' no encontrado!"); }
-        else { await msbox.ShowAsync(); }
+        var cores = FileOps.LoadCores();
+        if (cores.Length < 1) { lblNoCores.IsVisible = true; }
+        else { comboCore.ItemsSource = cores; }
      }
 
     void comboConfig_Loaded(object sender, RoutedEventArgs e)
@@ -57,7 +62,6 @@ public partial class MainView : UserControl
         }
         comboConfig.SelectedIndex++;
     }
-
 
     void comboICONDir_Loaded(object sender, RoutedEventArgs e)
     {
@@ -73,6 +77,15 @@ public partial class MainView : UserControl
     void FillIconBoxes(string DIR)
     {
         ICONimage = FileOps.GetBitmap(DIR);
+        pic16.Source = ICONimage;
+        pic32.Source = ICONimage;
+        pic64.Source = ICONimage;
+        pic128.Source = ICONimage;
+    }
+
+    void FillIconBoxes(Bitmap bitmap)
+    {
+        ICONimage = bitmap;
         pic16.Source = ICONimage;
         pic32.Source = ICONimage;
         pic64.Source = ICONimage;
@@ -96,7 +109,7 @@ public partial class MainView : UserControl
         int template;
         if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
         else { template = 5; }                  // FilePicker Option para iconos de Linux
-        string dir = await FileOps.OpenFileAsync(3, TopLevel.GetTopLevel(this));
+        string dir = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
             FileOps.IconsDir.Add(dir);
@@ -107,25 +120,33 @@ public partial class MainView : UserControl
 
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (comboICONDir.SelectedIndex > 2)
+        int index = comboICONDir.SelectedIndex;
+        if (index > 2)
         {
             shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
-            FillIconBoxes(shortcut.ICONfile);
+            if (DesktopOS) 
+            { 
+                if (FileOps.IsWinEXE(shortcut.ICONfile))
+                {
+                    int x = IconProc.IcoStreams.FindIndex(finder => finder.comboIconIndex == index);
+                    if (x >= 0) 
+                    { icoStream = IconProc.IcoStreams[x]; }
+                    else 
+                    { icoStream = FileOps.GetEXEWinIco(shortcut.ICONfile, index); }
+
+                    icoStream.IconStream.Position = 0;
+                    var bitm = FileOps.GetBitmap(icoStream.IconStream);
+                    FillIconBoxes(bitm);
+
+                }
+                else { FillIconBoxes(shortcut.ICONfile); }
+            }
+            
+            else { FillIconBoxes(shortcut.ICONfile); }
         }
         else
-        {
-            switch (comboICONDir.SelectedIndex)
-            {
-                case 0:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon1);
-                    break;
-                case 1:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon2);
-                    break;
-                case 2:
-                    shortcut.ICONfile = Path.Combine(FileOps.UserAssetsDir, FileOps.DEFicon3);
-                    break;
-            }
+        {   // llena los controles pic con uno de los iconos default (Indices del 0 al 2)
+            shortcut.ICONfile = FileOps.picFillWithDefault(index);
             FillIconBoxes(shortcut.ICONfile);
         }
     }
@@ -165,20 +186,12 @@ public partial class MainView : UserControl
 
     void btnPatches_Click(object sender, RoutedEventArgs e)
     {
-
-    }
-
-    void comboCore_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        /*if (comboCore.SelectedIndex >= 0)
-        {
-            shortcut.ROMcore = comboCore.SelectedItem.ToString();
-        }*/
+        // PENDIENTE
     }
 
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
-
+        // PENDIENTE
     }
 
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -225,6 +238,9 @@ public partial class MainView : UserControl
             shortcut.LNKdir = file;
             txtLINKDir.Text = shortcut.LNKdir;
         }
+#if DEBUG
+        //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
+#endif
     }
 
 
@@ -237,7 +253,6 @@ public partial class MainView : UserControl
         var msbox_params = new MessageBoxStandardParams();
         msbox_params.ShowInCenter = true; 
         msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        //var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
 
         // CHECKS!
         shortcut.verboseB = (bool)chkVerb.IsChecked;
@@ -248,6 +263,10 @@ public partial class MainView : UserControl
         if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
         else { shortcut.ROMdir = shortcut.ROMfile; }
 
+        // Validar que haya ejecutable (LINUX)
+        if (shortcut.RAdir == null && !txtRADir.IsReadOnly)
+        { shortcut.RAdir = txtRADir.Text; }
+
         // Validando que haya un core
         if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
         else { shortcut.ROMcore = comboCore.Text; }
@@ -255,6 +274,25 @@ public partial class MainView : UserControl
         // Validando que haya descripcion o no
         if (txtDesc.Text == null || txtDesc.Text == string.Empty) { shortcut.Desc = null; }
         else { shortcut.Desc = txtDesc.Text; }
+
+        // Manejo de iconos
+        if (comboICONDir.SelectedIndex < 3)
+        {
+            switch (comboICONDir.SelectedIndex)
+            {
+                case 0:
+                    shortcut.ICONfile = null;
+                    break;
+                default:
+                    shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile);
+                    break;
+                    
+            }
+        }
+        else if (comboICONDir.SelectedIndex > 2 && DesktopOS)
+        {   /* Falta setting que deje al usuario copiar sus iconos al UserSetting */
+            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, icoStream.IconStream);
+        }
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
@@ -269,12 +307,14 @@ public partial class MainView : UserControl
 
         while (ShortcutPosible)
         {
-            // Comillas para directorios comunes...
+            // Comillas para directorios que iran de parametros...
             // para el directorio de la ROM
-            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
+            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) 
+            { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
-            if (shortcut.CONFfile != null) { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
+            if (shortcut.CONFfile != null) 
+            { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
