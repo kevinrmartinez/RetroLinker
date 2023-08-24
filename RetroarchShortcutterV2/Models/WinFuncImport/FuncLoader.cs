@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models.WinFuncImport
 {
     public class FuncLoader
     {
-
-        const string WinFunc = "WinFunc.dll";           // Este dll de estar presente junto al ejecutable! (Windows)
+        private const string WinFunc = "WinFunc.dll";           // Este dll debe estar presente junto al ejecutable! (Windows)
         static Assembly DLL;
 
         public static void ImportWinFunc()

@@ -3,8 +3,13 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;Dbg-x86-partial</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dbg-x86-partial|AnyCPU'" />
 
   
   <ItemGroup>
@@ -18,12 +23,11 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.4" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Dbg-x86-partial'">
+      <Version>11.0.4</Version>
+    </PackageReference>
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.2.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\LinFunc\LinFunc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

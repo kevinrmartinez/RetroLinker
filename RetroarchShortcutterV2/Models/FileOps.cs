@@ -19,7 +19,7 @@ namespace RetroarchShortcutterV2.Models
         public static List<string> IconsDir = new List<string> { "Default", "Default Alt Light", "Default Alt Dark" };
         public static List<string> ConfigDir = new List<string> { "Default" };
         public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");
+        public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static string writeIcoDIR;
 
 
@@ -27,7 +27,7 @@ namespace RetroarchShortcutterV2.Models
         {
             string file = Path.Combine(UserAssetsDir, CoresFile);
             if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
-            else { return new string[] { }; }
+            else { return Array.Empty<string>(); }
         }
 
         public static bool CheckUsrSetDir()

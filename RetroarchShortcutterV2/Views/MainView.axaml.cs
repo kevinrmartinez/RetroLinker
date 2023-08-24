@@ -27,22 +27,19 @@ public partial class MainView : UserControl
 
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        //comboCore.ItemsSource = File.ReadAllLines("cores.txt");
-        
-        
-#if LINUX
-        Console.WriteLine("Esto es Linux");
-        Console.Beep();
-#endif
+
         if (!DesktopOS)
         {
             txtRADir.IsReadOnly = false;
             txtRADir.Text = "retroarch";
+#if DEBUG
+            System.Console.Beep();
+#endif
         }
         else
         {
-            FuncLoader.ImportWinFunc();
-            IconProc.StartImport();
+            try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+            catch { System.Console.Beep(); System.Console.Beep(); }   // PENDIENTE: Insertar msbox indicando un problema
             icoStream = new WinIcoStream();
         }
     }
@@ -118,7 +115,7 @@ public partial class MainView : UserControl
         }
     }
 
-    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion gracias a snurre en stackoverflow.com
     {
         int index = comboICONDir.SelectedIndex;
         if (index > 2)

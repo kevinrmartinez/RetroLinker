@@ -1,11 +1,5 @@
-﻿using RetroarchShortcutterV2.Models.WinIco;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models.WinFuncImport
 {

@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using RetroarchShortcutterV2.Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace LinFunc
 {
@@ -36,6 +39,36 @@ namespace LinFunc
             shortcut.Add(type);
 
             File.WriteAllLines( dir, shortcut, Encoding.UTF8);
+        }
+
+        public static void CreateShortcut(Shortcutter _shortcut)
+        {
+            string dir = _shortcut.LNKdir;
+            string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
+
+            List<string> shortcut = new List<string>
+            {
+                line1,
+                line2
+            };
+
+            if (_shortcut.Desc != null) { shortcut.Add("Comment=" + _shortcut.Desc.ToString()); }
+            else { shortcut.Add("Comment="); }
+
+            shortcut.Add("Exec=" + _shortcut.RAdir + " " + _shortcut.Command);
+
+            if (_shortcut.ICONfile != null) { shortcut.Add("Icon=" + _shortcut.ICONfile); }
+            else { shortcut.Add("Icon="); }
+
+            shortcut.Add("Name=" + name);
+            shortcut.Add(notify);
+
+            if (_shortcut.verboseB) { shortcut.Add("Terminal=true"); }
+            else { shortcut.Add("Terminal=false"); }
+
+            shortcut.Add(type);
+
+            File.WriteAllLines(dir, shortcut, Encoding.UTF8);
         }
     }
 }
