@@ -9,6 +9,6 @@
         x:Class="RetroarchShortcutterV2.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroarchShortcutterV2"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen" Name="MainWindow1">
         <views:MainView />
 </Window>

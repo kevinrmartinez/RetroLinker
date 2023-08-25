@@ -18,9 +18,8 @@ namespace RetroarchShortcutterV2.Models.Icons
             ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
         }
 
-        public static MemoryStream PngConvert(string DIR)
+        public static MagickImage ImageConvert(string DIR)
         {
-            var icoMS = new MemoryStream();
             var PNG = new MagickImage(DIR);
 
             int sizeMajor = int.Max(PNG.Width, PNG.Height);
@@ -32,8 +31,8 @@ namespace RetroarchShortcutterV2.Models.Icons
                 for (i = MaxRes; i > sizeMajor; i /= 2) { }
                 PNG.AdaptiveResize(i, i);
             }
-            PNG.Write(icoMS, MagickFormat.Ico);
-            return icoMS;
+            PNG.Format = MagickFormat.Ico;
+            return PNG;
         }
 
         public static MemoryStream IcoExtraction(string DIR)
@@ -55,6 +54,29 @@ namespace RetroarchShortcutterV2.Models.Icons
             var iconStream = new MemoryStream();
 
             return iconStream;
+        }
+
+        public static string SaveConvIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
+        {
+            var ico = new MagickImage(iconStream);
+            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
+            else
+            {
+                Console.WriteLine("No existe la carpeta para escribir, alternando...");
+                ico.Write(altPath); return altPath;
+            }
+            return savePath;
+        }
+
+        public static string SaveConvIcoToFile(string savePath, MagickImage ico, string? altPath)
+        {
+            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
+            else
+            {
+                Console.WriteLine("No existe la carpeta para escribir, alternando...");
+                ico.Write(altPath); return altPath;
+            }
+            return savePath;
         }
 
         public static string SaveIcoToFile(string savePath, MemoryStream iconStream, string? altPath)

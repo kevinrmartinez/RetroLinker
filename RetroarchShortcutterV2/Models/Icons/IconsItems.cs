@@ -14,6 +14,8 @@ namespace RetroarchShortcutterV2.Models.Icons
         public MemoryStream? IconStream { get; set; }
         public int? comboIconIndex { get; set; }
 
+        public IconsItems() { }
+        
         public IconsItems(string filePath) { FilePath = filePath; }
 
         public IconsItems(string fileName, string filePath)
@@ -22,12 +24,12 @@ namespace RetroarchShortcutterV2.Models.Icons
             FilePath = filePath;
         }
 
-        public IconsItems(string? fileName, string filePath, int? comboIconIndex) : this(fileName, filePath)
+        public IconsItems(string? fileName, string filePath, int? comboIconInd) : this(fileName, filePath)
         {
-            this.comboIconIndex = comboIconIndex;
+            comboIconIndex = comboIconInd;
         }
 
-        public IconsItems(string fileName, string filePath, MemoryStream? iconStream, int? comboIconInd) : this(fileName, filePath)
+        public IconsItems(string fileName, string filePath, MemoryStream? iconStream, int? comboIconInd) : this(fileName, filePath, comboIconInd)
         {
             IconStream = iconStream;
         }

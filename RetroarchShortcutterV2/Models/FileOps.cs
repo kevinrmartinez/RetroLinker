@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using RetroarchShortcutterV2.Models.Icons;
-using RetroarchShortcutterV2.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,41 +73,6 @@ namespace RetroarchShortcutterV2.Models
             return DEFicon; 
         }
 
-        public static bool IsWinEXE(string exe)
-        {
-            return (Path.GetExtension(exe) == ".exe");
-        }
-
-        public static IconsItems GetEXEWinIco(string icondir, int index)
-        {
-            var iconstream = IconProc.IcoExtraction(icondir);
-            var objicon = new IconsItems(null, icondir, iconstream, index);
-            IconProc.IconItemsList.Add(objicon);
-            return objicon;
-        }
-
-        public static string SaveWinIco(string icondir, MemoryStream icoStream)
-        {
-            string icoExt = Path.GetExtension(icondir);
-            string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
-            string newfile = Path.Combine(UserSettings, icoName);
-            string altfile = Path.Combine(UserProfile, icoName);
-            if (icoStream != null) { icoStream.Position = 0; }
-            switch (icoExt)
-            {
-                case ".png":
-                    var icon_stream = IconProc.PngConvert(icondir);
-                    icondir = IconProc.SaveIcoToFile(newfile, icon_stream, altfile);
-                    break;
-                case ".exe":
-                    icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
-                    break;
-                default:
-                    break;
-            }
-            return icondir;
-        }
-
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
@@ -140,6 +104,55 @@ namespace RetroarchShortcutterV2.Models
                 File.Copy(path, newpath);
                 return newpath;
             }
+        }
+
+        public static bool IsWinEXE(string exe)
+        {
+            return (Path.GetExtension(exe) == ".exe");
+        }
+
+        public static IconsItems GetEXEWinIco(string icondir, int index)
+        {
+            var iconstream = IconProc.IcoExtraction(icondir);
+            var objicon = new IconsItems(null, icondir, iconstream, index);
+            IconProc.IconItemsList.Add(objicon);
+            return objicon;
+        }
+
+        public static string GetAssetDir(string item, string file_name, string file_path)
+        {
+            return "";
+        }
+
+        public static string SaveWinIco(string icondir, MemoryStream icoStream)
+        {
+            string icoExt = Path.GetExtension(icondir);
+            string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
+            string newfile = Path.Combine(UserSettings, icoName);
+            string altfile = Path.Combine(UserProfile, icoName);
+            ImageMagick.MagickImage icon_stream = new();
+            if (icoStream != null) { icoStream.Position = 0; }
+            switch (icoExt)
+            {
+                case ".png":
+                    icon_stream = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    break;
+                case ".jpg":
+                    icon_stream = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    break;
+                case ".jpeg":
+                    icon_stream = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    break;
+                case ".exe":
+                    icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
+                    break;
+                default:
+                    break;
+            }
+            return icondir;
         }
 
         public static Bitmap GetBitmap(string path)
