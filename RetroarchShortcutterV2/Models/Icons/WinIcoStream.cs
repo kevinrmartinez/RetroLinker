@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace RetroarchShortcutterV2.Models.WinIco
+namespace RetroarchShortcutterV2.Models.Icons
 {
     public class WinIcoStream : IEquatable<WinIcoStream>
     {
@@ -29,7 +29,7 @@ namespace RetroarchShortcutterV2.Models.WinIco
 
         public bool Equals(WinIcoStream other)
         {
-            if (other.ExeDir == this.ExeDir)
+            if (other.ExeDir == ExeDir)
             {
                 return true;
             }

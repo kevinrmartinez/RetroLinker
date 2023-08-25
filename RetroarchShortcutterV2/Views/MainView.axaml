@@ -138,9 +138,9 @@
 							</Grid>
 
 							<!--pic128-->
-							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4" StretchDirection="DownOnly" Stretch="UniformToFill">
+							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
-								<Image Name="pic128"/>
+								<Image Name="pic128" Source="/Assets/retroarch.ico"/>
 								</Border>
 							</Viewbox>
 							<!--pic64-->

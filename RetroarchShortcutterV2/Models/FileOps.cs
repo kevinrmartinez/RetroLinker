@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using RetroarchShortcutterV2.Models.WinIco;
+using RetroarchShortcutterV2.Models.Icons;
+using RetroarchShortcutterV2.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,10 +14,7 @@ namespace RetroarchShortcutterV2.Models
         public const string UserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
-        public const string DEFicon1 = "retroarch.ico";
-        public const string DEFicon2 = "icon_light.ico";
-        public const string DEFicon3 = "icon_dark.ico";
-        public static List<string> IconsDir = new List<string> { "Default", "Default Alt Light", "Default Alt Dark" };
+        public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
         public static List<string> ConfigDir = new List<string> { "Default" };
         public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
@@ -30,28 +28,50 @@ namespace RetroarchShortcutterV2.Models
             else { return Array.Empty<string>(); }
         }
 
+        public static List<string> LoadIcons(bool OS)
+        {
+            IconProc.IconItemsList = new();
+            List<string>? files = new(Directory.EnumerateFiles(UserAssetsDir));
+            if (files != null)
+            {
+                for (int i = 0; i < files.Count; i++)
+                {
+                    string ext = Path.GetExtension(files[i]);
+                    string filename = Path.GetFileName(files[i]);
+                    string filepath = Path.GetFullPath(Path.Combine(files[i]));
+                    if (OS)
+                    {
+                        if (ext is ".ico" or ".png" or ".exe") 
+                        { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
+                    }
+                    else
+                    {
+                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")
+                        { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
+                    }
+                }
+                files.Clear();
+                int newindex = 1;
+                foreach (var file in IconProc.IconItemsList)
+                { files.Add(file.FileName); file.comboIconIndex = newindex; newindex++; }
+                return files;
+
+            }
+            else { return new List<string>(); } 
+        }
+
+
         public static bool CheckUsrSetDir()
         {
             try { Directory.CreateDirectory(UserSettings); return true; }
             catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
+            // PENDIENTE: mostrar msbox indicando problema
         }
 
-        public static string picFillWithDefault(int index) 
+        public static Uri GetDefaultIcon() 
         {
-            string icon_file = string.Empty;
-            switch (index)
-            {
-                case 0:
-                    icon_file = Path.Combine(UserAssetsDir, DEFicon1);
-                    break;
-                case 1:
-                    icon_file = Path.Combine(UserAssetsDir, DEFicon2);
-                    break;
-                case 2:
-                    icon_file = Path.Combine(UserAssetsDir, DEFicon3);
-                    break;
-            }
-            return icon_file;
+            Uri DEFicon = new(DEFicon1);
+            return DEFicon; 
         }
 
         public static bool IsWinEXE(string exe)
@@ -59,16 +79,11 @@ namespace RetroarchShortcutterV2.Models
             return (Path.GetExtension(exe) == ".exe");
         }
 
-        public static void WorkWinEXE(string exe, int index)
-        {
-
-        }
-
-        public static WinIcoStream GetEXEWinIco(string icondir, int index)
+        public static IconsItems GetEXEWinIco(string icondir, int index)
         {
             var iconstream = IconProc.IcoExtraction(icondir);
-            var objicon = new WinIcoStream(icondir, iconstream, index);
-            IconProc.IcoStreams.Add(objicon);
+            var objicon = new IconsItems(null, icondir, iconstream, index);
+            IconProc.IconItemsList.Add(objicon);
             return objicon;
         }
 
@@ -129,13 +144,13 @@ namespace RetroarchShortcutterV2.Models
 
         public static Bitmap GetBitmap(string path)
         {
-            Bitmap bitmap = new Bitmap(path);
+            Bitmap bitmap = new(path);
             return bitmap;
         }
 
         public static Bitmap GetBitmap(Stream stream)
         {
-            Bitmap bitmap = new Bitmap(stream);
+            Bitmap bitmap = new(stream);
             return bitmap;
         }
 

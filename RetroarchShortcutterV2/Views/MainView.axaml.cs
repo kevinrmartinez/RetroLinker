@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
-using RetroarchShortcutterV2.Models.WinFuncImport;
-using RetroarchShortcutterV2.Models.WinIco;
+using RetroarchShortcutterV2.Models.Icons;
+using System;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -38,9 +39,10 @@ public partial class MainView : UserControl
         }
         else
         {
-            try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+            try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
             catch { System.Console.Beep(); System.Console.Beep(); }   // PENDIENTE: Insertar msbox indicando un problema
-            icoStream = new WinIcoStream();
+            //iconItem = new Models.;
+            
         }
     }
 
@@ -62,9 +64,14 @@ public partial class MainView : UserControl
 
     void comboICONDir_Loaded(object sender, RoutedEventArgs e)
     {
-        for (int i = 0; i < FileOps.IconsDir.Count; i++)
+        var icons = FileOps.LoadIcons(DesktopOS);
+        comboICONDir.Items.Add("Default");
+        if (icons != null)
         {
-            comboICONDir.Items.Add(FileOps.IconsDir[i]);
+            for (int i = 0; i < icons.Count; i++)
+            {
+                comboICONDir.Items.Add(icons[i]);
+            }
         }
         comboICONDir.SelectedIndex++;
         rdoIconDef.IsChecked = true;
@@ -109,42 +116,38 @@ public partial class MainView : UserControl
         string dir = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
-            FileOps.IconsDir.Add(dir);
-            comboICONDir.Items.Add(dir);
-            comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
+            int newIndex = comboICONDir.ItemCount;                          // Coge lo que sera el nuevo idice
+            comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
+            if (DesktopOS && FileOps.IsWinEXE(dir))
+            { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
+            else
+            { IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex)); }    // Se agrega a la lista de iconos
         }
     }
 
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion gracias a snurre en stackoverflow.com
     {
         int index = comboICONDir.SelectedIndex;
-        if (index > 2)
-        {
+        if (index > 0)
+        {   // llena los controles pic con los iconos provistos por el usuario
             shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
-            if (DesktopOS) 
-            { 
-                if (FileOps.IsWinEXE(shortcut.ICONfile))
-                {
-                    int x = IconProc.IcoStreams.FindIndex(finder => finder.comboIconIndex == index);
-                    if (x >= 0) 
-                    { icoStream = IconProc.IcoStreams[x]; }
-                    else 
-                    { icoStream = FileOps.GetEXEWinIco(shortcut.ICONfile, index); }
-
-                    icoStream.IconStream.Position = 0;
-                    var bitm = FileOps.GetBitmap(icoStream.IconStream);
-                    FillIconBoxes(bitm);
-
-                }
-                else { FillIconBoxes(shortcut.ICONfile); }
+            var selectedIcon = IconProc.IconItemsList.Find(x => x.FilePath == shortcut.ICONfile);
+            if (DesktopOS && (selectedIcon.IconStream != null))
+            {
+                selectedIcon.IconStream.Position = 0;
+                var bitm = FileOps.GetBitmap(selectedIcon.IconStream);
+                FillIconBoxes(bitm);
             }
-            
-            else { FillIconBoxes(shortcut.ICONfile); }
+            else 
+            { FillIconBoxes(shortcut.ICONfile); }
         }
         else
-        {   // llena los controles pic con uno de los iconos default (Indices del 0 al 2)
-            shortcut.ICONfile = FileOps.picFillWithDefault(index);
-            FillIconBoxes(shortcut.ICONfile);
+        {   // llena los controles pic con el icono default (Indice 0)
+            var wtf = pic128.Source;
+            
+            var assets = AssetLoader.GetAssets(new Uri("avares://RetroarchShortcutterV2/"), null);
+            Bitmap bitm = new(AssetLoader.Open(FileOps.GetDefaultIcon()));
+            FillIconBoxes(bitm);
         }
     }
 
