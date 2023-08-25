@@ -1,11 +1,16 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsBox.Avalonia;
+using MsBox.Avalonia.Controls;
 using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Windows;
 using RetroarchShortcutterV2.Models;
-using RetroarchShortcutterV2.Models.WinFuncImport;
-using RetroarchShortcutterV2.Models.WinIco;
+using RetroarchShortcutterV2.Models.Icons;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -15,7 +20,7 @@ public partial class MainView : UserControl
     public Shortcutter shortcut = new();
     public static bool ROMenable = true;
     public Bitmap ICONimage;
-    public static WinIcoStream icoStream;
+    public static IconsItems IconItemSET;
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
@@ -38,14 +43,16 @@ public partial class MainView : UserControl
         }
         else
         {
-            try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+            try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
             catch { System.Console.Beep(); System.Console.Beep(); }   // PENDIENTE: Insertar msbox indicando un problema
-            icoStream = new WinIcoStream();
+            IconItemSET = new();
+            
         }
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
     {
+        
         var cores = FileOps.LoadCores();
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
@@ -62,9 +69,14 @@ public partial class MainView : UserControl
 
     void comboICONDir_Loaded(object sender, RoutedEventArgs e)
     {
-        for (int i = 0; i < FileOps.IconsDir.Count; i++)
+        var icons = FileOps.LoadIcons(DesktopOS);
+        comboICONDir.Items.Add("Default");
+        if (icons != null)
         {
-            comboICONDir.Items.Add(FileOps.IconsDir[i]);
+            for (int i = 0; i < icons.Count; i++)
+            {
+                comboICONDir.Items.Add(icons[i]);
+            }
         }
         comboICONDir.SelectedIndex++;
         rdoIconDef.IsChecked = true;
@@ -109,42 +121,38 @@ public partial class MainView : UserControl
         string dir = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
         if (dir != null)
         {
-            FileOps.IconsDir.Add(dir);
-            comboICONDir.Items.Add(dir);
-            comboICONDir.SelectedIndex = comboICONDir.Items.Count - 1;
+            int newIndex = comboICONDir.ItemCount;                          // Coge lo que sera el nuevo idice
+            comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
+            if (DesktopOS && FileOps.IsWinEXE(dir))
+            { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
+            else
+            { IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex)); }    // Se agrega a la lista de iconos
+            comboICONDir.SelectedIndex = newIndex;
         }
     }
 
-    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion gracias a snurre en stackoverflow.com
+    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion del SelectionChangedEventArgs gracias a snurre en stackoverflow.com
     {
         int index = comboICONDir.SelectedIndex;
-        if (index > 2)
-        {
-            shortcut.ICONfile = comboICONDir.SelectedItem.ToString();
-            if (DesktopOS) 
-            { 
-                if (FileOps.IsWinEXE(shortcut.ICONfile))
-                {
-                    int x = IconProc.IcoStreams.FindIndex(finder => finder.comboIconIndex == index);
-                    if (x >= 0) 
-                    { icoStream = IconProc.IcoStreams[x]; }
-                    else 
-                    { icoStream = FileOps.GetEXEWinIco(shortcut.ICONfile, index); }
-
-                    icoStream.IconStream.Position = 0;
-                    var bitm = FileOps.GetBitmap(icoStream.IconStream);
-                    FillIconBoxes(bitm);
-
-                }
-                else { FillIconBoxes(shortcut.ICONfile); }
-            }
+        if (index > 0)
+        {   // llena los controles pic con los iconos provistos por el usuario
+            string item = comboICONDir.SelectedItem.ToString();
+            IconItemSET = IconProc.IconItemsList.Find(x => x.comboIconIndex == index);
+            shortcut.ICONfile = IconItemSET.FilePath;
             
-            else { FillIconBoxes(shortcut.ICONfile); }
+            if (DesktopOS && (IconItemSET.IconStream != null))
+            {
+                IconItemSET.IconStream.Position = 0;
+                var bitm = FileOps.GetBitmap(IconItemSET.IconStream);
+                FillIconBoxes(bitm);
+            }
+            else 
+            { FillIconBoxes(shortcut.ICONfile); }
         }
         else
-        {   // llena los controles pic con uno de los iconos default (Indices del 0 al 2)
-            shortcut.ICONfile = FileOps.picFillWithDefault(index);
-            FillIconBoxes(shortcut.ICONfile);
+        {   // llena los controles pic con el icono default (Indice 0)
+            Bitmap bitm = new(AssetLoader.Open(FileOps.GetDefaultIcon()));
+            FillIconBoxes(bitm);
         }
     }
 
@@ -221,7 +229,7 @@ public partial class MainView : UserControl
 
     void btnAppendConfig_Click(object sender, RoutedEventArgs e)
     {
-
+        // PENDIENTE
     }
 
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
@@ -244,12 +252,13 @@ public partial class MainView : UserControl
     /* La accion ocurre aqui
      *  
      */
-    void btnEXECUTE_Click(object sender, RoutedEventArgs e)
+    async void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
         msbox_params.ShowInCenter = true; 
         msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime; // Solucion gracias a atresnjo en los issues de Avalonia
 
         // CHECKS!
         shortcut.verboseB = (bool)chkVerb.IsChecked;
@@ -273,22 +282,11 @@ public partial class MainView : UserControl
         else { shortcut.Desc = txtDesc.Text; }
 
         // Manejo de iconos
-        if (comboICONDir.SelectedIndex < 3)
-        {
-            switch (comboICONDir.SelectedIndex)
-            {
-                case 0:
-                    shortcut.ICONfile = null;
-                    break;
-                default:
-                    shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile);
-                    break;
-                    
-            }
-        }
-        else if (comboICONDir.SelectedIndex > 2 && DesktopOS)
+        if (comboICONDir.SelectedIndex == 0)
+        { shortcut.ICONfile = null; }
+        else if (comboICONDir.SelectedIndex > 0 && DesktopOS)
         {   /* Falta setting que deje al usuario copiar sus iconos al UserSetting */
-            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, icoStream.IconStream);
+            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream);
         }
 
         // REQUIERED FIELDS VALIDATION!
@@ -299,14 +297,14 @@ public partial class MainView : UserControl
             ShortcutPosible = false;
             msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
             var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-            msbox.ShowAsync();
+            await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
         }
 
         while (ShortcutPosible)
         {
             // Comillas para directorios que iran de parametros...
             // para el directorio de la ROM
-            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) 
+            if (shortcut.ROMdir != Commander.contentless) 
             { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
@@ -318,14 +316,14 @@ public partial class MainView : UserControl
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                msbox.ShowAsync();
+                await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
             }
             else
             {
                 msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                msbox.ShowAsync();
+                await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
             }
             ShortcutPosible = false;
         }
