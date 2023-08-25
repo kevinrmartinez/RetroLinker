@@ -47,6 +47,5 @@
 
   <ItemGroup>
     <Folder Include="Assets\Images\" />
-    <Folder Include="Models\WinIco\" />
   </ItemGroup>
 </Project>

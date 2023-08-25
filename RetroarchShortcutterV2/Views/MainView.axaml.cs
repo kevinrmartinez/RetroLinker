@@ -304,7 +304,7 @@ public partial class MainView : UserControl
         {
             // Comillas para directorios que iran de parametros...
             // para el directorio de la ROM
-            if (shortcut.ROMdir != null || shortcut.ROMdir != Commander.contentless) 
+            if (shortcut.ROMdir != Commander.contentless) 
             { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
