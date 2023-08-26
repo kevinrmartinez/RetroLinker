@@ -157,6 +157,16 @@ public partial class MainView : UserControl
     }
 
 
+    // TOP CONTROLS
+
+    void btnSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
+        var config = new ConfigView();
+        config.ShowDialog(deskWindow.MainWindow);
+    }
+
+
     // Usuario llenando object del link
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {

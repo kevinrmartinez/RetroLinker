@@ -10,5 +10,5 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroarchShortcutterV2"
 		WindowStartupLocation="CenterScreen" Name="MainWindow1">
-        <views:MainView />
+        <views:MainView/>
 </Window>
