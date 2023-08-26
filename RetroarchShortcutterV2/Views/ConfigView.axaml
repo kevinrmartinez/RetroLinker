@@ -2,10 +2,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
              x:Class="RetroarchShortcutterV2.Views.ConfigView"
 			 Name="ConfigView1">
-	<Grid Name="ConfigBody" RowDefinitions="Auto, Auto, *">
-		<Rectangle Fill="Gray" Height="100"/>
+	<Grid Name="gridConfigAll" RowDefinitions="Auto, Auto, *">
+		<!--TOP-->
+		<Rectangle Grid.Row="0" Fill="Gray" Height="30"/>
+		
+		<!--BODY-->
+		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="True">
+			
+			<!--APARIENCIA-->
+			<StackPanel Grid.Row="0" Margin="3" Background="Aqua">
+				<Label Content="Apariencia"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+				<StackPanel Orientation="Horizontal" Margin="0, 2">
+					<ToggleSwitch Name="ThemeSwitch" Content="Tema" OnContent="Dark" OffContent="Light"/>
+					<Rectangle Width="18"/>
+					<CheckBox Name="ThemeDefault" Content="Según el Sistema" Margin="0,24,0,0" />
+				</StackPanel>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+			</StackPanel>
+			
+			<!--EJECUTABLE-->
+			<StackPanel Grid.Row="1" Margin="3" Background="Aquamarine">
+				<Label Content="Ejecutable Preferido de RetroArch"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Grid.Column="0" HorizontalAlignment="Stretch"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnDefRADir" Height="30" 
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnsavDefRADir" Height="30" 
+								i:Attached.Icon="fa-check" Foreground="Green"/>
+						<Button Name="btnclrDefRADir" Height="30" 
+								i:Attached.Icon="fa-arrow-rotate-left" Foreground="Crimson"/>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+			</StackPanel>
+			
+			<!--DIR PADRE-->
+			<StackPanel Grid.Row="2" Margin="3" Background="Azure">
+				<Label Content="Directorio Padre de las ROMs"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Grid.Column="0" HorizontalAlignment="Stretch"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnDefROMDir" Height="30"
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnsavDefROMDir" Height="30"
+								i:Attached.Icon="fa-check" Foreground="Green"/>
+						<Button Name="btnclrDefROMDir" Height="30"
+								i:Attached.Icon="fa-arrow-rotate-left" Foreground="Crimson"/>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+			</StackPanel>
+
+
+		</Grid>
+		
+		<!--BOTTOM-->
+		<Rectangle Grid.Row="2" Fill="Cornsilk"/>
+	
 	</Grid>
 </UserControl>
