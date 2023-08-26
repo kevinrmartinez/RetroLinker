@@ -23,16 +23,15 @@ namespace RetroarchShortcutterV2.Views
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
-            var topLevel = GetTopLevel(this);
             if ((bool)ThemeSwitch.IsChecked) 
             {
                 deskWindow.MainWindow.RequestedThemeVariant = dark_theme;
-                topLevel.RequestedThemeVariant = dark_theme; 
+                this.RequestedThemeVariant = dark_theme; 
             }
             else 
             {
                 deskWindow.MainWindow.RequestedThemeVariant = light_theme;
-                topLevel.RequestedThemeVariant = light_theme; 
+                this.RequestedThemeVariant = light_theme; 
             }
         }
 
@@ -40,12 +39,11 @@ namespace RetroarchShortcutterV2.Views
         void ThemeDefault_CheckedChanged(object sender, RoutedEventArgs e)
         {
             var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
-            var topLevel = GetTopLevel(this);
             if ((bool)ThemeDefault.IsChecked) 
             { 
                 deskWindow.MainWindow.RequestedThemeVariant = system_theme;
-                topLevel.RequestedThemeVariant = system_theme; 
-                ThemeSwitch.IsEnabled = false; 
+                this.RequestedThemeVariant = system_theme; 
+                ThemeSwitch.IsEnabled = false;
             }
             else 
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
