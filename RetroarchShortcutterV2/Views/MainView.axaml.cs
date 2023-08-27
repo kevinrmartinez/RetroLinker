@@ -32,7 +32,7 @@ public partial class MainView : UserControl
 
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-
+        Settings.LoadSettings();
         if (!DesktopOS)
         {
             txtRADir.IsReadOnly = false;

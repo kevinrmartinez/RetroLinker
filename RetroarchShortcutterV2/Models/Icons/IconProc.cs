@@ -13,10 +13,7 @@ namespace RetroarchShortcutterV2.Models.Icons
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
         static WinFuncImport.WinFuncMethods ExtractIco;
 
-        public static void StartImport()
-        {
-            ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
-        }
+        public static void StartImport() => ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
 
         public static MagickImage ImageConvert(string DIR)
         {

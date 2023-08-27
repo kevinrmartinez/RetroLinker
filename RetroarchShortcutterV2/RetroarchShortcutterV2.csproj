@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\Images\" />
+    <Folder Include="Models\Settings\" />
   </ItemGroup>
 
   <ItemGroup>

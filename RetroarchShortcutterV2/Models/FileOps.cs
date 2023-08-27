@@ -4,6 +4,8 @@ using RetroarchShortcutterV2.Models.Icons;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models
@@ -18,15 +20,34 @@ namespace RetroarchShortcutterV2.Models
         public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static string SettingFile = "RetroarchShortcutter.cfg";
+        public static string SettingFileBin = "settings.bin";
         public static string writeIcoDIR;
 
 
-        public static void CreateSettingsFile()
-        { 
-            if (!File.Exists(SettingFile)) { File.Create(SettingFile); }
-        }
+        public static bool ExistSettingsFile() => (File.Exists(SettingFile));
+
+        public static bool ExistSettingsBinFile() => (File.Exists(SettingFileBin));
 
         public static bool ChkSettingsFile() => (File.ReadAllText(SettingFile) != null);
+
+        public static void ChkSettingsPaths()
+        {
+            if (Settings.DEFRADir != string.Empty)
+            {
+                try { Path.GetFullPath(Settings.DEFRADir); }
+                catch { Settings.DEFRADir = string.Empty; }
+            }
+            if (Settings.DEFROMPath != string.Empty)
+            {
+                try { }
+                catch { }
+            }
+            if (Settings.ConvICONPath != string.Empty)
+            {
+                try { }
+                catch { }
+            }
+        }
 
         public static string[] LoadCores()
         {
@@ -173,6 +194,77 @@ namespace RetroarchShortcutterV2.Models
         {
             Bitmap bitmap = new(stream);
             return bitmap;
+        }
+
+
+
+        // Origen:
+        ///<summary>
+        /// Steve Lydford - 12/05/2008.
+        ///
+        /// Encrypts a file using Rijndael algorithm.
+        ///</summary>
+        private void EncryptFile(string inputFile, string outputFile)
+        {
+
+            try
+            {
+                string password = @"myKey123"; // Your Key Here
+                UnicodeEncoding UE = new UnicodeEncoding();
+                byte[] key = UE.GetBytes(password);
+
+                string cryptFile = outputFile;
+                FileStream fsCrypt = new FileStream(cryptFile, FileMode.Create);
+
+                Aes AESCrypto = new AesCng();
+                CryptoStream cs = new(fsCrypt,
+                                      AESCrypto.CreateEncryptor(key, key),
+                                      CryptoStreamMode.Write);
+
+                FileStream fsIn = new(inputFile, FileMode.Open);
+
+                int data;
+                while ((data = fsIn.ReadByte()) != -1)
+                { cs.WriteByte((byte)data); }
+
+
+                fsIn.Close();
+                cs.Close();
+                fsCrypt.Close();
+            }
+            catch
+            {
+                _ = "Encryption failed!";
+            }
+        }
+        ///<summary>
+        /// Steve Lydford - 12/05/2008.
+        ///
+        /// Decrypts a file using Rijndael algorithm.
+        ///</summary>
+        private void DecryptFile(string inputFile, string outputFile)
+        {
+            string password = @"myKey123"; // Your Key Here
+
+            UnicodeEncoding UE = new UnicodeEncoding();
+            byte[] key = UE.GetBytes(password);
+
+            FileStream fsCrypt = new FileStream(inputFile, FileMode.Open);
+            Aes AESCrypto = new AesCng();
+
+            CryptoStream cs = new CryptoStream(fsCrypt,
+                                               AESCrypto.CreateDecryptor(key, key),
+                                               CryptoStreamMode.Read);
+
+            FileStream fsOut = new FileStream(outputFile, FileMode.Create);
+
+            int data;
+            while ((data = cs.ReadByte()) != -1)
+            { fsOut.WriteByte((byte)data); }
+
+            fsOut.Close();
+            cs.Close();
+            fsCrypt.Close();
         }
 
 
