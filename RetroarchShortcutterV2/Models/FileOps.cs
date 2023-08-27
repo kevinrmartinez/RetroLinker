@@ -17,8 +17,16 @@ namespace RetroarchShortcutterV2.Models
         public static List<string> ConfigDir = new List<string> { "Default" };
         public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static string SettingFile = "RetroarchShortcutter.cfg";
         public static string writeIcoDIR;
 
+
+        public static void CreateSettingsFile()
+        { 
+            if (!File.Exists(SettingFile)) { File.Create(SettingFile); }
+        }
+
+        public static bool ChkSettingsFile() => (File.ReadAllText(SettingFile) != null);
 
         public static string[] LoadCores()
         {
