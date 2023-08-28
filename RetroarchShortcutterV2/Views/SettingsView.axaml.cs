@@ -3,6 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 
 namespace RetroarchShortcutterV2.Views
@@ -18,14 +20,14 @@ namespace RetroarchShortcutterV2.Views
         private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
 
         // PROPS/STATICS
-        private byte PrefTheme { get; set; } = Settings.PreferedTheme;
-        private string PrefRADir { get; set; } = Settings.DEFRADir;
-        private string PrefROMPath { get; set; } = Settings.DEFROMPath;
-        private bool PrevConfigs { get; set; } = Settings.PrevConfig;
-        private bool AllwaysDesktop { get; set; } = Settings.AllwaysDesktop;
-        private bool CpyUserIcon { get; set; } = Settings.CpyUserIcon;
-        private string ConvIcoDir { get; set; } = Settings.ConvICONPath;
-        private bool ExtractIco { get; set; } = Settings.ExtractIco;
+        private byte PrefTheme { get; set; }
+        private string PrefRADir { get; set; }
+        private string PrefROMPath { get; set; }
+        private bool PrevConfigs { get; set; }
+        private bool AllwaysDesktop { get; set; }
+        private bool CpyUserIcon { get; set; }
+        private string ConvIcoDir { get; set; }
+        private bool ExtractIco { get; set; }
 
         private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
         
@@ -54,13 +56,7 @@ namespace RetroarchShortcutterV2.Views
             }
 
             // OTROS
-            txtDefRADir.Text = PrefRADir;
-            txtDefROMPath.Text = PrefROMPath;
-            chkPrevCONFIG.IsChecked = PrevConfigs;
-            chkAllwaysDesktop.IsChecked = AllwaysDesktop;
-            chkCpyUserIcon.IsChecked = CpyUserIcon;
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
-            chkExtractIco.IsChecked = ExtractIco;
+            LoadFromSettings();
             if (!DesktopOS)
             {
                 panelWindowsOnlyControls.IsEnabled = false;
@@ -68,6 +64,26 @@ namespace RetroarchShortcutterV2.Views
             }
 
             
+        }
+
+        void LoadFromSettings()
+        {
+            PrefTheme = Settings.PreferedTheme;
+            PrefRADir = Settings.DEFRADir;
+            PrefROMPath = Settings.DEFROMPath;
+            PrevConfigs = Settings.PrevConfig;
+            AllwaysDesktop = Settings.AllwaysDesktop;
+            CpyUserIcon = Settings.CpyUserIcon;
+            ConvIcoDir = Settings.ConvICONPath;
+            ExtractIco = Settings.ExtractIco;
+
+            txtDefRADir.Text = PrefRADir;
+            txtDefROMPath.Text = PrefROMPath;
+            chkPrevCONFIG.IsChecked = PrevConfigs;
+            chkAllwaysDesktop.IsChecked = AllwaysDesktop;
+            chkCpyUserIcon.IsChecked = CpyUserIcon;
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
+            chkExtractIco.IsChecked = ExtractIco;
         }
 
         //APARIENCIA
@@ -168,8 +184,37 @@ namespace RetroarchShortcutterV2.Views
         }
 
         // Dialog Controls
+        async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxStandardParams msparams = new()
+            {
+                ContentTitle = "Restaurar Defaults",
+                ContentMessage = "¿Está seguro de restaurar la configuracion default?",
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
+                EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,
+                EscDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Cancel,
+
+            };
+            var msbox = MessageBoxManager.GetMessageBoxStandard(msparams);
+            var result = await msbox.ShowWindowDialogAsync(Current_Window);
+            if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
+            {
+                Settings.LoadSettingsDefault();
+                LoadFromSettings();
+            }
+                
+        }
+
         void btnDISSettings_Click(object sender, RoutedEventArgs e)
         {
+            Current_Window.Close();
+        }
+
+        void btnCONSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+
             Current_Window.Close();
         }
     }

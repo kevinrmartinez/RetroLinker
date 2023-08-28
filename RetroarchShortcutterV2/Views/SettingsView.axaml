@@ -15,7 +15,7 @@
 		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="True">
 
 			<!--APARIENCIA-->
-			<StackPanel Grid.Row="0" Margin="3" Background="Aqua">
+			<StackPanel Grid.Row="0" Margin="3" Background="">
 				<Label Content="Apariencia"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<StackPanel Orientation="Horizontal" Margin="0, 2">
@@ -27,18 +27,18 @@
 			</StackPanel>
 
 			<!--EJECUTABLE-->
-			<StackPanel Grid.Row="1" Margin="3" Background="Aquamarine">
+			<StackPanel Grid.Row="1" Margin="3" Background="">
 				<Label Content="Ejecutable Preferido de RetroArch"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 					<TextBox Name="txtDefRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-						<Button Name="btnDefRADir" Height="30"
+						<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_Click"
 								i:Attached.Icon="fa-folder-open"/>
-						<Button Name="btnsavDefRADir" Height="30">
+						<Button Name="btnsavDefRADir" Height="30" Click="btnsavDefRADir_Click">
 							<i:Icon Value="fa-check" Foreground="Green"/>
 						</Button>
-						<Button Name="btnclrDefRADir" Height="30">
+						<Button Name="btnclrDefRADir" Height="30" Click="btnclrDefRADir_Click">
 							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 						</Button>
 					</StackPanel>
@@ -47,18 +47,18 @@
 			</StackPanel>
 
 			<!--DIR PADRE-->
-			<StackPanel Grid.Row="2" Margin="3" Background="Azure">
+			<StackPanel Grid.Row="2" Margin="3" Background="">
 				<Label Content="Directorio Padre de las ROMs"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 					<TextBox Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-						<Button Name="btnDefROMPath" Height="30"
+						<Button Name="btnDefROMPath" Height="30" Click="btnDefROMPath_Click"
 								i:Attached.Icon="fa-folder-open"/>
-						<Button Name="btnsavDefROMPath" Height="30">
+						<Button Name="btnsavDefROMPath" Height="30" Click="btnsavDefROMPath_Click">
 							<i:Icon Value="fa-check" Foreground="Green"/>
 						</Button>
-						<Button Name="btnclrDefROMPath" Height="30">
+						<Button Name="btnclrDefROMPath" Height="30" Click="btnclrDefROMPath_Click">
 							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 						</Button>
 					</StackPanel>
@@ -67,7 +67,7 @@
 			</StackPanel>
 
 			<!--OTRAS PREFERENCIAS-->
-			<StackPanel Grid.Row="3" Margin="3" Background="Beige">
+			<StackPanel Grid.Row="3" Margin="3" Background="">
 				<Label Content="Otras Preferencias"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
@@ -85,7 +85,7 @@
 			</StackPanel>
 
 			<!--ICONOS-->
-			<StackPanel Grid.Row="4" Margin="3" Background="Bisque">
+			<StackPanel Grid.Row="4" Margin="3" Background="">
 				<Label Content="Preferencias de Iconos"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"/>
@@ -102,17 +102,18 @@
 									   Text="Eliga el directorio para dichos '.ico'"/>
 							<TextBox Name="txtIcoSavPath" Grid.Column="1" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 							<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-								<Button Name="btnIcoSavPath" Height="30"
+								<Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_Click"
 										i:Attached.Icon="fa-folder-open"/>
-								<Button Name="btnsavIcoSavPath" Height="30">
+								<Button Name="btnsavIcoSavPath" Height="30" Click="btnsavIcoSavPath_Click">
 									<i:Icon Value="fa-check" Foreground="Green"/>
 								</Button>
-								<Button Name="btnclrIcoSavPath" Height="30">
+								<Button Name="btnclrIcoSavPath" Height="30" Click="btnclrIcoSavPath_Click">
 									<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 								</Button>
 							</StackPanel>
 						</Grid>
 						<CheckBox Name="chkExtractIco" Margin="0,-4,0,0" Content="Extraer los el icono del '.exe' para el uso"/>
+						
 					</StackPanel>
 				</Border>
 			</StackPanel>
@@ -120,11 +121,12 @@
 		</Grid>
 
 		<!--SPACING-->
-		<Rectangle Grid.Row="2" Fill="Coral"/>
+		<Rectangle Grid.Row="2" Fill=""/>
 
 		<!--CONTROLES-->
 		<StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
-			<Button Name="btnDEFSettings">
+			
+			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-arrow-rotate-left" Foreground=""/>
 					<TextBlock Text="Default"/>
@@ -136,7 +138,7 @@
 					<TextBlock Text="Descartar"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnCONSettings">
+			<Button Name="btnCONSettings" Click="btnCONSettings_Click">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-check" Foreground="Green"/>
 					<TextBlock Text="Confirmar"/>

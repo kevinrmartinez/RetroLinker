@@ -57,10 +57,16 @@
 
   <ItemGroup>
     <Folder Include="Assets\Images\" />
-    <Folder Include="Models\Settings\" />
   </ItemGroup>
 
   <ItemGroup>
 	  <AvaloniaResource Include="Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Remove="Models\Settings\**" />
+    <Compile Remove="Models\Settings\**" />
+    <EmbeddedResource Remove="Models\Settings\**" />
+    <None Remove="Models\Settings\**" />
   </ItemGroup>
 </Project>
