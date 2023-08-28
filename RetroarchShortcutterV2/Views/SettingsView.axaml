@@ -72,13 +72,13 @@
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
 					<StackPanel Grid.Column="0">
-						<CheckBox Name="chkPrevONFIG" Content="Recordar archivos '.cfg' usados"/>
+						<CheckBox Name="chkPrevCONFIG" Content="Recordar archivos '.cfg' usados"/>
 						<!--<CheckBox Name="chkPrevICON" Content="Recordar iconos usados"/>-->
 					</StackPanel>
 					<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>
 					<StackPanel Grid.Column="2" Margin="3,0">
-						<CheckBox Content="Siempre crear Links en el Desktop"/>
+						<CheckBox Name="chkAllwaysDesktop" Content="Siempre crear Links en el Desktop"/>
 					</StackPanel>
 				</Grid>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
@@ -88,7 +88,7 @@
 			<StackPanel Grid.Row="4" Margin="3" Background="Bisque">
 				<Label Content="Preferencias de Iconos"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
-				<CheckBox Content="Guardar copia de los iconos usados"/>
+				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"/>
 				<!--WINDOWS ONLY-->
 				<Border BorderThickness="1" BorderBrush="Gray">
 					<StackPanel Name="panelWindowsOnlyControls" Margin="1,0">
