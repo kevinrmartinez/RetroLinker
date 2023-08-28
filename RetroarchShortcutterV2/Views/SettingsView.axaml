@@ -1,21 +1,19 @@
-<Window xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="550"
-			 Height="560" MinHeight="550" Width="500" MinWidth="480"	
-             x:Class="RetroarchShortcutterV2.Views.ConfigView"
-			 Icon="/Assets/avalonia-logo.ico"
-			 Title="RetroarchShortcutterV2 Settings"
-			 WindowStartupLocation="CenterScreen" Name="ConfigWindow">
+             x:Class="RetroarchShortcutterV2.Views.SettingsView"
+			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
+  <!---->
 	<Grid Name="gridConfigAll" RowDefinitions="Auto, Auto, *, Auto, Auto">
 		<!--TOP-->
 		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>
-		
+
 		<!--BODY-->
 		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="True">
-			
+
 			<!--APARIENCIA-->
 			<StackPanel Grid.Row="0" Margin="3" Background="Aqua">
 				<Label Content="Apariencia"/>
@@ -27,7 +25,7 @@
 				</StackPanel>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 			</StackPanel>
-			
+
 			<!--EJECUTABLE-->
 			<StackPanel Grid.Row="1" Margin="3" Background="Aquamarine">
 				<Label Content="Ejecutable Preferido de RetroArch"/>
@@ -35,7 +33,7 @@
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 					<TextBox Name="txtDefRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-						<Button Name="btnDefRADir" Height="30" 
+						<Button Name="btnDefRADir" Height="30"
 								i:Attached.Icon="fa-folder-open"/>
 						<Button Name="btnsavDefRADir" Height="30">
 							<i:Icon Value="fa-check" Foreground="Green"/>
@@ -47,7 +45,7 @@
 				</Grid>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 			</StackPanel>
-			
+
 			<!--DIR PADRE-->
 			<StackPanel Grid.Row="2" Margin="3" Background="Azure">
 				<Label Content="Directorio Padre de las ROMs"/>
@@ -58,14 +56,16 @@
 						<Button Name="btnDefROMPath" Height="30"
 								i:Attached.Icon="fa-folder-open"/>
 						<Button Name="btnsavDefROMPath" Height="30">
-							<i:Icon Value="fa-check" Foreground="Green"/></Button>
+							<i:Icon Value="fa-check" Foreground="Green"/>
+						</Button>
 						<Button Name="btnclrDefROMPath" Height="30">
-								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/></Button>
+							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+						</Button>
 					</StackPanel>
 				</Grid>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 			</StackPanel>
-			
+
 			<!--OTRAS PREFERENCIAS-->
 			<StackPanel Grid.Row="3" Margin="3" Background="Beige">
 				<Label Content="Otras Preferencias"/>
@@ -75,7 +75,7 @@
 						<CheckBox Name="chkPrevONFIG" Content="Recordar archivos '.cfg' usados"/>
 						<!--<CheckBox Name="chkPrevICON" Content="Recordar iconos usados"/>-->
 					</StackPanel>
-					<Rectangle Grid.Column="1" Stroke="Gray" 
+					<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>
 					<StackPanel Grid.Column="2" Margin="3,0">
 						<CheckBox Content="Siempre crear Links en el Desktop"/>
@@ -83,7 +83,7 @@
 				</Grid>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 			</StackPanel>
-			
+
 			<!--ICONOS-->
 			<StackPanel Grid.Row="4" Margin="3" Background="Bisque">
 				<Label Content="Preferencias de Iconos"/>
@@ -94,11 +94,11 @@
 					<StackPanel Name="panelWindowsOnlyControls" Margin="1,0">
 						<Label FontSize="12" Content="Solo para Windows"/>
 						<Rectangle Height="4"/>
-						<TextBlock FontSize="10" TextWrapping="Wrap" 
+						<TextBlock FontSize="10" TextWrapping="Wrap"
 								   Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut."/>
 						<!--SAVE ICO CONTROLS-->
 						<Grid Margin="0,5" ColumnDefinitions="*,3.66*,Auto">
-							<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" 
+							<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center"
 									   Text="Eliga el directorio para dichos '.ico'"/>
 							<TextBox Name="txtIcoSavPath" Grid.Column="1" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 							<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -114,14 +114,14 @@
 						</Grid>
 						<CheckBox Name="chkExtractIco" Margin="0,-4,0,0" Content="Extraer los el icono del '.exe' para el uso"/>
 					</StackPanel>
-				</Border>	
+				</Border>
 			</StackPanel>
 
 		</Grid>
-		
+
 		<!--SPACING-->
 		<Rectangle Grid.Row="2" Fill="Coral"/>
-		
+
 		<!--CONTROLES-->
 		<StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 			<Button Name="btnDEFSettings">
@@ -143,9 +143,9 @@
 				</StackPanel>
 			</Button>
 		</StackPanel>
-		
+
 		<!--BOTTOM-->
 		<Rectangle Grid.Row="4" Fill="Gray" Height="15"/>
-	
+
 	</Grid>
-</Window>
+</UserControl>

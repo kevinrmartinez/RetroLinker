@@ -1,6 +1,8 @@
-﻿using SharpConfig;
+﻿using Avalonia.Styling;
+using SharpConfig;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,46 +22,30 @@ namespace RetroarchShortcutterV2.Models
 
         public static List<string> PrevConfigs { set; get; }
 
-        static List<string> SectionsList { get; } = new()
-        { "GeneralSettings", "StoredConfigs", "$SharpConfigDefaultSection" };
-        static List<string> GeneralSettingsList { get; } = new()
-             { "DEFRADir", "DEFROMPath", "PrevConfig", "AllwaysDesktop", 
-               "CpyUserIcon", "ConvICONPath", "ExtractIco", "PreferedTheme" };
+        //static List<string> SectionsList { get; } = new()
+        //{ "GeneralSettings", "StoredConfigs", "$SharpConfigDefaultSection" };
+        //static List<string> GeneralSettingsList { get; } = new()
+        //     { "DEFRADir", "DEFROMPath", "PrevConfig", "AllwaysDesktop", 
+        //       "CpyUserIcon", "ConvICONPath", "ExtractIco", "PreferedTheme" };
 
         public static void LoadSettings()
         {
             if (FileOps.ExistSettingsBinFile())
             {
-                Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
-                Section GeneralSettings = settings_file["GeneralSettings"];
-                Section StoredConfigs = settings_file["StoredConfigs"];
-                List<string> loaded_sections = new();
-                List<string> loaded_settings = new();
+                try
+                {
+                    Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
+                    Section GeneralSettings = settings_file["GeneralSettings"];
+                    Section StoredConfigs = settings_file["StoredConfigs"];
 
-                foreach (var section in settings_file)
-                {
-                    loaded_sections.Add(section.Name);
-                }
-                foreach (var setting in GeneralSettings)
-                {
-                    loaded_settings.Add(setting.Name);
-                }
-
-                
-                if (loaded_sections.SequenceEqual(SectionsList) && loaded_settings.SequenceEqual(GeneralSettingsList))
-                {
-                    try
-                    {
-                        DEFRADir = GeneralSettings["DEFRADir"].StringValue;
-                        DEFROMPath = GeneralSettings["DEFROMPath"].StringValue;
-                        PrevConfig = GeneralSettings["PrevConfig"].BoolValue;
-                        AllwaysDesktop = GeneralSettings["AllwaysDesktop"].BoolValue;
-                        CpyUserIcon = GeneralSettings["CpyUserIcon"].BoolValue;
-                        ConvICONPath = GeneralSettings["ConvICONPath"].StringValue;
-                        ExtractIco = GeneralSettings["ExtractIco"].BoolValue;
-                        PreferedTheme = GeneralSettings["PreferedTheme"].ByteValue;
-                    }
-                    catch { LoadSettingsDefault(); WriteSettingsFile(); }
+                    DEFRADir = GeneralSettings["DEFRADir"].StringValue;
+                    DEFROMPath = GeneralSettings["DEFROMPath"].StringValue;
+                    PrevConfig = GeneralSettings["PrevConfig"].BoolValue;
+                    AllwaysDesktop = GeneralSettings["AllwaysDesktop"].BoolValue;
+                    CpyUserIcon = GeneralSettings["CpyUserIcon"].BoolValue;
+                    ConvICONPath = GeneralSettings["ConvICONPath"].StringValue;
+                    ExtractIco = GeneralSettings["ExtractIco"].BoolValue;
+                    PreferedTheme = GeneralSettings["PreferedTheme"].ByteValue;
 
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
@@ -69,8 +55,12 @@ namespace RetroarchShortcutterV2.Models
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
                     }
                 }
-                else
-                { _ = "Archivo de cfg corrupto o dañado, volviendo a default."; LoadSettingsDefault(); WriteSettingsFile(); }
+                catch
+                {
+                    _ = "El archivo setting no se puedo cargar correctamente, sobreescribiendo...";
+                    LoadSettingsDefault(); WriteSettingsFile();
+                }
+                
             }
             else
             { LoadSettingsDefault(); WriteSettingsFile(); }
@@ -119,6 +109,23 @@ namespace RetroarchShortcutterV2.Models
             settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
         }
 
+        public static ThemeVariant LoadThemeVariant()
+        {
+            ThemeVariant theme;
+            switch(PreferedTheme)
+            {
+                case 1:
+                    theme = ThemeVariant.Light;
+                    break;
+                case 2:
+                    theme = ThemeVariant.Dark;
+                    break;
+                default:
+                    theme = ThemeVariant.Default;
+                    break;
+            }
+            return theme;
+        }
 
 
 #if DEBUG

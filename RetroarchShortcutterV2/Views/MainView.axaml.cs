@@ -4,7 +4,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Controls;
 using MsBox.Avalonia.Dto;
@@ -25,6 +24,10 @@ public partial class MainView : UserControl
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
+    
+    // Window Object
+    IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;  // Solucion basada en atresnjo en los issues de Avalonia
+    private TopLevel topLevel { get; set; }
 
     public MainView()
     { InitializeComponent(); }
@@ -32,7 +35,9 @@ public partial class MainView : UserControl
 
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
+        topLevel = TopLevel.GetTopLevel(this);
         Settings.LoadSettings();
+        deskWindow.MainWindow.RequestedThemeVariant = Settings.LoadThemeVariant();
         if (!DesktopOS)
         {
             txtRADir.IsReadOnly = false;
@@ -112,13 +117,22 @@ public partial class MainView : UserControl
     }
 
 
+    // TOP CONTROLS
+
+    void btnSettings_Click(object sender, RoutedEventArgs e)
+    { 
+        var config = new SettingsWindow();
+        config.ShowDialog(deskWindow.MainWindow);
+    }
+
+
     // Usuario llenando object del Icono
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
         int template;
         if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
         else { template = 5; }                  // FilePicker Option para iconos de Linux
-        string dir = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
+        string dir = await FileOps.OpenFileAsync(template, topLevel);
         if (dir != null)
         {
             int newIndex = comboICONDir.ItemCount;                          // Coge lo que sera el nuevo idice
@@ -157,23 +171,13 @@ public partial class MainView : UserControl
     }
 
 
-    // TOP CONTROLS
-
-    void btnSettings_Click(object sender, RoutedEventArgs e)
-    {
-        var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
-        var config = new ConfigView();
-        config.ShowDialog(deskWindow.MainWindow);
-    }
-
-
     // Usuario llenando object del link
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
         int template;
         if (DesktopOS) { template = 0; }        // FilePicker Option para .exe de Windows
         else { template = 4; }                  // FilePicker Option para .AppImage de Windows
-        string file = await FileOps.OpenFileAsync(template, TopLevel.GetTopLevel(this));
+        string file = await FileOps.OpenFileAsync(template, topLevel);
         if (file != null)
         {
             shortcut.RAdir = file;
@@ -190,7 +194,7 @@ public partial class MainView : UserControl
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(1, TopLevel.GetTopLevel(this));
+        string file = await FileOps.OpenFileAsync(1, topLevel);
         if (file != null)
         {
             shortcut.ROMdir = file;
@@ -227,7 +231,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileOps.OpenFileAsync(2, TopLevel.GetTopLevel(this));
+        var file = await FileOps.OpenFileAsync(2, topLevel);
         if (file != null)
         {
             //shortcut.CONFfile = file;
@@ -247,7 +251,7 @@ public partial class MainView : UserControl
         int template;
         if (DesktopOS) { template = 0; }        // Salvar link como un .lnk de Windows
         else { template = 1; }                  // Salvar link como un .desktop de Linux
-        var file = await FileOps.SaveFileAsync(template, TopLevel.GetTopLevel(this));
+        var file = await FileOps.SaveFileAsync(template, topLevel);
         if (file != null)
         {
             shortcut.LNKdir = file;
@@ -268,7 +272,6 @@ public partial class MainView : UserControl
         var msbox_params = new MessageBoxStandardParams();
         msbox_params.ShowInCenter = true; 
         msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        var deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime; // Solucion gracias a atresnjo en los issues de Avalonia
 
         // CHECKS!
         shortcut.verboseB = (bool)chkVerb.IsChecked;
@@ -342,7 +345,7 @@ public partial class MainView : UserControl
 #if DEBUG
     async void testing1(object sender, RoutedEventArgs e)
     {
-        Testing.FilePickerTesting(TopLevel.GetTopLevel(this));
+        Testing.FilePickerTesting(topLevel);
     }
 #endif
 }

@@ -12,16 +12,17 @@ namespace RetroarchShortcutterV2.Models
 {
     public class FileOps
     {
+        public const string SettingFile = "RS_settings.cfg";
+        public const string SettingFileBin = "RS_settings.bin";
         public const string UserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
-        public static List<string> ConfigDir = new List<string> { "Default" };
-        public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
-        public static string SettingFile = "RetroarchShortcutter.cfg";
-        public static string SettingFileBin = "settings.bin";
-        public static string writeIcoDIR;
+
+        public static List<string> ConfigDir { get; private set; } = new() { "Default" };
+        public static string UserProfile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public static string UserSettings { get; private set; } = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static string WriteIcoDIR { get; private set; } = string.Empty;
 
 
         public static bool ExistSettingsFile() => (File.Exists(SettingFile));
@@ -29,25 +30,6 @@ namespace RetroarchShortcutterV2.Models
         public static bool ExistSettingsBinFile() => (File.Exists(SettingFileBin));
 
         public static bool ChkSettingsFile() => (File.ReadAllText(SettingFile) != null);
-
-        public static void ChkSettingsPaths()
-        {
-            if (Settings.DEFRADir != string.Empty)
-            {
-                try { Path.GetFullPath(Settings.DEFRADir); }
-                catch { Settings.DEFRADir = string.Empty; }
-            }
-            if (Settings.DEFROMPath != string.Empty)
-            {
-                try { }
-                catch { }
-            }
-            if (Settings.ConvICONPath != string.Empty)
-            {
-                try { }
-                catch { }
-            }
-        }
 
         public static string[] LoadCores()
         {
