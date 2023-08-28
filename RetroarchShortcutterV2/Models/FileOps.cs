@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using RetroarchShortcutterV2.Models.Icons;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace RetroarchShortcutterV2.Models
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
         public static string UserProfile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string UserSettings { get; private set; } = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static IStorageFolder? ROMPadreDir { get; private set; }
         public static string WriteIcoDIR { get; private set; } = string.Empty;
 
 
@@ -84,12 +86,39 @@ namespace RetroarchShortcutterV2.Models
             return DEFicon; 
         }
 
+        public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
+        {
+            if (dir_ROMpadre != null)
+            { ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre); }
+        }
+
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
             string dir;
             if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.LocalPath); }
+            else { return null; }
+            return dir;
+        }
+
+        public static async Task<string> OpenFolderAsync(byte template ,TopLevel topLevel)
+        {
+            FolderPickerOpenOptions opt = new();
+            switch(template)
+            {
+                case 0:
+                    opt.Title = "Eliga el directorio padre de ROMs"; 
+                    opt.AllowMultiple = false;
+                    break;
+                case 1:
+                    opt.Title = "Eliga el directorio padre de ROMs";
+                    opt.AllowMultiple = false;
+                    break;
+            }    
+            var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
+            string dir;
+            if (dirList.Count > 0) { dir = Path.GetFullPath(dirList[0].Path.LocalPath); }
             else { return null; }
             return dir;
         }

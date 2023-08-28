@@ -23,14 +23,13 @@ namespace RetroarchShortcutterV2.Views
         private byte PrefTheme { get; set; }
         private string PrefRADir { get; set; }
         private string PrefROMPath { get; set; }
-        private bool PrevConfigs { get; set; }
+        private bool PrevConfig { get; set; }
         private bool AllwaysDesktop { get; set; }
         private bool CpyUserIcon { get; set; }
         private string ConvIcoDir { get; set; }
         private bool ExtractIco { get; set; }
 
         private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
-        
 
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
@@ -71,7 +70,7 @@ namespace RetroarchShortcutterV2.Views
             PrefTheme = Settings.PreferedTheme;
             PrefRADir = Settings.DEFRADir;
             PrefROMPath = Settings.DEFROMPath;
-            PrevConfigs = Settings.PrevConfig;
+            PrevConfig = Settings.PrevConfig;
             AllwaysDesktop = Settings.AllwaysDesktop;
             CpyUserIcon = Settings.CpyUserIcon;
             ConvIcoDir = Settings.ConvICONPath;
@@ -79,7 +78,7 @@ namespace RetroarchShortcutterV2.Views
 
             txtDefRADir.Text = PrefRADir;
             txtDefROMPath.Text = PrefROMPath;
-            chkPrevCONFIG.IsChecked = PrevConfigs;
+            chkPrevCONFIG.IsChecked = PrevConfig;
             chkAllwaysDesktop.IsChecked = AllwaysDesktop;
             chkCpyUserIcon.IsChecked = CpyUserIcon;
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
@@ -146,7 +145,7 @@ namespace RetroarchShortcutterV2.Views
         // DIR PADRE
         async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFileAsync(1, SettWindow);
+            string file = await FileOps.OpenFolderAsync(0, SettWindow);
             if (file != null)
             { txtDefROMPath.Text = file; }
         }
@@ -165,10 +164,7 @@ namespace RetroarchShortcutterV2.Views
         // WINDOWS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            int template;
-            if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
-            else { template = 5; }
-            string file = await FileOps.OpenFileAsync(template, SettWindow);
+            string file = await FileOps.OpenFolderAsync(1, SettWindow);
             if (file != null)
             { txtIcoSavPath.Text = file; }
         }
@@ -213,8 +209,10 @@ namespace RetroarchShortcutterV2.Views
 
         void btnCONSettings_Click(object sender, RoutedEventArgs e)
         {
-
-
+            Settings.SetSettings(PrefTheme, PrefRADir, PrefROMPath, PrevConfig,
+                                 AllwaysDesktop, CpyUserIcon, ConvIcoDir, ExtractIco);
+            Settings.WriteSettingsFile();
+            FileOps.SetROMPadre(PrefROMPath, SettWindow);
             Current_Window.Close();
         }
     }

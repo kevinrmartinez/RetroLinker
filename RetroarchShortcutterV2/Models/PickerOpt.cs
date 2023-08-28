@@ -40,7 +40,9 @@ namespace RetroarchShortcutterV2.Models
                 case 1:
                     options.AllowMultiple = false;
                     options.Title = "Eliga la ROM que desea linkear";
-                    //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
+                    //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
+                    if (FileOps.ROMPadreDir != null)
+                    { options.SuggestedStartLocation = FileOps.ROMPadreDir; }
                     break;
 
                 // Retroarch config
@@ -77,7 +79,6 @@ namespace RetroarchShortcutterV2.Models
                     options.Title = "Eliga un archivo";
                     break;
             }
-
             return options;
         }
 

@@ -5,9 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using MsBox.Avalonia;
-using MsBox.Avalonia.Controls;
 using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Windows;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 
@@ -38,6 +36,11 @@ public partial class MainView : UserControl
         topLevel = TopLevel.GetTopLevel(this);
         Settings.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = Settings.LoadThemeVariant();
+        // Carga de Settings
+        txtRADir.Text = Settings.DEFRADir;
+        shortcut.RAdir = Settings.DEFRADir;
+        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
+        // Condicion de OS
         if (!DesktopOS)
         {
             txtRADir.IsReadOnly = false;
@@ -119,10 +122,12 @@ public partial class MainView : UserControl
 
     // TOP CONTROLS
 
-    void btnSettings_Click(object sender, RoutedEventArgs e)
+    async void btnSettings_Click(object sender, RoutedEventArgs e)
     { 
         var config = new SettingsWindow();
-        config.ShowDialog(deskWindow.MainWindow);
+        await config.ShowDialog(deskWindow.MainWindow);
+        txtRADir.Text = Settings.DEFRADir;
+        shortcut.RAdir = Settings.DEFRADir;
     }
 
 

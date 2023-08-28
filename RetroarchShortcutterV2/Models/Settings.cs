@@ -1,4 +1,5 @@
 ﻿using Avalonia.Styling;
+using RetroarchShortcutterV2.Views;
 using SharpConfig;
 using System;
 using System.Collections.Generic;
@@ -76,6 +77,31 @@ namespace RetroarchShortcutterV2.Models
             ConvICONPath = FileOps.UserAssetsDir;
             ExtractIco = false;
             PreferedTheme = 0;
+        }
+
+        public static void SetSettings(byte theme, string defRADir, string defROMPath, bool prevConf,
+                                       bool desktop, bool cpyUserIcon, string convIcoDir, bool extractIco)
+        {
+            DEFRADir = defRADir;
+            DEFROMPath = defROMPath;
+            PrevConfig = prevConf;
+            AllwaysDesktop = desktop;
+            CpyUserIcon = cpyUserIcon;
+            ConvICONPath = convIcoDir;
+            ExtractIco = extractIco;
+            PreferedTheme = theme;
+        }
+
+        public static void SetSettings(SettingsView viewObj)
+        {
+            DEFRADir = viewObj.PrefRADir;
+            DEFROMPath = viewObj.PrefROMPath;
+            PrevConfig = viewObj.PrevConfig;
+            AllwaysDesktop = viewObj.AllwaysDesktop;
+            CpyUserIcon = viewObj.CpyUserIcon;
+            ConvICONPath = viewObj.ConvIcoDir;
+            ExtractIco = viewObj.ExtractIco;
+            PreferedTheme = viewObj.PrefTheme;
         }
 
         public static void WriteSettingsFile()
