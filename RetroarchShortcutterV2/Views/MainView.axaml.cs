@@ -13,24 +13,24 @@ namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
-
-    public Shortcutter shortcut = new();
     public static bool ROMenable = true;
-    public Bitmap ICONimage;
-    public static IconsItems IconItemSET;
+    private Shortcutter shortcut = new();
+    private Bitmap ICONimage;
+    private static IconsItems IconItemSET;
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
     
     // Window Object
-    IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;  // Solucion basada en atresnjo en los issues de Avalonia
+    private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;  // Solucion basada en atresnjo en los issues de Avalonia
     private TopLevel topLevel { get; set; }
 
     public MainView()
     { InitializeComponent(); }
 
-
+    #region LOAD EVENTS
+    // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
         topLevel = TopLevel.GetTopLevel(this);
@@ -39,12 +39,12 @@ public partial class MainView : UserControl
         // Carga de Settings
         txtRADir.Text = Settings.DEFRADir;
         shortcut.RAdir = Settings.DEFRADir;
-        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
+        
         // Condicion de OS
         if (!DesktopOS)
         {
+            if (Settings.DEFRADir == string.Empty) { Settings.DEFRADir = "retroarch"; }
             txtRADir.IsReadOnly = false;
-            txtRADir.Text = "retroarch";
 #if DEBUG
             System.Console.Beep();
 #endif
@@ -56,6 +56,7 @@ public partial class MainView : UserControl
             IconItemSET = new();
             
         }
+        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -89,8 +90,9 @@ public partial class MainView : UserControl
         comboICONDir.SelectedIndex++;
         rdoIconDef.IsChecked = true;
     }
+    #endregion
 
-
+    // FUNCIONES
     void FillIconBoxes(string DIR)
     {
         ICONimage = FileOps.GetBitmap(DIR);
@@ -109,19 +111,8 @@ public partial class MainView : UserControl
         pic128.Source = ICONimage;
     }
 
-    void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
-    {
-        if ((bool)rdoIconDef.IsChecked) 
-        {
-            comboICONDir.SelectedIndex = 0;
-            gridIconControl.IsEnabled = false;
-        }
-        else { gridIconControl.IsEnabled = true; }
-    }
-
 
     // TOP CONTROLS
-
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     { 
         var config = new SettingsWindow();
@@ -130,8 +121,18 @@ public partial class MainView : UserControl
         shortcut.RAdir = Settings.DEFRADir;
     }
 
-
+    #region Icon Controls
     // Usuario llenando object del Icono
+    void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
+    {
+        if ((bool)rdoIconDef.IsChecked)
+        {
+            comboICONDir.SelectedIndex = 0;
+            gridIconControl.IsEnabled = false;
+        }
+        else { gridIconControl.IsEnabled = true; }
+    }
+
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
         int template;
@@ -174,9 +175,11 @@ public partial class MainView : UserControl
             FillIconBoxes(bitm);
         }
     }
-
+    #endregion
 
     // Usuario llenando object del link
+    #region RADirectory Controls
+    // RetroArch Directory
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
         int template;
@@ -189,7 +192,10 @@ public partial class MainView : UserControl
             txtRADir.Text = file;
         }
     }
+    #endregion
 
+    #region ROM Controls
+    // ROM
     void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
     {
         if ((bool)chkContentless.IsChecked) { panelROMDirControl.IsEnabled = false; }
@@ -212,12 +218,10 @@ public partial class MainView : UserControl
     {
         // PENDIENTE
     }
+    #endregion
 
-    void btnSubSys_Click(object sender, RoutedEventArgs e)
-    {
-        // PENDIENTE
-    }
-
+    #region RACore Controls
+    // CORE
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         switch (comboConfig.SelectedIndex)
@@ -234,6 +238,14 @@ public partial class MainView : UserControl
         }
     }
 
+    void btnSubSys_Click(object sender, RoutedEventArgs e)
+    {
+        // PENDIENTE
+    }
+    #endregion
+
+    #region Config Controls
+    // CONFIG
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
         var file = await FileOps.OpenFileAsync(2, topLevel);
@@ -250,7 +262,10 @@ public partial class MainView : UserControl
     {
         // PENDIENTE
     }
+    #endregion
 
+    #region LinkDir Controls
+    // Link Directory
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
         int template;
@@ -266,11 +281,10 @@ public partial class MainView : UserControl
         //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
 #endif
     }
+    #endregion
 
-
-    /* La accion ocurre aqui
-     *  
-     */
+    // EXECUTE
+    // La accion ocurre aqui
     async void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         bool ShortcutPosible;

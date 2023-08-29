@@ -1,12 +1,6 @@
 ﻿using Avalonia.Styling;
-using RetroarchShortcutterV2.Views;
 using SharpConfig;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -22,12 +16,6 @@ namespace RetroarchShortcutterV2.Models
         public static byte PreferedTheme { get; set; }
 
         public static List<string> PrevConfigs { set; get; }
-
-        //static List<string> SectionsList { get; } = new()
-        //{ "GeneralSettings", "StoredConfigs", "$SharpConfigDefaultSection" };
-        //static List<string> GeneralSettingsList { get; } = new()
-        //     { "DEFRADir", "DEFROMPath", "PrevConfig", "AllwaysDesktop", 
-        //       "CpyUserIcon", "ConvICONPath", "ExtractIco", "PreferedTheme" };
 
         public static void LoadSettings()
         {

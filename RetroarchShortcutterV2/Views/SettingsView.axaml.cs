@@ -31,6 +31,10 @@ namespace RetroarchShortcutterV2.Views
 
         private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
 
+        static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
+        static readonly ThemeVariant light_theme = ThemeVariant.Light;
+        static readonly ThemeVariant system_theme = ThemeVariant.Default;
+
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         {
@@ -86,10 +90,6 @@ namespace RetroarchShortcutterV2.Views
         }
 
         //APARIENCIA
-        static ThemeVariant dark_theme = ThemeVariant.Dark;
-        static ThemeVariant light_theme = ThemeVariant.Light;
-        static ThemeVariant system_theme = ThemeVariant.Default;
-
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             
