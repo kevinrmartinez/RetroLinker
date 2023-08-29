@@ -92,18 +92,6 @@ namespace RetroarchShortcutterV2.Models
             PreferedTheme = theme;
         }
 
-        public static void SetSettings(SettingsView viewObj)
-        {
-            DEFRADir = viewObj.PrefRADir;
-            DEFROMPath = viewObj.PrefROMPath;
-            PrevConfig = viewObj.PrevConfig;
-            AllwaysDesktop = viewObj.AllwaysDesktop;
-            CpyUserIcon = viewObj.CpyUserIcon;
-            ConvICONPath = viewObj.ConvIcoDir;
-            ExtractIco = viewObj.ExtractIco;
-            PreferedTheme = viewObj.PrefTheme;
-        }
-
         public static void WriteSettingsFile()
         {
             Configuration settings_file = new Configuration();
