@@ -13,6 +13,7 @@ namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
+    public static int PrevConfigsCount;
     public static bool ROMenable = true;
     private Shortcutter shortcut = new();
     private Bitmap ICONimage;
@@ -98,7 +99,10 @@ public partial class MainView : UserControl
 
         FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
 
-
+        if (Settings.PrevConfig && Settings.PrevConfigs == null) { Settings.PrevConfigs = new(); }
+        else if (!Settings.PrevConfig && Settings.PrevConfigs != null) { Settings.PrevConfigs = null; }
+        if (Settings.PrevConfigs != null) { PrevConfigsCount = Settings.PrevConfigs.Count; }
+        else { PrevConfigsCount = -1; }
 
         if (!Settings.AllwaysDesktop) { LinkDirSetting(); }
         else { LinkNameSetting(); }
@@ -249,6 +253,14 @@ public partial class MainView : UserControl
 
     #region RACore Controls
     // CORE
+    void btnSubSys_Click(object sender, RoutedEventArgs e)
+    {
+        // PENDIENTE
+    }
+    #endregion
+
+    #region Config Controls
+    // CONFIG
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         switch (comboConfig.SelectedIndex)
@@ -265,23 +277,17 @@ public partial class MainView : UserControl
         }
     }
 
-    void btnSubSys_Click(object sender, RoutedEventArgs e)
-    {
-        // PENDIENTE
-    }
-    #endregion
-
-    #region Config Controls
-    // CONFIG
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
         var file = await FileOps.OpenFileAsync(2, topLevel);
         if (file != null)
         {
-            //shortcut.CONFfile = file;
-            FileOps.ConfigDir.Add(file);
-            comboConfig.Items.Add(file);
-            comboConfig.SelectedIndex = comboConfig.ItemCount - 1;
+            if (!comboConfig.Items.Contains(file))
+            {
+                comboConfig.Items.Add(file);
+                if (Settings.PrevConfig) { Settings.PrevConfigs.Add(file); }
+            }
+            comboConfig.SelectedItem = file;
         }
     }
 
@@ -348,12 +354,17 @@ public partial class MainView : UserControl
         else { shortcut.Desc = txtDesc.Text; }
 
         // Manejo de iconos
+        // Icono del ejecutable (Default)
         if (comboICONDir.SelectedIndex == 0)
         { shortcut.ICONfile = null; }
+
+        // En caso de tener que copiar el icono provisto por el usuario
+        else if (comboICONDir.SelectedIndex > 0 && Settings.CpyUserIcon)
+        { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); }
+
+        // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
         else if (comboICONDir.SelectedIndex > 0 && DesktopOS)
-        {   /* Falta setting que deje al usuario copiar sus iconos al UserSetting */
-            shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream);
-        }
+        { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
@@ -394,6 +405,11 @@ public partial class MainView : UserControl
             ShortcutPosible = false;
         }
     }
+
+    // CLOSING
+
+    void View1_Unloaded(object sender, RoutedEventArgs e)
+    {  if (PrevConfigsCount != Settings.PrevConfigs?.Count && PrevConfigsCount > -1) { Settings.WriteSettingsFile(); }  }
 
 #if DEBUG
     async void testing1(object sender, RoutedEventArgs e)

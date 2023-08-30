@@ -42,6 +42,7 @@ namespace RetroarchShortcutterV2.Models
                         PrevConfigs = new List<string>();
                         for (int i = 0; i < dir_count; i++)
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
+                        FileOps.ConfigDir.AddRange(PrevConfigs);
                     }
                 }
                 catch
@@ -82,9 +83,8 @@ namespace RetroarchShortcutterV2.Models
 
         public static void WriteSettingsFile()
         {
-            Configuration settings_file = new Configuration();
+            Configuration settings_file = new();
             Section GeneralSettings = settings_file["GeneralSettings"];
-            Section StoredConfigs = settings_file["StoredConfigs"];
 
             GeneralSettings["DEFRADir"].StringValue = DEFRADir;
             GeneralSettings["DEFROMPath"].StringValue = DEFROMPath;
@@ -94,9 +94,10 @@ namespace RetroarchShortcutterV2.Models
             GeneralSettings["ConvICONPath"].StringValue = ConvICONPath;
             GeneralSettings["ExtractIco"].BoolValue = ExtractIco;
             GeneralSettings["PreferedTheme"].ByteValue = PreferedTheme;
-            
+
             //TestfillPrevConfigs();
 
+            Section StoredConfigs = settings_file["StoredConfigs"];
             if (PrevConfigs != null)
             {
                 int dir_count = PrevConfigs.Count;
@@ -106,7 +107,6 @@ namespace RetroarchShortcutterV2.Models
                     key = "dir" + i; StoredConfigs[key].StringValue = PrevConfigs[i];
                 }
             }
-
             //settings_file.SaveToFile(FileOps.SettingFile);
             settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
         }

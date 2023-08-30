@@ -5,3 +5,6 @@ Console.WriteLine("Hello, World!");
 // var icoStream = WinFunc.WinIconProc.ExtractIco(file);
 // if (icoStream == null) { Console.WriteLine("Operacion Fallida"); }
 // else { Console.WriteLine("Operación exitosa"); Console.Beep(); }
+var temp = Path.GetTempPath();
+Console.WriteLine();
+Console.WriteLine(temp);

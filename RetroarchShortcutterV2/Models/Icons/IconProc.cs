@@ -46,46 +46,18 @@ namespace RetroarchShortcutterV2.Models.Icons
             // PENDIENTE: Mostrar msbox indicando que hay un problema
         }
 
-        public static MemoryStream IcoFullExtraction(string DIR)
-        {
-            var iconStream = new MemoryStream();
+        /* Posible implementacion para extraer un icono especifico de un .exe o .dll */
+        //public static MemoryStream IcoFullExtraction(string DIR)
+        //{
+        //    var iconStream = new MemoryStream();
 
-            return iconStream;
-        }
+        //    return iconStream;
+        //}
 
-        public static string SaveConvIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
-        {
-            var ico = new MagickImage(iconStream);
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
-        }
-
-        public static string SaveConvIcoToFile(string savePath, MagickImage ico, string? altPath)
-        {
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
-        }
-
-        public static string SaveIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
+        public static MagickImage SaveIcoToMI(MemoryStream iconStream)
         {
             var ico = new MagickImage(iconStream, MagickFormat.Ico);
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
+            return ico;
         }
 
 

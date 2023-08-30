@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.MainView"
              x:DataType="vm:MainViewModel"
-			 Name="View1" Loaded="View1_Loaded">
+			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->

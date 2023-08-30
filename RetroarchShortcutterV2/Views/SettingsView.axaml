@@ -35,9 +35,6 @@
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 						<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_Click"
 								i:Attached.Icon="fa-folder-open"/>
-						<Button Name="btnsavDefRADir" Height="30" Click="btnsavDefRADir_Click">
-							<i:Icon Value="fa-check" Foreground="Green"/>
-						</Button>
 						<Button Name="btnclrDefRADir" Height="30" Click="btnclrDefRADir_Click">
 							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 						</Button>
@@ -55,9 +52,6 @@
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 						<Button Name="btnDefROMPath" Height="30" Click="btnDefROMPath_Click"
 								i:Attached.Icon="fa-folder-open"/>
-						<Button Name="btnsavDefROMPath" Height="30" Click="btnsavDefROMPath_Click">
-							<i:Icon Value="fa-check" Foreground="Green"/>
-						</Button>
 						<Button Name="btnclrDefROMPath" Height="30" Click="btnclrDefROMPath_Click">
 							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 						</Button>
@@ -88,7 +82,8 @@
 			<StackPanel Grid.Row="4" Margin="3" Background="">
 				<Label Content="Preferencias de Iconos"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
-				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"/>
+				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"
+						  ToolTip.Tip="Copia el archivo seleccionado como icono al directorio de esta aplicacion (UserAssets), y usarlo desde ahí."/>
 				<!--WINDOWS ONLY-->
 				<Border BorderThickness="1" BorderBrush="Gray">
 					<StackPanel Name="panelWindowsOnlyControls" Margin="1,0">
@@ -104,9 +99,6 @@
 							<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
 								<Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_Click"
 										i:Attached.Icon="fa-folder-open"/>
-								<Button Name="btnsavIcoSavPath" Height="30" Click="btnsavIcoSavPath_Click">
-									<i:Icon Value="fa-check" Foreground="Green"/>
-								</Button>
 								<Button Name="btnclrIcoSavPath" Height="30" Click="btnclrIcoSavPath_Click">
 									<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 								</Button>

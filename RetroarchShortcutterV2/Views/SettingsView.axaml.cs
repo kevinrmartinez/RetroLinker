@@ -129,12 +129,7 @@ namespace RetroarchShortcutterV2.Views
             else { template = 4; }                  // FilePicker Option para .AppImage de Windows
             string file = await FileOps.OpenFileAsync(template, SettWindow);
             if (file != null)
-            { txtDefRADir.Text = file; }
-        }
-
-        void btnsavDefRADir_Click(object sender, RoutedEventArgs e)
-        {
-            if (txtDefRADir.Text != string.Empty) { PrefRADir = txtDefRADir.Text; }
+            { txtDefRADir.Text = file; PrefRADir = txtDefRADir.Text; }
         }
 
         void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
@@ -147,12 +142,7 @@ namespace RetroarchShortcutterV2.Views
         {
             string file = await FileOps.OpenFolderAsync(0, SettWindow);
             if (file != null)
-            { txtDefROMPath.Text = file; }
-        }
-
-        void btnsavDefROMPath_Click(object sender, RoutedEventArgs e)
-        {
-            if (txtDefROMPath.Text != string.Empty) { PrefROMPath = txtDefROMPath.Text; }
+            { txtDefROMPath.Text = file; PrefROMPath = txtDefROMPath.Text; }
         }
 
         void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
@@ -161,17 +151,12 @@ namespace RetroarchShortcutterV2.Views
         }
 
         // ICONS
-        // WINDOWS ONLY
+        // WINDOWS OS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
             string file = await FileOps.OpenFolderAsync(1, SettWindow);
             if (file != null)
-            { txtIcoSavPath.Text = file; }
-        }
-
-        void btnsavIcoSavPath_Click(object sender, RoutedEventArgs e)
-        {
-            if (txtIcoSavPath.Text != string.Empty) { ConvIcoDir = txtIcoSavPath.Text; }
+            { txtIcoSavPath.Text = file; ConvIcoDir = txtIcoSavPath.Text; }
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
@@ -179,7 +164,8 @@ namespace RetroarchShortcutterV2.Views
             ConvIcoDir = FileOps.UserAssetsDir; txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
         }
 
-        // Dialog Controls
+        #region Window/Dialog Controls
+        // Window/Dialog Controls
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxStandardParams msparams = new()
@@ -209,6 +195,7 @@ namespace RetroarchShortcutterV2.Views
 
         void btnCONSettings_Click(object sender, RoutedEventArgs e)
         {
+            if (!DesktopOS) { PrefRADir = txtDefRADir.Text; }
             // Set bools
             PrevConfig = (bool)chkPrevCONFIG.IsChecked;
             AllwaysDesktop = (bool)chkAllwaysDesktop.IsChecked;
@@ -221,5 +208,6 @@ namespace RetroarchShortcutterV2.Views
             FileOps.SetROMPadre(PrefROMPath, SettWindow);
             Current_Window.Close();
         }
+        #endregion
     }
 }

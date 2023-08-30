@@ -19,10 +19,12 @@ namespace RetroarchShortcutterV2.Models
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
+        public const short MAX_PATH = 255;  // Aplicar en todas partes!
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
         public static string UserDesktop { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static string UserProfile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public static string UserTemp { get; private set; } = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
         public static string UserSettings { get; private set; } = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
@@ -60,7 +62,7 @@ namespace RetroarchShortcutterV2.Models
                     }
                     else
                     {
-                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")
+                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")         // Las imagenes de Avalonia no leen .svg!!
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                 }
@@ -81,6 +83,14 @@ namespace RetroarchShortcutterV2.Models
             catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
             // PENDIENTE: mostrar msbox indicando problema
         }
+
+        public static bool CheckUsrSetDir(string dir)
+        {
+            try { Directory.CreateDirectory(dir); return true; }
+            catch { Console.WriteLine("No se puede crear la carpeta " + dir); return false; }
+            // PENDIENTE: mostrar msbox indicando problema
+        }
+
 
         public static Uri GetDefaultIcon() 
         {
@@ -146,16 +156,28 @@ namespace RetroarchShortcutterV2.Models
             return new_dir;
         }
         
-        public static string CpyIconToUsrSet(string path)
+        public static string CpyIconToUsrSet(string og_path)
         {
-            string name = Path.GetFileName(path);
-            string newpath = Path.Combine(UserSettings, name);
-            CheckUsrSetDir();
-            if (File.Exists(newpath)) { return newpath; }
+            string name = Path.GetFileName(og_path);
+            string new_path = Path.Combine(WriteIcoDIR, name);  // WriteIcoDIR se llena en SaveWinIco!
+            CheckUsrSetDir(WriteIcoDIR);
+            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
             else 
             {
-                File.Copy(path, newpath);
-                return newpath;
+                File.Copy(og_path, new_path);
+                return Path.GetFullPath(new_path);
+            }
+        }
+        
+        public static string CpyIconToUsrAss(string og_path)
+        {
+            string name = Path.GetFileName(og_path);
+            string new_path = Path.Combine(UserAssetsDir, name);
+            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
+            else 
+            {
+                File.Copy(og_path, new_path);
+                return Path.GetFullPath(new_path);
             }
         }
 
@@ -173,35 +195,44 @@ namespace RetroarchShortcutterV2.Models
             return objicon;
         }
 
-        public static string SaveWinIco(string icondir, MemoryStream icoStream)
+        public static string SaveWinIco(string icondir, MemoryStream? icoStream)
         {
+            WriteIcoDIR = Settings.ConvICONPath;
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
-            string newfile = Path.Combine(UserSettings, icoName);
-            string altfile = Path.Combine(UserProfile, icoName);
+            string new_dir = Path.Combine(UserTemp, icoName);
+            CheckUsrSetDir(UserTemp);
             ImageMagick.MagickImage icon_image = new();
             if (icoStream != null) { icoStream.Position = 0; }
             switch (icoExt)
             {
                 case ".png":
                     icon_image = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
+                    icon_image.Write(new_dir);
+                    new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".jpg":
                     icon_image = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
+                    icon_image.Write(new_dir);
+                    new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".jpeg":
                     icon_image = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
+                    icon_image.Write(new_dir);
+                    new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
-                    icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
+                    if (Settings.ExtractIco) 
+                    { 
+                        icon_image = IconProc.SaveIcoToMI(icoStream); 
+                        icon_image.Write(new_dir);
+                        new_dir = CpyIconToUsrSet(new_dir);
+                    }
                     break;
                 default:
                     break;
             }
-            return icondir;
+            return new_dir;
         }
         #endregion
 
@@ -219,87 +250,11 @@ namespace RetroarchShortcutterV2.Models
 
 
 
-        // Origen:
-        ///<summary>
-        /// Steve Lydford - 12/05/2008.
-        ///
-        /// Encrypts a file using Rijndael algorithm.
-        ///</summary>
-        private void EncryptFile(string inputFile, string outputFile)
-        {
-
-            try
-            {
-                string password = @"myKey123"; // Your Key Here
-                UnicodeEncoding UE = new UnicodeEncoding();
-                byte[] key = UE.GetBytes(password);
-
-                string cryptFile = outputFile;
-                FileStream fsCrypt = new FileStream(cryptFile, FileMode.Create);
-
-                Aes AESCrypto = new AesCng();
-                CryptoStream cs = new(fsCrypt,
-                                      AESCrypto.CreateEncryptor(key, key),
-                                      CryptoStreamMode.Write);
-
-                FileStream fsIn = new(inputFile, FileMode.Open);
-
-                int data;
-                while ((data = fsIn.ReadByte()) != -1)
-                { cs.WriteByte((byte)data); }
-
-
-                fsIn.Close();
-                cs.Close();
-                fsCrypt.Close();
-            }
-            catch
-            {
-                _ = "Encryption failed!";
-            }
-        }
-        ///<summary>
-        /// Steve Lydford - 12/05/2008.
-        ///
-        /// Decrypts a file using Rijndael algorithm.
-        ///</summary>
-        private void DecryptFile(string inputFile, string outputFile)
-        {
-            string password = @"myKey123"; // Your Key Here
-
-            UnicodeEncoding UE = new UnicodeEncoding();
-            byte[] key = UE.GetBytes(password);
-
-            FileStream fsCrypt = new FileStream(inputFile, FileMode.Open);
-            Aes AESCrypto = new AesCng();
-
-            CryptoStream cs = new CryptoStream(fsCrypt,
-                                               AESCrypto.CreateDecryptor(key, key),
-                                               CryptoStreamMode.Read);
-
-            FileStream fsOut = new FileStream(outputFile, FileMode.Create);
-
-            int data;
-            while ((data = cs.ReadByte()) != -1)
-            { fsOut.WriteByte((byte)data); }
-
-            fsOut.Close();
-            cs.Close();
-            fsCrypt.Close();
-        }
-
-
-
 #if DEBUG
         public static string IconExtractTest()
         {
             string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
-            string name = Path.GetFileNameWithoutExtension(file) + ".ico";
-            var icoStream = IconProc.IcoExtraction(file);
-            string newfile = Path.Combine(UserSettings, name);
-            string altfile = Path.Combine(UserProfile, name);
-            newfile = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
-            return newfile;
+            return file;
         }
 #endif
     }
