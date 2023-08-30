@@ -21,8 +21,10 @@ namespace RetroarchShortcutterV2.Models
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
+        public static string UserDesktop { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static string UserProfile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string UserSettings { get; private set; } = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
         public static string WriteIcoDIR { get; private set; } = string.Empty;
 
@@ -92,6 +94,7 @@ namespace RetroarchShortcutterV2.Models
             { ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre); }
         }
 
+        #region FileDialogs
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
@@ -132,7 +135,17 @@ namespace RetroarchShortcutterV2.Models
             else { return null; }
             return dir;
         }
+        #endregion
 
+        public static string GetAllDeskPath(string link_name, bool OS)
+        {
+            string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            string lnk_ext = (OS) ? ".lnk" : "dsktop";
+            new_dir += lnk_ext;
+            new_dir = Path.Combine(UserDesktop, new_dir);
+            return new_dir;
+        }
+        
         public static string CpyIconToUsrSet(string path)
         {
             string name = Path.GetFileName(path);
@@ -146,6 +159,7 @@ namespace RetroarchShortcutterV2.Models
             }
         }
 
+        #region Windows Only Ops
         public static bool IsWinEXE(string exe)
         {
             return (Path.GetExtension(exe) == ".exe");
@@ -159,32 +173,27 @@ namespace RetroarchShortcutterV2.Models
             return objicon;
         }
 
-        public static string GetAssetDir(string item, string file_name, string file_path)
-        {
-            return "";
-        }
-
         public static string SaveWinIco(string icondir, MemoryStream icoStream)
         {
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
             string newfile = Path.Combine(UserSettings, icoName);
             string altfile = Path.Combine(UserProfile, icoName);
-            ImageMagick.MagickImage icon_stream = new();
+            ImageMagick.MagickImage icon_image = new();
             if (icoStream != null) { icoStream.Position = 0; }
             switch (icoExt)
             {
                 case ".png":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    icon_image = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
                     break;
                 case ".jpg":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    icon_image = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
                     break;
                 case ".jpeg":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    icon_image = IconProc.ImageConvert(icondir);
+                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_image, altfile);
                     break;
                 case ".exe":
                     icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
@@ -194,6 +203,7 @@ namespace RetroarchShortcutterV2.Models
             }
             return icondir;
         }
+        #endregion
 
         public static Bitmap GetBitmap(string path)
         {

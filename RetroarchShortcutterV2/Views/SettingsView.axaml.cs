@@ -209,6 +209,12 @@ namespace RetroarchShortcutterV2.Views
 
         void btnCONSettings_Click(object sender, RoutedEventArgs e)
         {
+            // Set bools
+            PrevConfig = (bool)chkPrevCONFIG.IsChecked;
+            AllwaysDesktop = (bool)chkAllwaysDesktop.IsChecked;
+            CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
+            ExtractIco = (bool)chkExtractIco.IsChecked;
+
             Settings.SetSettings(PrefTheme, PrefRADir, PrefROMPath, PrevConfig,
                                  AllwaysDesktop, CpyUserIcon, ConvIcoDir, ExtractIco);
             Settings.WriteSettingsFile();

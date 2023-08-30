@@ -36,10 +36,6 @@ public partial class MainView : UserControl
         topLevel = TopLevel.GetTopLevel(this);
         Settings.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = Settings.LoadThemeVariant();
-        // Carga de Settings
-        txtRADir.Text = Settings.DEFRADir;
-        shortcut.RAdir = Settings.DEFRADir;
-        
         // Condicion de OS
         if (!DesktopOS)
         {
@@ -56,7 +52,7 @@ public partial class MainView : UserControl
             IconItemSET = new();
             
         }
-        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
+        LoadSettingsIntoControls();
     }
 
     async void comboCore_Loaded(object sender, RoutedEventArgs e)
@@ -93,6 +89,38 @@ public partial class MainView : UserControl
     #endregion
 
     // FUNCIONES
+    void LoadSettingsIntoControls()
+    {
+        // Carga de Settings
+
+        txtRADir.Text = Settings.DEFRADir;
+        shortcut.RAdir = Settings.DEFRADir;
+
+        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
+
+
+
+        if (!Settings.AllwaysDesktop) { LinkDirSetting(); }
+        else { LinkNameSetting(); }
+    }
+
+    void LinkDirSetting()
+    {
+        lblLinkDir.IsVisible = true;
+        lblLinkName.IsVisible = false;
+        txtLINKDir.IsReadOnly = true;
+        btnLINKDir.IsEnabled = true;
+    }
+
+    void LinkNameSetting()
+    {
+        lblLinkDir.IsVisible = false;
+        lblLinkName.IsVisible = true;
+        txtLINKDir.IsReadOnly = false;
+        txtLINKDir.AcceptsReturn = false;
+        btnLINKDir.IsEnabled = false;
+    }
+
     void FillIconBoxes(string DIR)
     {
         ICONimage = FileOps.GetBitmap(DIR);
@@ -117,8 +145,7 @@ public partial class MainView : UserControl
     { 
         var config = new SettingsWindow();
         await config.ShowDialog(deskWindow.MainWindow);
-        txtRADir.Text = Settings.DEFRADir;
-        shortcut.RAdir = Settings.DEFRADir;
+        LoadSettingsIntoControls();
     }
 
     #region Icon Controls
@@ -308,6 +335,13 @@ public partial class MainView : UserControl
         // Validando que haya un core
         if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
         else { shortcut.ROMcore = comboCore.Text; }
+
+        // Manejo del link en caso de 'AllwaysDesktop = true'
+        if (Settings.AllwaysDesktop)
+        {
+            string name = txtLINKDir.Text;
+            shortcut.LNKdir = FileOps.GetAllDeskPath(name, DesktopOS);
+        }
 
         // Validando que haya descripcion o no
         if (txtDesc.Text == null || txtDesc.Text == string.Empty) { shortcut.Desc = null; }

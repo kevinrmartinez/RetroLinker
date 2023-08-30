@@ -96,7 +96,8 @@
 						<CheckBox Name="chkVerb" Content="Verbose"/>
 						<CheckBox Name="chkAccessi" Content="Accessibility"/>
 					</StackPanel>
-					<Label Margin="3,10,0,0" Content="Directorio del Link*"/>
+					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="Directorio destino del Shortcut*"/>
+					<Label Name="lblLinkName" Margin="3,10,0,0" Content="Nombre del Shortcut destino*"/>
 					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
 						<Button Name="btnLINKDir" Content="..." Click="btnLINKDir_Click"/>
 						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
