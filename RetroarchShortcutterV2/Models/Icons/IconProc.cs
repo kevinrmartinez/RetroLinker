@@ -1,4 +1,5 @@
 ﻿using ImageMagick;
+using ImageMagick.ImageOptimizers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,15 +21,16 @@ namespace RetroarchShortcutterV2.Models.Icons
             var PNG = new MagickImage(DIR);
 
             int sizeMajor = int.Max(PNG.Width, PNG.Height);
+            PNG.Format = MagickFormat.Ico;
             if (PNG.Height > MaxRes || PNG.Width > MaxRes)
-            { PNG.InterpolativeResize(MaxRes, MaxRes, PixelInterpolateMethod.Bilinear); }
+            { PNG.InterpolativeResize(new MagickGeometry(MaxRes), PixelInterpolateMethod.Bilinear); }
             else
             {
                 int i;
                 for (i = MaxRes; i > sizeMajor; i /= 2) { }
                 PNG.AdaptiveResize(i, i);
             }
-            PNG.Format = MagickFormat.Ico;
+            var opto = new IcoOptimizer();
             return PNG;
         }
 

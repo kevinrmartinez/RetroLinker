@@ -1,5 +1,4 @@
-﻿using System.IO;
-
+﻿
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -26,7 +25,7 @@ namespace RetroarchShortcutterV2.Models
             if (!OS) { return false; }
             WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
 
-            shortcut.RApath = Path.GetDirectoryName(shortcut.RAdir);
+            shortcut.RApath = FileOps.GetDirFromPath(shortcut.RAdir);
 
             // Adicion de comillas para manejo de directorios no inusuales...
             // para el WorkingDirectory de RetroArch
@@ -36,8 +35,8 @@ namespace RetroarchShortcutterV2.Models
             shortcut.RAdir = Utils.FixUnusualDirectories(shortcut.RAdir);
 
             // para el icono del link
-            if (shortcut.ICONfile != null) 
-            { shortcut.ICONfile = Utils.FixUnusualDirectories(shortcut.ICONfile); }
+            //if (shortcut.ICONfile != null) 
+            //{ shortcut.ICONfile = Utils.FixUnusualDirectories(shortcut.ICONfile); }
 
             shortcut = Commander.CommandBuilder(shortcut);
 

@@ -197,6 +197,11 @@ public partial class MainView : UserControl
                 var bitm = FileOps.GetBitmap(IconItemSET.IconStream);
                 FillIconBoxes(bitm);
             }
+            else if (!DesktopOS && FileOps.IsVectorImage(item))
+            {
+                Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));
+                FillIconBoxes(bitm);
+            }
             else 
             { FillIconBoxes(shortcut.ICONfile); }
         }
@@ -357,14 +362,16 @@ public partial class MainView : UserControl
         // Icono del ejecutable (Default)
         if (comboICONDir.SelectedIndex == 0)
         { shortcut.ICONfile = null; }
+        else
+        {
+            // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
+            if (DesktopOS)
+            { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
 
-        // En caso de tener que copiar el icono provisto por el usuario
-        else if (comboICONDir.SelectedIndex > 0 && Settings.CpyUserIcon)
-        { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); }
-
-        // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
-        else if (comboICONDir.SelectedIndex > 0 && DesktopOS)
-        { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
+            // En caso de tener que copiar el icono provisto por el usuario
+            if (Settings.CpyUserIcon)
+            { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); }
+        }
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))

@@ -36,10 +36,11 @@
 				<!-- ROW1 - RetroArch Directory -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
 					<Label Margin="0,5,0,0" Content="Ejecutable de RetroArch*"/>
-					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
-						<Button Name="btnRADir" Content="..." Click="btnRADir_Click"/>
-						<TextBox Name="txtRADir" TextAlignment="Left" IsReadOnly="True" Watermark="retroarch.exe"/>
-					</DockPanel>
+					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="retroarch.exe"/>
+						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="Explorar"
+								i:Attached.Icon="fa-folder-open" FontSize="18"/>
+					</Grid>
 				</StackPanel>
 
 				<!-- ROW2 - ROM Directory -->
@@ -48,44 +49,44 @@
 						<Label Margin="0,5,0,0" Content="Directorio de la ROM*"/>
 						<CheckBox Name="chkContentless" Content="Sin Contenido" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
-					<DockPanel Name="panelROMDirControl" FlowDirection="RightToLeft" Margin="3,0,3,10">
-						<Button Name="btnPatches" Content="Patches" IsEnabled="False"/>
-						<Button Name="btnROMDir" Content="..." Click="btnROMDir_Click"/>
-						<TextBox Name="txtROMDir" TextAlignment="Left" IsReadOnly="True" Watermark="supermariobros.nes"/>
-					</DockPanel>
+					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="supermariobros.nes"/>
+						<StackPanel Grid.Column="1" Orientation="Horizontal">
+							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="Explorar"/>
+							<Button Name="btnPatches" IsEnabled="False" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="Patches"/>
+						</StackPanel>
+					</Grid>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
 				<Grid Name="COREconfig" Grid.Row="3" ColumnDefinitions="*, Auto, *, Auto" ShowGridLines="False">
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
 						<Label Content="Core*"/>
-						<StackPanel Orientation="Vertical">
-							<AutoCompleteBox Name="comboCore" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
+						<Grid ColumnDefinitions="*, Auto">
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
 									  Loaded="comboCore_Loaded" SelectionChanged=""/>
-							<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="'cores.txt' No encontrado!" IsVisible="False"/>
-						</StackPanel>
+							<Button Name="btnSubSys" Grid.Column="1" Content="Subsystem" IsEnabled="False" ToolTip.Tip="Subsystem"
+									i:Attached.Icon="fa-microchip" FontSize="18"/>
+						</Grid>
+						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="'cores.txt' No encontrado!" IsVisible="False"/>
 					</StackPanel>
-					<StackPanel Grid.Column="1">
-						<Rectangle Fill="Transparent" Height="28"/>
-						<StackPanel Orientation="Horizontal">
-							<Button Name="btnSubSys" Margin="3,0,0,0" Content="Subsystem" IsEnabled="False"/>
-						</StackPanel>
-					</StackPanel>
+					
+					
 
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
 						<Label Content="Config"/>
-						<StackPanel Orientation="Vertical">
-							<ComboBox Name="comboConfig" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
+						<Grid ColumnDefinitions="*, Auto">
+							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
 									  SelectionChanged="comboConfig_SelectionChanged" Loaded="comboConfig_Loaded"/>
-						</StackPanel>
+							<StackPanel Grid.Column="1" Orientation="Horizontal">
+								<Button Name="btnCONFIGDir" ToolTip.Tip="Explorar" Click="btnCONFIGDir_Click" 
+										i:Attached.Icon="fa-folder-open" FontSize="18"/>
+								<Button Name="btnAppendConfig" ToolTip.Tip="Adjuntar Config" Click="" IsEnabled="False"
+										i:Attached.Icon="fa-plus" FontSize="18"/>
+							</StackPanel>
+						</Grid>
 					</StackPanel>
-					<StackPanel Grid.Column="3">
-						<Rectangle Fill="Transparent" Height="28"/>
-						<StackPanel Orientation="Horizontal" Spacing="4">
-							<Button Name="btnCONFIGDir" Content="..." Click="btnCONFIGDir_Click"/>
-							<Button Name="btnAppendConfig" Content="Extras" IsEnabled="False"/>
-						</StackPanel>
-					</StackPanel>
+					
 
 				</Grid>
 
@@ -98,12 +99,13 @@
 					</StackPanel>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="Directorio destino del Shortcut*"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="Nombre del Shortcut destino*"/>
-					<DockPanel FlowDirection="RightToLeft" Margin="3,0,3,10">
-						<Button Name="btnLINKDir" Content="..." Click="btnLINKDir_Click"/>
-						<TextBox Name="txtLINKDir" TextAlignment="Left" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
-					</DockPanel>
-					<Label Margin="3,0" Content="Descripcion del Link"/>
-					<TextBox Name="txtDesc" Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch"></TextBox>
+					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
+						<Button Name="btnLINKDir" Grid.Column="1" ToolTip.Tip="Explorar" Click="btnLINKDir_Click"
+								i:Attached.Icon="fa-folder-open" FontSize="18"/>
+					</Grid>
+					<Label Margin="3,0" Content="Descripcion del Link" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>
+					<TextBox Name="txtDesc" Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>
 				</StackPanel>
 
 
@@ -183,4 +185,5 @@
 	</Grid>
 	<!--<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
 	<!--https://stackify.com/cross-platform-net-core-apps/-->
+	<!--"https://www.flaticon.es/iconos-gratis/formas-y-simbolos" Formas y simbolos iconos creados por Freepik - Flaticon-->
 </UserControl>

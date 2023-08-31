@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using ConsoleAppForTesting;
+
 Console.WriteLine("Hello, World!");
 
 // string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
@@ -8,3 +10,4 @@ Console.WriteLine("Hello, World!");
 var temp = Path.GetTempPath();
 Console.WriteLine();
 Console.WriteLine(temp);
+IconConvert.ConvertIcon1();

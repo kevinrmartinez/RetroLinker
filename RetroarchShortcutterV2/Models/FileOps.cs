@@ -5,8 +5,6 @@ using RetroarchShortcutterV2.Models.Icons;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Models
@@ -19,6 +17,7 @@ namespace RetroarchShortcutterV2.Models
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
+        public const string NOAPLICA = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
         public const short MAX_PATH = 255;  // Aplicar en todas partes!
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
@@ -36,6 +35,8 @@ namespace RetroarchShortcutterV2.Models
         public static bool ExistSettingsBinFile() => (File.Exists(SettingFileBin));
 
         public static bool ChkSettingsFile() => (File.ReadAllText(SettingFile) != null);
+
+        public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
         public static string[] LoadCores()
         {
@@ -96,6 +97,12 @@ namespace RetroarchShortcutterV2.Models
         {
             Uri DEFicon = new(DEFicon1);
             return DEFicon; 
+        }
+
+        public static Uri GetNAimage() 
+        {
+            Uri NAimage = new(NOAPLICA);
+            return NAimage; 
         }
 
         public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
@@ -181,11 +188,10 @@ namespace RetroarchShortcutterV2.Models
             }
         }
 
+        public static bool IsVectorImage(string svg) => (Path.GetExtension(svg) is ".svg" or "svgz");
+
         #region Windows Only Ops
-        public static bool IsWinEXE(string exe)
-        {
-            return (Path.GetExtension(exe) == ".exe");
-        }
+        public static bool IsWinEXE(string exe) => (Path.GetExtension(exe) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
