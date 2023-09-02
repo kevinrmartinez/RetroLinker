@@ -14,6 +14,7 @@ namespace RetroarchShortcutterV2.Models
         public const string SettingFile = "RS_settings.cfg";
         public const string SettingFileBin = "RS_settings.bin";
         public const string UserAssetsDir = "UserAssets";
+        public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
@@ -188,10 +189,10 @@ namespace RetroarchShortcutterV2.Models
             }
         }
 
-        public static bool IsVectorImage(string svg) => (Path.GetExtension(svg) is ".svg" or "svgz");
+        public static bool IsVectorImage(string svg_file) => (Path.GetExtension(svg_file) is ".svg" or "svgz");
 
         #region Windows Only Ops
-        public static bool IsWinEXE(string exe) => (Path.GetExtension(exe) == ".exe");
+        public static bool IsWinEXE(string exe_file) => (Path.GetExtension(exe_file) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
@@ -203,7 +204,8 @@ namespace RetroarchShortcutterV2.Models
 
         public static string SaveWinIco(string icondir, MemoryStream? icoStream)
         {
-            WriteIcoDIR = Settings.ConvICONPath;
+            var settings = SettingsOps.GetMemSettings();
+            WriteIcoDIR = settings.ConvICONPath;
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
             string new_dir = Path.Combine(UserTemp, icoName);
@@ -228,7 +230,7 @@ namespace RetroarchShortcutterV2.Models
                     new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
-                    if (Settings.ExtractIco) 
+                    if (settings.ExtractIco) 
                     { 
                         icon_image = IconProc.SaveIcoToMI(icoStream); 
                         icon_image.Write(new_dir);

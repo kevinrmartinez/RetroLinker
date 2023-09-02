@@ -20,21 +20,14 @@ namespace RetroarchShortcutterV2.Views
         private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
 
         // PROPS/STATICS
-        private byte PrefTheme { get; set; }
-        private string PrefRADir { get; set; }
-        private string PrefROMPath { get; set; }
-        private bool PrevConfig { get; set; }
-        private bool AllwaysDesktop { get; set; }
-        private bool CpyUserIcon { get; set; }
-        private string ConvIcoDir { get; set; }
-        private bool ExtractIco { get; set; }
-
+        private Settings settings;
         private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
 
         static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
 
+        #region Loads
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         {
@@ -43,9 +36,11 @@ namespace RetroarchShortcutterV2.Views
             var windows_list = deskWindow.Windows;
             Current_Window = windows_list[1];
 
+            // Settings
+            LoadFromSettings();
+
             // Apariencia
-            //Current_Window.RequestedThemeVariant = Settings.LoadThemeVariant();
-            switch(PrefTheme)
+            switch (settings.PreferedTheme)
             {
                 case 1: // Case de que el tema sea 'claro'
                     ThemeSwitch.IsChecked = false;
@@ -59,7 +54,6 @@ namespace RetroarchShortcutterV2.Views
             }
 
             // OTROS
-            LoadFromSettings();
             if (!DesktopOS)
             {
                 panelWindowsOnlyControls.IsEnabled = false;
@@ -71,23 +65,18 @@ namespace RetroarchShortcutterV2.Views
 
         void LoadFromSettings()
         {
-            PrefTheme = Settings.PreferedTheme;
-            PrefRADir = Settings.DEFRADir;
-            PrefROMPath = Settings.DEFROMPath;
-            PrevConfig = Settings.PrevConfig;
-            AllwaysDesktop = Settings.AllwaysDesktop;
-            CpyUserIcon = Settings.CpyUserIcon;
-            ConvIcoDir = Settings.ConvICONPath;
-            ExtractIco = Settings.ExtractIco;
+            settings = SettingsOps.LoadSettings();
 
-            txtDefRADir.Text = PrefRADir;
-            txtDefROMPath.Text = PrefROMPath;
-            chkPrevCONFIG.IsChecked = PrevConfig;
-            chkAllwaysDesktop.IsChecked = AllwaysDesktop;
-            chkCpyUserIcon.IsChecked = CpyUserIcon;
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
-            chkExtractIco.IsChecked = ExtractIco;
+            txtUserAssets.Text = System.IO.Path.GetFullPath(settings.UserAssetsPath);
+            txtDefRADir.Text = settings.DEFRADir;
+            txtDefROMPath.Text = settings.DEFROMPath;
+            chkPrevCONFIG.IsChecked = settings.PrevConfig;
+            chkAllwaysDesktop.IsChecked = settings.AllwaysDesktop;
+            chkCpyUserIcon.IsChecked = settings.CpyUserIcon;
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
+            chkExtractIco.IsChecked = settings.ExtractIco;
         }
+        #endregion
 
         //APARIENCIA
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
@@ -97,13 +86,13 @@ namespace RetroarchShortcutterV2.Views
             {
                 deskWindow.MainWindow.RequestedThemeVariant = dark_theme;
                 SettWindow.RequestedThemeVariant = dark_theme;
-                PrefTheme = 2;
+                settings.PreferedTheme = 2;
             }
             else
             {
                 deskWindow.MainWindow.RequestedThemeVariant = light_theme;
                 SettWindow.RequestedThemeVariant = light_theme;
-                PrefTheme = 1;
+                settings.PreferedTheme = 1;
             }
         }
 
@@ -114,12 +103,26 @@ namespace RetroarchShortcutterV2.Views
                 deskWindow.MainWindow.RequestedThemeVariant = system_theme;
                 SettWindow.RequestedThemeVariant = system_theme;
                 ThemeSwitch.IsEnabled = false;
-                PrefTheme = 0;
+                settings.PreferedTheme = 0;
             }
             else
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
 
         }
+
+        // USER ASSETS
+        async void btnUserAssets_Click(object sender, RoutedEventArgs e)
+        {
+            string file = await FileOps.OpenFolderAsync(0, SettWindow);
+            if (file != null)
+            { txtUserAssets.Text = file; settings.UserAssetsPath = txtUserAssets.Text; }
+        }
+
+        void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
+        {
+            txtUserAssets.Text = string.Empty; settings.UserAssetsPath = string.Empty;
+        }
+
 
         // EJECUTABLE
         async void btnDefRADir_Click(object sender, RoutedEventArgs e)
@@ -129,12 +132,12 @@ namespace RetroarchShortcutterV2.Views
             else { template = 4; }                  // FilePicker Option para .AppImage de Windows
             string file = await FileOps.OpenFileAsync(template, SettWindow);
             if (file != null)
-            { txtDefRADir.Text = file; PrefRADir = txtDefRADir.Text; }
+            { txtDefRADir.Text = file; settings.DEFRADir = txtDefRADir.Text; }
         }
 
         void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
         {
-            txtDefRADir.Text = string.Empty; PrefRADir = string.Empty;
+            txtDefRADir.Text = string.Empty; settings.DEFRADir = string.Empty;
         }
 
         // DIR PADRE
@@ -142,12 +145,12 @@ namespace RetroarchShortcutterV2.Views
         {
             string file = await FileOps.OpenFolderAsync(0, SettWindow);
             if (file != null)
-            { txtDefROMPath.Text = file; PrefROMPath = txtDefROMPath.Text; }
+            { txtDefROMPath.Text = file; settings.DEFROMPath = txtDefROMPath.Text; }
         }
 
         void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
         {
-            txtDefROMPath.Text = string.Empty; PrefROMPath = string.Empty;
+            txtDefROMPath.Text = string.Empty; settings.DEFROMPath = string.Empty;
         }
 
         // ICONS
@@ -156,16 +159,19 @@ namespace RetroarchShortcutterV2.Views
         {
             string file = await FileOps.OpenFolderAsync(1, SettWindow);
             if (file != null)
-            { txtIcoSavPath.Text = file; ConvIcoDir = txtIcoSavPath.Text; }
+            { txtIcoSavPath.Text = file; settings.ConvICONPath = txtIcoSavPath.Text; }
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            ConvIcoDir = FileOps.UserAssetsDir; txtIcoSavPath.Text = System.IO.Path.GetFullPath(ConvIcoDir);
+            settings.ConvICONPath = FileOps.UserAssetsDir; 
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
         }
 
         #region Window/Dialog Controls
         // Window/Dialog Controls
+        void btnDISSettings_Click(object sender, RoutedEventArgs e) => Current_Window.Close();
+
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxStandardParams msparams = new()
@@ -182,30 +188,25 @@ namespace RetroarchShortcutterV2.Views
             var result = await msbox.ShowWindowDialogAsync(Current_Window);
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
-                Settings.LoadSettingsDefault();
-                LoadFromSettings();
+                settings = new();
+                SettingsOps.PrevConfigs = new();
+                SettingsOps.WriteSettingsFile(settings);
+                Current_Window.Close();
             }
                 
         }
 
-        void btnDISSettings_Click(object sender, RoutedEventArgs e)
-        {
-            Current_Window.Close();
-        }
-
         void btnCONSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (!DesktopOS) { PrefRADir = txtDefRADir.Text; }
+            if (!DesktopOS) { settings.DEFRADir = txtDefRADir.Text; }
             // Set bools
-            PrevConfig = (bool)chkPrevCONFIG.IsChecked;
-            AllwaysDesktop = (bool)chkAllwaysDesktop.IsChecked;
-            CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
-            ExtractIco = (bool)chkExtractIco.IsChecked;
+            settings.PrevConfig = (bool)chkPrevCONFIG.IsChecked;
+            settings.AllwaysDesktop = (bool)chkAllwaysDesktop.IsChecked;
+            settings.CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
+            settings.ExtractIco = (bool)chkExtractIco.IsChecked;
 
-            Settings.SetSettings(PrefTheme, PrefRADir, PrefROMPath, PrevConfig,
-                                 AllwaysDesktop, CpyUserIcon, ConvIcoDir, ExtractIco);
-            Settings.WriteSettingsFile();
-            FileOps.SetROMPadre(PrefROMPath, SettWindow);
+            SettingsOps.WriteSettingsFile(settings);
+            FileOps.SetROMPadre(settings.DEFROMPath, SettWindow);
             Current_Window.Close();
         }
         #endregion

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="570"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="800"
              x:Class="RetroarchShortcutterV2.Views.SettingsView"
 			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
   <!---->
@@ -12,7 +12,7 @@
 		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>
 
 		<!--BODY-->
-		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
+		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
 
 			<!--APARIENCIA-->
 			<StackPanel Grid.Row="0" Margin="3" Background="">
@@ -25,9 +25,28 @@
 				</StackPanel>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
 			</StackPanel>
+			
+			<!--USER ASSETS-->
+			<StackPanel Grid.Row="1" Margin="3" Background="">
+				<Label Content="Ruta de UserAssets"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<TextBlock TextWrapping="Wrap" FontSize="12" 
+						   Text="En la carpeta UserAssets se guardan las copias de los iconos y la fuente de los Cores disponibles (cores.txt)."/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnUserAssets" Height="30" Click="btnUserAssets_Click"
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnclrUserAssets" Height="30" Click="btnclrUserAssets_Click">
+							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
 
 			<!--EJECUTABLE-->
-			<StackPanel Grid.Row="1" Margin="3" Background="">
+			<StackPanel Grid.Row="2" Margin="3" Background="">
 				<Label Content="Ejecutable Preferido de RetroArch"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
@@ -44,7 +63,7 @@
 			</StackPanel>
 
 			<!--DIR PADRE-->
-			<StackPanel Grid.Row="2" Margin="3" Background="">
+			<StackPanel Grid.Row="3" Margin="3" Background="">
 				<Label Content="Directorio Padre de las ROMs"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
@@ -61,7 +80,7 @@
 			</StackPanel>
 
 			<!--OTRAS PREFERENCIAS-->
-			<StackPanel Grid.Row="3" Margin="3" Background="">
+			<StackPanel Grid.Row="4" Margin="3" Background="">
 				<Label Content="Otras Preferencias"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
@@ -79,11 +98,13 @@
 			</StackPanel>
 
 			<!--ICONOS-->
-			<StackPanel Grid.Row="4" Margin="3" Background="">
+			<StackPanel Grid.Row="5" Margin="3" Background="">
 				<Label Content="Preferencias de Iconos"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"
 						  ToolTip.Tip="Copia el archivo seleccionado como icono al directorio de esta aplicacion (UserAssets), y usarlo desde ahí."/>
+				<!--Tambien hay que añadir un nuevo elemento el Settings-->
+				
 				<!--WINDOWS ONLY-->
 				<Border BorderThickness="1" BorderBrush="Gray" Margin="0,2">
 					<StackPanel Name="panelWindowsOnlyControls" Margin="1,0">

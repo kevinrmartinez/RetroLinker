@@ -16,6 +16,7 @@ public partial class MainView : UserControl
     public static int PrevConfigsCount;
     public static bool ROMenable = true;
     private Shortcutter shortcut = new();
+    private Settings settings;
     private Bitmap ICONimage;
     private static IconsItems IconItemSET;
 
@@ -35,12 +36,13 @@ public partial class MainView : UserControl
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
         topLevel = TopLevel.GetTopLevel(this);
-        Settings.LoadSettings();
-        deskWindow.MainWindow.RequestedThemeVariant = Settings.LoadThemeVariant();
+        SettingsOps.BuildConfFile();
+        settings = SettingsOps.LoadSettings();
+        deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
         // Condicion de OS
         if (!DesktopOS)
         {
-            if (Settings.DEFRADir == string.Empty) { Settings.DEFRADir = "retroarch"; }
+            if (settings.DEFRADir == string.Empty) { settings.DEFRADir = "retroarch"; }
             txtRADir.IsReadOnly = false;
 #if DEBUG
             System.Console.Beep();
@@ -90,21 +92,24 @@ public partial class MainView : UserControl
     #endregion
 
     // FUNCIONES
+    void LoadNewSettings()
+    { settings = SettingsOps.GetMemSettings(); LoadSettingsIntoControls(); }
+
     void LoadSettingsIntoControls()
     {
         // Carga de Settings
 
-        txtRADir.Text = Settings.DEFRADir;
-        shortcut.RAdir = Settings.DEFRADir;
+        txtRADir.Text = settings.DEFRADir;
+        shortcut.RAdir = settings.DEFRADir;
 
-        FileOps.SetROMPadre(Settings.DEFROMPath, topLevel);
+        FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
 
-        if (Settings.PrevConfig && Settings.PrevConfigs == null) { Settings.PrevConfigs = new(); }
-        else if (!Settings.PrevConfig && Settings.PrevConfigs != null) { Settings.PrevConfigs = null; }
-        if (Settings.PrevConfigs != null) { PrevConfigsCount = Settings.PrevConfigs.Count; }
+        if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
+        else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
+        if (SettingsOps.PrevConfigs != null) { PrevConfigsCount = SettingsOps.PrevConfigs.Count; }
         else { PrevConfigsCount = -1; }
 
-        if (!Settings.AllwaysDesktop) { LinkDirSetting(); }
+        if (!settings.AllwaysDesktop) { LinkDirSetting(); }
         else { LinkNameSetting(); }
     }
 
@@ -149,7 +154,7 @@ public partial class MainView : UserControl
     { 
         var config = new SettingsWindow();
         await config.ShowDialog(deskWindow.MainWindow);
-        LoadSettingsIntoControls();
+        LoadNewSettings();
     }
 
     #region Icon Controls
@@ -177,7 +182,7 @@ public partial class MainView : UserControl
             if (DesktopOS && FileOps.IsWinEXE(dir))
             { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
             else
-            { IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex)); }    // Se agrega a la lista de iconos
+            { IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex)); }    // Se agrega a la lista de iconos como un nuevo objeto 'IconsItems'
             comboICONDir.SelectedIndex = newIndex;
         }
     }
@@ -185,6 +190,7 @@ public partial class MainView : UserControl
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion del SelectionChangedEventArgs gracias a snurre en stackoverflow.com
     {
         int index = comboICONDir.SelectedIndex;
+        panelIconNoImage.IsVisible = false;
         if (index > 0)
         {   // llena los controles pic con los iconos provistos por el usuario
             string item = comboICONDir.SelectedItem.ToString();
@@ -201,6 +207,7 @@ public partial class MainView : UserControl
             {
                 Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));
                 FillIconBoxes(bitm);
+                panelIconNoImage.IsVisible = true;
             }
             else 
             { FillIconBoxes(shortcut.ICONfile); }
@@ -290,7 +297,7 @@ public partial class MainView : UserControl
             if (!comboConfig.Items.Contains(file))
             {
                 comboConfig.Items.Add(file);
-                if (Settings.PrevConfig) { Settings.PrevConfigs.Add(file); }
+                if (settings.PrevConfig) { SettingsOps.PrevConfigs.Add(file); }
             }
             comboConfig.SelectedItem = file;
         }
@@ -348,7 +355,7 @@ public partial class MainView : UserControl
         else { shortcut.ROMcore = comboCore.Text; }
 
         // Manejo del link en caso de 'AllwaysDesktop = true'
-        if (Settings.AllwaysDesktop)
+        if (settings.AllwaysDesktop)
         {
             string name = txtLINKDir.Text;
             shortcut.LNKdir = FileOps.GetAllDeskPath(name, DesktopOS);
@@ -369,7 +376,7 @@ public partial class MainView : UserControl
             { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
 
             // En caso de tener que copiar el icono provisto por el usuario
-            if (Settings.CpyUserIcon)
+            if (settings.CpyUserIcon)
             { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); }
         }
 
@@ -416,7 +423,7 @@ public partial class MainView : UserControl
     // CLOSING
 
     void View1_Unloaded(object sender, RoutedEventArgs e)
-    {  if (PrevConfigsCount != Settings.PrevConfigs?.Count && PrevConfigsCount > -1) { Settings.WriteSettingsFile(); }  }
+    {  if (PrevConfigsCount != SettingsOps.PrevConfigs?.Count && PrevConfigsCount > -1) { SettingsOps.WriteSettingsFile(settings); }  }
 
 #if DEBUG
     async void testing1(object sender, RoutedEventArgs e)

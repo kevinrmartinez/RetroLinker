@@ -139,8 +139,14 @@
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged" Loaded="comboICONDir_Loaded"/>
-								<Button Name="btnICONDir" Grid.Column="1" Content="..." Click="btnICONDir_Click"/>
+								<Button Name="btnICONDir" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="btnICONDir_Click"/>
 							</Grid>
+
+							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"
+										ToolTip.Tip="El programa no puede visualizar dicho icono. Sin embargo, si esta seleccionado, será usado al crear el shortcut.">
+								<Label VerticalAlignment="Center" i:Attached.Icon="fa-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
+								<Label VerticalAlignment="Center" Content="No se puede visualizar este elemento" FontSize="12"/>
+							</StackPanel>
 
 							<!--pic128-->
 							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">

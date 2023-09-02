@@ -10,4 +10,11 @@ Console.WriteLine("Hello, World!");
 var temp = Path.GetTempPath();
 Console.WriteLine();
 Console.WriteLine(temp);
-IconConvert.ConvertIcon1();
+//IconConvert.ConvertIcon1();
+
+SettingsTest.BuildConfFile();
+Settings settings = SettingsTest.GetSettingsTesting();
+SettingsTest.WriteSettingsFile(settings);
+Console.WriteLine(settings.DEFRADir);
+settings = SettingsTest.LoadSettings();
+Console.WriteLine(settings.DEFRADir);
