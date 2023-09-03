@@ -12,7 +12,7 @@ namespace WinFunc
             var shell = new WshShell();
             //var shortcut = shell.CreateShortcut(System.IO.Path.GetFullPath(Dest)) as IWshShortcut;
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Link);
-            if (Iconfile != null) { shortcut.IconLocation = Iconfile; }
+            if (Iconfile != null) { shortcut.IconLocation = "\"" + Iconfile + "\""; }
             shortcut.TargetPath = Exec;
             shortcut.WorkingDirectory = Path;
             shortcut.Arguments = command;

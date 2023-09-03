@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using RetroarchShortcutterV2.Models.Icons;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,44 @@ namespace RetroarchShortcutterV2.Models
 {
     public class FileOps
     {
-        public const string UserAssetsDir = "UserAssets";
+        public const string SettingFile = "RS_settings.cfg";
+        public const string SettingFileBin = "RS_settings.dat";
+        public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
-        public static List<string> ConfigDir = new List<string> { "Default" };
-        public static string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
-        public static string writeIcoDIR;
+        public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
+        public const short MAX_PATH = 255;  // Aplicar en todas partes!
+        
 
+        public static List<string> ConfigDir { get; private set; } = new() { "Default" };
+        public static readonly List<string> WinConvertibleIconsExt = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly List<string> LinIconFiles = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
+        public static readonly string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static IStorageFolder? DesktopFolder { get; private set; }
+        public static IStorageFolder? ROMPadreDir { get; private set; }
+        private static Settings Load_Settings;
+
+
+        //public static bool ExistSettingsFile() => (File.Exists(SettingFile));
+        //public static bool ChkSettingsFile() => File.ReadAllText(SettingFile) != null;
+
+        public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
+
+        public static async void LoadSettingsFO(TopLevel topLevel)
+        {
+            DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);    // '??=' le asigna valor solo si esta null
+            Load_Settings = SettingsOps.GetCachedSettings();
+        }
+
+        public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
         public static string[] LoadCores()
         {
-            string file = Path.Combine(UserAssetsDir, CoresFile);
+            string file = Path.Combine(Load_Settings.UserAssetsPath, CoresFile);
             if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
             else { return Array.Empty<string>(); }
         }
@@ -30,7 +56,7 @@ namespace RetroarchShortcutterV2.Models
         public static List<string> LoadIcons(bool OS)
         {
             IconProc.IconItemsList = new();
-            List<string>? files = new(Directory.EnumerateFiles(UserAssetsDir));
+            List<string>? files = new(Directory.EnumerateFiles(Load_Settings.UserAssetsPath));
             if (files != null)
             {
                 for (int i = 0; i < files.Count; i++)
@@ -40,19 +66,27 @@ namespace RetroarchShortcutterV2.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (ext is ".ico" or ".png" or ".exe") 
+                        if (PickerOpt.conv_icons.Contains("*"+ext) || (ext is ".ico" or ".exe"))
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
+                         
+                        //if (ext is ".ico" or ".png" or ".exe" or ".jpg" or ".jpeg") 
+
+                            //{ IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                     else
                     {
-                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")
+                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")         // Las imagenes de Avalonia no leen .svg!!
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                 }
                 files.Clear();
                 int newindex = 1;
                 foreach (var file in IconProc.IconItemsList)
-                { files.Add(file.FileName); file.comboIconIndex = newindex; newindex++; }
+                { 
+                    files.Add(file.FileName); 
+                    file.comboIconIndex = newindex; 
+                    newindex++; 
+                }
                 return files;
 
             }
@@ -67,18 +101,51 @@ namespace RetroarchShortcutterV2.Models
             // PENDIENTE: mostrar msbox indicando problema
         }
 
-        public static Uri GetDefaultIcon() 
+        public static bool CheckUsrSetDir(string dir)
         {
-            Uri DEFicon = new(DEFicon1);
-            return DEFicon; 
+            try { Directory.CreateDirectory(dir); return true; }
+            catch { Console.WriteLine("No se puede crear la carpeta " + dir); return false; }
+            // PENDIENTE: mostrar msbox indicando problema
         }
 
+        public static Uri GetDefaultIcon() => new(DEFicon1);
+
+        public static Uri GetNAimage() => new(NoAplica);
+
+        public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
+        {
+            if (dir_ROMpadre != null)
+            { ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre); }
+        }
+
+        #region FileDialogs
         public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
             string dir;
             if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.LocalPath); }
+            else { return null; }
+            return dir;
+        }
+
+        public static async Task<string> OpenFolderAsync(byte template ,TopLevel topLevel)
+        {
+            FolderPickerOpenOptions opt = new();
+            switch(template)
+            {
+                case 0:
+                    opt.Title = "Eliga el directorio padre de ROMs"; 
+                    opt.AllowMultiple = false;
+                    break;
+                case 1:
+                    opt.Title = "Eliga el directorio padre de ROMs";
+                    opt.AllowMultiple = false;
+                    break;
+            }    
+            var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
+            string dir;
+            if (dirList.Count > 0) { dir = Path.GetFullPath(dirList[0].Path.LocalPath); }
             else { return null; }
             return dir;
         }
@@ -92,24 +159,46 @@ namespace RetroarchShortcutterV2.Models
             else { return null; }
             return dir;
         }
+        #endregion
 
-        public static string CpyIconToUsrSet(string path)
+        public static string GetAllDeskPath(string link_name, bool OS)
         {
-            string name = Path.GetFileName(path);
-            string newpath = Path.Combine(UserSettings, name);
-            CheckUsrSetDir();
-            if (File.Exists(newpath)) { return newpath; }
+            string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            string lnk_ext = (OS) ? ".lnk" : "dsktop";
+            new_dir += lnk_ext;
+            new_dir = Path.Combine(UserDesktop, new_dir);
+            return new_dir;
+        }
+        
+        public static string CpyIconToUsrSet(string og_path)
+        {
+            string name = Path.GetFileName(og_path);
+            string new_path = Path.Combine(Load_Settings.ConvICONPath, name);
+            CheckUsrSetDir(Load_Settings.ConvICONPath);
+            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
             else 
             {
-                File.Copy(path, newpath);
-                return newpath;
+                File.Copy(og_path, new_path);
+                return Path.GetFullPath(new_path);
+            }
+        }
+        
+        public static string CpyIconToUsrAss(string og_path)
+        {
+            string name = Path.GetFileName(og_path);
+            string new_path = Path.Combine(Load_Settings.UserAssetsPath, name);
+            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
+            else 
+            {
+                File.Copy(og_path, new_path);
+                return Path.GetFullPath(new_path);
             }
         }
 
-        public static bool IsWinEXE(string exe)
-        {
-            return (Path.GetExtension(exe) == ".exe");
-        }
+        public static bool IsVectorImage(string svg_file) => (Path.GetExtension(svg_file) is ".svg" or "svgz");
+
+        #region Windows Only Ops
+        public static bool IsWinEXE(string exe_file) => (Path.GetExtension(exe_file) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
@@ -119,41 +208,41 @@ namespace RetroarchShortcutterV2.Models
             return objicon;
         }
 
-        public static string GetAssetDir(string item, string file_name, string file_path)
-        {
-            return "";
-        }
-
-        public static string SaveWinIco(string icondir, MemoryStream icoStream)
+        public static string SaveWinIco(string icondir, MemoryStream? icoStream)
         {
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
-            string newfile = Path.Combine(UserSettings, icoName);
-            string altfile = Path.Combine(UserProfile, icoName);
-            ImageMagick.MagickImage icon_stream = new();
+            string new_dir = Path.Combine(UserTemp, icoName);
+            CheckUsrSetDir(UserTemp);
+            ImageMagick.MagickImage icon_image = new();
             if (icoStream != null) { icoStream.Position = 0; }
             switch (icoExt)
             {
                 case ".png":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                    icon_image = IconProc.ImageConvert(icondir);
+                    icon_image.Write(new_dir);
+                    new_dir = CpyIconToUsrSet(new_dir);
                     break;
-                case ".jpg":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
-                    break;
-                case ".jpeg":
-                    icon_stream = IconProc.ImageConvert(icondir);
-                    icondir = IconProc.SaveConvIcoToFile(newfile, icon_stream, altfile);
+                case ".jpg" or ".jpeg":
+                    icon_image = IconProc.ImageConvert(icondir);
+                    icon_image.Write(new_dir);
+                    new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
-                    icondir = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
+                    if (Load_Settings.ExtractIco) 
+                    { 
+                        icon_image = IconProc.SaveIcoToMI(icoStream); 
+                        icon_image.Write(new_dir);
+                        new_dir = CpyIconToUsrSet(new_dir);
+                    }
                     break;
                 default:
                     break;
             }
-            return icondir;
+            //settings.Dispose();
+            return new_dir;
         }
+        #endregion
 
         public static Bitmap GetBitmap(string path)
         {
@@ -173,12 +262,7 @@ namespace RetroarchShortcutterV2.Models
         public static string IconExtractTest()
         {
             string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
-            string name = Path.GetFileNameWithoutExtension(file) + ".ico";
-            var icoStream = IconProc.IcoExtraction(file);
-            string newfile = Path.Combine(UserSettings, name);
-            string altfile = Path.Combine(UserProfile, name);
-            newfile = IconProc.SaveIcoToFile(newfile, icoStream, altfile);
-            return newfile;
+            return file;
         }
 #endif
     }

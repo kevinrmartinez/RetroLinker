@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Avalonia;
-using Avalonia.ReactiveUI;
+//using Avalonia.ReactiveUI;
 using Projektanker.Icons.Avalonia.FontAwesome;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 using Projektanker.Icons.Avalonia;
@@ -27,6 +27,6 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
-            .UseReactiveUI();
+            /*.UseReactiveUI()*/;
     }
 }

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/RetroarchShortcutterV2.Desktop/bin/Debug/net7.0/RetroarchShortcutterV2.Desktop.dll",
+            "program": "${workspaceFolder}/RetroarchShortcutterV2.Desktop/bin/Debug/net7.0/RetroarchShortcutter(V2).dll",
             "args": [],
             "cwd": "${workspaceFolder}/RetroarchShortcutterV2.Desktop",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

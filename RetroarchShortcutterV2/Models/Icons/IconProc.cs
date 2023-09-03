@@ -1,4 +1,5 @@
 ﻿using ImageMagick;
+using ImageMagick.ImageOptimizers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,25 +14,23 @@ namespace RetroarchShortcutterV2.Models.Icons
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
         static WinFuncImport.WinFuncMethods ExtractIco;
 
-        public static void StartImport()
-        {
-            ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
-        }
+        public static void StartImport() => ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
 
         public static MagickImage ImageConvert(string DIR)
         {
             var PNG = new MagickImage(DIR);
 
             int sizeMajor = int.Max(PNG.Width, PNG.Height);
+            PNG.Format = MagickFormat.Ico;
             if (PNG.Height > MaxRes || PNG.Width > MaxRes)
-            { PNG.InterpolativeResize(MaxRes, MaxRes, PixelInterpolateMethod.Bilinear); }
+            { PNG.InterpolativeResize(new MagickGeometry(MaxRes), PixelInterpolateMethod.Bilinear); }
             else
             {
                 int i;
                 for (i = MaxRes; i > sizeMajor; i /= 2) { }
                 PNG.AdaptiveResize(i, i);
             }
-            PNG.Format = MagickFormat.Ico;
+            var opto = new IcoOptimizer();
             return PNG;
         }
 
@@ -49,46 +48,18 @@ namespace RetroarchShortcutterV2.Models.Icons
             // PENDIENTE: Mostrar msbox indicando que hay un problema
         }
 
-        public static MemoryStream IcoFullExtraction(string DIR)
-        {
-            var iconStream = new MemoryStream();
+        /* Posible implementacion para extraer un icono especifico de un .exe o .dll */
+        //public static MemoryStream IcoFullExtraction(string DIR)
+        //{
+        //    var iconStream = new MemoryStream();
 
-            return iconStream;
-        }
+        //    return iconStream;
+        //}
 
-        public static string SaveConvIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
-        {
-            var ico = new MagickImage(iconStream);
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
-        }
-
-        public static string SaveConvIcoToFile(string savePath, MagickImage ico, string? altPath)
-        {
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
-        }
-
-        public static string SaveIcoToFile(string savePath, MemoryStream iconStream, string? altPath)
+        public static MagickImage SaveIcoToMI(MemoryStream iconStream)
         {
             var ico = new MagickImage(iconStream, MagickFormat.Ico);
-            if (FileOps.CheckUsrSetDir()) { ico.Write(savePath); }
-            else
-            {
-                Console.WriteLine("No existe la carpeta para escribir, alternando...");
-                ico.Write(altPath); return altPath;
-            }
-            return savePath;
+            return ico;
         }
 
 

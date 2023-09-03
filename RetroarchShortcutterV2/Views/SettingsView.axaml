@@ -1,0 +1,172 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="700"
+             x:Class="RetroarchShortcutterV2.Views.SettingsView"
+			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
+  <!---->
+	<Grid Name="gridConfigAll" RowDefinitions="Auto, Auto, *, Auto, Auto">
+		<!--TOP-->
+		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>
+
+		<!--BODY-->
+		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
+
+			<!--APARIENCIA-->
+			<StackPanel Grid.Row="0" Margin="3" Background="">
+				<Label Content="Apariencia"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<StackPanel Orientation="Horizontal" Margin="0, 2">
+					<ToggleSwitch Name="ThemeSwitch" Content="Tema" OnContent="Dark" OffContent="Light" IsCheckedChanged="ThemeSwitch_CheckedChanged"/>
+					<Rectangle Width="18"/>
+					<CheckBox Name="ThemeDefault" Content="Según el Sistema" Margin="0,24,0,0" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+				</StackPanel>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+			
+			<!--USER ASSETS-->
+			<StackPanel Grid.Row="1" Margin="3, 6" Background="">
+				<Label Content="Ruta de UserAssets"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<TextBlock TextWrapping="Wrap" FontSize="12" 
+						   Text="En la carpeta UserAssets se guardan las copias de los iconos y la fuente de los Cores disponibles (cores.txt)."/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnUserAssets" Height="30" Click="btnUserAssets_Click"
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnclrUserAssets" Height="30" Click="btnclrUserAssets_Click">
+							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+
+			<!--EJECUTABLE-->
+			<StackPanel Grid.Row="2" Margin="3, 6" Background="">
+				<Label Content="Ejecutable Preferido de RetroArch"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Name="txtDefRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_Click"
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnclrDefRADir" Height="30" Click="btnclrDefRADir_Click">
+							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+
+			<!--DIR PADRE-->
+			<StackPanel Grid.Row="3" Margin="3, 6" Background="">
+				<Label Content="Directorio Padre de las ROMs"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<TextBox Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Name="btnDefROMPath" Height="30" Click="btnDefROMPath_Click"
+								i:Attached.Icon="fa-folder-open"/>
+						<Button Name="btnclrDefROMPath" Height="30" Click="btnclrDefROMPath_Click">
+							<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+
+			<!--OTRAS PREFERENCIAS-->
+			<StackPanel Grid.Row="4" Margin="3, 6" Background="">
+				<Label Content="Otras Preferencias"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
+					<StackPanel Grid.Column="0">
+						<CheckBox Name="chkPrevCONFIG" Content="Recordar archivos '.cfg' usados"/>
+						<!--<CheckBox Name="chkPrevICON" Content="Recordar iconos usados"/>-->
+					</StackPanel>
+					<!--<Rectangle Grid.Column="1" Stroke="Gray"
+							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->
+					<StackPanel Grid.Column="2" Margin="3,0">
+						<CheckBox Name="chkAllwaysDesktop" Content="Siempre crear Links en el Desktop"/>
+					</StackPanel>
+				</Grid>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+
+			<!--ICONOS-->
+			<StackPanel Grid.Row="5" Margin="3, 6" Background="">
+				<Label Content="Preferencias de Iconos"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"
+						  ToolTip.Tip="Copia el archivo seleccionado como icono al directorio de esta aplicacion (UserAssets), y usarlo desde ahí."/>
+				<!--Tambien hay que añadir un nuevo elemento el Settings-->
+				
+				<!--WINDOWS ONLY-->
+				<Border BorderThickness="1" BorderBrush="Gray" Margin="0,2">
+					<StackPanel Name="panelWindowsOnlyControls" Margin="1,0">
+						<Label FontSize="12" Content="Solo para Windows"/>
+						<Rectangle Height="4"/>
+						<TextBlock FontSize="10" TextWrapping="Wrap"
+								   Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut."/>
+						<!--SAVE ICO CONTROLS-->
+						<Grid Name="panelWindowsOnlyControls2" Margin="0,5" ColumnDefinitions="*,3.66*,Auto">
+							<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center"
+									   Text="Eliga el directorio para dichos '.ico'"/>
+							<TextBox Name="txtIcoSavPath" Grid.Column="1" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+							<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+								<Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_Click"
+										i:Attached.Icon="fa-folder-open"/>
+								<Button Name="btnclrIcoSavPath" Height="30" Click="btnclrIcoSavPath_Click">
+									<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+								</Button>
+							</StackPanel>
+						</Grid>
+						<Grid ColumnDefinitions="*, *">
+							<CheckBox Name="chkUseUserAssets" Grid.Column="0" Content="Usar el folder UserAssets" IsCheckedChanged="chkUseUserAssets_Checked"
+									  ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
+							<CheckBox Name="chkExtractIco" Grid.Column="1" Content="Extraer los el icono del '.exe' para el uso" 
+									  ToolTip.Tip="Extrae el icono del ejecutable seleccionado como un '.ico'. Se guarda en la direccion elegida arriba."/>
+						</Grid>
+
+					</StackPanel>
+				</Border>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/>
+			</StackPanel>
+
+		</Grid>
+
+		<!--SPACING-->
+		<Rectangle Grid.Row="2" Fill=""/>
+
+		<!--CONTROLES-->
+		<StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
+
+			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-arrow-rotate-left" Foreground=""/>
+					<TextBlock Text="Default"/>
+				</StackPanel>
+			</Button>
+			<Button Name="btnDISSettings" Click="btnDISSettings_Click">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-x" Foreground="Crimson"/>
+					<TextBlock Text="Descartar"/>
+				</StackPanel>
+			</Button>
+			<Button Name="btnCONSettings" Click="btnCONSettings_Click">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-check" Foreground="Green"/>
+					<TextBlock Text="Confirmar"/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+		<!--BOTTOM-->
+		<Rectangle Grid.Row="4" Fill="Gray" Height="15"/>
+
+	</Grid>
+</UserControl>
