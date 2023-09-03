@@ -15,7 +15,7 @@ namespace RetroarchShortcutterV2.Views
         { InitializeComponent(); }
 
         // Window Obj
-        private TopLevel SettWindow { get; set; }
+        private TopLevel topLevel { get; set; }
         private Window Current_Window { get; set; }
         private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
 
@@ -32,7 +32,7 @@ namespace RetroarchShortcutterV2.Views
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         {
             // Window objects
-            SettWindow = TopLevel.GetTopLevel(this);
+            topLevel = TopLevel.GetTopLevel(this);
             var windows_list = deskWindow.Windows;
             Current_Window = windows_list[1];
 
@@ -87,13 +87,13 @@ namespace RetroarchShortcutterV2.Views
             if ((bool)ThemeSwitch.IsChecked)
             {
                 deskWindow.MainWindow.RequestedThemeVariant = dark_theme;
-                SettWindow.RequestedThemeVariant = dark_theme;
+                topLevel.RequestedThemeVariant = dark_theme;
                 settings.PreferedTheme = 2;
             }
             else
             {
                 deskWindow.MainWindow.RequestedThemeVariant = light_theme;
-                SettWindow.RequestedThemeVariant = light_theme;
+                topLevel.RequestedThemeVariant = light_theme;
                 settings.PreferedTheme = 1;
             }
         }
@@ -103,7 +103,7 @@ namespace RetroarchShortcutterV2.Views
             if ((bool)ThemeDefault.IsChecked)
             {
                 deskWindow.MainWindow.RequestedThemeVariant = system_theme;
-                SettWindow.RequestedThemeVariant = system_theme;
+                topLevel.RequestedThemeVariant = system_theme;
                 ThemeSwitch.IsEnabled = false;
                 settings.PreferedTheme = 0;
             }
@@ -115,7 +115,7 @@ namespace RetroarchShortcutterV2.Views
         // USER ASSETS
         async void btnUserAssets_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(0, SettWindow);
+            string file = await FileOps.OpenFolderAsync(0, topLevel);
             if (file != null)
             { txtUserAssets.Text = file; settings.UserAssetsPath = txtUserAssets.Text; }
         }
@@ -132,7 +132,7 @@ namespace RetroarchShortcutterV2.Views
             int template;
             if (DesktopOS) { template = 0; }        // FilePicker Option para .exe de Windows
             else { template = 4; }                  // FilePicker Option para .AppImage de Windows
-            string file = await FileOps.OpenFileAsync(template, SettWindow);
+            string file = await FileOps.OpenFileAsync(template, topLevel);
             if (file != null)
             { txtDefRADir.Text = file; settings.DEFRADir = txtDefRADir.Text; }
         }
@@ -145,7 +145,7 @@ namespace RetroarchShortcutterV2.Views
         // DIR PADRE
         async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(0, SettWindow);
+            string file = await FileOps.OpenFolderAsync(0, topLevel);
             if (file != null)
             { txtDefROMPath.Text = file; settings.DEFROMPath = txtDefROMPath.Text; }
         }
@@ -159,7 +159,7 @@ namespace RetroarchShortcutterV2.Views
         // WINDOWS OS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(1, SettWindow);
+            string file = await FileOps.OpenFolderAsync(1, topLevel);
             if (file != null)
             { txtIcoSavPath.Text = file; settings.ConvICONPath = txtIcoSavPath.Text; }
         }
@@ -198,7 +198,7 @@ namespace RetroarchShortcutterV2.Views
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
                 settings = new();
-                SettingsOps.PrevConfigs = new();
+                //SettingsOps.PrevConfigs = new();
                 SettingsOps.WriteSettingsFile(settings);
                 Current_Window.Close();
             }
@@ -215,7 +215,6 @@ namespace RetroarchShortcutterV2.Views
             settings.ExtractIco = (bool)chkExtractIco.IsChecked;
 
             SettingsOps.WriteSettingsFile(settings);
-            FileOps.SetROMPadre(settings.DEFROMPath, SettWindow);
             Current_Window.Close();
         }
         #endregion

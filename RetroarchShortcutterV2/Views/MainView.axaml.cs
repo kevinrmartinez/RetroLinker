@@ -98,11 +98,11 @@ public partial class MainView : UserControl
     { 
         settings = SettingsOps.GetCachedSettings(); 
         LoadSettingsIntoControls();
-        FileOps.LoadSettingsFO(topLevel);
     }
 
     void LoadSettingsIntoControls()
     {
+        FileOps.LoadSettingsFO(topLevel);
         // Carga de Settings
 
         txtRADir.Text = settings.DEFRADir;
