@@ -22,7 +22,8 @@ namespace RetroarchShortcutterV2.Models
         
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
-        public static readonly List<string> blah = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly List<string> WinConvertibleIconsExt = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly List<string> LinIconFiles = new() { "*.png", "*.jpg", "*.jpeg" };
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
