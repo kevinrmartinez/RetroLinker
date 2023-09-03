@@ -26,7 +26,7 @@ public partial class MainView : UserControl
     
     // Window Object
     private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;  // Solucion basada en atresnjo en los issues de Avalonia
-    private TopLevel topLevel { get; set; }
+    private TopLevel topLevel;
 
     public MainView()
     { InitializeComponent(); }
@@ -39,6 +39,7 @@ public partial class MainView : UserControl
         SettingsOps.BuildConfFile();
         settings = SettingsOps.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
+        FileOps.LoadSettingsFO(topLevel);
         // Condicion de OS
         if (!DesktopOS)
         {
@@ -53,8 +54,8 @@ public partial class MainView : UserControl
             try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
             catch { System.Console.Beep(); System.Console.Beep(); }   // PENDIENTE: Insertar msbox indicando un problema
             IconItemSET = new();
-            
         }
+
         LoadSettingsIntoControls();
     }
 
@@ -91,9 +92,14 @@ public partial class MainView : UserControl
     }
     #endregion
 
+    #region Funciones
     // FUNCIONES
     void LoadNewSettings()
-    { settings = SettingsOps.GetMemSettings(); LoadSettingsIntoControls(); }
+    { 
+        settings = SettingsOps.GetCachedSettings(); 
+        LoadSettingsIntoControls();
+        FileOps.LoadSettingsFO(topLevel);
+    }
 
     void LoadSettingsIntoControls()
     {
@@ -147,6 +153,7 @@ public partial class MainView : UserControl
         pic64.Source = ICONimage;
         pic128.Source = ICONimage;
     }
+    #endregion
 
 
     // TOP CONTROLS
@@ -203,14 +210,17 @@ public partial class MainView : UserControl
                 var bitm = FileOps.GetBitmap(IconItemSET.IconStream);
                 FillIconBoxes(bitm);
             }
-            else if (!DesktopOS && FileOps.IsVectorImage(item))
+            //else if (!DesktopOS && FileOps.IsVectorImage(item))
+            else
             {
-                Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));
-                FillIconBoxes(bitm);
-                panelIconNoImage.IsVisible = true;
+                try { FillIconBoxes(shortcut.ICONfile); }
+                catch 
+                {
+                    Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));
+                    FillIconBoxes(bitm);
+                    panelIconNoImage.IsVisible = true;
+                } 
             }
-            else 
-            { FillIconBoxes(shortcut.ICONfile); }
         }
         else
         {   // llena los controles pic con el icono default (Indice 0)
@@ -421,11 +431,15 @@ public partial class MainView : UserControl
     }
 
     // CLOSING
-
     void View1_Unloaded(object sender, RoutedEventArgs e)
     {  if (PrevConfigsCount != SettingsOps.PrevConfigs?.Count && PrevConfigsCount > -1) { SettingsOps.WriteSettingsFile(settings); }  }
 
 #if DEBUG
+    void View2_Loaded(object sender, RoutedEventArgs e)
+    {
+        _ = sender.ToString();
+    }
+
     async void testing1(object sender, RoutedEventArgs e)
     {
         Testing.FilePickerTesting(topLevel);

@@ -3,11 +3,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:RetroarchShortcutterV2.Views"
-        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="550"
-		Width="500" Height="550" MinWidth="480" MinHeight="530"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="670"
+		Width="500" Height="670" MinWidth="480" MinHeight="650"
         x:Class="RetroarchShortcutterV2.Views.SettingsWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroarchShortcutterV2 Settings"
-		WindowStartupLocation="CenterScreen" Name="SettingsWindow1">
+		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="">
 	<views:SettingsView/>
+	<!--<ContentControl Name="CC1"/>-->
 </Window>

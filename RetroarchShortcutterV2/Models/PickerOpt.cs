@@ -5,11 +5,13 @@ namespace RetroarchShortcutterV2.Models
 {
     public class PickerOpt
     {
+        public static List<string> conv_icons = new() { "*.png", "*.jpg", "*.jpeg" };
+
         static readonly FilePickerFileType ejecutable = new("Ejecutables") { Patterns = new string[] { "*.exe" } };
         static readonly FilePickerFileType appimage = new("AppImage") { Patterns = new string[] { "*.AppImage" } };
         static readonly FilePickerFileType config_file = new("Config Files") { Patterns = new string[] { "*.cfg" } };
-        static readonly FilePickerFileType win_icon_files = new("Windows Icons") { Patterns = new string[] { "*.ico" } };
-        static readonly FilePickerFileType comp_icon = new("Convertible Images") { Patterns = new string[] { "*.png", "*.jpg" } };
+        public static readonly FilePickerFileType win_icon_files = new("Windows Icons") { Patterns = new string[] { "*.ico" } };
+        static readonly FilePickerFileType comp_icon = new("Convertible Images") { Patterns = conv_icons };
         static readonly FilePickerFileType lin_icon_files = new("Icon Files") { Patterns = new string[] { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" } };
         static readonly FilePickerFileType win_lnk = new("Windows Shortcut") { Patterns = new string[] { "*.lnk"} };
         static readonly FilePickerFileType lin_lnk = new("Desktop link") { Patterns = new string[] { "*.desktop" } };

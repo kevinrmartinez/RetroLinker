@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+//using Avalonia.Interactivity;
 
 namespace RetroarchShortcutterV2.Views
 {
@@ -8,5 +9,11 @@ namespace RetroarchShortcutterV2.Views
         {
             InitializeComponent();
         }
+
+
+        //void SettingsWindow1_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    CC1.Content = new Views.MainView();
+        //}
     }
 }

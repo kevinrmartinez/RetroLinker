@@ -8,7 +8,7 @@ namespace RetroarchShortcutterV2.Models
     {
         public static List<string> PrevConfigs { set; get; }
         private static Configuration settings_file = new();
-        private static Settings MemSettings { set; get; } = new();
+        private static Settings CachedSettings { set; get; } = new();
 
         public static void BuildConfFile()
         {
@@ -34,7 +34,7 @@ namespace RetroarchShortcutterV2.Models
                     Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
                     Section GeneralSettings = settings_file["GeneralSettings"];
                     GeneralSettings.SetValuesTo(settings);
-                    GeneralSettings.SetValuesTo(MemSettings);
+                    GeneralSettings.SetValuesTo(CachedSettings);
 
                     Section StoredConfigs = settings_file["StoredConfigs"];
                     int dir_count = StoredConfigs.SettingCount;
@@ -58,15 +58,12 @@ namespace RetroarchShortcutterV2.Models
             return settings;
         }
 
-        public static Settings GetMemSettings() => MemSettings;
+        public static Settings GetCachedSettings() => CachedSettings;
 
         public static void WriteSettingsFile(Settings settings)
         {
-            try
-            {
-                MemSettings = settings;
+            try {
                 settings_file["GeneralSettings"].GetValuesFrom(settings);
-
                 Section StoredConfigs = settings_file["StoredConfigs"];
                 if (PrevConfigs != null)
                 {
@@ -77,16 +74,15 @@ namespace RetroarchShortcutterV2.Models
                         key = "dir" + i; StoredConfigs[key].StringValue = PrevConfigs[i];
                     }
                 }
-
+                CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
             }
-            catch
-            { _ = "Icapaz de salver el archivo!"; }
+            catch { _ = "Incapaz de salver el archivo!"; }
         }
 
         public static ThemeVariant LoadThemeVariant()
         {
-            ThemeVariant theme = MemSettings.PreferedTheme switch
+            ThemeVariant theme = CachedSettings.PreferedTheme switch
             {
                 1 => ThemeVariant.Light,
                 2 => ThemeVariant.Dark,
@@ -128,5 +124,7 @@ namespace RetroarchShortcutterV2.Models
             ExtractIco = false;
             PreferedTheme = 0;
         }
+
+        public void Dispose() => this.Dispose();
     }
 }

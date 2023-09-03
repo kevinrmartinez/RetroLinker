@@ -54,6 +54,8 @@ namespace RetroarchShortcutterV2.Views
             }
 
             // OTROS
+            if (settings.UserAssetsPath == settings.ConvICONPath) 
+            { chkUseUserAssets.IsChecked = true; }
             if (!DesktopOS)
             {
                 panelWindowsOnlyControls.IsEnabled = false;
@@ -65,7 +67,7 @@ namespace RetroarchShortcutterV2.Views
 
         void LoadFromSettings()
         {
-            settings = SettingsOps.LoadSettings();
+            settings = SettingsOps.GetCachedSettings();
 
             txtUserAssets.Text = System.IO.Path.GetFullPath(settings.UserAssetsPath);
             txtDefRADir.Text = settings.DEFRADir;
@@ -164,7 +166,14 @@ namespace RetroarchShortcutterV2.Views
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            settings.ConvICONPath = FileOps.UserAssetsDir; 
+            settings.ConvICONPath = FileOps.DefUserAssetsDir; 
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
+        }
+
+        void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
+        {
+            panelWindowsOnlyControls2.IsEnabled = !(bool)chkUseUserAssets.IsChecked;
+            settings.ConvICONPath = settings.UserAssetsPath;
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
         }
 
@@ -210,5 +219,12 @@ namespace RetroarchShortcutterV2.Views
             Current_Window.Close();
         }
         #endregion
+
+#if DEBUG
+        void SettingsView2_Loaded(object sender, RoutedEventArgs e)
+        {
+            _ = sender.ToString();
+        }
+#endif
     }
 }

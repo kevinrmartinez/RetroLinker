@@ -12,36 +12,42 @@ namespace RetroarchShortcutterV2.Models
     public class FileOps
     {
         public const string SettingFile = "RS_settings.cfg";
-        public const string SettingFileBin = "RS_settings.bin";
-        public const string UserAssetsDir = "UserAssets";
+        public const string SettingFileBin = "RS_settings.dat";
         public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
-        public const string NOAPLICA = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
+        public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
         public const short MAX_PATH = 255;  // Aplicar en todas partes!
+        
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
-        public static string UserDesktop { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        public static string UserProfile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string UserTemp { get; private set; } = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
-        public static string UserSettings { get; private set; } = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static readonly List<string> blah = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
+        public static readonly string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
-        public static string WriteIcoDIR { get; private set; } = string.Empty;
+        private static Settings Load_Settings;
 
 
-        public static bool ExistSettingsFile() => (File.Exists(SettingFile));
+        //public static bool ExistSettingsFile() => (File.Exists(SettingFile));
+        //public static bool ChkSettingsFile() => File.ReadAllText(SettingFile) != null;
 
-        public static bool ExistSettingsBinFile() => (File.Exists(SettingFileBin));
+        public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
-        public static bool ChkSettingsFile() => (File.ReadAllText(SettingFile) != null);
+        public static async void LoadSettingsFO(TopLevel topLevel)
+        {
+            DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);    // '??=' le asigna valor solo si esta null
+            Load_Settings = SettingsOps.GetCachedSettings();
+        }
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
         public static string[] LoadCores()
         {
-            string file = Path.Combine(UserAssetsDir, CoresFile);
+            string file = Path.Combine(Load_Settings.UserAssetsPath, CoresFile);
             if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
             else { return Array.Empty<string>(); }
         }
@@ -49,7 +55,7 @@ namespace RetroarchShortcutterV2.Models
         public static List<string> LoadIcons(bool OS)
         {
             IconProc.IconItemsList = new();
-            List<string>? files = new(Directory.EnumerateFiles(UserAssetsDir));
+            List<string>? files = new(Directory.EnumerateFiles(Load_Settings.UserAssetsPath));
             if (files != null)
             {
                 for (int i = 0; i < files.Count; i++)
@@ -59,8 +65,12 @@ namespace RetroarchShortcutterV2.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (ext is ".ico" or ".png" or ".exe") 
+                        if (PickerOpt.conv_icons.Contains("*"+ext) || (ext is ".ico" or ".exe"))
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
+                         
+                        //if (ext is ".ico" or ".png" or ".exe" or ".jpg" or ".jpeg") 
+
+                            //{ IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                     else
                     {
@@ -71,7 +81,11 @@ namespace RetroarchShortcutterV2.Models
                 files.Clear();
                 int newindex = 1;
                 foreach (var file in IconProc.IconItemsList)
-                { files.Add(file.FileName); file.comboIconIndex = newindex; newindex++; }
+                { 
+                    files.Add(file.FileName); 
+                    file.comboIconIndex = newindex; 
+                    newindex++; 
+                }
                 return files;
 
             }
@@ -93,18 +107,9 @@ namespace RetroarchShortcutterV2.Models
             // PENDIENTE: mostrar msbox indicando problema
         }
 
+        public static Uri GetDefaultIcon() => new(DEFicon1);
 
-        public static Uri GetDefaultIcon() 
-        {
-            Uri DEFicon = new(DEFicon1);
-            return DEFicon; 
-        }
-
-        public static Uri GetNAimage() 
-        {
-            Uri NAimage = new(NOAPLICA);
-            return NAimage; 
-        }
+        public static Uri GetNAimage() => new(NoAplica);
 
         public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
         {
@@ -167,8 +172,8 @@ namespace RetroarchShortcutterV2.Models
         public static string CpyIconToUsrSet(string og_path)
         {
             string name = Path.GetFileName(og_path);
-            string new_path = Path.Combine(WriteIcoDIR, name);  // WriteIcoDIR se llena en SaveWinIco!
-            CheckUsrSetDir(WriteIcoDIR);
+            string new_path = Path.Combine(Load_Settings.ConvICONPath, name);
+            CheckUsrSetDir(Load_Settings.ConvICONPath);
             if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
             else 
             {
@@ -180,7 +185,7 @@ namespace RetroarchShortcutterV2.Models
         public static string CpyIconToUsrAss(string og_path)
         {
             string name = Path.GetFileName(og_path);
-            string new_path = Path.Combine(UserAssetsDir, name);
+            string new_path = Path.Combine(Load_Settings.UserAssetsPath, name);
             if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
             else 
             {
@@ -204,8 +209,6 @@ namespace RetroarchShortcutterV2.Models
 
         public static string SaveWinIco(string icondir, MemoryStream? icoStream)
         {
-            var settings = SettingsOps.GetMemSettings();
-            WriteIcoDIR = settings.ConvICONPath;
             string icoExt = Path.GetExtension(icondir);
             string icoName = Path.GetFileNameWithoutExtension(icondir) + ".ico";
             string new_dir = Path.Combine(UserTemp, icoName);
@@ -219,18 +222,13 @@ namespace RetroarchShortcutterV2.Models
                     icon_image.Write(new_dir);
                     new_dir = CpyIconToUsrSet(new_dir);
                     break;
-                case ".jpg":
-                    icon_image = IconProc.ImageConvert(icondir);
-                    icon_image.Write(new_dir);
-                    new_dir = CpyIconToUsrSet(new_dir);
-                    break;
-                case ".jpeg":
+                case ".jpg" or ".jpeg":
                     icon_image = IconProc.ImageConvert(icondir);
                     icon_image.Write(new_dir);
                     new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
-                    if (settings.ExtractIco) 
+                    if (Load_Settings.ExtractIco) 
                     { 
                         icon_image = IconProc.SaveIcoToMI(icoStream); 
                         icon_image.Write(new_dir);
@@ -240,6 +238,7 @@ namespace RetroarchShortcutterV2.Models
                 default:
                     break;
             }
+            //settings.Dispose();
             return new_dir;
         }
         #endregion
