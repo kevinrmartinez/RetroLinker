@@ -56,6 +56,11 @@ namespace RetroarchShortcutterV2.Models.Icons
         //    return iconStream;
         //}
 
+        /// <summary>
+        /// Convert a MemoryStream into a MagickImage of the .ico format
+        /// </summary>
+        /// <param name="iconStream">The MemoryStream that is going to be converted</param>
+        /// <returns>A MagickImage instance in the .ico format</returns>
         public static MagickImage SaveIcoToMI(MemoryStream iconStream)
         {
             var ico = new MagickImage(iconStream, MagickFormat.Ico);

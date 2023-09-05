@@ -129,10 +129,10 @@ namespace RetroarchShortcutterV2.Views
         // EJECUTABLE
         async void btnDefRADir_Click(object sender, RoutedEventArgs e)
         {
-            int template;
-            if (DesktopOS) { template = 0; }        // FilePicker Option para .exe de Windows
-            else { template = 4; }                  // FilePicker Option para .AppImage de Windows
-            string file = await FileOps.OpenFileAsync(template, topLevel);
+            PickerOpt.OpenOpts opt;
+            if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
+            else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
+            string file = await FileOps.OpenFileAsync(opt, topLevel);
             if (file != null)
             { txtDefRADir.Text = file; settings.DEFRADir = txtDefRADir.Text; }
         }

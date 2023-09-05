@@ -23,7 +23,7 @@ namespace RetroarchShortcutterV2.Models
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
         public static readonly List<string> WinConvertibleIconsExt = new() { "*.png", "*.jpg", "*.jpeg" };
-        public static readonly List<string> LinIconFiles = new() { "*.png", "*.jpg", "*.jpeg" };
+        public static readonly List<string> LinIconFiles = new() { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" };
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
@@ -66,7 +66,7 @@ namespace RetroarchShortcutterV2.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (PickerOpt.conv_icons.Contains("*"+ext) || (ext is ".ico" or ".exe"))
+                        if (WinConvertibleIconsExt.Contains("*"+ext) || (ext is ".ico" or ".exe"))
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                          
                         //if (ext is ".ico" or ".png" or ".exe" or ".jpg" or ".jpeg") 
@@ -75,7 +75,7 @@ namespace RetroarchShortcutterV2.Models
                     }
                     else
                     {
-                        if (ext is ".ico" or ".png" or ".xpm" or ".svg" or ".svgz")         // Las imagenes de Avalonia no leen .svg!!
+                        if (LinIconFiles.Contains("*"+ext))         // Las imagenes de Avalonia no leen .svg!!
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                 }
@@ -119,7 +119,7 @@ namespace RetroarchShortcutterV2.Models
         }
 
         #region FileDialogs
-        public static async Task<string> OpenFileAsync(int template, TopLevel topLevel)
+        public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
@@ -142,7 +142,8 @@ namespace RetroarchShortcutterV2.Models
                     opt.Title = "Eliga el directorio padre de ROMs";
                     opt.AllowMultiple = false;
                     break;
-            }    
+            }
+
             var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
             string dir;
             if (dirList.Count > 0) { dir = Path.GetFullPath(dirList[0].Path.LocalPath); }
@@ -150,7 +151,7 @@ namespace RetroarchShortcutterV2.Models
             return dir;
         }
 
-        public static async Task<string> SaveFileAsync(int template, TopLevel topLevel)
+        public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.SavePickerOpt(template);
             var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);

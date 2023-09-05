@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using LinFunc;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
@@ -14,7 +15,7 @@ namespace RetroarchShortcutterV2.Views;
 public partial class MainView : UserControl
 {
     public static int PrevConfigsCount;
-    public static bool ROMenable = true;
+    public static bool ROMenable = true;    // Creo no es necesario
     private Shortcutter shortcut = new();
     private Settings settings;
     private Bitmap ICONimage;
@@ -178,10 +179,10 @@ public partial class MainView : UserControl
 
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
-        int template;
-        if (DesktopOS) { template = 3; }        // FilePicker Option para iconos de Windows
-        else { template = 5; }                  // FilePicker Option para iconos de Linux
-        string dir = await FileOps.OpenFileAsync(template, topLevel);
+        PickerOpt.OpenOpts opt;
+        if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }        // FilePicker Option para iconos de Windows
+        else { opt = PickerOpt.OpenOpts.LINico; }                  // FilePicker Option para iconos de Linux
+        string dir = await FileOps.OpenFileAsync(opt, topLevel);
         if (dir != null)
         {
             int newIndex = comboICONDir.ItemCount;                          // Coge lo que sera el nuevo idice
@@ -235,10 +236,10 @@ public partial class MainView : UserControl
     // RetroArch Directory
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
-        int template;
-        if (DesktopOS) { template = 0; }        // FilePicker Option para .exe de Windows
-        else { template = 4; }                  // FilePicker Option para .AppImage de Windows
-        string file = await FileOps.OpenFileAsync(template, topLevel);
+        PickerOpt.OpenOpts opt;
+        if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
+        else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
+        string file = await FileOps.OpenFileAsync(opt, topLevel);
         if (file != null)
         {
             shortcut.RAdir = file;
@@ -258,7 +259,7 @@ public partial class MainView : UserControl
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(1, topLevel);
+        string file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, topLevel);
         if (file != null)
         {
             shortcut.ROMdir = file;
@@ -301,7 +302,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileOps.OpenFileAsync(2, topLevel);
+        var file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, topLevel);
         if (file != null)
         {
             if (!comboConfig.Items.Contains(file))
@@ -323,16 +324,17 @@ public partial class MainView : UserControl
     // Link Directory
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
-        int template;
-        if (DesktopOS) { template = 0; }        // Salvar link como un .lnk de Windows
-        else { template = 1; }                  // Salvar link como un .desktop de Linux
-        var file = await FileOps.SaveFileAsync(template, topLevel);
+        PickerOpt.SaveOpts opt;
+        if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }        // Salvar link como un .lnk de Windows
+        else { opt = PickerOpt.SaveOpts.LINdesktop; }              // Salvar link como un .desktop de Linux
+        var file = await FileOps.SaveFileAsync(opt, topLevel);
         if (file != null)
         {
             shortcut.LNKdir = file;
             txtLINKDir.Text = shortcut.LNKdir;
         }
 #if DEBUG
+        else { Testing.LinShortcutTest(DesktopOS); }
         //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
 #endif
     }

@@ -3,8 +3,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release;Dbg-x86-partial</Configurations>
-    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -30,7 +30,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.4" />
-    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Dbg-x86-partial'">
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
       <Version>11.0.4</Version>
     </PackageReference>
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.2.0" />
