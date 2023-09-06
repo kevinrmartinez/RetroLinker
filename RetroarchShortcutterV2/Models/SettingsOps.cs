@@ -1,6 +1,7 @@
 ﻿using Avalonia.Styling;
 using SharpConfig;
 using System.Collections.Generic;
+using System.IO;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -55,6 +56,38 @@ namespace RetroarchShortcutterV2.Models
             }
             else
             { WriteSettingsFile(settings); }
+            return settings;
+        }
+
+        public static Settings LoadSettings(Stream file_s)
+        {
+            Settings settings = new();
+            if (file_s != Stream.Null)
+            {
+                try
+                {
+                    Configuration settings_file = Configuration.LoadFromBinaryStream(file_s);
+                    Section GeneralSettings = settings_file["GeneralSettings"];
+                    GeneralSettings.SetValuesTo(settings);
+                    GeneralSettings.SetValuesTo(CachedSettings);
+
+                    Section StoredConfigs = settings_file["StoredConfigs"];
+                    int dir_count = StoredConfigs.SettingCount;
+                    if (dir_count > 0)
+                    {
+                        PrevConfigs = new List<string>();
+                        for (int i = 0; i < dir_count; i++)
+                        { PrevConfigs.Add(StoredConfigs[i].StringValue); }
+                        FileOps.ConfigDir.AddRange(PrevConfigs);
+                    }
+                }
+                catch
+                {
+                    _ = "El archivo setting no se puedo cargar correctamente, sobreescribiendo...";
+                    settings = new(); WriteSettingsFile(settings);
+                }
+            }
+            else { WriteSettingsFile(settings); }
             return settings;
         }
 

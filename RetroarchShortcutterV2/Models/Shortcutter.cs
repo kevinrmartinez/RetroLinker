@@ -59,7 +59,7 @@ namespace RetroarchShortcutterV2.Models
 
             shortcut = Commander.CommandBuilder(shortcut);
             
-            try { LinFunc.LinShortcutter.CreateShortcut(shortcut); return true; }
+            try { LinFunc.LinShortcutter.CreateShortcutIni(shortcut); return true; }
             catch { return false; }
         }
     }

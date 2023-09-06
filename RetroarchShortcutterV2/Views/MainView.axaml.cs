@@ -4,16 +4,20 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using LinFunc;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
+
+    private List<string> logging = new();
+
     public static int PrevConfigsCount;
     public static bool ROMenable = true;    // Creo no es necesario
     private Shortcutter shortcut = new();
@@ -34,13 +38,16 @@ public partial class MainView : UserControl
 
     #region LOAD EVENTS
     // LOADS
-    void View1_Loaded(object sender, RoutedEventArgs e)
+    async void View1_Loaded(object sender, RoutedEventArgs e)
     {
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
-        settings = SettingsOps.LoadSettings();
+        var sett_task = FileOps.LoadSettingsFO(topLevel);
+        sett_task.Wait();                                   // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
+        settings = sett_task.Result;
+        //settings = SettingsOps.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
-        FileOps.LoadSettingsFO(topLevel);
+        
         // Condicion de OS
         if (!DesktopOS)
         {
@@ -58,9 +65,12 @@ public partial class MainView : UserControl
         }
 
         LoadSettingsIntoControls();
+        comboCore_Loaded();
+        comboConfig_Loaded();
+        comboICONDir_Loaded();
     }
 
-    async void comboCore_Loaded(object sender, RoutedEventArgs e)
+    void comboCore_Loaded()
     {
         
         var cores = FileOps.LoadCores();
@@ -68,7 +78,7 @@ public partial class MainView : UserControl
         else { comboCore.ItemsSource = cores; }
      }
 
-    void comboConfig_Loaded(object sender, RoutedEventArgs e)
+    void comboConfig_Loaded()
     {
         for (int i = 0; i < FileOps.ConfigDir.Count; i++)
         {
@@ -77,7 +87,7 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex++;
     }
 
-    void comboICONDir_Loaded(object sender, RoutedEventArgs e)
+    void comboICONDir_Loaded()
     {
         var icons = FileOps.LoadIcons(DesktopOS);
         comboICONDir.Items.Add("Default");
@@ -97,19 +107,19 @@ public partial class MainView : UserControl
     // FUNCIONES
     void LoadNewSettings()
     { 
-        settings = SettingsOps.GetCachedSettings(); 
+        var sett_task = FileOps.LoadCachedSettingsFO();
+        sett_task.Wait();
+        settings = sett_task.Result;
         LoadSettingsIntoControls();
     }
 
     void LoadSettingsIntoControls()
     {
-        FileOps.LoadSettingsFO(topLevel);
-        // Carga de Settings
+        //FileOps.LoadSettingsFO(topLevel);
 
+        // Carga de Settings
         txtRADir.Text = settings.DEFRADir;
         shortcut.RAdir = settings.DEFRADir;
-
-        FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
 
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
         else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
@@ -322,7 +332,7 @@ public partial class MainView : UserControl
 
     #region LinkDir Controls
     // Link Directory
-    async void btnLINKDir_Click(object sender, RoutedEventArgs e)
+    async void btnLINKDir_Click(object sender, RoutedEventArgs e)   // PENDIENTE: resolver async
     {
         PickerOpt.SaveOpts opt;
         if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }        // Salvar link como un .lnk de Windows
@@ -342,7 +352,7 @@ public partial class MainView : UserControl
 
     // EXECUTE
     // La accion ocurre aqui
-    async void btnEXECUTE_Click(object sender, RoutedEventArgs e)
+    void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
@@ -355,27 +365,23 @@ public partial class MainView : UserControl
         shortcut.accessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validando si sera contentless o no
-        if (!ROMenable) { shortcut.ROMdir = Commander.contentless; }
-        else { shortcut.ROMdir = shortcut.ROMfile; }
+        shortcut.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : shortcut.ROMfile;
 
         // Validar que haya ejecutable (LINUX)
-        if (shortcut.RAdir == null && !txtRADir.IsReadOnly)
-        { shortcut.RAdir = txtRADir.Text; }
+        if (shortcut.RAdir == null && !txtRADir.IsReadOnly) { shortcut.RAdir = txtRADir.Text; }
 
         // Validando que haya un core
-        if (comboCore.Text == null || comboCore.Text == string.Empty) { shortcut.ROMcore = null; }
-        else { shortcut.ROMcore = comboCore.Text; }
+        shortcut.ROMcore = (comboCore.Text == null || comboCore.Text == string.Empty) ? null : comboCore.Text;
 
         // Manejo del link en caso de 'AllwaysDesktop = true'
         if (settings.AllwaysDesktop)
         {
-            string name = txtLINKDir.Text;
-            shortcut.LNKdir = FileOps.GetAllDeskPath(name, DesktopOS);
+            string link = txtLINKDir.Text;
+            shortcut.LNKdir = FileOps.GetAllDeskPath(link, DesktopOS);
         }
 
         // Validando que haya descripcion o no
-        if (txtDesc.Text == null || txtDesc.Text == string.Empty) { shortcut.Desc = null; }
-        else { shortcut.Desc = txtDesc.Text; }
+        shortcut.Desc = (txtDesc.Text == null || txtDesc.Text == string.Empty) ? null : txtDesc.Text;
 
         // Manejo de iconos
         // Icono del ejecutable (Default)
@@ -400,7 +406,7 @@ public partial class MainView : UserControl
             ShortcutPosible = false;
             msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
             var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-            await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+            _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
         }
 
         while (ShortcutPosible)
@@ -414,19 +420,20 @@ public partial class MainView : UserControl
             if (shortcut.CONFfile != null) 
             { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
+            // Arreglar el manejo de Tasks
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+                _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
             }
             else
             {
                 msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                await msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+                _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
             }
             ShortcutPosible = false;
         }

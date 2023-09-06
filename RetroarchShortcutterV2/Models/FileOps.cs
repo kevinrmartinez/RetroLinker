@@ -38,10 +38,17 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
-        public static async void LoadSettingsFO(TopLevel topLevel)
+        public static async Task<Settings> LoadSettingsFO(TopLevel topLevel)
         {
             DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);    // '??=' le asigna valor solo si esta null
+            Load_Settings = SettingsOps.LoadSettings();
+            return Load_Settings;
+        }
+
+        public static async Task<Settings> LoadCachedSettingsFO()
+        {
             Load_Settings = SettingsOps.GetCachedSettings();
+            return Load_Settings;
         }
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);

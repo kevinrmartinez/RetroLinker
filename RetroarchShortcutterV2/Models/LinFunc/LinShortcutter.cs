@@ -83,9 +83,8 @@ namespace LinFunc
 
             Configuration.OutputRawStringValues = true;
             Configuration desktop_file = new();
-            Section DesktopEntry = desktop_file["Desktop Entry"];
             
-
+            Section DesktopEntry = desktop_file["Desktop Entry"];
             DesktopEntry["Comment"].StringValue = _shortcut.Desc;
             DesktopEntry["Exec"].StringValue = _shortcut.RAdir + " " + _shortcut.Command;
             DesktopEntry["Icon"].StringValue = _shortcut.ICONfile;

@@ -64,7 +64,7 @@
 						<Label Content="Core*"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
-									  Loaded="comboCore_Loaded" SelectionChanged=""/>
+									  Loaded=""/>
 							<Button Name="btnSubSys" Grid.Column="1" Content="Subsystem" IsEnabled="False" ToolTip.Tip="Subsystem"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
@@ -77,7 +77,7 @@
 						<Label Content="Config"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
-									  SelectionChanged="comboConfig_SelectionChanged" Loaded="comboConfig_Loaded"/>
+									  SelectionChanged="comboConfig_SelectionChanged" Loaded=""/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
 								<Button Name="btnCONFIGDir" ToolTip.Tip="Explorar" Click="btnCONFIGDir_Click" 
 										i:Attached.Icon="fa-folder-open" FontSize="18"/>
@@ -138,7 +138,7 @@
 							<!--Icon Control-->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
-										   SelectionChanged="comboICONDir_SelectionChanged" Loaded="comboICONDir_Loaded"/>
+										   SelectionChanged="comboICONDir_SelectionChanged" Loaded=""/>
 								<Button Name="btnICONDir" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="btnICONDir_Click"/>
 							</Grid>
 
