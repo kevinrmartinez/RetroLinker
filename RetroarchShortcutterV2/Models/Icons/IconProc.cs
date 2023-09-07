@@ -18,20 +18,15 @@ namespace RetroarchShortcutterV2.Models.Icons
 
         public static MagickImage ImageConvert(string DIR)
         {
-            var PNG = new MagickImage(DIR);
+            var ICO = new MagickImage(DIR)
+            { Format = MagickFormat.Ico };
+            var ICOGeo = new MagickGeometry(MaxRes);
+            bool IsSquare = (ICO.BaseHeight == ICO.BaseWidth);
 
-            int sizeMajor = int.Max(PNG.Width, PNG.Height);
-            PNG.Format = MagickFormat.Ico;
-            if (PNG.Height > MaxRes || PNG.Width > MaxRes)      // PEDIENTE: Implementar Extent
-            { PNG.InterpolativeResize(new MagickGeometry(MaxRes), PixelInterpolateMethod.Bilinear); }
-            else                                                // PENDIENTE: Implementar Scale y Extent(?)
-            {
-                int i;
-                for (i = MaxRes; i > sizeMajor; i /= 2) { }
-                PNG.AdaptiveResize(i, i);
-            }
-            var opto = new IcoOptimizer();
-            return PNG;
+            if (ICO.Height > MaxRes || ICO.Width > MaxRes) { ICO.Resize(ICOGeo); }
+            else { ICO.Scale(ICOGeo); }
+            if (!IsSquare) { ICO.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent); }
+            return ICO;
         }
 
         public static MemoryStream IcoExtraction(string DIR)
