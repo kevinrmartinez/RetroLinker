@@ -1,5 +1,7 @@
 ﻿
 
+using System.Threading.Tasks;
+
 namespace RetroarchShortcutterV2.Models
 {
     public class Shortcutter
@@ -49,8 +51,8 @@ namespace RetroarchShortcutterV2.Models
 
             var CreateShortcutArgs = new object[]
             {
-                shortcut.LNKdir, shortcut.ICONfile, shortcut.RAdir,
-                shortcut.Desc, shortcut.RApath, shortcut.Command
+                shortcut.RAdir, shortcut.RApath, shortcut.Command,
+                shortcut.ICONfile, shortcut.Desc, shortcut.LNKdir
             };
             
             try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }

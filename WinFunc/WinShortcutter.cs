@@ -6,17 +6,17 @@ namespace WinFunc
 {
     public class WinShortcutter
     {
-        public static void CreateShortcut(string Link, string? Iconfile, string Exec, string? Desc, string Path, string command)
+        public static void CreateShortcut(string Exec, string path, string command, string? Iconfile, string? Desc, string Link)
         {
 
             var shell = new WshShell();
             //var shortcut = shell.CreateShortcut(System.IO.Path.GetFullPath(Dest)) as IWshShortcut;
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Link);
-            if (Iconfile != null) { shortcut.IconLocation = Iconfile; }
             shortcut.TargetPath = Exec;
-            if (Desc != null) { shortcut.Description = Desc; }
-            shortcut.WorkingDirectory = Path;
             shortcut.Arguments = command;
+            shortcut.WorkingDirectory = path;
+            if (Iconfile != null) { shortcut.IconLocation = Iconfile; }
+            if (Desc != null) { shortcut.Description = Desc; }
             shortcut.Save();
         }
 
