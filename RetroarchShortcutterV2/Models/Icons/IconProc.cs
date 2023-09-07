@@ -22,9 +22,9 @@ namespace RetroarchShortcutterV2.Models.Icons
 
             int sizeMajor = int.Max(PNG.Width, PNG.Height);
             PNG.Format = MagickFormat.Ico;
-            if (PNG.Height > MaxRes || PNG.Width > MaxRes)
+            if (PNG.Height > MaxRes || PNG.Width > MaxRes)      // PEDIENTE: Implementar Extent
             { PNG.InterpolativeResize(new MagickGeometry(MaxRes), PixelInterpolateMethod.Bilinear); }
-            else
+            else                                                // PENDIENTE: Implementar Scale y Extent(?)
             {
                 int i;
                 for (i = MaxRes; i > sizeMajor; i /= 2) { }

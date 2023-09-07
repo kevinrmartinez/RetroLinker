@@ -43,10 +43,6 @@ namespace RetroarchShortcutterV2.Models
             // para el ejecutable de RetroArch
             shortcut.RAdir = Utils.FixUnusualDirectories(shortcut.RAdir);
 
-            // para el icono del link
-            //if (shortcut.ICONfile != null) 
-            //{ shortcut.ICONfile = Utils.FixUnusualDirectories(shortcut.ICONfile); }
-
             shortcut = Commander.CommandBuilder(shortcut);
 
             //IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null

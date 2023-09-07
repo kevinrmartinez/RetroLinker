@@ -123,7 +123,7 @@ public partial class MainView : UserControl
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
         else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
         if (SettingsOps.PrevConfigs != null) { PrevConfigsCount = SettingsOps.PrevConfigs.Count; }
-        else { PrevConfigsCount = -1; }
+        else { PrevConfigsCount = -1; }     // -1 ayuda a indicar que la lista en cuestión no existe
 
         if (!settings.AllwaysDesktop) { LinkDirSetting(); }
         else { LinkNameSetting(); }

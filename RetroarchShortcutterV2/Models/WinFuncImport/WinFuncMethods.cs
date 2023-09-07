@@ -23,8 +23,5 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
 
         public override bool Equals(object obj)
         { return base.Equals(obj); }
-
-
-
     }
 }

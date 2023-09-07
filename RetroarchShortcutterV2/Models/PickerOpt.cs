@@ -1,5 +1,4 @@
 ﻿using Avalonia.Platform.Storage;
-using System;
 using System.Collections.Generic;
 
 namespace RetroarchShortcutterV2.Models
