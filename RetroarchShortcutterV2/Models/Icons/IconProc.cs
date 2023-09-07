@@ -41,7 +41,7 @@ namespace RetroarchShortcutterV2.Models.Icons
                 { DIR };
             try
             {
-                MemoryStream icoMS = ExtractIco.mInfo.Invoke(ExtractIco.objInstance, Args) as MemoryStream;
+                MemoryStream icoMS = ExtractIco.MInfo.Invoke(ExtractIco.ObjInstance, Args) as MemoryStream;
                 return icoMS;
             }
             catch { Console.WriteLine("WinFunc no pude extraer el icono!"); Console.Beep(); return new MemoryStream(); }

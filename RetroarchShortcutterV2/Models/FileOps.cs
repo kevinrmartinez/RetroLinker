@@ -245,6 +245,7 @@ namespace RetroarchShortcutterV2.Models
                     }
                     break;
                 default:
+                    new_dir = icondir;
                     break;
             }
             //settings.Dispose();

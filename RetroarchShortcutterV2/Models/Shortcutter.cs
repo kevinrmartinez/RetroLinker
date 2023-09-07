@@ -4,6 +4,7 @@ namespace RetroarchShortcutterV2.Models
 {
     public class Shortcutter
     {
+        #region Object
         public string RAdir { get; set; }       // 0
         public string RApath { get; set; }      // 1
         public string? ROMdir { get; set; }     // 2
@@ -14,11 +15,19 @@ namespace RetroarchShortcutterV2.Models
         public string Command { get; set; }     // 7
         public string? Desc { get; set; }       // 8
         public string LNKdir { get; set; }      // 9
-        public bool verboseB = false;           // 10
-        public bool fullscreenB = false;        // 11
-        public bool accessibilityB = false;     // 12
+        public bool verboseB { get; set; }      // 10
+        public bool fullscreenB { get; set; }   // 11
+        public bool accessibilityB { get; set; }// 12
 
-        
+        public Shortcutter()    //PENDIENTE: quizas sea mejor predefinir todo a string.Empty
+        {
+            verboseB = false;
+            fullscreenB = false;
+            accessibilityB = false;
+        }
+        #endregion
+
+
         // Windows
         public static bool BuildWinShortcut(Shortcutter shortcut, bool OS)
         {
@@ -48,9 +57,9 @@ namespace RetroarchShortcutterV2.Models
                 shortcut.Desc, shortcut.RApath, shortcut.Command
             };
             
-            try { CreateShortcut.mInfo.Invoke(CreateShortcut.objInstance, CreateShortcutArgs); return true; }
-            catch { return false; }                                     // El metodo es bool; true si tuvo exito, false en caso contrario
-        }
+            try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }
+            catch { return false; }
+        }   // El metodo es bool; true si tuvo exito, false en caso contrario
 
         // Linux
         public static bool BuildLinShorcut(Shortcutter shortcut, bool OS)

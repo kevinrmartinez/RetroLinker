@@ -8,15 +8,13 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
 
-    private List<string> logging = new();
+    //private System.Collections.Generic.List<string> logging = new();
 
     public static int PrevConfigsCount;
     public static bool ROMenable = true;    // Creo no es necesario
@@ -120,6 +118,7 @@ public partial class MainView : UserControl
         // Carga de Settings
         txtRADir.Text = settings.DEFRADir;
         shortcut.RAdir = settings.DEFRADir;
+        FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
 
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
         else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }

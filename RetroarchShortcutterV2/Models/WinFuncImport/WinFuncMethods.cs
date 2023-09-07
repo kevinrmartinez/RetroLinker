@@ -6,19 +6,19 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
     public class WinFuncMethods : IEquatable<WinFuncMethods>
     {
         public string MethodName { get; set; }
-        public object objInstance { get; set; }
-        public MethodInfo mInfo { get; set; }
+        public object ObjInstance { get; set; }
+        public MethodInfo MInfo { get; set; }
 
         public WinFuncMethods(string name, object instance, MethodInfo methodInfo) 
         {
             this.MethodName = name;
-            this.objInstance = instance;
-            this.mInfo = methodInfo;
+            this.ObjInstance = instance;
+            this.MInfo = methodInfo;
         }
 
         public bool Equals(WinFuncMethods other)
         {
-            return other.mInfo == this.mInfo;
+            return other.MInfo == this.MInfo;
         }
 
         public override bool Equals(object obj)
