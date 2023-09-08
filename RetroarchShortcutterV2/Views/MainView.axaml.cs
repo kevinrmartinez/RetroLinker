@@ -196,7 +196,8 @@ public partial class MainView : UserControl
         {
             int newIndex = comboICONDir.ItemCount;                  // Coge lo que sera el nuevo idice
             int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(x => x.FilePath == dir));
-            if (ExistingItem == -1)
+            
+            if (ExistingItem == -1)                                             // Confirma que el archivo no esta en la lista
             {                         
                 comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
                 if (DesktopOS && FileOps.IsWinEXE(dir))
@@ -211,7 +212,8 @@ public partial class MainView : UserControl
                     }
                 }
             }
-            else { newIndex = (int)IconProc.IconItemsList[ExistingItem].comboIconIndex; }   
+            else { newIndex = (int)IconProc.IconItemsList[ExistingItem].comboIconIndex; }   // Si el archivo ya estaba, se selecciona
+            
             comboICONDir.SelectedIndex = newIndex;
         }
     }

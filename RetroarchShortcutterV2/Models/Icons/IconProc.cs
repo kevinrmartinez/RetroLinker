@@ -20,41 +20,40 @@ namespace RetroarchShortcutterV2.Models.Icons
         {
             var ICO = new MagickImage(DIR)
             { Format = MagickFormat.Ico };
-            var ICOGeo = new MagickGeometry(MaxRes);
-            bool IsSquare = (ICO.BaseHeight == ICO.BaseWidth);
+            ICO = ResizeToIco(ICO);
+            return ICO;
+        }
 
-            if (ICO.Height > MaxRes || ICO.Width > MaxRes) { ICO.Resize(ICOGeo); }
-            else { ICO.Scale(ICOGeo); }
+        public static MagickImage ResizeToIco(MagickImage ICO)
+        {
+            var ICOGeo = new MagickGeometry(MaxRes)
+            { IgnoreAspectRatio = false };
+            bool IsSquare = (ICO.BaseHeight == ICO.BaseWidth);
+            //if (ICO.Height > MaxRes || ICO.Width > MaxRes) { ICO.Resize(ICOGeo); }
+            //else { ICO.Scale(ICOGeo); }
+            ICO.Scale(ICOGeo);
             if (!IsSquare) { ICO.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent); }
             return ICO;
         }
 
         public static MemoryStream GetStream(string DIR)
         {
-            var IMG = new MagickImage(DIR)
-            { ColorSpace = ColorSpace.sRGB, HasAlpha = true, BackgroundColor = null, Format = MagickFormat.Png};
+            var IMG = new MagickImage()
+            { BackgroundColor = MagickColors.Transparent };
             var ImgStream = new MemoryStream();
+            //IMG.BackgroundColor = null;
+            //IMG.Transparent(MagickColors.White);
+            IMG.Read(DIR);
+            IMG.Format = MagickFormat.Png32;
             IMG.Write(ImgStream);
+            //IMG.WriteAsync(FileOps.tempIco + ".png");
             return ImgStream;
-        }
-
-        public static MemoryStream ResizeStream(MemoryStream IMG)
-        {
-            IMG.Position = 0;
-            var mIMG = new MagickImage(IMG, MagickFormat.Png);
-            IMG = new();
-            var IMGgeo = new MagickGeometry(MaxRes)
-            { IgnoreAspectRatio = false };
-            mIMG.Scale(IMGgeo);
-            mIMG.Write(IMG);
-            return IMG;
         }
 
         public static MemoryStream IcoExtraction(string DIR)
         {
             //var iconStream = new MemoryStream();
-            var Args = new object[]
-                { DIR };
+            var Args = new object[1] { DIR };
             try
             {
                 MemoryStream icoMS = ExtractIco.MInfo.Invoke(ExtractIco.ObjInstance, Args) as MemoryStream;
@@ -73,15 +72,11 @@ namespace RetroarchShortcutterV2.Models.Icons
         //}
 
         /// <summary>
-        /// Convert a MemoryStream into a MagickImage of the .ico format
+        /// Converts a MemoryStream into a MagickImage of the .ico format
         /// </summary>
         /// <param name="iconStream">The MemoryStream that is going to be converted</param>
         /// <returns>A MagickImage instance in the .ico format</returns>
-        public static MagickImage SaveIcoToMI(MemoryStream iconStream)
-        {
-            var ico = new MagickImage(iconStream, MagickFormat.Ico);
-            return ico;
-        }
+        public static MagickImage SaveIcoToMI(MemoryStream iconStream) => new MagickImage(iconStream, MagickFormat.Ico);
 
 
 
