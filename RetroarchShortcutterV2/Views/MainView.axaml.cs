@@ -194,12 +194,24 @@ public partial class MainView : UserControl
         string dir = await FileOps.OpenFileAsync(opt, topLevel);
         if (dir != null)
         {
-            int newIndex = comboICONDir.ItemCount;                          // Coge lo que sera el nuevo idice
-            comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
-            if (DesktopOS && FileOps.IsWinEXE(dir))
-            { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
-            else
-            { IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex)); }    // Se agrega a la lista de iconos como un nuevo objeto 'IconsItems'
+            int newIndex = comboICONDir.ItemCount;                  // Coge lo que sera el nuevo idice
+            int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(x => x.FilePath == dir));
+            if (ExistingItem == -1)
+            {                         
+                comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
+                if (DesktopOS && FileOps.IsWinEXE(dir))
+                { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
+                else
+                {
+                    IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex));    // Se agrega a la lista de iconos como un nuevo objeto 'IconsItems'
+                    if (FileOps.IsVectorImage(dir))
+                    {
+                        var item_id = IconProc.IconItemsList.Count - 1;
+                        IconProc.IconItemsList[item_id].IconStream = IconProc.GetStream(dir);
+                    }
+                }
+            }
+            else { newIndex = (int)IconProc.IconItemsList[ExistingItem].comboIconIndex; }   
             comboICONDir.SelectedIndex = newIndex;
         }
     }
@@ -214,7 +226,7 @@ public partial class MainView : UserControl
             IconItemSET = IconProc.IconItemsList.Find(x => x.comboIconIndex == index);
             shortcut.ICONfile = IconItemSET.FilePath;
             
-            if (DesktopOS && (IconItemSET.IconStream != null))
+            if (IconItemSET.IconStream != null)
             {
                 IconItemSET.IconStream.Position = 0;
                 var bitm = FileOps.GetBitmap(IconItemSET.IconStream);
@@ -223,7 +235,8 @@ public partial class MainView : UserControl
             //else if (!DesktopOS && FileOps.IsVectorImage(item))
             else
             {
-                try { FillIconBoxes(shortcut.ICONfile); }
+                try 
+                { FillIconBoxes(shortcut.ICONfile); }
                 catch 
                 {
                     Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));

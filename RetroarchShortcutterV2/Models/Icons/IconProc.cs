@@ -29,6 +29,27 @@ namespace RetroarchShortcutterV2.Models.Icons
             return ICO;
         }
 
+        public static MemoryStream GetStream(string DIR)
+        {
+            var IMG = new MagickImage(DIR)
+            { ColorSpace = ColorSpace.sRGB, HasAlpha = true, BackgroundColor = null, Format = MagickFormat.Png};
+            var ImgStream = new MemoryStream();
+            IMG.Write(ImgStream);
+            return ImgStream;
+        }
+
+        public static MemoryStream ResizeStream(MemoryStream IMG)
+        {
+            IMG.Position = 0;
+            var mIMG = new MagickImage(IMG, MagickFormat.Png);
+            IMG = new();
+            var IMGgeo = new MagickGeometry(MaxRes)
+            { IgnoreAspectRatio = false };
+            mIMG.Scale(IMGgeo);
+            mIMG.Write(IMG);
+            return IMG;
+        }
+
         public static MemoryStream IcoExtraction(string DIR)
         {
             //var iconStream = new MemoryStream();
