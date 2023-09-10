@@ -9,6 +9,7 @@ using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -41,9 +42,7 @@ public partial class MainView : UserControl
     {
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
-        var sett_task = FileOps.LoadSettingsFO(topLevel);
-        sett_task.Wait();                                   // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
-        settings = sett_task.Result;
+        settings = FileOps.LoadSettingsFO(topLevel);
         //settings = SettingsOps.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
         
@@ -63,12 +62,11 @@ public partial class MainView : UserControl
         LoadSettingsIntoControls();
         comboCore_Loaded();
         comboConfig_Loaded();
-        comboICONDir_Loaded();
+        await comboICONDir_Loaded();
     }
 
     void comboCore_Loaded()
     {
-        
         var cores = FileOps.LoadCores();
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
@@ -83,9 +81,9 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex++;
     }
 
-    void comboICONDir_Loaded()
+    async Task comboICONDir_Loaded()
     {
-        var icons_list = FileOps.LoadIcons(DesktopOS);
+        var icons_list = await FileOps.LoadIcons(DesktopOS);
         comboICONDir.Items.Add("Default");
         if (icons_list != null)
         {
@@ -399,7 +397,7 @@ public partial class MainView : UserControl
 
             // En caso de tener que copiar el icono provisto por el usuario
             if (settings.CpyUserIcon)
-            { shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile); } // PENDIENTE: creo que es UsrSett
+            { shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile); }
         }
 
         // REQUIERED FIELDS VALIDATION!
@@ -424,7 +422,7 @@ public partial class MainView : UserControl
             if (shortcut.CONFfile != null) 
             { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
-            // Arreglar el manejo de Tasks
+
             if (Shortcutter.BuildWinShortcut(shortcut, DesktopOS) || Shortcutter.BuildLinShorcut(shortcut, DesktopOS))
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";

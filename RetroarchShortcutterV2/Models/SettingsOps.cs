@@ -95,7 +95,8 @@ namespace RetroarchShortcutterV2.Models
 
         public static void WriteSettingsFile(Settings settings)
         {
-            try {
+            try 
+            {
                 settings_file["GeneralSettings"].GetValuesFrom(settings);
                 Section StoredConfigs = settings_file["StoredConfigs"];
                 if (PrevConfigs != null)

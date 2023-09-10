@@ -8,9 +8,8 @@ namespace RetroarchShortcutterV2.Models.Icons
     public class IconProc
     {
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
-        public static readonly IDefine IcoDefine1 = new MagickDefine("auto-resize", "256,128,64,48,32,16");
-        public static readonly IWriteDefines IcoDefines = (IWriteDefines)IcoDefine1;
         public static List<IconsItems> IconItemsList { get; set; }
+
         static WinFuncImport.WinFuncMethods ExtractIco;
 
         public static MagickImage ImageConvert(string DIR)

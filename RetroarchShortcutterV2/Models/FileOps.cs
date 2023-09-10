@@ -39,9 +39,13 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
-        public static async Task<Settings> LoadSettingsFO(TopLevel topLevel)
+        public static Settings LoadSettingsFO(TopLevel topLevel)
         {
-            DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);    // '??=' le asigna valor solo si esta null
+            // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
+            var desktop_task = topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
+            // '??=' le asigna valor solo si esta null
+            DesktopFolder ??= desktop_task.Result;
+
             LoadedSettings = SettingsOps.LoadSettings();
             return LoadedSettings;
         }
@@ -62,7 +66,7 @@ namespace RetroarchShortcutterV2.Models
             else { return Array.Empty<string>(); }
         }
 
-        public static List<string> LoadIcons(bool OS)
+        public static async Task<List<string>> LoadIcons(bool OS)
         {
             IconProc.IconItemsList = new();
             List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
@@ -236,21 +240,22 @@ namespace RetroarchShortcutterV2.Models
             {
                 case ".svg" or ".svgz":
                     icon_image = IconProc.ImageConvert(selectedIconItem.IconStream);
-                    icon_image.Write(new_dir, IconProc.IcoDefines);
+                    icon_image.Write(new_dir);
                     new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
                     if (LoadedSettings.ExtractIco) 
                     { 
-                        icon_image = IconProc.SaveIcoToMagick(selectedIconItem.IconStream); 
-                        icon_image.Write(new_dir, IconProc.IcoDefines);
+                        icon_image = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
+                        icon_image.Write(new_dir);
                         new_dir = CpyIconToUsrSet(new_dir);
                     }
                     else { new_dir = selectedIconItem.FilePath; }
                     break;
+                
                 default:
                     icon_image = IconProc.ImageConvert(selectedIconItem.FilePath);
-                    icon_image.Write(new_dir, IconProc.IcoDefines);
+                    icon_image.Write(new_dir);
                     new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
