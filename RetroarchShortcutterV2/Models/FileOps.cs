@@ -27,7 +27,8 @@ namespace RetroarchShortcutterV2.Models
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
-        public static readonly string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");           // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static readonly string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");
+                                                // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
         private static Settings LoadedSettings;
@@ -116,9 +117,13 @@ namespace RetroarchShortcutterV2.Models
             // PENDIENTE: mostrar msbox indicando problema
         }
 
-        public static Uri GetDefaultIcon() => new(DEFicon1);
+        public static Uri GetDefaultIcon() => new Uri(DEFicon1);
 
-        public static Uri GetNAimage() => new(NoAplica);
+        public static Uri GetNAimage() => new Uri(NoAplica);
+
+        public static Bitmap GetBitmap(string path) => new Bitmap(path);
+
+        public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
 
         public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
         {
@@ -253,10 +258,6 @@ namespace RetroarchShortcutterV2.Models
             return new_dir;
         }
         #endregion
-
-        public static Bitmap GetBitmap(string path) => new(path);
-
-        public static Bitmap GetBitmap(Stream img_stream) => new(img_stream);
 
 
 
