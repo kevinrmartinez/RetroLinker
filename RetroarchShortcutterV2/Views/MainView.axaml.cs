@@ -8,6 +8,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
+using System.IO;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -51,9 +52,6 @@ public partial class MainView : UserControl
         {
             if (settings.DEFRADir == string.Empty) { settings.DEFRADir = "retroarch"; }
             txtRADir.IsReadOnly = false;
-#if DEBUG
-            System.Console.Beep();
-#endif
         }
         else
         {
@@ -87,13 +85,13 @@ public partial class MainView : UserControl
 
     void comboICONDir_Loaded()
     {
-        var icons = FileOps.LoadIcons(DesktopOS);
+        var icons_list = FileOps.LoadIcons(DesktopOS);
         comboICONDir.Items.Add("Default");
-        if (icons != null)
+        if (icons_list != null)
         {
-            for (int i = 0; i < icons.Count; i++)
+            for (int i = 0; i < icons_list.Count; i++)
             {
-                comboICONDir.Items.Add(icons[i]);
+                comboICONDir.Items.Add(icons_list[i]);
             }
         }
         comboICONDir.SelectedIndex++;
@@ -189,37 +187,29 @@ public partial class MainView : UserControl
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }        // FilePicker Option para iconos de Windows
-        else { opt = PickerOpt.OpenOpts.LINico; }                  // FilePicker Option para iconos de Linux
-        string dir = await FileOps.OpenFileAsync(opt, topLevel);
-        if (dir != null)
+        if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }
+        else { opt = PickerOpt.OpenOpts.LINico; }
+        
+        string file = await FileOps.OpenFileAsync(opt, topLevel);
+        if (file != null)
         {
-            int newIndex = comboICONDir.ItemCount;                  // Coge lo que sera el nuevo idice
-            int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(x => x.FilePath == dir));
-            
-            if (ExistingItem == -1)                                             // Confirma que el archivo no esta en la lista
-            {                         
-                comboICONDir.Items.Add(dir);                                    // Agrega el archivo a la lista
-                if (DesktopOS && FileOps.IsWinEXE(dir))
-                { FileOps.GetEXEWinIco(dir, newIndex); }                                // Se agrega a la lista de iconos junto al stream del ico
-                else
-                {
-                    IconProc.IconItemsList.Add(new IconsItems(null, dir, newIndex));    // Se agrega a la lista de iconos como un nuevo objeto 'IconsItems'
-                    if (FileOps.IsVectorImage(dir))
-                    {
-                        var item_id = IconProc.IconItemsList.Count - 1;
-                        IconProc.IconItemsList[item_id].IconStream = IconProc.GetStream(dir);
-                    }
-                }
+            int newIndex = comboICONDir.ItemCount;
+            const int IndexNotFound = -1;
+            int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(x => x.FilePath == file));
+            if (ExistingItem == IndexNotFound)
+            {
+                comboICONDir.Items.Add(file);
+                IconProc.BuildIconItem(file, newIndex, DesktopOS);
             }
-            else { newIndex = (int)IconProc.IconItemsList[ExistingItem].comboIconIndex; }   // Si el archivo ya estaba, se selecciona
-            
+            else { newIndex = (int)IconProc.IconItemsList[ExistingItem].comboIconIndex; }
+
             comboICONDir.SelectedIndex = newIndex;
         }
     }
 
-    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)  // Solucion del SelectionChangedEventArgs gracias a snurre en stackoverflow.com
-    {
+    // Solucion del SelectionChangedEventArgs gracias a snurre en stackoverflow.com
+    void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {   
         int index = comboICONDir.SelectedIndex;
         panelIconNoImage.IsVisible = false;
         if (index > 0)
@@ -404,12 +394,12 @@ public partial class MainView : UserControl
         else
         {
             // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
-            if (DesktopOS)
+            if (IconItemSET.ConvertionRequiered)
             { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
 
             // En caso de tener que copiar el icono provisto por el usuario
             if (settings.CpyUserIcon)
-            { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); }
+            { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); } // PENDIENTE: creo que es UsrSett
         }
 
         // REQUIERED FIELDS VALIDATION!

@@ -11,32 +11,22 @@ namespace RetroarchShortcutterV2.Models.Icons
         public int? comboIconIndex { get; set; }
         public bool ConvertionRequiered { get; set; }
 
-        public IconsItems() { }
-        
-        public IconsItems(string filePath, bool convertionRequiered) 
+        public IconsItems(string fileName, string filePath, bool convertionRequiered = false) 
         {
+            FileName = fileName;
             FilePath = filePath;
             ConvertionRequiered = convertionRequiered;
         }
 
-        public IconsItems(string fileName, string filePath, bool convertionRequiered) : this(filePath, convertionRequiered)
-        {
-            FileName = fileName;
-            FilePath = filePath;
-        }
-
-        public IconsItems(string? fileName, string filePath, int? comboIconInd, bool convertionRequiered) : this(fileName, filePath, convertionRequiered)
+        public IconsItems(string? fileName, string filePath, int? comboIconInd, bool convertionRequiered = false) : this(fileName, filePath, convertionRequiered)
         { comboIconIndex = comboIconInd; }
 
-        public IconsItems(string fileName, string filePath, MemoryStream? iconStream, int? comboIconInd, bool convertionRequiered) : this(fileName, filePath, comboIconInd, convertionRequiered)
+        public IconsItems(string fileName, string filePath, MemoryStream? iconStream, int? comboIconInd, bool convertionRequiered = false) : this(fileName, filePath, comboIconInd, convertionRequiered)
         { IconStream = iconStream; }
+
 
         public override bool Equals(object? obj) => Equals(obj as IconsItems);
 
-        public bool Equals(IconsItems? other)
-        {
-            return other is not null &&
-                   FilePath == other.FilePath;
-        }
+        public bool Equals(IconsItems? other) => (other != null) && (FilePath == other.FilePath);
     }
 }

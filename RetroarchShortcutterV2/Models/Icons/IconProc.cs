@@ -1,5 +1,4 @@
 ﻿using ImageMagick;
-using ImageMagick.ImageOptimizers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,17 +7,23 @@ namespace RetroarchShortcutterV2.Models.Icons
 {
     public class IconProc
     {
-        public static List<IconsItems> IconItemsList { get; set; }
-
-
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
+        public static readonly IDefine IcoDefine1 = new MagickDefine("auto-resize", "256,128,64,48,32,16");
+        public static readonly IWriteDefines IcoDefines = (IWriteDefines)IcoDefine1;
+        public static List<IconsItems> IconItemsList { get; set; }
         static WinFuncImport.WinFuncMethods ExtractIco;
-
-        public static void StartImport() => ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
 
         public static MagickImage ImageConvert(string DIR)
         {
             var ICO = new MagickImage(DIR)
+            { Format = MagickFormat.Ico };
+            ICO = ResizeToIco(ICO);
+            return ICO;
+        }
+
+        public static MagickImage ImageConvert(MemoryStream IMG)
+        {
+            var ICO = new MagickImage(IMG)
             { Format = MagickFormat.Ico };
             ICO = ResizeToIco(ICO);
             return ICO;
@@ -38,17 +43,37 @@ namespace RetroarchShortcutterV2.Models.Icons
 
         public static MemoryStream GetStream(string DIR)
         {
+            // Fijar el background transparente antes de leer lar imagen. Solucion gracias a Micah y Mateen Ulhaq en stackoverflow.com
             var IMG = new MagickImage()
             { BackgroundColor = MagickColors.Transparent };
             var ImgStream = new MemoryStream();
-            //IMG.BackgroundColor = null;
-            //IMG.Transparent(MagickColors.White);
             IMG.Read(DIR);
             IMG.Format = MagickFormat.Png32;
             IMG.Write(ImgStream);
-            //IMG.WriteAsync(FileOps.tempIco + ".png");
             return ImgStream;
         }
+
+        public static void BuildIconItem(string file_path, int new_index, bool OS)
+        {
+            string file_name = Path.GetFileName(file_path);
+            string file_ext = Path.GetExtension(file_path);
+            file_path = Path.GetFullPath(file_path);
+            var ico_item = new IconsItems(file_name, file_path, new_index);
+            
+            if (FileOps.IsVectorImage(file_path)) { ico_item.IconStream = GetStream(file_path); }
+            //if (FileOps.IsWinEXE(file_path)) { }
+
+            if (OS)
+            {
+                if (FileOps.IsWinEXE(file_path)) { ico_item.IconStream = IcoExtraction(file_path); }
+                if (FileOps.WinConvertibleIconsExt.Contains("*" + file_ext) || file_ext == ".exe")
+                { ico_item.ConvertionRequiered = true; }
+            }
+            IconItemsList.Add(ico_item);
+        }
+
+        #region Windows Only
+        public static void StartImport() => ExtractIco = WinFuncImport.FuncLoader.GetIcoExtractMethod();
 
         public static MemoryStream IcoExtraction(string DIR)
         {
@@ -76,8 +101,8 @@ namespace RetroarchShortcutterV2.Models.Icons
         /// </summary>
         /// <param name="iconStream">The MemoryStream that is going to be converted</param>
         /// <returns>A MagickImage instance in the .ico format</returns>
-        public static MagickImage SaveIcoToMI(MemoryStream iconStream) => new MagickImage(iconStream, MagickFormat.Ico);
-
+        public static MagickImage SaveIcoToMagick(MemoryStream iconStream) => new MagickImage(iconStream, MagickFormat.Ico);
+        #endregion
 
 
 #if DEBUG
