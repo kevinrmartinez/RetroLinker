@@ -11,6 +11,8 @@ namespace RetroarchShortcutterV2.Models.Icons
         public int? comboIconIndex { get; set; }
         public bool ConvertionRequiered { get; set; }
 
+        public IconsItems() { }
+
         public IconsItems(string fileName, string filePath, bool convertionRequiered = false) 
         {
             FileName = fileName;

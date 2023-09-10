@@ -395,11 +395,11 @@ public partial class MainView : UserControl
         {
             // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
             if (IconItemSET.ConvertionRequiered)
-            { shortcut.ICONfile = FileOps.SaveWinIco(shortcut.ICONfile, IconItemSET.IconStream); }
+            { shortcut.ICONfile = FileOps.SaveWinIco(IconItemSET); }
 
             // En caso de tener que copiar el icono provisto por el usuario
             if (settings.CpyUserIcon)
-            { shortcut.ICONfile = FileOps.CpyIconToUsrAss(shortcut.ICONfile); } // PENDIENTE: creo que es UsrSett
+            { shortcut.ICONfile = FileOps.CpyIconToUsrSet(shortcut.ICONfile); } // PENDIENTE: creo que es UsrSett
         }
 
         // REQUIERED FIELDS VALIDATION!
