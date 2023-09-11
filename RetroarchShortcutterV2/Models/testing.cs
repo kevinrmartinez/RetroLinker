@@ -29,7 +29,7 @@ namespace RetroarchShortcutterV2.Models
             if (OS) { OS = false; }
             Shortcutter.BuildLinShorcut(lnk, OS);
 
-            lnk.Command = "-L 2048";
+            lnk.Command = "-L mgba \"Fire Emblem - The Binding Blade.gba\"";
             lnk.LNKdir = "new2048.desktop";
             LinFunc.LinShortcutter.CreateShortcutIni(lnk);
         }
