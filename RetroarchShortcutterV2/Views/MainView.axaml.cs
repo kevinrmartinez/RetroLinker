@@ -8,7 +8,6 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace RetroarchShortcutterV2.Views;
@@ -28,9 +27,10 @@ public partial class MainView : UserControl
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
-    
+
     // Window Object
-    private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;  // Solucion basada en atresnjo en los issues de Avalonia
+    // Solucion basada en atresnjo en los issues de Avalonia
+    private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
     private TopLevel topLevel;
 
     public MainView()
@@ -38,14 +38,12 @@ public partial class MainView : UserControl
 
     #region LOAD EVENTS
     // LOADS
-    async void View1_Loaded(object sender, RoutedEventArgs e)
+    void View1_Loaded(object sender, RoutedEventArgs e)
     {
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
-        settings = FileOps.LoadSettingsFO(topLevel);
-        //sett_task.Wait();
-        //settings = sett_task.Result;
-        //settings = SettingsOps.LoadSettings();
+        settings = FileOps.LoadSettingsFO();
+        FileOps.SetDesktopDir(topLevel);
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
         
         // Condicion de OS
@@ -64,7 +62,7 @@ public partial class MainView : UserControl
         LoadSettingsIntoControls();
         comboCore_Loaded();
         comboConfig_Loaded();
-        await comboICONDir_Loaded();
+        comboICONDir_Loaded();
     }
 
     void comboCore_Loaded()
@@ -102,18 +100,13 @@ public partial class MainView : UserControl
     #region Funciones
     // FUNCIONES
     void LoadNewSettings()
-    { 
-        var sett_task = FileOps.LoadCachedSettingsFO();
-        sett_task.Wait();
-        settings = sett_task.Result;
+    {
+        settings = FileOps.LoadCachedSettingsFO();
         LoadSettingsIntoControls();
     }
 
     void LoadSettingsIntoControls()
     {
-        //FileOps.LoadSettingsFO(topLevel);
-
-        // Carga de Settings
         txtRADir.Text = settings.DEFRADir;
         shortcut.RAdir = settings.DEFRADir;
         FileOps.SetROMPadre(settings.DEFROMPath, topLevel);

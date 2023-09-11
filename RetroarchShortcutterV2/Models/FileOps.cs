@@ -2,6 +2,7 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using RetroarchShortcutterV2.Models.Icons;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,16 +40,13 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
-        public static Settings LoadSettingsFO(TopLevel topLevel)
+        public static Settings LoadSettingsFO()
         {
-            // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
-            //DesktopFolder = await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
-            // '??=' le asigna valor solo si esta null
             LoadedSettings = SettingsOps.LoadSettings();
             return LoadedSettings;
         }
 
-        public static async Task<Settings> LoadCachedSettingsFO()
+        public static Settings LoadCachedSettingsFO()
         {
             LoadedSettings = SettingsOps.GetCachedSettings();
             return LoadedSettings;
@@ -101,7 +99,13 @@ namespace RetroarchShortcutterV2.Models
             }
             else { return new List<string>(); } 
         }
-#endregion
+
+        public static async Task SetDesktopDir(TopLevel topLevel)
+        {
+            DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
+            // '??=' le asigna valor solo si esta null
+        }
+        #endregion
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
