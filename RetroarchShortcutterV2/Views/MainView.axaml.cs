@@ -184,7 +184,7 @@ public partial class MainView : UserControl
         else { opt = PickerOpt.OpenOpts.LINico; }
         
         string file = await FileOps.OpenFileAsync(opt, topLevel);
-        if (file != null)
+        if (!string.IsNullOrEmpty(file))
         {
             int newIndex = comboICONDir.ItemCount;
             const int IndexNotFound = -1;
@@ -247,7 +247,7 @@ public partial class MainView : UserControl
         if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
         else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
         string file = await FileOps.OpenFileAsync(opt, topLevel);
-        if (file != null)
+        if (!string.IsNullOrEmpty(file))
         {
             shortcut.RAdir = file;
             txtRADir.Text = file;
@@ -267,7 +267,7 @@ public partial class MainView : UserControl
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
         string file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, topLevel);
-        if (file != null)
+        if (!string.IsNullOrEmpty(file))
         {
             shortcut.ROMdir = file;
             shortcut.ROMfile = file;
@@ -310,7 +310,7 @@ public partial class MainView : UserControl
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
         var file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, topLevel);
-        if (file != null)
+        if (!string.IsNullOrEmpty(file))
         {
             if (!comboConfig.Items.Contains(file))
             {
@@ -335,7 +335,7 @@ public partial class MainView : UserControl
         if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }        // Salvar link como un .lnk de Windows
         else { opt = PickerOpt.SaveOpts.LINdesktop; }              // Salvar link como un .desktop de Linux
         var file = await FileOps.SaveFileAsync(opt, topLevel);
-        if (file != null)
+        if (!string.IsNullOrEmpty(file))
         {
             shortcut.LNKdir = file;
             txtLINKDir.Text = shortcut.LNKdir;
@@ -414,7 +414,7 @@ public partial class MainView : UserControl
             { shortcut.ROMdir = Utils.FixUnusualDirectories(shortcut.ROMdir); }
 
             // para el archivo config
-            if (shortcut.CONFfile != null) 
+            if (!string.IsNullOrEmpty(shortcut.CONFfile)) 
             { shortcut.CONFfile = Utils.FixUnusualDirectories(shortcut.CONFfile); }
 
 

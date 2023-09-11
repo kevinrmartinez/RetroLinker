@@ -142,9 +142,8 @@ namespace RetroarchShortcutterV2.Models
         {
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-            string dir;
+            string dir = string.Empty;
             if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.LocalPath); }
-            else { return null; }
             return dir;
         }
 
@@ -174,9 +173,8 @@ namespace RetroarchShortcutterV2.Models
         {
             var opt = PickerOpt.SavePickerOpt(template);
             var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
-            string dir;
-            if (file != null) { dir = file.Path.LocalPath; }
-            else { return null; }
+            string dir = string.Empty;
+            if (file != null) { dir = file.Path.LocalPath; };
             return dir;
         }
         #endregion
