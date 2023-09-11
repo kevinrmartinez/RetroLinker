@@ -79,6 +79,7 @@ namespace LinFunc
         public static void CreateShortcutIni(Shortcutter _shortcut)
         {
             string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
+            _shortcut.Desc ??= string.Empty;
             _shortcut.ICONfile ??= string.Empty;
 
             Configuration.OutputRawStringValues = true;
