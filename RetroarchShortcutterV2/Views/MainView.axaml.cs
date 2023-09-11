@@ -42,7 +42,9 @@ public partial class MainView : UserControl
     {
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
-        settings = FileOps.LoadSettingsFO(topLevel);
+        var sett_task = FileOps.LoadSettingsFO(topLevel);
+        sett_task.Wait();
+        settings = sett_task.Result;
         //settings = SettingsOps.LoadSettings();
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
         

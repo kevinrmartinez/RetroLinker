@@ -39,12 +39,11 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
-        public static Settings LoadSettingsFO(TopLevel topLevel)
+        public static async Task<Settings> LoadSettingsFO(TopLevel topLevel)
         {
             // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
-            //var desktop_task = topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
+            DesktopFolder = await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
             // '??=' le asigna valor solo si esta null
-            //DesktopFolder ??= desktop_task.Result;
 
             LoadedSettings = SettingsOps.LoadSettings();
             return LoadedSettings;
