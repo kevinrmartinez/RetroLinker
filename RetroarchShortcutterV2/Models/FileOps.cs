@@ -42,9 +42,9 @@ namespace RetroarchShortcutterV2.Models
         public static Settings LoadSettingsFO(TopLevel topLevel)
         {
             // Solucion para maquinas con lectura lenta. Gracias a Richard Cook @ Stackoverflow
-            var desktop_task = topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
+            //var desktop_task = topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
             // '??=' le asigna valor solo si esta null
-            DesktopFolder ??= desktop_task.Result;
+            //DesktopFolder ??= desktop_task.Result;
 
             LoadedSettings = SettingsOps.LoadSettings();
             return LoadedSettings;

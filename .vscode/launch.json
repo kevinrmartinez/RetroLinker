@@ -21,6 +21,25 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
+        },
+        {
+            "name": ".NET Core SSH Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickRemoteProcess}",
+            "pipeTransport": {
+                "pipeProgram": "ssh",
+                "pipeArgs": [ "-i", "C:\\Users\\force\\.ssh\\vmkey1", "-T", "zerofox@192.168.50.10" ],
+                "debuggerPath": "~/vsdbg/vsdbg",
+                "pipeCwd": "${workspaceRoot}",
+                "quoteArgs": true
+            },
+            "sourceFileMap": {
+                "/home/zerofox/src/RSV2": "${workspaceRoot}"
+            }
         }
-    ]
+    ],
+    "logging": {
+        "engineLogging": true
+     }
 }
