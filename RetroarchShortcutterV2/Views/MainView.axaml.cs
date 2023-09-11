@@ -15,7 +15,7 @@ namespace RetroarchShortcutterV2.Views;
 public partial class MainView : UserControl
 {
 
-    //private System.Collections.Generic.List<string> logging = new();
+    //private System.Collections.Generic.List<string> _logging = new();
 
     public static int PrevConfigsCount;
     public static bool ROMenable = true;    // Creo no es necesario
@@ -40,11 +40,15 @@ public partial class MainView : UserControl
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
+        System.Diagnostics.Debug.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.");
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
         settings = FileOps.LoadSettingsFO();
+        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.");
         FileOps.SetDesktopDir(topLevel);
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
+        var cores_task = FileOps.LoadCores();
+        var icon_task = FileOps.LoadIcons(DesktopOS);
         
         // Condicion de OS
         if (!DesktopOS)
@@ -55,19 +59,21 @@ public partial class MainView : UserControl
         else
         {
             try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
-            catch { System.Console.Beep(); System.Console.Beep(); }   // PENDIENTE: Insertar msbox indicando un problema
+            catch { System.Diagnostics.Debug.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!"); }
+            // PENDIENTE: Insertar msbox indicando un problema
             IconItemSET = new();
         }
 
         LoadSettingsIntoControls();
-        comboCore_Loaded();
+        comboCore_Loaded(cores_task);
         comboConfig_Loaded();
-        comboICONDir_Loaded();
+        comboICONDir_Loaded(icon_task);
     }
 
-    void comboCore_Loaded()
+    async void comboCore_Loaded(Task<string[]> cores_task)
     {
-        var cores = FileOps.LoadCores();
+        var cores = await cores_task;
+        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.");
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
      }
@@ -81,12 +87,13 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex++;
     }
 
-    async Task comboICONDir_Loaded()
+    async void comboICONDir_Loaded(Task<System.Collections.Generic.List<string>> icon_task)
     {
-        var icons_list = await FileOps.LoadIcons(DesktopOS);
+        var icons_list = await icon_task;
         comboICONDir.Items.Add("Default");
         if (icons_list != null)
         {
+            System.Diagnostics.Debug.WriteLine("Lista de iconos importada");
             for (int i = 0; i < icons_list.Count; i++)
             {
                 comboICONDir.Items.Add(icons_list[i]);
@@ -334,6 +341,7 @@ public partial class MainView : UserControl
         PickerOpt.SaveOpts opt;
         if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }        // Salvar link como un .lnk de Windows
         else { opt = PickerOpt.SaveOpts.LINdesktop; }              // Salvar link como un .desktop de Linux
+        
         var file = await FileOps.SaveFileAsync(opt, topLevel);
         if (!string.IsNullOrEmpty(file))
         {

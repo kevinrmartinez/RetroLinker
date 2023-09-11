@@ -2,7 +2,6 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using RetroarchShortcutterV2.Models.Icons;
-using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,6 +33,8 @@ namespace RetroarchShortcutterV2.Models
         public static IStorageFolder? ROMPadreDir { get; private set; }
         private static Settings LoadedSettings;
 
+        //public static List<string> _logging = new();
+
         #region Settings
         //public static bool ExistSettingsFile() => (File.Exists(SettingFile));
         //public static bool ChkSettingsFile() => File.ReadAllText(SettingFile) != null;
@@ -43,6 +44,7 @@ namespace RetroarchShortcutterV2.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para FileOps.");
             return LoadedSettings;
         }
 
@@ -55,16 +57,24 @@ namespace RetroarchShortcutterV2.Models
 
 
         #region Load
-        public static string[] LoadCores()
+        public static async Task<string[]> LoadCores()
         {
             string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
-            if (File.Exists(file)) { var cores = File.ReadAllLines(file); return cores; }
-            else { return Array.Empty<string>(); }
+            if (File.Exists(file)) 
+            {
+                System.Diagnostics.Debug.WriteLine($"Empezando la lectura de {file}.");
+                var cores = await File.ReadAllLinesAsync(file);
+                System.Diagnostics.Debug.WriteLine($"Completada la lectura de {file}.");
+                return cores;
+            }
+            else 
+            { System.Diagnostics.Debug.WriteLine($"El archivo {file} no fue encontrado!"); return Array.Empty<string>(); }
         }
 
         public static async Task<List<string>> LoadIcons(bool OS)
         {
             IconProc.IconItemsList = new();
+            System.Diagnostics.Debug.WriteLine($"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.");
             List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
             if (files != null)
             {
@@ -86,6 +96,7 @@ namespace RetroarchShortcutterV2.Models
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                 }
+                System.Diagnostics.Debug.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.");
                 files.Clear();
                 int newindex = 1;
                 foreach (var file in IconProc.IconItemsList)
@@ -97,11 +108,12 @@ namespace RetroarchShortcutterV2.Models
                 return files;
 
             }
-            else { return new List<string>(); } 
+            else { System.Diagnostics.Debug.WriteLine($"No se encontraron archivos en {LoadedSettings.UserAssetsPath}."); return new List<string>(); }
         }
 
         public static async Task SetDesktopDir(TopLevel topLevel)
         {
+
             DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
             // '??=' le asigna valor solo si esta null
         }
@@ -172,8 +184,9 @@ namespace RetroarchShortcutterV2.Models
         public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.SavePickerOpt(template);
-            var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
+            var file_task = topLevel.StorageProvider.SaveFilePickerAsync(opt);
             string dir = string.Empty;
+            var file = await file_task;
             if (file != null) { dir = file.Path.LocalPath; };
             return dir;
         }

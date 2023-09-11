@@ -5,12 +5,14 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
 {
     public class FuncLoader
     {
-        private const string WinFunc = "WinFunc.dll";           // Este dll debe estar presente junto al ejecutable! (Windows)
+        public const string WinFunc = "WinFunc.dll";           // Este dll debe estar presente junto al ejecutable! (Windows)
         static Assembly DLL;
 
         public static void ImportWinFunc()
         {
+            System.Diagnostics.Debug.WriteLine($"Importando {WinFunc}...");
             DLL = Assembly.LoadFrom(WinFunc);
+            System.Diagnostics.Debug.WriteLine($"{WinFunc} importado exitosamente como \"{DLL.FullName}\".");
         }
 
         public static WinFuncMethods GetShortcutMethod()

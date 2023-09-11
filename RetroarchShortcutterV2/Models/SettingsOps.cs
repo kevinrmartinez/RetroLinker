@@ -30,6 +30,7 @@ namespace RetroarchShortcutterV2.Models
             Settings settings = new();
             if (FileOps.ExistSettingsBinFile())
             {
+                System.Diagnostics.Debug.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.");
                 try
                 {
                     Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
@@ -45,11 +46,12 @@ namespace RetroarchShortcutterV2.Models
                         for (int i = 0; i < dir_count; i++)
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
                         FileOps.ConfigDir.AddRange(PrevConfigs);
+                        System.Diagnostics.Debug.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.");
                     }
                 }
                 catch
                 {
-                    _ = "El archivo setting no se puedo cargar correctamente, sobreescribiendo...";
+                    System.Diagnostics.Debug.WriteLine($"El archivo {FileOps.SettingFileBin} no se puedo cargar correctamente, sobreescribiendo...");
                     settings = new(); WriteSettingsFile(settings);
                 }
                 
@@ -110,8 +112,9 @@ namespace RetroarchShortcutterV2.Models
                 }
                 CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
+                System.Diagnostics.Debug.WriteLine("Archivo " + FileOps.SettingFileBin + " creado exitosamente.");
             }
-            catch { _ = "Incapaz de salver el archivo!"; }
+            catch { System.Diagnostics.Debug.WriteLine("Incapaz de escribir el archivo!"); }
         }
 
         public static ThemeVariant LoadThemeVariant()
@@ -133,6 +136,7 @@ namespace RetroarchShortcutterV2.Models
         }
 #endif
     }
+
 
     public class Settings
     {
