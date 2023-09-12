@@ -1,9 +1,4 @@
-﻿
-
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace RetroarchShortcutterV2.Models
+﻿namespace RetroarchShortcutterV2.Models
 {
     public class Shortcutter
     {
@@ -57,7 +52,12 @@ namespace RetroarchShortcutterV2.Models
             };
             System.Diagnostics.Debug.WriteLine($"Creando {System.IO.Path.GetFileName(shortcut.LNKdir)} para Windows.", "Info");
             try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }
-            catch { return false; }
+            catch (System.Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(shortcut.LNKdir)}!", "Erro");
+                System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "Erro");
+                return false; 
+            }
         }   // El metodo es bool; true si tuvo exito, false en caso contrario
 
         // Linux
@@ -68,7 +68,12 @@ namespace RetroarchShortcutterV2.Models
             shortcut = Commander.CommandBuilder(shortcut);
             
             try { LinFunc.LinShortcutter.CreateShortcutIni(shortcut); return true; }
-            catch { return false; }
+            catch (System.Exception e)
+            {
+                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(shortcut.LNKdir)}!", "Erro");
+                System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "Erro");
+                return false; 
+            }
         }
     }
 }

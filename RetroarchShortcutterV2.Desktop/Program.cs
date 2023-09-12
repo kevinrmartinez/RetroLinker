@@ -17,13 +17,12 @@ class Program
     public static void Main(string[] args)
     {
         var ConsoleTracer = new System.Diagnostics.ConsoleTraceListener()
-        { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
+        { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
         var TextfileTracer = new System.Diagnostics.TextWriterTraceListener("log.txt", "mainTextTracer")
         { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
         System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
 
         System.Diagnostics.Trace.WriteLine("Iniciando AvaloniaApp", "[Info]");
-        Console.WriteLine("[Info] Iniciando AvaloniaApp");
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
         System.Diagnostics.Trace.Listeners.Remove(ConsoleTracer);

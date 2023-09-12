@@ -1,5 +1,6 @@
 ﻿using Avalonia.Styling;
 using SharpConfig;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -30,7 +31,7 @@ namespace RetroarchShortcutterV2.Models
             Settings settings = new();
             if (FileOps.ExistSettingsBinFile())
             {
-                System.Diagnostics.Debug.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.");
+                System.Diagnostics.Trace.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.", "[Info]");
                 try
                 {
                     Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
@@ -46,12 +47,13 @@ namespace RetroarchShortcutterV2.Models
                         for (int i = 0; i < dir_count; i++)
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
                         FileOps.ConfigDir.AddRange(PrevConfigs);
-                        System.Diagnostics.Debug.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.");
+                        System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.", "[Info]");
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    System.Diagnostics.Debug.WriteLine($"El archivo {FileOps.SettingFileBin} no se puedo cargar correctamente, sobreescribiendo...");
+                    System.Diagnostics.Trace.WriteLine($"El archivo {FileOps.SettingFileBin} no se puedo cargar correctamente, sobreescribiendo...", "[Info]");
+                    System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
                     settings = new(); WriteSettingsFile(settings);
                 }
                 
@@ -112,9 +114,13 @@ namespace RetroarchShortcutterV2.Models
                 }
                 CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
-                System.Diagnostics.Debug.WriteLine("Archivo " + FileOps.SettingFileBin + " creado exitosamente.");
+                System.Diagnostics.Trace.WriteLine("Archivo " + FileOps.SettingFileBin + " creado exitosamente.", "[Info]");
             }
-            catch { System.Diagnostics.Debug.WriteLine("Incapaz de escribir el archivo!"); }
+            catch (Exception e)
+            { System.Diagnostics.Trace.WriteLine("Incapaz de escribir el archivo!", "[Erro]");
+                System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
+                CachedSettings = new();
+            }
         }
 
         public static ThemeVariant LoadThemeVariant()

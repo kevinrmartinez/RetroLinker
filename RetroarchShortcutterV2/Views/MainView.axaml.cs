@@ -40,11 +40,11 @@ public partial class MainView : UserControl
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.");
+        System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
         topLevel = TopLevel.GetTopLevel(this);
         SettingsOps.BuildConfFile();
         settings = FileOps.LoadSettingsFO();
-        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.");
+        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
         FileOps.SetDesktopDir(topLevel);
         deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
         var cores_task = FileOps.LoadCores();
@@ -59,7 +59,10 @@ public partial class MainView : UserControl
         else
         {
             try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
-            catch { System.Diagnostics.Debug.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!"); }
+            catch (System.Exception eMain)
+            { System.Diagnostics.Trace.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!", "[Erro]");
+                System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
+            }
             // PENDIENTE: Insertar msbox indicando un problema
             IconItemSET = new();
         }
@@ -73,7 +76,7 @@ public partial class MainView : UserControl
     async void comboCore_Loaded(Task<string[]> cores_task)
     {
         var cores = await cores_task;
-        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.");
+        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", "[Info]");
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
      }
@@ -93,7 +96,7 @@ public partial class MainView : UserControl
         comboICONDir.Items.Add("Default");
         if (icons_list != null)
         {
-            System.Diagnostics.Debug.WriteLine("Lista de iconos importada");
+            System.Diagnostics.Debug.WriteLine("Lista de iconos importada", "[Info]");
             for (int i = 0; i < icons_list.Count; i++)
             {
                 comboICONDir.Items.Add(icons_list[i]);
