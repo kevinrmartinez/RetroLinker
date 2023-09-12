@@ -62,22 +62,22 @@ namespace RetroarchShortcutterV2.Models
             string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
             if (File.Exists(file)) 
             {
-                System.Diagnostics.Trace.WriteLine($"Empezando la lectura de {file}.");
+                System.Diagnostics.Trace.WriteLine($"Empezando la lectura de {file}.", "[Info]");
                 var cores = await File.ReadAllLinesAsync(file);
-                System.Diagnostics.Trace.WriteLine($"Completada la lectura de {file}.");
+                System.Diagnostics.Trace.WriteLine($"Completada la lectura de {file}.", "[Info]");
                 return cores;
             }
             else 
-            { System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!"); return Array.Empty<string>(); }
+            { System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!", "[Info]"); return Array.Empty<string>(); }
         }
 
         public static async Task<List<string>> LoadIcons(bool OS)
         {
             IconProc.IconItemsList = new();
-            System.Diagnostics.Trace.WriteLine($"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.");
-            List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
-            if (files != null)
+            try
             {
+                List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
+                System.Diagnostics.Trace.WriteLine($"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.", "[Info]");
                 for (int i = 0; i < files.Count; i++)
                 {
                     string ext = Path.GetExtension(files[i]);
@@ -96,7 +96,9 @@ namespace RetroarchShortcutterV2.Models
                         { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
                     }
                 }
-                System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.");
+                if (files.Count == 0) 
+                { System.Diagnostics.Trace.WriteLine($"No se encontraron archivos en {LoadedSettings.UserAssetsPath}.", "[Info]"); return new List<string>(); }
+                else { System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.", "[Info]"); }
                 files.Clear();
                 int newindex = 1;
                 foreach (var file in IconProc.IconItemsList)
@@ -106,9 +108,19 @@ namespace RetroarchShortcutterV2.Models
                     newindex++; 
                 }
                 return files;
-
             }
-            else { System.Diagnostics.Trace.WriteLine($"No se encontraron archivos en {LoadedSettings.UserAssetsPath}."); return new List<string>(); }
+
+            catch (DirectoryNotFoundException) 
+            {
+                System.Diagnostics.Trace.WriteLine($"No se encontro el directorio '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}'.", "[Warn]");
+                return new List<string>(); 
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Trace.WriteLine($"Ha ocurrido un error en la carga de iconos.", "[Erro]");
+                System.Diagnostics.Debug.WriteLine($"En FileOps, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                return new List<string>();
+            }
         }
 
         public static async Task SetDesktopDir(TopLevel topLevel)
