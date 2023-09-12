@@ -1,6 +1,7 @@
 ﻿
 
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace RetroarchShortcutterV2.Models
 {
@@ -54,7 +55,7 @@ namespace RetroarchShortcutterV2.Models
                 shortcut.RAdir, shortcut.RApath, shortcut.Command,
                 shortcut.ICONfile, shortcut.Desc, shortcut.LNKdir
             };
-            
+            System.Diagnostics.Debug.WriteLine($"Creando {System.IO.Path.GetFileName(shortcut.LNKdir)} para Windows.", "Info");
             try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }
             catch { return false; }
         }   // El metodo es bool; true si tuvo exito, false en caso contrario

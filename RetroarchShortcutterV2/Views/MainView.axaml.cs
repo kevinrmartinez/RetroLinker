@@ -405,7 +405,7 @@ public partial class MainView : UserControl
 
         // REQUIERED FIELDS VALIDATION!
         if ((shortcut.RAdir != null) && (shortcut.ROMdir != null) && (shortcut.ROMcore != null) && (shortcut.LNKdir != null))
-        { ShortcutPosible = true; }
+        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "Info"); }
         else
         {
             ShortcutPosible = false;

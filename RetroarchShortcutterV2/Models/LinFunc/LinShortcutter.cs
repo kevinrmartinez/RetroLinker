@@ -78,7 +78,9 @@ namespace LinFunc
         // Version con SharpConfig
         public static void CreateShortcutIni(Shortcutter _shortcut)
         {
+            
             string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
+            System.Diagnostics.Debug.WriteLine($"Creando {name}.desktop para Linux.", "Info");
             _shortcut.Command = _shortcut.Command.Replace("\"", "\'");
             _shortcut.Desc ??= string.Empty;
             _shortcut.ICONfile ??= string.Empty;
@@ -96,6 +98,31 @@ namespace LinFunc
             DesktopEntry["Type"].StringValue = "Application";
 
             desktop_file.SaveToFile(_shortcut.LNKdir);
+            System.Diagnostics.Debug.WriteLine($"{name}.desktop creado con exito.", "Info");
+            SetExecPermissions(_shortcut.LNKdir);
+        }
+
+        private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
+        {
+            System.Diagnostics.Debug.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "Info");
+            var processStartInfo = new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = "bash",
+                Arguments = $"chmod a+x \'{dir}\'",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            var process = new System.Diagnostics.Process()
+            { StartInfo = processStartInfo };
+
+            System.Diagnostics.Debug.WriteLine($"Ejecutando chmod a+x \'{dir}\' en bash", "Info");
+            process.Start();
+            string error = process.StandardError.ReadToEnd();
+            string output = process.StandardOutput.ReadToEnd();
+
+            System.Diagnostics.Debug.WriteLine(error);
+            System.Diagnostics.Debug.WriteLine(output);
         }
     }
 }

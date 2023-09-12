@@ -18,6 +18,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            System.Diagnostics.Trace.WriteLine("Iniciando MainWindow", "[Info]");
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel()
