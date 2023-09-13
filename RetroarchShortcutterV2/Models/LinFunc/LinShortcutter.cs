@@ -67,7 +67,7 @@ namespace LinFunc
             shortcut.Add("Name=" + name);
             shortcut.Add(notify);
 
-            if (_shortcut.verboseB) { shortcut.Add("Terminal=true"); }
+            if (_shortcut.VerboseB) { shortcut.Add("Terminal=true"); }
             else { shortcut.Add("Terminal=false"); }
 
             shortcut.Add(type);
@@ -94,7 +94,7 @@ namespace LinFunc
             DesktopEntry["Icon"].StringValue = _shortcut.ICONfile;
             DesktopEntry["Name"].StringValue = name;
             //DesktopEntry["StartupNotify"].StringValue = "true";
-            DesktopEntry["Terminal"].StringValue = _shortcut.verboseB ? "true" : "false";
+            DesktopEntry["Terminal"].StringValue = _shortcut.VerboseB ? "true" : "false";
             DesktopEntry["Type"].StringValue = "Application";
 
             desktop_file.SaveToFile(_shortcut.LNKdir);

@@ -9,9 +9,12 @@ namespace RetroarchShortcutterV2;
 
 public partial class App : Application
 {
+    public static System.DateTime LaunchTime = System.DateTime.Now;
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        System.TimeSpan launchTime = System.TimeSpan.FromTicks(LaunchTime.Ticks);
+        System.Diagnostics.Trace.WriteLine($"AppLoadTime: {launchTime}", "[Time]");
     }
 
     public override void OnFrameworkInitializationCompleted()

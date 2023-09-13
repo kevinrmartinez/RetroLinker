@@ -5,7 +5,7 @@
         #region Object
         public string RAdir { get; set; }       // 0
         public string RApath { get; set; }      // 1
-        public string? ROMdir { get; set; }     // 2
+        public string ROMdir { get; set; }     // 2
         public string? ROMfile { get; set; }    // 3
         public string ROMcore { get; set; }     // 4
         public string? CONFfile { get; set; }   // 5
@@ -13,15 +13,21 @@
         public string Command { get; set; }     // 7
         public string? Desc { get; set; }       // 8
         public string LNKdir { get; set; }      // 9
-        public bool verboseB { get; set; }      // 10
-        public bool fullscreenB { get; set; }   // 11
-        public bool accessibilityB { get; set; }// 12
+        public bool VerboseB { get; set; }      // 10
+        public bool FullscreenB { get; set; }   // 11
+        public bool AccessibilityB { get; set; }// 12
 
         public Shortcutter()    //PENDIENTE: quizas sea mejor predefinir todo a string.Empty
         {
-            verboseB = false;
-            fullscreenB = false;
-            accessibilityB = false;
+            RAdir = string.Empty;
+            RApath = string.Empty;
+            ROMdir = string.Empty;
+            ROMcore = string.Empty;
+            Command = string.Empty;
+            LNKdir = string.Empty;
+            VerboseB = false;
+            FullscreenB = false;
+            AccessibilityB = false;
         }
         #endregion
 

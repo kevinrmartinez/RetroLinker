@@ -17,9 +17,9 @@
             { shortcut.Command += " " + shortcut.ROMdir; }
 
             // Parametros extras comunes
-            if (shortcut.accessibilityB) { shortcut.Command = shortcut.Command.Insert(0, accessibility); }
-            if (shortcut.fullscreenB) { shortcut.Command = shortcut.Command.Insert(0, fullscreen); }
-            if (shortcut.verboseB) { shortcut.Command = shortcut.Command.Insert(0, verbose); }
+            if (shortcut.AccessibilityB) { shortcut.Command = shortcut.Command.Insert(0, accessibility); }
+            if (shortcut.FullscreenB) { shortcut.Command = shortcut.Command.Insert(0, fullscreen); }
+            if (shortcut.VerboseB) { shortcut.Command = shortcut.Command.Insert(0, verbose); }
 
             return shortcut;
         }

@@ -99,10 +99,11 @@
 					</StackPanel>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="Directorio destino del Shortcut*"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="Nombre del Shortcut destino*"/>
-					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk"/>
+					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk" TextChanged="txtLINKDir_TextChanged"/>
 						<Button Name="btnLINKDir" Grid.Column="1" ToolTip.Tip="Explorar" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
+						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="Drirectorio del Desktop" FontSize="11"/>
 					</Grid>
 					<Label Margin="3,0" Content="Descripcion del Link" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>
 					<TextBox Name="txtDesc" Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>

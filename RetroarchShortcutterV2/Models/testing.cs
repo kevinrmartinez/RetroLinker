@@ -25,7 +25,7 @@ namespace RetroarchShortcutterV2.Models
             lnk.ROMcore = "2048";
             lnk.LNKdir = "2048.desktop";
             lnk.Desc = "Juega 2048 en Retroarch";
-            lnk.verboseB = true;
+            lnk.VerboseB = true;
             if (OS) { OS = false; }
             Shortcutter.BuildLinShorcut(lnk, OS);
 

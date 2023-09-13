@@ -19,6 +19,8 @@ namespace RetroarchShortcutterV2.Models
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
         public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
         public const short MAX_PATH = 255;  // PENDIENTE: Aplicar en todas partes!
+        public const string WinLinkExt = ".lnk";
+        public const string LinLinkExt = ".desktop";
         
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
@@ -204,11 +206,10 @@ namespace RetroarchShortcutterV2.Models
         }
         #endregion
 
-        public static string GetAllDeskPath(string link_name, bool OS)
+        public static string GetDeskLinkPath(string link_name, bool OS)
         {
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            string lnk_ext = (OS) ? ".lnk" : "dsktop";
-            new_dir += lnk_ext;
+            new_dir += (OS) ? WinLinkExt : LinLinkExt;
             new_dir = Path.Combine(UserDesktop, new_dir);
             return new_dir;
         }

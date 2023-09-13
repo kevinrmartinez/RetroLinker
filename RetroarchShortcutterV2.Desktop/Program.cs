@@ -16,10 +16,12 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
         var ConsoleTracer = new System.Diagnostics.ConsoleTraceListener()
         { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
         var TextfileTracer = new System.Diagnostics.TextWriterTraceListener("log.txt", "mainTextTracer")
         { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
+        System.Diagnostics.Trace.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
         System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
 
         System.Diagnostics.Trace.WriteLine("Iniciando AvaloniaApp", "[Info]");
@@ -35,8 +37,7 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         IconProvider.Current
-            .Register<FontAwesomeIconProvider>()
-            .Register<MaterialDesignIconProvider>();
+            .Register<FontAwesomeIconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Rendering;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
@@ -15,8 +16,14 @@ namespace RetroarchShortcutterV2.Views;
 
 public partial class MainView : UserControl
 {
+    System.TimeSpan timeSpan;
     public MainView()
-    { InitializeComponent(); }
+    { 
+        InitializeComponent();
+        System.DateTime now = System.DateTime.Now;
+        timeSpan = now - App.LaunchTime;
+        System.Diagnostics.Trace.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+    }
 
     private int PrevConfigsCount;
     private int retrycount = 0;
@@ -59,15 +66,7 @@ public partial class MainView : UserControl
         }
         else
         {
-            try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
-            catch (System.Exception eMain)
-            { 
-                System.Diagnostics.Trace.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!", "[Erro]");
-                System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
-                lock (this)
-                { WinFuncImportFail(eMain); }
-            }
-            // PENDIENTE: Insertar msbox indicando un problema
+            WinFuncImport();
             IconItemSET = new();
         }
 
@@ -75,6 +74,10 @@ public partial class MainView : UserControl
         comboCore_Loaded(cores_task);
         comboConfig_Loaded();
         comboICONDir_Loaded(icon_task);
+
+        System.DateTime now = System.DateTime.Now;
+        timeSpan = now - App.LaunchTime;
+        System.Diagnostics.Trace.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
     }
 
     async void comboCore_Loaded(Task<string[]> cores_task)
@@ -125,30 +128,28 @@ public partial class MainView : UserControl
         Link.RAdir = settings.DEFRADir;
         FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
 
+        // PENDIENTE: refactorizar esta parte sin ayuda de null
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
         else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
         if (SettingsOps.PrevConfigs != null) { PrevConfigsCount = SettingsOps.PrevConfigs.Count; }
         else { PrevConfigsCount = -1; }     // -1 ayuda a indicar que la lista en cuestión no existe
 
+        txtLINKDir.Watermark = "Super Mario Bros";
+        txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
         if (!settings.AllwaysDesktop) { LinkDirSetting(); }
         else { LinkNameSetting(); }
     }
 
-    void LinkDirSetting()
+    void WinFuncImport()
     {
-        lblLinkDir.IsVisible = true;
-        lblLinkName.IsVisible = false;
-        txtLINKDir.IsReadOnly = true;
-        btnLINKDir.IsEnabled = true;
-    }
-
-    void LinkNameSetting()
-    {
-        lblLinkDir.IsVisible = false;
-        lblLinkName.IsVisible = true;
-        txtLINKDir.IsReadOnly = false;
-        txtLINKDir.AcceptsReturn = false;
-        btnLINKDir.IsEnabled = false;
+        try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+        catch (System.Exception eMain)
+        {
+            System.Diagnostics.Trace.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!", "[Erro]");
+            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
+            lock (this)
+            { WinFuncImportFail(eMain); }
+        }
     }
 
     async Task WinFuncImportFail(System.Exception eMain)
@@ -164,11 +165,16 @@ public partial class MainView : UserControl
                 new ButtonDefinition {Name = abort_btn, IsCancel = true, IsDefault = true}
             };
         }
-        else { diag_btns = new[] { new ButtonDefinition { Name = abort_btn, IsCancel = true, IsDefault = true } }; }
-
+        else 
+        { 
+            diag_btns = new[] 
+            { new ButtonDefinition { Name = abort_btn, IsCancel = true, IsDefault = true } };
+        }
 
         var msb_params = new MessageBoxCustomParams()
         {
+            MaxWidth = 550,
+            ShowInCenter = true,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
             ContentTitle = "Error Fatal",
@@ -176,6 +182,7 @@ public partial class MainView : UserControl
             ContentMessage = $"El importado a fallado con el siguiente error:\n{eMain.Message}\n\nSin este módulo el programa no puede cumplir su funcion.",
             ButtonDefinitions = diag_btns
         };
+
         var msb = MessageBoxManager.GetMessageBoxCustom(msb_params);
         var diag_result = await msb.ShowWindowDialogAsync(deskWindow.MainWindow);
         switch (diag_result)
@@ -186,18 +193,32 @@ public partial class MainView : UserControl
 
             case retry_btn:
                 retrycount++;
-                try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
-                catch (System.Exception eMain2)
-                {
-                    System.Diagnostics.Trace.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!", "[Erro]");
-                    System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain2.Source} a retrornado el error {eMain2.Message}", "[Erro]");
-                    await WinFuncImportFail(eMain2);
-                }
+                WinFuncImport();
                 break;
 
             default:
                 break;
         }
+    }
+
+    void LinkDirSetting()
+    {
+        lblLinkDir.IsVisible = true;
+        lblLinkName.IsVisible = false;
+        txtLINKDir.IsReadOnly = true;
+        btnLINKDir.IsEnabled = true;
+        lblLinkDeskDir.IsVisible = false;
+    }
+
+    void LinkNameSetting()
+    {
+        lblLinkDir.IsVisible = false;
+        lblLinkName.IsVisible = true;
+        txtLINKDir.IsReadOnly = false;
+        txtLINKDir.AcceptsReturn = false;
+        btnLINKDir.IsEnabled = false;
+        lblLinkDeskDir.IsVisible = true;
+        lblLinkDeskDir.Content = FileOps.UserDesktop;
     }
 
     void FillIconBoxes(string DIR)
@@ -404,9 +425,19 @@ public partial class MainView : UserControl
             txtLINKDir.Text = Link.LNKdir;
         }
 #if DEBUG
-        else { Testing.LinShortcutTest(DesktopOS); }
+        //else { Testing.LinShortcutTest(DesktopOS); }
         //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
 #endif
+    }
+
+    void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (settings.AllwaysDesktop)
+        {
+            if (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
+            { lblLinkDeskDir.Content = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS); }
+            else { lblLinkDeskDir.Content = FileOps.UserDesktop; }
+        }
     }
     #endregion
 
@@ -415,33 +446,34 @@ public partial class MainView : UserControl
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         bool ShortcutPosible;
-        var msbox_params = new MessageBoxStandardParams();
-        msbox_params.ShowInCenter = true; 
-        msbox_params.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        var msbox_params = new MessageBoxStandardParams
+        {
+            ShowInCenter = true,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen
+        };
 
         // CHECKS!
-        Link.verboseB = (bool)chkVerb.IsChecked;
-        Link.fullscreenB = (bool)chkFull.IsChecked;
-        Link.accessibilityB = (bool)chkAccessi.IsChecked;
+        Link.VerboseB = (bool)chkVerb.IsChecked;
+        Link.FullscreenB = (bool)chkFull.IsChecked;
+        Link.AccessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validando si sera contentless o no
         Link.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : Link.ROMfile;
 
         // Validar que haya ejecutable (LINUX)
-        if (Link.RAdir == null && !txtRADir.IsReadOnly) { Link.RAdir = txtRADir.Text; }
+        if (string.IsNullOrEmpty(Link.RAdir) && !txtRADir.IsReadOnly) { Link.RAdir = txtRADir.Text; }
 
         // Validando que haya un core
-        Link.ROMcore = (comboCore.Text == null || comboCore.Text == string.Empty) ? null : comboCore.Text;
+        Link.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Manejo del link en caso de 'AllwaysDesktop = true'
-        if (settings.AllwaysDesktop)
+        if (settings.AllwaysDesktop && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
-            string link = txtLINKDir.Text;
-            Link.LNKdir = FileOps.GetAllDeskPath(link, DesktopOS);
+            Link.LNKdir = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS);
         }
 
         // Validando que haya descripcion o no
-        Link.Desc = (txtDesc.Text == null || txtDesc.Text == string.Empty) ? null : txtDesc.Text;
+        Link.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
 
         // Manejo de iconos
         // Icono del ejecutable (Default)
@@ -459,7 +491,7 @@ public partial class MainView : UserControl
         }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((Link.RAdir != null) && (Link.ROMdir != null) && (Link.ROMcore != null) && (Link.LNKdir != null))
+        if ((string.IsNullOrEmpty(Link.RAdir)) && (Link.ROMdir != null) && (Link.ROMcore != null) && (Link.LNKdir != null))
         { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "Info"); }
         else
         {
