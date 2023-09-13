@@ -22,7 +22,7 @@ public partial class MainView : UserControl
         InitializeComponent();
         System.DateTime now = System.DateTime.Now;
         timeSpan = now - App.LaunchTime;
-        System.Diagnostics.Trace.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
     }
 
     private int PrevConfigsCount;
@@ -77,7 +77,7 @@ public partial class MainView : UserControl
 
         System.DateTime now = System.DateTime.Now;
         timeSpan = now - App.LaunchTime;
-        System.Diagnostics.Trace.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
+        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
     }
 
     async void comboCore_Loaded(Task<string[]> cores_task)
@@ -272,7 +272,7 @@ public partial class MainView : UserControl
         {
             int newIndex = comboICONDir.ItemCount;
             const int IndexNotFound = -1;
-            int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(x => x.FilePath == file));
+            int ExistingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == file));
             if (ExistingItem == IndexNotFound)
             {
                 comboICONDir.Items.Add(file);
@@ -291,8 +291,7 @@ public partial class MainView : UserControl
         panelIconNoImage.IsVisible = false;
         if (index > 0)
         {   // llena los controles pic con los iconos provistos por el usuario
-            string item = comboICONDir.SelectedItem.ToString();
-            IconItemSET = IconProc.IconItemsList.Find(x => x.comboIconIndex == index);
+            IconItemSET = IconProc.IconItemsList.Find(Item => Item.comboIconIndex == index);
             Link.ICONfile = IconItemSET.FilePath;
             
             if (IconItemSET.IconStream != null)
@@ -343,8 +342,7 @@ public partial class MainView : UserControl
     // ROM
     void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
     {
-        if ((bool)chkContentless.IsChecked) { panelROMDirControl.IsEnabled = false; }
-        else { panelROMDirControl.IsEnabled = true; }
+        panelROMDirControl.IsEnabled = !(bool)chkContentless.IsChecked;
     }
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
@@ -382,7 +380,7 @@ public partial class MainView : UserControl
                 //comboConfig.SelectedIndex = 0;
                 break;
             case 0:
-                Link.CONFfile = null;
+                Link.CONFfile = string.Empty;
                 break;
             default:
                 Link.CONFfile = comboConfig.SelectedItem.ToString();
@@ -412,11 +410,11 @@ public partial class MainView : UserControl
 
     #region LinkDir Controls
     // Link Directory
-    async void btnLINKDir_Click(object sender, RoutedEventArgs e)   // PENDIENTE: resolver async
+    async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.SaveOpts opt;
-        if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }        // Salvar link como un .lnk de Windows
-        else { opt = PickerOpt.SaveOpts.LINdesktop; }              // Salvar link como un .desktop de Linux
+        if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }
+        else { opt = PickerOpt.SaveOpts.LINdesktop; }
         
         var file = await FileOps.SaveFileAsync(opt, topLevel);
         if (!string.IsNullOrEmpty(file))
@@ -491,7 +489,7 @@ public partial class MainView : UserControl
         }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((string.IsNullOrEmpty(Link.RAdir)) && (Link.ROMdir != null) && (Link.ROMcore != null) && (Link.LNKdir != null))
+        if ((!string.IsNullOrEmpty(Link.RAdir)) && (!string.IsNullOrEmpty(Link.ROMdir)) && (!string.IsNullOrEmpty(Link.ROMcore)) && (!string.IsNullOrEmpty(Link.LNKdir)))
         { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "Info"); }
         else
         {
@@ -533,7 +531,8 @@ public partial class MainView : UserControl
 
     // CLOSING
     void View1_Unloaded(object sender, RoutedEventArgs e)
-    {  if (PrevConfigsCount != SettingsOps.PrevConfigs?.Count && PrevConfigsCount > -1) { SettingsOps.WriteSettingsFile(settings); }  }
+    {  if ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1)) 
+        { SettingsOps.WriteSettingsFile(settings); }  }
 
 #if DEBUG
     void View2_Loaded(object sender, RoutedEventArgs e)

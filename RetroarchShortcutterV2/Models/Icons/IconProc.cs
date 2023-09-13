@@ -60,12 +60,10 @@ namespace RetroarchShortcutterV2.Models.Icons
             var ico_item = new IconsItems(file_name, file_path, new_index);
             
             if (FileOps.IsVectorImage(file_path)) { ico_item.IconStream = GetStream(file_path); }
-            //if (FileOps.IsWinEXE(file_path)) { }
-
             if (OS)
             {
                 if (FileOps.IsWinEXE(file_path)) { ico_item.IconStream = IcoExtraction(file_path); }
-                if (FileOps.WinConvertibleIconsExt.Contains("*" + file_ext) || file_ext == ".exe")
+                if (FileOps.WinConvertibleIconsExt.Contains($"*{file_ext}") || file_ext == ".exe")
                 { ico_item.ConvertionRequiered = true; }
             }
             IconItemsList.Add(ico_item);
