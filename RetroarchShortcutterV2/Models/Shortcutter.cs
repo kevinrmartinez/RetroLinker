@@ -33,50 +33,51 @@
 
 
         // Windows
-        public static bool BuildWinShortcut(Shortcutter shortcut, bool OS)
+        public static bool BuildWinShortcut(Shortcutter link, bool OS)
         {
             if (!OS) { return false; }
             WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
 
-            shortcut.RApath = FileOps.GetDirFromPath(shortcut.RAdir);
+            link.RApath = FileOps.GetDirFromPath(link.RAdir);
 
             // Adicion de comillas para manejo de directorios no inusuales...
             // para el WorkingDirectory de RetroArch
-            shortcut.RApath = Utils.FixUnusualDirectories(shortcut.RApath);
+            link.RApath = Utils.FixUnusualDirectories(link.RApath);
 
             // para el ejecutable de RetroArch
-            shortcut.RAdir = Utils.FixUnusualDirectories(shortcut.RAdir);
+            link.RAdir = Utils.FixUnusualDirectories(link.RAdir);
 
-            shortcut = Commander.CommandBuilder(shortcut);
+            link = Commander.CommandBuilder(link);
 
             //IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
 
             var CreateShortcutArgs = new object[]
             {
-                shortcut.RAdir, shortcut.RApath, shortcut.Command,
-                shortcut.ICONfile, shortcut.Desc, shortcut.LNKdir
+                link.RAdir, link.RApath, link.Command,
+                link.ICONfile, link.Desc, link.LNKdir
             };
-            System.Diagnostics.Debug.WriteLine($"Creando {System.IO.Path.GetFileName(shortcut.LNKdir)} para Windows.", "Info");
+            System.Diagnostics.Trace.WriteLine($"Creando {System.IO.Path.GetFileName(link.LNKdir)} para Windows.", "Info");
             try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }
             catch (System.Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(shortcut.LNKdir)}!", "Erro");
+                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "Erro");
                 System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "Erro");
                 return false; 
             }
         }   // El metodo es bool; true si tuvo exito, false en caso contrario
 
         // Linux
-        public static bool BuildLinShorcut(Shortcutter shortcut, bool OS)
+        public static bool BuildLinShorcut(Shortcutter link, bool OS)
         {
             if (OS) { return false; }
 
-            shortcut = Commander.CommandBuilder(shortcut);
-            
-            try { LinFunc.LinShortcutter.CreateShortcutIni(shortcut); return true; }
+            link = Commander.CommandBuilder(link);
+            link.Command = link.Command.Replace("\"", "\'");
+
+            try { LinFunc.LinShortcutter.CreateShortcutIni(link); return true; }
             catch (System.Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(shortcut.LNKdir)}!", "Erro");
+                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "Erro");
                 System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "Erro");
                 return false; 
             }

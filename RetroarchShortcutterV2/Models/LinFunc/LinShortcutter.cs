@@ -81,9 +81,6 @@ namespace LinFunc
             
             string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
             System.Diagnostics.Trace.WriteLine($"Creando {name}.desktop para Linux.", "Info");
-            _shortcut.Command = _shortcut.Command.Replace("\"", "\'");
-            _shortcut.Desc ??= string.Empty;
-            _shortcut.ICONfile ??= string.Empty;
 
             Configuration.OutputRawStringValues = true;
             Configuration desktop_file = new();
@@ -104,25 +101,27 @@ namespace LinFunc
 
         private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
         {
-            System.Diagnostics.Trace.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "Info");
-            var processStartInfo = new System.Diagnostics.ProcessStartInfo()
-            {
-                FileName = "bash",
-                Arguments = $"chmod a+x \'{dir}\'",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+            //await System.Threading.Tasks.Task.Run(() => {
+                System.Diagnostics.Trace.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "Info");
+                var processStartInfo = new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = "bash",
+                    Arguments = $"chmod a+x \'{dir}\'",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
 
-            var process = new System.Diagnostics.Process()
-            { StartInfo = processStartInfo };
+                var process = new System.Diagnostics.Process()
+                { StartInfo = processStartInfo };
 
-            System.Diagnostics.Trace.WriteLine($"Ejecutando chmod a+x \'{dir}\' en bash", "Info");
-            process.Start();
-            string error = process.StandardError.ReadToEnd();
-            string output = process.StandardOutput.ReadToEnd();
+                System.Diagnostics.Trace.WriteLine($"Ejecutando chmod a+x \'{dir}\' en bash", "Info");
+                process.Start();
+                string error = process.StandardError.ReadToEnd();
+                string output = process.StandardOutput.ReadToEnd();
 
-            System.Diagnostics.Debug.WriteLine(error);
-            System.Diagnostics.Trace.WriteLine(output);
+                System.Diagnostics.Debug.WriteLine(error);
+                System.Diagnostics.Trace.WriteLine(output);
+            //});
         }
     }
 }
