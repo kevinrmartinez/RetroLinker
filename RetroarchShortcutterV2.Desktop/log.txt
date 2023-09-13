@@ -1,0 +1,29 @@
+[Info]: Iniciando AvaloniaApp
+[Time]: AppLoadTime: 738775.15:03:16.8371898
+[Info]: Iniciando MainWindow
+[Time]: Ejecuacion tras MainView(): 00:00:00.4979034
+[Info]: OS actual: Unix 6.4.12.1.
+[Info]: Comenzando la carga de RS_settings.dat.
+[Info]: Settings cargadas para FileOps.
+[Info]: Settings cargadas para la MainView.
+[Debg]: RetroarchShortcutterV2.Models.Settings
+[Info]: Empezando la lectura de UserAssets/cores.txt.
+[Info]: Comenzando la lectura de iconos en UserAssets.
+[Info]: Se encontraron 3 iconos.
+[Info]: Lista de iconos importada
+[Time]: Ejecuacion tras View1_Loaded(): 00:00:01.0452242
+[Info]: Completada la lectura de UserAssets/cores.txt.
+[Info]: Lista de Cores importada.
+Info: Todos los campos para el shortcut han sido aceptados
+Info: Creando Fire Emblem 3.desktop para Linux.
+Info: Fire Emblem 3.desktop creado con exito.
+Info: Intentando establecer permisos de ejecucion para Fire Emblem 3.desktop.
+Info: Ejecutando chmod a+x '/home/zerofox/Desktop/Fire Emblem 3.desktop' en bash
+/usr/bin/chmod: /usr/bin/chmod: cannot execute binary file
+
+
+[Binding]Error in binding to 'Avalonia.Input.KeyBinding'.'Command': 'Null value in expression '{empty}' at ''.'(KeyBinding #47561922)
+[Binding]Error in binding to 'Avalonia.Input.KeyBinding'.'Command': 'Null value in expression '{empty}' at ''.'(KeyBinding #25404116)
+[Binding]Error in binding to 'Avalonia.Input.KeyBinding'.'Command': 'Null value in expression '{empty}' at ''.'(KeyBinding #27310456)
+[Binding]Error in binding to 'Avalonia.Controls.RowDefinition'.'Height': 'Null value in expression '{empty}' at ''.'(RowDefinition #64663364)
+[Binding]Error in binding to 'Avalonia.Controls.RowDefinition'.'Height': 'Null value in expression '{empty}' at ''.'(RowDefinition #45099364)
