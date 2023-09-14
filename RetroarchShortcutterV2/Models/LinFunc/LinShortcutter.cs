@@ -78,16 +78,18 @@ namespace LinFunc
         // Version con SharpConfig
         public static void CreateShortcutIni(Shortcutter _shortcut)
         {
-            
-            string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
-            System.Diagnostics.Trace.WriteLine($"Creando {name}.desktop para Linux.", "Info");
+            string filename = Path.GetFileName(_shortcut.LNKdir);
+            string name = Path.GetFileNameWithoutExtension(filename);
+            filename = filename.Replace(" ", "-");
+            _shortcut.LNKdir = Path.Combine(Path.GetDirectoryName(_shortcut.LNKdir), filename);
+            System.Diagnostics.Trace.WriteLine($"Creando {filename} para Linux.", "[Info]");
 
             Configuration.OutputRawStringValues = true;
             Configuration desktop_file = new();
             
             Section DesktopEntry = desktop_file["Desktop Entry"];
             DesktopEntry["Comment"].StringValue = _shortcut.Desc;
-            DesktopEntry["Exec"].StringValue = _shortcut.RAdir + " " + _shortcut.Command;
+            DesktopEntry["Exec"].StringValue = $"{_shortcut.RAdir} {_shortcut.Command}";
             DesktopEntry["Icon"].StringValue = _shortcut.ICONfile;
             DesktopEntry["Name"].StringValue = name;
             //DesktopEntry["StartupNotify"].StringValue = "true";
@@ -95,18 +97,18 @@ namespace LinFunc
             DesktopEntry["Type"].StringValue = "Application";
 
             desktop_file.SaveToFile(_shortcut.LNKdir);
-            System.Diagnostics.Trace.WriteLine($"{name}.desktop creado con exito.", "Info");
+            System.Diagnostics.Trace.WriteLine($"{filename} creado con exito.", "[Info]");
             SetExecPermissions(_shortcut.LNKdir);
         }
 
         private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
         {
             //await System.Threading.Tasks.Task.Run(() => {
-                System.Diagnostics.Trace.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "Info");
+                System.Diagnostics.Trace.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "[Info]");
                 var processStartInfo = new System.Diagnostics.ProcessStartInfo()
                 {
-                    FileName = "bash",
-                    Arguments = $"chmod a+x \'{dir}\'",
+                    FileName = "chmod",
+                    Arguments = $"a+x {dir}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
@@ -114,7 +116,7 @@ namespace LinFunc
                 var process = new System.Diagnostics.Process()
                 { StartInfo = processStartInfo };
 
-                System.Diagnostics.Trace.WriteLine($"Ejecutando chmod a+x \'{dir}\' en bash", "Info");
+                System.Diagnostics.Trace.WriteLine($"Ejecutando chmod a+x {dir}...", "[Info]");
                 process.Start();
                 string error = process.StandardError.ReadToEnd();
                 string output = process.StandardOutput.ReadToEnd();

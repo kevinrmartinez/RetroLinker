@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.MainView"
              x:DataType="vm:MainViewModel"
-			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
+			 Name="View1" Loaded="View2_Loaded" Unloaded="View1_Unloaded">
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -99,11 +99,15 @@
 					</StackPanel>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="Directorio destino del Shortcut*"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="Nombre del Shortcut destino*"/>
-					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+					<Grid RowDefinitions="*, Auto, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk" TextChanged="txtLINKDir_TextChanged"/>
 						<Button Name="btnLINKDir" Grid.Column="1" ToolTip.Tip="Explorar" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="Drirectorio del Desktop" FontSize="11"/>
+						<Grid Grid.Row="2" ColumnDefinitions="*, Auto">
+							<i:Icon VerticalAlignment="Top" Value="fa-triangle-exclamation" Foreground="Yellow" FontSize="10"/>
+							<TextBlock Grid.Column="1" FontSize="10" TextWrapping="Wrap" Text="Los espacios en blanco se usaran como Friendly Name, pero seran remplazados por '-' en el nombre de archivo."/>
+						</Grid>
 					</Grid>
 					<Label Margin="3,0" Content="Descripcion del Link" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>
 					<TextBox Name="txtDesc" Margin="3,0" Watermark="Juega Super Mario Bros. en RetroArch" ToolTip.Tip="Agrega una descripcion al shortcut a crear"/>

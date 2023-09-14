@@ -209,6 +209,7 @@ namespace RetroarchShortcutterV2.Models
         public static string GetDeskLinkPath(string link_name, bool OS)
         {
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
             new_dir += (OS) ? WinLinkExt : LinLinkExt;
             new_dir = Path.Combine(UserDesktop, new_dir);
             return new_dir;
