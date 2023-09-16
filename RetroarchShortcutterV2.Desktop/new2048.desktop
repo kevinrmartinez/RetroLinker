@@ -1,8 +1,0 @@
-[Desktop Entry]
-Comment=Juega 2048 en Retroarch
-Exec=retroarch -L mgba 'Fire Emblem - The Binding Blade.gba'
-Icon=
-Name=new2048
-StartupNotify=true
-Terminal=true
-Type=Application

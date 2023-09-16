@@ -15,7 +15,7 @@
 		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
 
 			<!--APARIENCIA-->
-			<StackPanel Grid.Row="0" Margin="3" Background="">
+			<StackPanel Grid.Row="0" Margin="3">
 				<Label Content="Apariencia"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<StackPanel Orientation="Horizontal" Margin="0, 2">
@@ -27,7 +27,7 @@
 			</StackPanel>
 			
 			<!--USER ASSETS-->
-			<StackPanel Grid.Row="1" Margin="3, 6" Background="">
+			<StackPanel Grid.Row="1" Margin="3, 6">
 				<Label Content="Ruta de UserAssets"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<TextBlock TextWrapping="Wrap" FontSize="12" 
@@ -46,7 +46,7 @@
 			</StackPanel>
 
 			<!--EJECUTABLE-->
-			<StackPanel Grid.Row="2" Margin="3, 6" Background="">
+			<StackPanel Grid.Row="2" Margin="3, 6">
 				<Label Content="Ejecutable Preferido de RetroArch"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
@@ -63,7 +63,7 @@
 			</StackPanel>
 
 			<!--DIR PADRE-->
-			<StackPanel Grid.Row="3" Margin="3, 6" Background="">
+			<StackPanel Grid.Row="3" Margin="3, 6">
 				<Label Content="Directorio Padre de las ROMs"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*, Auto">
@@ -80,7 +80,7 @@
 			</StackPanel>
 
 			<!--OTRAS PREFERENCIAS-->
-			<StackPanel Grid.Row="4" Margin="3, 6" Background="">
+			<StackPanel Grid.Row="4" Margin="3, 6">
 				<Label Content="Otras Preferencias"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
@@ -98,7 +98,7 @@
 			</StackPanel>
 
 			<!--ICONOS-->
-			<StackPanel Grid.Row="5" Margin="3, 6" Background="">
+			<StackPanel Grid.Row="5" Margin="3, 6">
 				<Label Content="Preferencias de Iconos"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<CheckBox Name="chkCpyUserIcon" Content="Guardar copia de los iconos usados"
@@ -140,14 +140,14 @@
 		</Grid>
 
 		<!--SPACING-->
-		<Rectangle Grid.Row="2" Fill=""/>
+		<Rectangle Grid.Row="2"/>
 
 		<!--CONTROLES-->
 		<StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 
 			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click">
 				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-arrow-rotate-left" Foreground=""/>
+					<i:Icon Value="fa-arrow-rotate-left"/>
 					<TextBlock Text="Default"/>
 				</StackPanel>
 			</Button>

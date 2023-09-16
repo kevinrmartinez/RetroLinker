@@ -186,7 +186,7 @@ namespace RetroarchShortcutterV2.Views
             MessageBoxStandardParams msparams = new()
             {
                 ContentTitle = "Restaurar Defaults",
-                ContentMessage = "¿Está seguro de restaurar la configuracion default?",
+                ContentMessage = "ï¿½Estï¿½ seguro de restaurar la configuracion default?",
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
                 EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,

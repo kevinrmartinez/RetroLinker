@@ -10,6 +10,7 @@ using MsBox.Avalonia.Models;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 using System.Threading.Tasks;
+using MsBox.Avalonia.Enums;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -228,7 +229,7 @@ public partial class MainView : UserControl
         pic64.Source = ICONimage;
         pic128.Source = ICONimage;
     }
-
+    
     void FillIconBoxes(Bitmap bitmap)
     {
         ICONimage = bitmap;
@@ -236,6 +237,26 @@ public partial class MainView : UserControl
         pic32.Source = ICONimage;
         pic64.Source = ICONimage;
         pic128.Source = ICONimage;
+    }
+    
+    async Task<ButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
+    {
+        standardParams.WindowIcon = deskWindow.MainWindow.Icon;
+        standardParams.MaxWidth = 550;
+        standardParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
+        var result = await msBox.ShowWindowDialogAsync(deskWindow.MainWindow);
+        return result;
+    }
+    
+    async Task<string> MessageBoxPopUp(MessageBoxCustomParams customParams)
+    {
+        customParams.WindowIcon = deskWindow.MainWindow.Icon;
+        customParams.MaxWidth = 600;
+        customParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        var msBox = MessageBoxManager.GetMessageBoxCustom(customParams);
+        var result = await msBox.ShowWindowDialogAsync(deskWindow.MainWindow);
+        return result;
     }
     #endregion
 
@@ -411,6 +432,19 @@ public partial class MainView : UserControl
     // Link Directory
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
+        if (!DesktopOS)
+        {
+            var msbox_params = new MessageBoxStandardParams()
+            {
+                ContentTitle = "Observacion",
+                ContentHeader = "El nombre utilizado aqui sera utilizado como el campo 'Name' del archivo, y como nombre del archivo en si.",
+                ContentMessage = "Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancel para no volver a mostrar este mensaje.",
+                ButtonDefinitions = ButtonEnum.OkCancel,
+            };
+            var box_result = await MessageBoxPopUp(msbox_params);
+            if (box_result == ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
+        }
+        
         PickerOpt.SaveOpts opt;
         if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }
         else { opt = PickerOpt.SaveOpts.LINdesktop; }

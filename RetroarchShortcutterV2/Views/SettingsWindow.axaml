@@ -9,7 +9,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroarchShortcutterV2 Settings"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
-		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="">
+		WindowStartupLocation="CenterScreen" Name="SettingsWindow1">
 	<views:SettingsView/>
 	<!--<ContentControl Name="CC1"/>-->
 </Window>

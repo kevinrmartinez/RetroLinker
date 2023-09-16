@@ -10,20 +10,28 @@ namespace RetroarchShortcutterV2.Models
     {
         public static List<string> PrevConfigs { set; get; }
         private static Configuration settings_file = new();
+        private static Section GeneralSettings = settings_file["GeneralSettings"];
+        private static Section StoredConfigs = settings_file["StoredConfigs"];
         private static Settings CachedSettings { set; get; } = new();
 
         public static void BuildConfFile()
         {
-            Section GeneralSettings = settings_file["GeneralSettings"];
-            GeneralSettings.Add(new Setting("UserAssetsPath"));
-            GeneralSettings.Add(new Setting("DEFRADir"));
-            GeneralSettings.Add(new Setting("DEFROMPath"));
-            GeneralSettings.Add(new Setting("PrevConfig"));
-            GeneralSettings.Add(new Setting("AllwaysDesktop"));
-            GeneralSettings.Add(new Setting("CpyUserIcon"));
-            GeneralSettings.Add(new Setting("ConvICONPath"));
-            GeneralSettings.Add(new Setting("ExtractIco"));
-            GeneralSettings.Add(new Setting("PreferedTheme"));
+            var settings_props = Utils.ExtractClassProperties(typeof(Settings));
+            foreach (string setting in settings_props)
+            {
+                GeneralSettings.Add(setting);
+            }
+            // GeneralSettings.Add(new Setting("UserAssetsPath"));
+            // GeneralSettings.Add(new Setting("DEFRADir"));
+            // GeneralSettings.Add(new Setting("DEFROMPath"));
+            // GeneralSettings.Add(new Setting("PrevConfig"));
+            // GeneralSettings.Add(new Setting("AllwaysDesktop"));
+            // GeneralSettings.Add(new Setting("CpyUserIcon"));
+            // GeneralSettings.Add(new Setting("ConvICONPath"));
+            // GeneralSettings.Add(new Setting("ExtractIco"));
+            // GeneralSettings.Add(new Setting("PreferedTheme"));
+            // GeneralSettings.Add(new Setting("LinDesktopPopUp"));
+            System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcmpos.", "[Debg]");
         }
 
         public static Settings LoadSettings()
@@ -35,11 +43,11 @@ namespace RetroarchShortcutterV2.Models
                 try
                 {
                     Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
-                    Section GeneralSettings = settings_file["GeneralSettings"];
+                    settings_file.Add(GeneralSettings);
                     GeneralSettings.SetValuesTo(settings);
                     GeneralSettings.SetValuesTo(CachedSettings);
 
-                    Section StoredConfigs = settings_file["StoredConfigs"];
+                    settings_file.Add(StoredConfigs);
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
                     {
@@ -71,11 +79,11 @@ namespace RetroarchShortcutterV2.Models
                 try
                 {
                     Configuration settings_file = Configuration.LoadFromBinaryStream(file_s);
-                    Section GeneralSettings = settings_file["GeneralSettings"];
+                    settings_file.Add(GeneralSettings);
                     GeneralSettings.SetValuesTo(settings);
                     GeneralSettings.SetValuesTo(CachedSettings);
 
-                    Section StoredConfigs = settings_file["StoredConfigs"];
+                    settings_file.Add(StoredConfigs);
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
                     {
@@ -101,20 +109,19 @@ namespace RetroarchShortcutterV2.Models
         {
             try 
             {
-                settings_file["GeneralSettings"].GetValuesFrom(settings);
-                Section StoredConfigs = settings_file["StoredConfigs"];
+                GeneralSettings.GetValuesFrom(settings);
                 if (PrevConfigs != null)
                 {
                     int dir_count = PrevConfigs.Count;
                     string key;
                     for (int i = 0; i < dir_count; i++)
                     {
-                        key = "dir" + i; StoredConfigs[key].StringValue = PrevConfigs[i];
+                        key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
                     }
                 }
                 CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
-                System.Diagnostics.Trace.WriteLine("Archivo " + FileOps.SettingFileBin + " creado exitosamente.", "[Info]");
+                System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");
             }
             catch (Exception e)
             { System.Diagnostics.Trace.WriteLine("Incapaz de escribir el archivo!", "[Erro]");
@@ -155,6 +162,7 @@ namespace RetroarchShortcutterV2.Models
         public string ConvICONPath { get; set; }
         public bool ExtractIco { get; set; }
         public byte PreferedTheme { get; set; }
+        public bool LinDesktopPopUp { get; set; }
 
         public Settings()
         {
@@ -167,8 +175,9 @@ namespace RetroarchShortcutterV2.Models
             ConvICONPath = FileOps.DefUserAssetsDir;
             ExtractIco = false;
             PreferedTheme = 0;
+            LinDesktopPopUp = true;
         }
 
-        public void Dispose() => this.Dispose();
+        //public void Dispose() => this.Dispose();
     }
 }
