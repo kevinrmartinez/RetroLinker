@@ -45,6 +45,8 @@ namespace RetroarchShortcutterV2.Models
                     Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
                     settings_file.Add(GeneralSettings);
                     GeneralSettings.SetValuesTo(settings);
+                    if (string.IsNullOrEmpty(settings.UserAssetsPath))
+                    { throw new InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
                     GeneralSettings.SetValuesTo(CachedSettings);
 
                     settings_file.Add(StoredConfigs);

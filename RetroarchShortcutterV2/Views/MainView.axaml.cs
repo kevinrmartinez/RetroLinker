@@ -25,6 +25,7 @@ public partial class MainView : UserControl
         System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
     }
 
+    private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int retrycount = 0;
     private Shortcutter Link = new();
@@ -63,6 +64,7 @@ public partial class MainView : UserControl
         {
             if (settings.DEFRADir == string.Empty) { settings.DEFRADir = "retroarch"; }
             txtRADir.IsReadOnly = false;
+            DefLinRAIcon = FileOps.GetRAIcons();
         }
         else
         {
@@ -432,7 +434,7 @@ public partial class MainView : UserControl
     // Link Directory
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
-        if (!DesktopOS)
+        if (!DesktopOS && settings.LinDesktopPopUp)
         {
             var msbox_params = new MessageBoxStandardParams()
             {
@@ -440,6 +442,7 @@ public partial class MainView : UserControl
                 ContentHeader = "El nombre utilizado aqui sera utilizado como el campo 'Name' del archivo, y como nombre del archivo en si.",
                 ContentMessage = "Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancel para no volver a mostrar este mensaje.",
                 ButtonDefinitions = ButtonEnum.OkCancel,
+                Icon = Icon.Folder
             };
             var box_result = await MessageBoxPopUp(msbox_params);
             if (box_result == ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
@@ -509,7 +512,7 @@ public partial class MainView : UserControl
         // Manejo de iconos
         // Icono del ejecutable (Default)
         if (comboICONDir.SelectedIndex == 0)
-        { Link.ICONfile = null; }
+        { Link.ICONfile = string.Empty; }
         else
         {
             // En caso de ser Winodws OS, hay que convertir las imagenes a .ico

@@ -82,6 +82,7 @@ namespace LinFunc
             string name = Path.GetFileNameWithoutExtension(filename);
             filename = filename.Replace(" ", "-");
             _shortcut.LNKdir = Path.Combine(Path.GetDirectoryName(_shortcut.LNKdir), filename);
+            //if (string.IsNullOrEmpty(_shortcut.ICONfile)) { _shortcut.ICONfile = FileOps.GetRAIcons(); }
             System.Diagnostics.Trace.WriteLine($"Creando {filename} para Linux.", "[Info]");
 
             Configuration.OutputRawStringValues = true;
@@ -89,7 +90,7 @@ namespace LinFunc
             
             Section DesktopEntry = desktop_file["Desktop Entry"];
             DesktopEntry["Comment"].StringValue = _shortcut.Desc;
-            DesktopEntry["Exec"].StringValue = $"{_shortcut.RAdir} {_shortcut.Command}";
+            DesktopEntry["Exec"].StringValue = $"{_shortcut.RAdir} {_shortcut.Command}" + "\"";
             DesktopEntry["Icon"].StringValue = _shortcut.ICONfile;
             DesktopEntry["Name"].StringValue = name;
             //DesktopEntry["StartupNotify"].StringValue = "true";

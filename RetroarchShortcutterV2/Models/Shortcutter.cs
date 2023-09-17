@@ -72,7 +72,7 @@
             if (OS) { return false; }
 
             link = Commander.CommandBuilder(link);
-            link.Command = link.Command.Replace("\"", "\'");
+            //link.Command = link.Command.Replace("\"", "\'");
 
             try { LinFunc.LinShortcutter.CreateShortcutIni(link); return true; }
             catch (System.Exception e)

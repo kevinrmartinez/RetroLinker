@@ -291,6 +291,35 @@ namespace RetroarchShortcutterV2.Models
         }
         #endregion
 
+        #region Linux Only
+
+        public static string GetRAIcons()
+        {
+            // TODO: Escanear los .desktop de RA existentes
+            const string RA = "retroarch";
+            const string RAsvg = "retroarch.svg";
+            const string RApng = "retroarch.png";
+            string[] CommonIconPaths = new[]
+            {
+                "/usr/share/pixmaps/",
+                "/usr/share/app-install/icons/",
+                $"{Path.Combine(UserProfile, ".local", "share", "icons") + "\\"}",
+                "/usr/share/retroarch/"
+                //,"/snap/retroarch/"
+            };
+            string icon_dir = string.Empty;
+            for (int i = 0; i < CommonIconPaths.Length; i++)
+            {
+                
+                if (File.Exists(CommonIconPaths[i] + RAsvg))
+                { icon_dir = CommonIconPaths[i] + RAsvg; break; }
+                if (File.Exists(CommonIconPaths[i] + RApng))
+                { icon_dir = CommonIconPaths[i] + RAsvg; break; }
+            }
+            return (string.IsNullOrEmpty(icon_dir)) ? RA : icon_dir;
+        }
+
+        #endregion
 
 
 #if DEBUG
