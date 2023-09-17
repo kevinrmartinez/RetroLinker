@@ -17,7 +17,7 @@
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
 
-        public Shortcutter()    //PENDIENTE: quizas sea mejor predefinir todo a string.Empty
+        public Shortcutter()
         {
             RAdir = string.Empty;
             RApath = string.Empty;

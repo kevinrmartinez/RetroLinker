@@ -82,7 +82,6 @@ namespace RetroarchShortcutterV2.Models.Icons
                 return icoMS;
             }
             catch { Console.WriteLine("WinFunc no pude extraer el icono!"); Console.Beep(); return new MemoryStream(); }
-            // PENDIENTE: Mostrar msbox indicando que hay un problema
         }
 
         /* Posible implementacion para extraer un icono especifico de un .exe o .dll */

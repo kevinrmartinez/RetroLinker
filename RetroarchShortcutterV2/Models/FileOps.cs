@@ -18,7 +18,7 @@ namespace RetroarchShortcutterV2.Models
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
         public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
-        public const short MAX_PATH = 255;  // PENDIENTE: Aplicar en todas partes!
+        public const short MAX_PATH = 255;  // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         
@@ -139,14 +139,14 @@ namespace RetroarchShortcutterV2.Models
         {
             try { Directory.CreateDirectory(UserSettings); return true; }
             catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
-            // PENDIENTE: mostrar msbox indicando problema
+            // TODO: mostrar msbox indicando problema
         }
 
         public static bool CheckUsrSetDir(string dir)
         {
             try { Directory.CreateDirectory(dir); return true; }
             catch { Console.WriteLine("No se puede crear la carpeta " + dir); return false; }
-            // PENDIENTE: mostrar msbox indicando problema
+            // TODO: mostrar msbox indicando problema
         }
 
         public static Uri GetDefaultIcon() => new Uri(DEFicon1);

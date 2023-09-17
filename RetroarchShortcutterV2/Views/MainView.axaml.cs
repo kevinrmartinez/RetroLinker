@@ -130,7 +130,7 @@ public partial class MainView : UserControl
         Link.RAdir = settings.DEFRADir;
         FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
 
-        // PENDIENTE: refactorizar esta parte sin ayuda de null
+        // TODO: refactorizar esta parte sin ayuda de null
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
         else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
         if (SettingsOps.PrevConfigs != null) { PrevConfigsCount = SettingsOps.PrevConfigs.Count; }
@@ -378,17 +378,19 @@ public partial class MainView : UserControl
         }
     }
 
+    // TODO
     void btnPatches_Click(object sender, RoutedEventArgs e)
     {
-        // PENDIENTE
+        
     }
     #endregion
 
     #region RACore Controls
     // CORE
+    // TODO
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
-        // PENDIENTE
+        
     }
     #endregion
 
@@ -424,9 +426,9 @@ public partial class MainView : UserControl
         }
     }
 
+    // TODO
     void btnAppendConfig_Click(object sender, RoutedEventArgs e)
     {
-        // PENDIENTE
     }
     #endregion
 
