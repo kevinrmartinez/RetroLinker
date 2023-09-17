@@ -21,6 +21,7 @@ namespace RetroarchShortcutterV2.Models
         public const short MAX_PATH = 255;  // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
+        public const string DotDesktopRAIcon = "retroarch";
         
 
         public static List<string> ConfigDir { get; private set; } = new() { "Default" };
@@ -293,6 +294,23 @@ namespace RetroarchShortcutterV2.Models
 
         #region Linux Only
 
+        public static string[] FixLinkName(string LinkDir)
+        {
+            string[] NameFix =
+            {
+                // File Path
+                Path.GetFileName(LinkDir),
+                // .desktop Name field
+                Path.GetFileNameWithoutExtension(LinkDir),
+                // File Name
+                //LinkDir
+            };
+            NameFix[0] = NameFix[0].Replace(" ", "-");
+            //NameFix[2] = NameFix[0];
+            NameFix[0] = Path.Combine(Path.GetDirectoryName(LinkDir), NameFix[0]);
+            return NameFix;
+        }
+        
         public static string GetRAIcons()
         {
             // TODO: Escanear los .desktop de RA existentes
