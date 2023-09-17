@@ -73,11 +73,15 @@
 
             link = Commander.CommandBuilder(link);
             //link.Command = link.Command.Replace("\"", "\'");
-
-            try { LinFunc.LinShortcutter.CreateShortcutIni(link); return true; }
+            if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
+            { link.ICONfile = FileOps.DotDesktopRAIcon; }
+            string[] NameFix = FileOps.FixLinkName(link.LNKdir);
+            link.LNKdir = NameFix[0];
+            
+            try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]); return true; }
             catch (System.Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "[Erro]");
+                System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKdir}'!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
                 return false; 
             }

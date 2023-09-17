@@ -76,15 +76,9 @@ namespace LinFunc
         }
 
         // Version con SharpConfig
-        public static void CreateShortcutIni(Shortcutter _shortcut)
-        {
-            string filename = Path.GetFileName(_shortcut.LNKdir);
-            string name = Path.GetFileNameWithoutExtension(filename);
-            filename = filename.Replace(" ", "-");
-            _shortcut.LNKdir = Path.Combine(Path.GetDirectoryName(_shortcut.LNKdir), filename);
-            //if (string.IsNullOrEmpty(_shortcut.ICONfile)) { _shortcut.ICONfile = FileOps.GetRAIcons(); }
-            System.Diagnostics.Trace.WriteLine($"Creando {filename} para Linux.", "[Info]");
-
+        public static void CreateShortcutIni(Shortcutter _shortcut, string name)
+        { 
+            System.Diagnostics.Trace.WriteLine($"Creando {_shortcut.LNKdir} para Linux.", "[Info]");
             Configuration.OutputRawStringValues = true;
             Configuration desktop_file = new();
             
@@ -98,7 +92,7 @@ namespace LinFunc
             DesktopEntry["Type"].StringValue = "Application";
 
             desktop_file.SaveToFile(_shortcut.LNKdir);
-            System.Diagnostics.Trace.WriteLine($"{filename} creado con exito.", "[Info]");
+            System.Diagnostics.Trace.WriteLine($"{_shortcut.LNKdir} creado con exito.", "[Info]");
             SetExecPermissions(_shortcut.LNKdir);
         }
 

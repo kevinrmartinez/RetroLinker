@@ -29,9 +29,11 @@ namespace RetroarchShortcutterV2.Models
             if (OS) { OS = false; }
             Shortcutter.BuildLinShorcut(lnk, OS);
 
-            lnk.Command = "-L mgba \"Fire Emblem - The Binding Blade.gba\"";
-            lnk.LNKdir = "new2048.desktop";
-            LinFunc.LinShortcutter.CreateShortcutIni(lnk);
+            lnk.Command = $"-L mgba \"{System.IO.Path.Combine(FileOps.UserProfile, "Fire Emblem - The Binding Blade.gba")}\"";
+            lnk.LNKdir = "Fire Emblem 6.desktop";
+            string[] NameFix = FileOps.FixLinkName(lnk.LNKdir);
+            lnk.LNKdir = NameFix[0];
+            LinFunc.LinShortcutter.CreateShortcutIni(lnk, NameFix[1]);
         }
     }
 }
