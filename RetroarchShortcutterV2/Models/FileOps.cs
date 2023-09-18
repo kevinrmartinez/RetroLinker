@@ -30,7 +30,6 @@ namespace RetroarchShortcutterV2.Models
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
-        public static readonly string UserSettings = Path.Combine(UserProfile, ".RetroarchShortcutterV2");
                                                 // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
@@ -136,13 +135,6 @@ namespace RetroarchShortcutterV2.Models
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
-        public static bool CheckUsrSetDir()
-        {
-            try { Directory.CreateDirectory(UserSettings); return true; }
-            catch { Console.WriteLine("No se puede crear la carpeta " + UserSettings); return false; }
-            // TODO: mostrar msbox indicando problema
-        }
-
         public static bool CheckUsrSetDir(string dir)
         {
             try { Directory.CreateDirectory(dir); return true; }
@@ -158,9 +150,9 @@ namespace RetroarchShortcutterV2.Models
 
         public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
 
-        public static async void SetROMPadre(string dir_ROMpadre, TopLevel topLevel)
+        public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
         {
-            if (dir_ROMpadre != null)
+            if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
             { ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre); }
         }
 
@@ -313,6 +305,7 @@ namespace RetroarchShortcutterV2.Models
         
         public static string GetRAIcons()
         {
+            // TODO: Decidir si se utilizara este metodo
             // TODO: Escanear los .desktop de RA existentes
             const string RA = "retroarch";
             const string RAsvg = "retroarch.svg";

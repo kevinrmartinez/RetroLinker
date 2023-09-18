@@ -10,12 +10,13 @@ namespace RetroarchShortcutterV2.Models
     {
         public static List<string> PrevConfigs { set; get; }
         private static Configuration settings_file = new();
-        private static Section GeneralSettings = settings_file["GeneralSettings"];
-        private static Section StoredConfigs = settings_file["StoredConfigs"];
+        private static Section GeneralSettings = new("GeneralSettings");
+        private static Section StoredConfigs = new("StoredConfigs");
         private static Settings CachedSettings { set; get; } = new();
 
         public static void BuildConfFile()
         {
+            settings_file.Add(GeneralSettings);
             var settings_props = Utils.ExtractClassProperties(typeof(Settings));
             foreach (string setting in settings_props)
             {
@@ -31,7 +32,7 @@ namespace RetroarchShortcutterV2.Models
             // GeneralSettings.Add(new Setting("ExtractIco"));
             // GeneralSettings.Add(new Setting("PreferedTheme"));
             // GeneralSettings.Add(new Setting("LinDesktopPopUp"));
-            System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcmpos.", "[Debg]");
+            System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcampos.", "[Debg]");
         }
 
         public static Settings LoadSettings()
@@ -181,5 +182,20 @@ namespace RetroarchShortcutterV2.Models
         }
 
         //public void Dispose() => this.Dispose();
+
+        public bool SettingsAreEqual(Settings other)
+        {
+            UserAssetsPath = other.UserAssetsPath;
+            DEFRADir = other.DEFRADir;
+            DEFROMPath = other.DEFROMPath;
+            PrevConfig = other.PrevConfig;
+            AllwaysDesktop = other.AllwaysDesktop;
+            CpyUserIcon = other.CpyUserIcon;
+            ConvICONPath = other.ConvICONPath;
+            ExtractIco = other.ExtractIco;
+            PreferedTheme = other.PreferedTheme;
+            LinDesktopPopUp = other.LinDesktopPopUp;
+            return true;
+        }
     }
 }

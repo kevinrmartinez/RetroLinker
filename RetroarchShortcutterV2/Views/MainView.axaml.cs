@@ -177,7 +177,6 @@ public partial class MainView : UserControl
         {
             MaxWidth = 550,
             ShowInCenter = true,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
             ContentTitle = "Error Fatal",
             ContentHeader = $"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!",
@@ -185,8 +184,7 @@ public partial class MainView : UserControl
             ButtonDefinitions = diag_btns
         };
 
-        var msb = MessageBoxManager.GetMessageBoxCustom(msb_params);
-        var diag_result = await msb.ShowWindowDialogAsync(deskWindow.MainWindow);
+        var diag_result = await MessageBoxPopUp(msb_params);
         switch (diag_result)
         {
             case abort_btn:
@@ -482,11 +480,7 @@ public partial class MainView : UserControl
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         bool ShortcutPosible;
-        var msbox_params = new MessageBoxStandardParams
-        {
-            ShowInCenter = true,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen
-        };
+        var msbox_params = new MessageBoxStandardParams();
 
         // CHECKS!
         Link.VerboseB = (bool)chkVerb.IsChecked;
@@ -528,13 +522,12 @@ public partial class MainView : UserControl
 
         // REQUIERED FIELDS VALIDATION!
         if ((!string.IsNullOrEmpty(Link.RAdir)) && (!string.IsNullOrEmpty(Link.ROMdir)) && (!string.IsNullOrEmpty(Link.ROMcore)) && (!string.IsNullOrEmpty(Link.LNKdir)))
-        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "Info"); }
+        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "[Info]"); }
         else
         {
             ShortcutPosible = false;
             msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
-            var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-            _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+            MessageBoxPopUp(msbox_params);
         }
 
         while (ShortcutPosible)
@@ -553,15 +546,13 @@ public partial class MainView : UserControl
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
-                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+                MessageBoxPopUp(msbox_params);
             }
             else
             {
                 msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
-                var msbox = MessageBoxManager.GetMessageBoxStandard(msbox_params);
-                _ = msbox.ShowWindowDialogAsync(deskWindow.MainWindow);
+                MessageBoxPopUp(msbox_params);
             }
             ShortcutPosible = false;
         }
@@ -569,8 +560,12 @@ public partial class MainView : UserControl
 
     // CLOSING
     void View1_Unloaded(object sender, RoutedEventArgs e)
-    {  if ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1)) 
-        { SettingsOps.WriteSettingsFile(settings); }  }
+    {
+        var cachedSettings = SettingsOps.GetCachedSettings();
+        var settingsChanged = !settings.Equals(cachedSettings);
+        if ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1) || settingsChanged) 
+        { SettingsOps.WriteSettingsFile(settings); }  
+    }
 
 #if DEBUG
     void View2_Loaded(object sender, RoutedEventArgs e)
