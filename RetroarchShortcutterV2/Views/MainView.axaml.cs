@@ -1,4 +1,4 @@
-﻿using Avalonia;
+﻿//using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
@@ -10,6 +10,7 @@ using MsBox.Avalonia.Models;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 using System.Threading.Tasks;
+using Avalonia.Styling;
 using MsBox.Avalonia.Enums;
 
 namespace RetroarchShortcutterV2.Views;
@@ -39,7 +40,7 @@ public partial class MainView : UserControl
 
     // Window Object
     // Solucion basada en atresnjo en los issues de Avalonia
-    private readonly IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
+    private readonly IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Avalonia.Application.Current.ApplicationLifetime;
     private TopLevel topLevel;
 
     
@@ -53,16 +54,16 @@ public partial class MainView : UserControl
         SettingsOps.BuildConfFile();
         settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
-        System.Diagnostics.Debug.WriteLine(settings, "[Debg]");
+        System.Diagnostics.Debug.WriteLine(settings.GetHashCode(), "[Debg]");
         FileOps.SetDesktopDir(topLevel);
-        deskWindow.MainWindow.RequestedThemeVariant = SettingsOps.LoadThemeVariant();
+        deskWindow.MainWindow.RequestedThemeVariant = LoadThemeVariant();
         var cores_task = FileOps.LoadCores();
         var icon_task = FileOps.LoadIcons(DesktopOS);
         
         // Condicion de OS
         if (!DesktopOS)
         {
-            if (settings.DEFRADir == string.Empty) { settings.DEFRADir = "retroarch"; }
+            if (string.IsNullOrEmpty(settings.DEFRADir)) { settings.DEFRADir = "retroarch"; }
             txtRADir.IsReadOnly = false;
             DefLinRAIcon = FileOps.GetRAIcons();
         }
@@ -122,6 +123,17 @@ public partial class MainView : UserControl
     {
         settings = FileOps.LoadCachedSettingsFO();
         LoadSettingsIntoControls();
+    }
+    
+    ThemeVariant LoadThemeVariant()
+    {
+        ThemeVariant theme = settings.PreferedTheme switch
+        {
+            1 => ThemeVariant.Light,
+            2 => ThemeVariant.Dark,
+            _ => ThemeVariant.Default,
+        };
+        return theme;
     }
 
     void LoadSettingsIntoControls()
@@ -563,7 +575,7 @@ public partial class MainView : UserControl
     {
         var cachedSettings = SettingsOps.GetCachedSettings();
         var settingsChanged = !settings.Equals(cachedSettings);
-        if ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1) || settingsChanged) 
+        if ( ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1)) || settingsChanged) 
         { SettingsOps.WriteSettingsFile(settings); }  
     }
 

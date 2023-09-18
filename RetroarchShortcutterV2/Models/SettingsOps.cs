@@ -1,18 +1,16 @@
-﻿using Avalonia.Styling;
-using SharpConfig;
-using System;
+﻿using SharpConfig;
 using System.Collections.Generic;
-using System.IO;
 
 namespace RetroarchShortcutterV2.Models
 {
     public class SettingsOps
     {
-        public static List<string> PrevConfigs { set; get; }
         private static Configuration settings_file = new();
         private static Section GeneralSettings = new("GeneralSettings");
         private static Section StoredConfigs = new("StoredConfigs");
-        private static Settings CachedSettings { set; get; } = new();
+        private static Settings CachedSettings = new();
+        
+        public static List<string>? PrevConfigs { set; get; }
 
         public static void BuildConfFile()
         {
@@ -35,6 +33,9 @@ namespace RetroarchShortcutterV2.Models
             System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcampos.", "[Debg]");
         }
 
+        private static Configuration LoadConfiguration(string configDIR) => Configuration.LoadFromBinaryFile(configDIR);
+        private static Configuration LoadConfiguration(System.IO.Stream configSTREAM) => Configuration.LoadFromBinaryStream(configSTREAM);
+
         public static Settings LoadSettings()
         {
             Settings settings = new();
@@ -43,14 +44,14 @@ namespace RetroarchShortcutterV2.Models
                 System.Diagnostics.Trace.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.", "[Info]");
                 try
                 {
-                    Configuration settings_file = Configuration.LoadFromBinaryFile(FileOps.SettingFileBin);
-                    settings_file.Add(GeneralSettings);
+                    Configuration settings_file = LoadConfiguration(FileOps.SettingFileBin);
+                    GeneralSettings = settings_file["GeneralSettings"];
                     GeneralSettings.SetValuesTo(settings);
                     if (string.IsNullOrEmpty(settings.UserAssetsPath))
-                    { throw new InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
+                    { throw new System.IO.InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
                     GeneralSettings.SetValuesTo(CachedSettings);
 
-                    settings_file.Add(StoredConfigs);
+                    StoredConfigs = settings_file["StoredConfigs"];
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
                     {
@@ -61,7 +62,7 @@ namespace RetroarchShortcutterV2.Models
                         System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.", "[Info]");
                     }
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     System.Diagnostics.Trace.WriteLine($"El archivo {FileOps.SettingFileBin} no se puedo cargar correctamente, sobreescribiendo...", "[Info]");
                     System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
@@ -71,38 +72,6 @@ namespace RetroarchShortcutterV2.Models
             }
             else
             { WriteSettingsFile(settings); }
-            return settings;
-        }
-
-        public static Settings LoadSettings(Stream file_s)
-        {
-            Settings settings = new();
-            if (file_s != Stream.Null)
-            {
-                try
-                {
-                    Configuration settings_file = Configuration.LoadFromBinaryStream(file_s);
-                    settings_file.Add(GeneralSettings);
-                    GeneralSettings.SetValuesTo(settings);
-                    GeneralSettings.SetValuesTo(CachedSettings);
-
-                    settings_file.Add(StoredConfigs);
-                    int dir_count = StoredConfigs.SettingCount;
-                    if (dir_count > 0)
-                    {
-                        PrevConfigs = new List<string>();
-                        for (int i = 0; i < dir_count; i++)
-                        { PrevConfigs.Add(StoredConfigs[i].StringValue); }
-                        FileOps.ConfigDir.AddRange(PrevConfigs);
-                    }
-                }
-                catch
-                {
-                    _ = "El archivo setting no se puedo cargar correctamente, sobreescribiendo...";
-                    settings = new(); WriteSettingsFile(settings);
-                }
-            }
-            else { WriteSettingsFile(settings); }
             return settings;
         }
 
@@ -126,25 +95,13 @@ namespace RetroarchShortcutterV2.Models
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
                 System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");
             }
-            catch (Exception e)
+            catch (System.Exception e)
             { System.Diagnostics.Trace.WriteLine("Incapaz de escribir el archivo!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
                 CachedSettings = new();
             }
         }
-
-        public static ThemeVariant LoadThemeVariant()
-        {
-            ThemeVariant theme = CachedSettings.PreferedTheme switch
-            {
-                1 => ThemeVariant.Light,
-                2 => ThemeVariant.Dark,
-                _ => ThemeVariant.Default,
-            };
-            return theme;
-        }
-
-
+        
 #if DEBUG
         public static void TestfillPrevConfigs()
         {
@@ -182,20 +139,5 @@ namespace RetroarchShortcutterV2.Models
         }
 
         //public void Dispose() => this.Dispose();
-
-        public bool SettingsAreEqual(Settings other)
-        {
-            UserAssetsPath = other.UserAssetsPath;
-            DEFRADir = other.DEFRADir;
-            DEFROMPath = other.DEFROMPath;
-            PrevConfig = other.PrevConfig;
-            AllwaysDesktop = other.AllwaysDesktop;
-            CpyUserIcon = other.CpyUserIcon;
-            ConvICONPath = other.ConvICONPath;
-            ExtractIco = other.ExtractIco;
-            PreferedTheme = other.PreferedTheme;
-            LinDesktopPopUp = other.LinDesktopPopUp;
-            return true;
-        }
     }
 }
