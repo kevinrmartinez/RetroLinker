@@ -17,27 +17,26 @@ namespace RetroarchShortcutterV2.Models
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAout, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
 
-        static List<FilePickerFileType> RADirFileTypes { get; } = new List<FilePickerFileType> { ejecutable, FilePickerFileTypes.All };
-        static List<FilePickerFileType> RADirFileTypes2 { get; } = new List<FilePickerFileType> { appimage, FilePickerFileTypes.All };
-        static List<FilePickerFileType> CONFIGDirFileTypes { get; } = new List<FilePickerFileType> { config_file, FilePickerFileTypes.TextPlain };
-        static List<FilePickerFileType> ICONfileTypes { get; } = new List<FilePickerFileType> { win_icon_files, ejecutable, conv_icon };
-        static List<FilePickerFileType> ICONfileTypes2 { get; } = new List<FilePickerFileType> { lin_icon_files };
-        static List<FilePickerFileType> WinShorTypes { get; } = new List<FilePickerFileType> { win_lnk };
-        static List<FilePickerFileType> LinShorTypes { get; } = new List<FilePickerFileType> { lin_lnk };
-
+        static List<FilePickerFileType> RADirFileTypes_win = new() { ejecutable, FilePickerFileTypes.All };
+        static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, FilePickerFileTypes.All };
+        static List<FilePickerFileType> CONFIGDirFileTypes = new() { config_file, FilePickerFileTypes.TextPlain };
+        static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, ejecutable, conv_icon };
+        static List<FilePickerFileType> ICONfileTypes2 = new() { lin_icon_files };
+        static List<FilePickerFileType> WinShorTypes = new() { win_lnk };
+        static List<FilePickerFileType> LinShorTypes = new() { lin_lnk };
         
-
+        
         public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
         {
             var options = new FilePickerOpenOptions();
 
             switch (template)
             {
-                // Windows exe (retroarch.exe)
+                // Windows exe
                 case OpenOpts.RAexe:
                     options.AllowMultiple = false;
                     options.Title = "Eliga el ejecutable de RetroArch";
-                    options.FileTypeFilter = RADirFileTypes;
+                    options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
                 // All files for ROMs
@@ -63,11 +62,11 @@ namespace RetroarchShortcutterV2.Models
                     options.FileTypeFilter = ICONfileTypes;
                     break;
 
-                // Linux AppImage
+                // Linux executable
                 case OpenOpts.RAout:
                     options.AllowMultiple = false;
                     options.Title = "Eliga el ejecutable de RetroArch";
-                    options.FileTypeFilter = RADirFileTypes2;
+                    options.FileTypeFilter = RADirFileTypes_lin;
                     break;
 
                 // Linux images for icons
@@ -95,13 +94,13 @@ namespace RetroarchShortcutterV2.Models
             {
                 // Windows .lnk
                 case SaveOpts.WINlnk:                 
-                    options.DefaultExtension = "lnk";
+                    options.DefaultExtension = FileOps.WinLinkExt;
                     options.FileTypeChoices = WinShorTypes;
                     break;
 
                 // Linux popular .desktop
                 case SaveOpts.LINdesktop:
-                    options.DefaultExtension = "desktop";
+                    options.DefaultExtension = FileOps.LinLinkExt;
                     options.FileTypeChoices = LinShorTypes;
                     break;
                 

@@ -115,9 +115,9 @@ namespace RetroarchShortcutterV2.Views
         // USER ASSETS
         async void btnUserAssets_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(0, topLevel);
-            if (file != null)
-            { txtUserAssets.Text = file; settings.UserAssetsPath = txtUserAssets.Text; }
+            string folder = await FileOps.OpenFolderAsync(0, topLevel);
+            if (folder != null)
+            { txtUserAssets.Text = folder; settings.UserAssetsPath = folder; }
         }
 
         void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
@@ -134,7 +134,7 @@ namespace RetroarchShortcutterV2.Views
             else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
             string file = await FileOps.OpenFileAsync(opt, topLevel);
             if (file != null)
-            { txtDefRADir.Text = file; settings.DEFRADir = txtDefRADir.Text; }
+            { txtDefRADir.Text = file; settings.DEFRADir = file; }
         }
 
         void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
@@ -145,10 +145,10 @@ namespace RetroarchShortcutterV2.Views
         // DIR PADRE
         async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(0, topLevel);
-            if (file != null)
-            { txtDefROMPath.Text = file; settings.DEFROMPath = txtDefROMPath.Text; }
-        }
+            string folder = await FileOps.OpenFolderAsync(1, topLevel);
+            if (folder != null)
+            { txtDefROMPath.Text = folder; settings.DEFROMPath = folder; }
+        }   // TODO: No parece aplicarce en ningun Linux
 
         void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
         {
@@ -156,12 +156,13 @@ namespace RetroarchShortcutterV2.Views
         }
 
         // ICONS
-        // WINDOWS OS ONLY
+
+        #region WINDOWS OS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            string file = await FileOps.OpenFolderAsync(1, topLevel);
-            if (file != null)
-            { txtIcoSavPath.Text = file; settings.ConvICONPath = txtIcoSavPath.Text; }
+            string folder = await FileOps.OpenFolderAsync(2, topLevel);
+            if (folder != null)
+            { txtIcoSavPath.Text = folder; settings.ConvICONPath = folder; }
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
@@ -176,6 +177,8 @@ namespace RetroarchShortcutterV2.Views
             settings.ConvICONPath = settings.UserAssetsPath;
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
         }
+        #endregion
+        
 
         #region Window/Dialog Controls
         // Window/Dialog Controls

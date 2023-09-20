@@ -168,19 +168,17 @@ namespace RetroarchShortcutterV2.Models
 
         public static async Task<string> OpenFolderAsync(byte template ,TopLevel topLevel)
         {
-            FolderPickerOpenOptions opt = new();
-            switch(template)
+            FolderPickerOpenOptions opt = new()
             {
-                case 0:
-                    opt.Title = "Eliga el directorio padre de ROMs"; 
-                    opt.AllowMultiple = false;
-                    break;
-                case 1:
-                    opt.Title = "Eliga el directorio padre de ROMs";
-                    opt.AllowMultiple = false;
-                    break;
-            }
-
+                AllowMultiple = false,
+                Title = template switch
+                {
+                    0 => "Eliga el directorio de UserAssets",
+                    1 => "Eliga el directorio padre de ROMs",
+                    2 => "Eliga el directorio donde guardar los .ico"
+                }
+            };
+            
             var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
             string dir;
             if (dirList.Count > 0) { dir = Path.GetFullPath(dirList[0].Path.LocalPath); }

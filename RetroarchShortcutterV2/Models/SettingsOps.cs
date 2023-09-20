@@ -139,5 +139,29 @@ namespace RetroarchShortcutterV2.Models
         }
 
         //public void Dispose() => this.Dispose();
+        private string GetString()
+        {
+            string objectstring = UserAssetsPath + DEFRADir + DEFROMPath + ConvICONPath;
+            objectstring += PreferedTheme.ToString();
+            objectstring += (PrevConfig) ? "1" : "0";
+            objectstring += (AllwaysDesktop) ? "1" : "0";
+            objectstring += (CpyUserIcon) ? "1" : "0";
+            objectstring += (ExtractIco) ? "1" : "0";
+            objectstring += (LinDesktopPopUp) ? "1" : "0";
+            return objectstring;
+        }
+        public string GetBase64()
+        {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
+            var objectstring = GetString();
+            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectstring);
+            var object64 = System.Convert.ToBase64String(objectBytes);
+            return object64;
+        }
+        public string GetBase64(string objectString)
+        {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
+            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectString);
+            var object64 = System.Convert.ToBase64String(objectBytes);
+            return object64;
+        }
     }
 }

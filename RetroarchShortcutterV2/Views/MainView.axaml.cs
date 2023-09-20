@@ -54,7 +54,7 @@ public partial class MainView : UserControl
         SettingsOps.BuildConfFile();
         settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
-        System.Diagnostics.Debug.WriteLine(settings.GetHashCode(), "[Debg]");
+        System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
         FileOps.SetDesktopDir(topLevel);
         deskWindow.MainWindow.RequestedThemeVariant = LoadThemeVariant();
         var cores_task = FileOps.LoadCores();
