@@ -161,8 +161,7 @@ namespace RetroarchShortcutterV2.Models
         {
             var opt = PickerOpt.OpenPickerOpt(template);
             var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-            string dir = string.Empty;
-            if (file.Count > 0) { dir = Path.GetFullPath(file[0].Path.LocalPath); }
+            string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
             return dir;
         }
 
@@ -175,24 +174,23 @@ namespace RetroarchShortcutterV2.Models
                 {
                     0 => "Eliga el directorio de UserAssets",
                     1 => "Eliga el directorio padre de ROMs",
-                    2 => "Eliga el directorio donde guardar los .ico"
+                    2 => "Eliga el directorio donde guardar los .ico",
+                    // Esta opcion no deberia pasar
+                    _ => "Eliga el directorio..."
                 }
             };
             
             var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-            string dir;
-            if (dirList.Count > 0) { dir = Path.GetFullPath(dirList[0].Path.LocalPath); }
-            else { return null; }
+            string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
             return dir;
         }
-
+        
         public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.SavePickerOpt(template);
             var file_task = topLevel.StorageProvider.SaveFilePickerAsync(opt);
-            string dir = string.Empty;
             var file = await file_task;
-            if (file != null) { dir = file.Path.LocalPath; };
+            string dir = (file != null) ? file.Path.LocalPath : string.Empty;
             return dir;
         }
         #endregion
@@ -332,11 +330,7 @@ namespace RetroarchShortcutterV2.Models
 
 
 #if DEBUG
-        public static string IconExtractTest()
-        {
-            string file = "F:\\Zero Fox\\Anime Icon Matcher.exe";
-            return file;
-        }
+        public static string IconExtractTest() => "F:\\Zero Fox\\Anime Icon Matcher.exe";
 #endif
     }
 }
