@@ -46,6 +46,7 @@ namespace RetroarchShortcutterV2.Models
                     //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
                     if (FileOps.ROMPadreDir != null)
                     { options.SuggestedStartLocation = FileOps.ROMPadreDir; }
+                    // FIXME: No funciona con los FilePicker de las distros
                     break;
 
                 // Retroarch config

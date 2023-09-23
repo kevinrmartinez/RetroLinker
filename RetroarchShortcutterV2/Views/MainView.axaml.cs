@@ -51,6 +51,7 @@ public partial class MainView : UserControl
     {
         System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
         topLevel = TopLevel.GetTopLevel(this);
+        System.Diagnostics.Trace.WriteLine($"Window Implementation: {topLevel.PlatformImpl?.ToString()}.", "[Info]");
         SettingsOps.BuildConfFile();
         settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
@@ -77,6 +78,7 @@ public partial class MainView : UserControl
         comboCore_Loaded(cores_task);
         comboConfig_Loaded();
         comboICONDir_Loaded(icon_task);
+        // TODO: Evento de tutorial para nuevos usuarios
 
         System.DateTime now = System.DateTime.Now;
         timeSpan = now - App.LaunchTime;
