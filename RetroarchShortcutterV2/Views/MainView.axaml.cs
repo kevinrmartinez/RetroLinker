@@ -79,24 +79,24 @@ public partial class MainView : UserControl
             var cores_task = FileOps.LoadCores();
             var icon_task = FileOps.LoadIcons(DesktopOS);
         
-            // Condicion de OS
-            if (!DesktopOS)
-            {
-                if (string.IsNullOrEmpty(settings.DEFRADir)) 
-                { settings.DEFRADir = "retroarch"; }
-                txtRADir.IsReadOnly = false;
-                DefLinRAIcon = FileOps.GetRAIcons();
-            }
-            else
-            {
-                WinFuncImport();
-                IconItemSET = new IconsItems();
-            }
+        // Condicion de OS
+        if (!DesktopOS)
+        {
+            if (string.IsNullOrEmpty(settings.DEFRADir)) { settings.DEFRADir = "retroarch"; }
+            txtRADir.IsReadOnly = false;
+            DefLinRAIcon = FileOps.GetRAIcons();
+        }
+        else
+        {
+            WinFuncImport();
+            IconItemSET = new();
+        }
 
-            LoadSettingsIntoControls();
-            comboCore_Loaded(cores_task);
-            comboConfig_Loaded();
-            comboICONDir_Loaded(icon_task);
+        LoadSettingsIntoControls();
+        comboCore_Loaded(cores_task);
+        comboConfig_Loaded();
+        comboICONDir_Loaded(icon_task);
+        // TODO: Evento de tutorial para nuevos usuarios
 
             FirstTimeLoad = false;
             System.DateTime now = System.DateTime.Now;

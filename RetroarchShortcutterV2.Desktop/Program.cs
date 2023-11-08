@@ -1,9 +1,9 @@
 ﻿using System;
 
 using Avalonia;
+using Avalonia.Dialogs;
 //using Avalonia.ReactiveUI;
 using Projektanker.Icons.Avalonia.FontAwesome;
-using Projektanker.Icons.Avalonia.MaterialDesign;
 using Projektanker.Icons.Avalonia;
 
 namespace RetroarchShortcutterV2.Desktop;
@@ -42,6 +42,7 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
+            /*.UseManagedSystemDialogs()*/
             /*.UseReactiveUI()*/;
     }
 }

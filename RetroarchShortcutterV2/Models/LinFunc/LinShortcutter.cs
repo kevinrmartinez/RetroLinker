@@ -103,7 +103,7 @@ namespace LinFunc
                 var processStartInfo = new System.Diagnostics.ProcessStartInfo()
                 {
                     FileName = "chmod",
-                    Arguments = $"a+x {dir}",
+                    Arguments = $"-c a+x {dir}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
@@ -116,8 +116,8 @@ namespace LinFunc
                 string error = process.StandardError.ReadToEnd();
                 string output = process.StandardOutput.ReadToEnd();
 
-                System.Diagnostics.Debug.WriteLine(error);
-                System.Diagnostics.Trace.WriteLine(output);
+                System.Diagnostics.Debug.WriteLine(error, "[Proc]");
+                System.Diagnostics.Trace.WriteLine(output, "[Proc]");
             //});
         }
     }
