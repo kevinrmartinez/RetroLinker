@@ -14,15 +14,23 @@ namespace RetroarchShortcutterV2.Views
         public SettingsView()
         { InitializeComponent(); }
 
+        public SettingsView(MainWindow mainWindow)
+        {
+            InitializeComponent();
+            ParentWindow = mainWindow;
+        }
+        
         // Window Obj
-        private TopLevel topLevel { get; set; }
-        private Window Current_Window { get; set; }
+        private MainWindow ParentWindow;
+        
+        // TODO: rempplazar con la nueva implementacion de MainWindow
         private IClassicDesktopStyleApplicationLifetime deskWindow = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
+        private TopLevel topLevel;
 
         // PROPS/STATICS
+        private bool FirstTimeLoad = true;
         private Settings settings;
         private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
-
         static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
@@ -31,38 +39,24 @@ namespace RetroarchShortcutterV2.Views
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         {
-            // Window objects
-            topLevel = TopLevel.GetTopLevel(this);
-            var windows_list = deskWindow.Windows;
-            Current_Window = windows_list[1];
+            if (FirstTimeLoad)
+            {
+                // Window objects
+                topLevel = TopLevel.GetTopLevel(this);
+                // var windows_list = deskWindow.Windows;
+                // Current_Window = windows_list[1];
+                if (!DesktopOS)
+                {
+                    panelWindowsOnlyControls.IsEnabled = false;
+                    txtDefRADir.IsReadOnly = false;
+                }
+            }
 
             // Settings
             LoadFromSettings();
-
-            // Apariencia
-            switch (settings.PreferedTheme)
-            {
-                case 1: // Case de que el tema sea 'claro'
-                    ThemeSwitch.IsChecked = false;
-                    break;
-                case 2: // Case de que el tema sea 'oscuro'
-                    ThemeSwitch.IsChecked = true;
-                    break;
-                default:// Case de culaquier otro caso (0 = tema segun el sistema)
-                    ThemeDefault.IsChecked = true;
-                    break;
-            }
-
-            // OTROS
             if (settings.UserAssetsPath == settings.ConvICONPath) 
             { chkUseUserAssets.IsChecked = true; }
-            if (!DesktopOS)
-            {
-                panelWindowsOnlyControls.IsEnabled = false;
-                txtDefRADir.IsReadOnly = false;
-            }
-
-            
+            //System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", "[Debg]");
         }
 
         void LoadFromSettings()
@@ -77,13 +71,31 @@ namespace RetroarchShortcutterV2.Views
             chkCpyUserIcon.IsChecked = settings.CpyUserIcon;
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
             chkExtractIco.IsChecked = settings.ExtractIco;
+            LoadTheme(settings.PreferedTheme);
         }
         #endregion
 
         //APARIENCIA
+        void LoadTheme(byte ThemeCode)
+        {
+            // El designer de Avalonia se rompe en esta parte, asi que puse una condicion para DEBUG
+            switch (ThemeCode)
+            {
+                case 1: // Case de que el tema sea 'claro'
+                    ThemeSwitch.IsChecked = false;
+                    break;
+                case 2: // Case de que el tema sea 'oscuro'
+                    ThemeSwitch.IsChecked = true;
+                    break;
+                default:// Case de culaquier otro caso (0 = tema segun el sistema)
+                    ThemeDefault.IsChecked = true;
+                    break;
+            }
+        }
+        
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            
+            // TODO: El designer de Avalonia se rompe en esta parte
             if ((bool)ThemeSwitch.IsChecked)
             {
                 deskWindow.MainWindow.RequestedThemeVariant = dark_theme;
@@ -102,6 +114,7 @@ namespace RetroarchShortcutterV2.Views
         {
             if ((bool)ThemeDefault.IsChecked)
             {
+                // TODO: El designer de Avalonia se rompe en esta parte
                 deskWindow.MainWindow.RequestedThemeVariant = system_theme;
                 topLevel.RequestedThemeVariant = system_theme;
                 ThemeSwitch.IsEnabled = false;
@@ -109,20 +122,21 @@ namespace RetroarchShortcutterV2.Views
             }
             else
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
-
         }
 
         // USER ASSETS
         async void btnUserAssets_Click(object sender, RoutedEventArgs e)
         {
             string folder = await FileOps.OpenFolderAsync(0, topLevel);
+            // TODO: Resolver sin el uso de null
             if (folder != null)
             { txtUserAssets.Text = folder; settings.UserAssetsPath = folder; }
         }
 
         void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
         {
-            txtUserAssets.Text = string.Empty; settings.UserAssetsPath = string.Empty;
+            txtUserAssets.Text = string.Empty; 
+            settings.UserAssetsPath = string.Empty;
         }
 
 
@@ -133,21 +147,30 @@ namespace RetroarchShortcutterV2.Views
             if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
             else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
             string file = await FileOps.OpenFileAsync(opt, topLevel);
+            // TODO: Resolver sin el uso de null
             if (file != null)
-            { txtDefRADir.Text = file; settings.DEFRADir = file; }
+            { 
+                txtDefRADir.Text = file; 
+                settings.DEFRADir = file; 
+            }
         }
 
         void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
         {
-            txtDefRADir.Text = string.Empty; settings.DEFRADir = string.Empty;
+            txtDefRADir.Text = string.Empty; 
+            settings.DEFRADir = string.Empty;
         }
 
         // DIR PADRE
         async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
         {
             string folder = await FileOps.OpenFolderAsync(1, topLevel);
+            // TODO: Resolver sin el uso de null
             if (folder != null)
-            { txtDefROMPath.Text = folder; settings.DEFROMPath = folder; }
+            { 
+                txtDefROMPath.Text = folder; 
+                settings.DEFROMPath = folder; 
+            }
         }   // TODO: No parece aplicarce en ningun Linux
 
         void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
@@ -161,8 +184,12 @@ namespace RetroarchShortcutterV2.Views
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
             string folder = await FileOps.OpenFolderAsync(2, topLevel);
+            // TODO: Resolver sin el uso de null
             if (folder != null)
-            { txtIcoSavPath.Text = folder; settings.ConvICONPath = folder; }
+            {
+                txtIcoSavPath.Text = folder; 
+                settings.ConvICONPath = folder;
+            }
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
@@ -182,7 +209,7 @@ namespace RetroarchShortcutterV2.Views
 
         #region Window/Dialog Controls
         // Window/Dialog Controls
-        void btnDISSettings_Click(object sender, RoutedEventArgs e) => Current_Window.Close();
+        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseView();
 
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -197,13 +224,13 @@ namespace RetroarchShortcutterV2.Views
 
             };
             var msbox = MessageBoxManager.GetMessageBoxStandard(msparams);
-            var result = await msbox.ShowWindowDialogAsync(Current_Window);
+            var result = await msbox.ShowWindowDialogAsync(ParentWindow);
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
                 settings = new();
                 //SettingsOps.PrevConfigs = new();
                 SettingsOps.WriteSettingsFile(settings);
-                Current_Window.Close();
+                CloseView();
             }
                 
         }
@@ -218,7 +245,13 @@ namespace RetroarchShortcutterV2.Views
             settings.ExtractIco = (bool)chkExtractIco.IsChecked;
 
             SettingsOps.WriteSettingsFile(settings);
-            Current_Window.Close();
+            CloseView();
+        }
+
+        void CloseView()
+        {
+            //ParentWindow.Close();
+            ParentWindow.ReturnToMainView(this);
         }
         #endregion
 

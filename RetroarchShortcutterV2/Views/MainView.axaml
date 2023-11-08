@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.MainView"
              x:DataType="vm:MainViewModel"
+             
 			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
@@ -15,17 +16,17 @@
   </Design.DataContext>
 	<Grid RowDefinitions="Auto, *, Auto">
 		<!--Top-->
-		<Grid Name="gridTOP" Grid.Row="0" Background="Aqua" Height="40" ColumnDefinitions="Auto, *, Auto">
-			<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
-					i:Attached.Icon="fa-gear" FontSize="24"/>
+		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Aqua">
+			<Rectangle Grid.Column="0" Width="40" Fill="Blue"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<Label Content="TOP"/>	
 			</StackPanel>
-			<Rectangle Grid.Column="2" Width="40" Fill="Blue"/>
+			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
+			        i:Attached.Icon="fa-gear" FontSize="24"/>
 		</Grid>
 		
 		<!--Body-->
-		<Grid Name="gridBODY" Grid.Row="1" Background="Red" ColumnDefinitions="*, Auto">
+		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto" Background="Red">
 			
 			<!--Main Operations-->
 			<Grid Name="gridOPS" Grid.Column="0" Background="RosyBrown" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto" ShowGridLines="False">
@@ -183,7 +184,7 @@
 		</Grid>
 		
 		<!--Bottom-->
-		<Grid Name="gridBOTTOM" Grid.Row="2" Background="Gray" Height="40" ColumnDefinitions="Auto, *, Auto">
+		<Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray">
 			<!--Supongo que aqui ira el About y Help-->
 			<Label Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">BOTTOM</Label>
 		</Grid>

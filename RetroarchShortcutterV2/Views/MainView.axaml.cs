@@ -10,6 +10,7 @@ using MsBox.Avalonia.Models;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 using System.Threading.Tasks;
+using Avalonia.Input;
 using Avalonia.Styling;
 using MsBox.Avalonia.Enums;
 
@@ -25,10 +26,22 @@ public partial class MainView : UserControl
         timeSpan = now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
     }
+    
+    public MainView(MainWindow mainWindow)
+    { 
+        InitializeComponent();
+        ParentWindow = mainWindow;
+        System.DateTime now = System.DateTime.Now;
+        timeSpan = now - App.LaunchTime;
+        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+    }
 
+    private MainWindow ParentWindow;
+    private bool FirstTimeLoad = true;
     private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int retrycount = 0;
+    private byte CurrentTheme = 250;
     private Shortcutter Link = new();
     private Settings settings;
     private Bitmap ICONimage;
@@ -49,38 +62,51 @@ public partial class MainView : UserControl
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
-        topLevel = TopLevel.GetTopLevel(this);
-        SettingsOps.BuildConfFile();
-        settings = FileOps.LoadSettingsFO();
-        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
-        System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
-        FileOps.SetDesktopDir(topLevel);
-        deskWindow.MainWindow.RequestedThemeVariant = LoadThemeVariant();
-        var cores_task = FileOps.LoadCores();
-        var icon_task = FileOps.LoadIcons(DesktopOS);
-        
-        // Condicion de OS
-        if (!DesktopOS)
+        if (FirstTimeLoad)
         {
-            if (string.IsNullOrEmpty(settings.DEFRADir)) { settings.DEFRADir = "retroarch"; }
-            txtRADir.IsReadOnly = false;
-            DefLinRAIcon = FileOps.GetRAIcons();
+            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
+            topLevel = TopLevel.GetTopLevel(this);
+            SettingsOps.BuildConfFile();
+            settings = FileOps.LoadSettingsFO();
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
+            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
+            FileOps.SetDesktopDir(topLevel);
+        
+            // TODO: El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
+            // TODO: utilizar la nueva referencia a la ventana
+            deskWindow.MainWindow.RequestedThemeVariant = LoadThemeVariant();
+        
+            var cores_task = FileOps.LoadCores();
+            var icon_task = FileOps.LoadIcons(DesktopOS);
+        
+            // Condicion de OS
+            if (!DesktopOS)
+            {
+                if (string.IsNullOrEmpty(settings.DEFRADir)) 
+                { settings.DEFRADir = "retroarch"; }
+                txtRADir.IsReadOnly = false;
+                DefLinRAIcon = FileOps.GetRAIcons();
+            }
+            else
+            {
+                WinFuncImport();
+                IconItemSET = new IconsItems();
+            }
+
+            LoadSettingsIntoControls();
+            comboCore_Loaded(cores_task);
+            comboConfig_Loaded();
+            comboICONDir_Loaded(icon_task);
+
+            FirstTimeLoad = false;
+            System.DateTime now = System.DateTime.Now;
+            timeSpan = now - App.LaunchTime;
+            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
         }
         else
         {
-            WinFuncImport();
-            IconItemSET = new();
+            LoadNewSettings();
         }
-
-        LoadSettingsIntoControls();
-        comboCore_Loaded(cores_task);
-        comboConfig_Loaded();
-        comboICONDir_Loaded(icon_task);
-
-        System.DateTime now = System.DateTime.Now;
-        timeSpan = now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
     }
 
     async void comboCore_Loaded(Task<string[]> cores_task)
@@ -104,6 +130,7 @@ public partial class MainView : UserControl
     {
         var icons_list = await icon_task;
         comboICONDir.Items.Add("Default");
+        // TODO: refactorizar esta parte sin ayuda de null
         if (icons_list != null)
         {
             System.Diagnostics.Debug.WriteLine("Lista de iconos importada", "[Info]");
@@ -133,6 +160,9 @@ public partial class MainView : UserControl
             2 => ThemeVariant.Dark,
             _ => ThemeVariant.Default,
         };
+        CurrentTheme = settings.PreferedTheme;
+        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", "[Info]");
+        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", "[Debg]");
         return theme;
     }
 
@@ -276,8 +306,10 @@ public partial class MainView : UserControl
     // TOP CONTROLS
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     { 
-        var config = new SettingsWindow();
-        await config.ShowDialog(deskWindow.MainWindow);
+        // var config = new SettingsWindow();
+        // await config.ShowDialog(deskWindow.MainWindow);
+        var settingView = MainWindow.Window1Views1.SettingsView1;
+        ParentWindow.ChangeContent(settingView);
         LoadNewSettings();
     }
 

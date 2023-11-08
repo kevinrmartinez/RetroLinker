@@ -10,5 +10,10 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroarchShortcutterV2"
 		WindowStartupLocation="CenterScreen" Name="MainWindow1">
-        <views:MainView/>
+        
+        <TransitioningContentControl Name="CC1">
+	        <TransitioningContentControl.PageTransition>
+		        <PageSlide Duration="0:00:00.250" Orientation="Horizontal" SlideOutEasing=""/>
+	        </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
 </Window>
