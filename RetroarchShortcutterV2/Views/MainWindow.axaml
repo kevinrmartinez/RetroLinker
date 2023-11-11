@@ -13,7 +13,7 @@
         
         <TransitioningContentControl Name="CC1">
 	        <TransitioningContentControl.PageTransition>
-		        <PageSlide Duration="0:00:00.250" Orientation="Horizontal" SlideOutEasing=""/>
+				<CrossFade  Duration="0:00:00.300"/>
 	        </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 </Window>

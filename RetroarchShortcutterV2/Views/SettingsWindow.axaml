@@ -10,6 +10,9 @@
         Title="RetroarchShortcutterV2 Settings"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
 		WindowStartupLocation="CenterScreen" Name="SettingsWindow1">
-	<views:SettingsView/>
+	<!--<views:SettingsView/>-->
 	<!--<ContentControl Name="CC1"/>-->
+	<TabControl>
+		
+	</TabControl>
 </Window>
