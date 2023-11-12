@@ -19,11 +19,18 @@
 		<!--Body Tabs-->
 		<TabControl Grid.Row="1">
 			<!--TODO: Crear e implementar un Data Template para los header-->
-			<TabItem Header="Page 1">
-				<ContentControl Name="CCTab1"/>
+			<TabItem Header="General">
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
+				</ScrollViewer>
 			</TabItem>
-			<TabItem Header="Page 2">
-				<ContentControl Name="CCTab2"/>
+			<TabItem Header="Rutas de la App">
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab2" Margin="0,0,8,0"/>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Rutas de Destino">
+				
 			</TabItem>
 		</TabControl>
 		
