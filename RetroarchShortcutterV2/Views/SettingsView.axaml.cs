@@ -14,10 +14,12 @@ namespace RetroarchShortcutterV2.Views
         public SettingsView()
         { InitializeComponent(); }
 
-        public SettingsView(MainWindow mainWindow)
+        public SettingsView(MainWindow mainWindow, bool desktopOs, Settings _settings)
         {
             InitializeComponent();
             ParentWindow = mainWindow;
+            DesktopOS = desktopOs;
+            settings = _settings;
         }
         
         // Window Obj
@@ -30,7 +32,7 @@ namespace RetroarchShortcutterV2.Views
         // PROPS/STATICS
         private bool FirstTimeLoad = true;
         private Settings settings;
-        private bool DesktopOS { get; } = System.OperatingSystem.IsWindows();
+        private bool DesktopOS;
         static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
@@ -43,8 +45,6 @@ namespace RetroarchShortcutterV2.Views
             {
                 // Window objects
                 topLevel = TopLevel.GetTopLevel(this);
-                // var windows_list = deskWindow.Windows;
-                // Current_Window = windows_list[1];
                 if (!DesktopOS)
                 {
                     panelWindowsOnlyControls.IsEnabled = false;
@@ -53,16 +53,14 @@ namespace RetroarchShortcutterV2.Views
             }
 
             // Settings
-            LoadFromSettings();
+            ApplySettingsToControls();
             if (settings.UserAssetsPath == settings.ConvICONPath) 
             { chkUseUserAssets.IsChecked = true; }
             //System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", "[Debg]");
         }
 
-        void LoadFromSettings()
-        {
-            settings = SettingsOps.GetCachedSettings();
-
+        void ApplySettingsToControls()
+        { 
             txtUserAssets.Text = System.IO.Path.GetFullPath(settings.UserAssetsPath);
             txtDefRADir.Text = settings.DEFRADir;
             txtDefROMPath.Text = settings.DEFROMPath;
@@ -76,6 +74,7 @@ namespace RetroarchShortcutterV2.Views
         #endregion
 
         //APARIENCIA
+        // TODO: Optimizar con el uso de un evento, posiblemente basado en el byte de tema
         void LoadTheme(byte ThemeCode)
         {
             // El designer de Avalonia se rompe en esta parte, asi que puse una condicion para DEBUG

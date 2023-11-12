@@ -3,16 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="700"
+             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.SettingsView"
-			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
-  <!---->
-	<Grid Name="gridConfigAll" RowDefinitions="Auto, Auto, *, Auto, Auto">
-		<!--TOP-->
-		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>
-
+			 Name="SettingsView1" Loaded="SettingsView2_Loaded">
+  
+	<Grid Name="gridConfigAll" RowDefinitions="Auto, *">
 		<!--BODY-->
-		<Grid Name="gridConfigBody" Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
+		<Grid Name="gridConfigBody" Grid.Row="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, *" ShowGridLines="False">
 
 			<!--APARIENCIA-->
 			<StackPanel Grid.Row="0" Margin="3">
@@ -140,33 +137,7 @@
 		</Grid>
 
 		<!--SPACING-->
-		<Rectangle Grid.Row="2"/>
-
-		<!--CONTROLES-->
-		<StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
-
-			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click">
-				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-arrow-rotate-left"/>
-					<TextBlock Text="Default"/>
-				</StackPanel>
-			</Button>
-			<Button Name="btnDISSettings" Click="btnDISSettings_Click">
-				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-x" Foreground="Crimson"/>
-					<TextBlock Text="Descartar"/>
-				</StackPanel>
-			</Button>
-			<Button Name="btnCONSettings" Click="btnCONSettings_Click">
-				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-check" Foreground="Green"/>
-					<TextBlock Text="Confirmar"/>
-				</StackPanel>
-			</Button>
-		</StackPanel>
-
-		<!--BOTTOM-->
-		<Rectangle Grid.Row="4" Fill="Gray" Height="15"/>
-
+		<Rectangle Grid.Row="1"/>
+		
 	</Grid>
 </UserControl>

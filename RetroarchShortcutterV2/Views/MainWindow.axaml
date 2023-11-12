@@ -11,7 +11,7 @@
         Title="RetroarchShortcutterV2"
 		WindowStartupLocation="CenterScreen" Name="MainWindow1">
         
-        <TransitioningContentControl Name="CC1">
+        <TransitioningContentControl Name="MainCC1">
 	        <TransitioningContentControl.PageTransition>
 				<CrossFade  Duration="0:00:00.300"/>
 	        </TransitioningContentControl.PageTransition>
