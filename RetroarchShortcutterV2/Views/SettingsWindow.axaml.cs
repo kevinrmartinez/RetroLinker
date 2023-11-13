@@ -34,8 +34,8 @@ namespace RetroarchShortcutterV2.Views
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
         {
             LoadFromSettings();
-            SettingsView1 = new SettingsView(ParentWindow, DesktopOS, settings);
-            SettingsView2 = new SettingsView2(ParentWindow, DesktopOS, settings);
+            SettingsView1 = new SettingsView(ParentWindow, this, DesktopOS, settings);
+            SettingsView2 = new SettingsView2(ParentWindow, this, DesktopOS, settings);
             CCTab1.Content = SettingsView1;
             CCTab2.Content = SettingsView2;
         }
@@ -77,12 +77,12 @@ namespace RetroarchShortcutterV2.Views
 
         void btnCONSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (!DesktopOS) { settings.DEFRADir = SettingsView1.txtDefRADir.Text; }
+            if (!DesktopOS) { settings.DEFRADir = SettingsView2.txtDefRADir.Text; }
             // Set bools
             settings.PrevConfig = (bool)SettingsView1.chkPrevCONFIG.IsChecked;
             settings.AllwaysDesktop = (bool)SettingsView1.chkAllwaysDesktop.IsChecked;
             settings.CpyUserIcon = (bool)SettingsView1.chkCpyUserIcon.IsChecked;
-            settings.ExtractIco = (bool)SettingsView1.chkExtractIco.IsChecked;
+            settings.ExtractIco = (bool)SettingsView2.chkExtractIco.IsChecked;
             
             SettingsOps.WriteSettingsFile(settings);
             CloseView();

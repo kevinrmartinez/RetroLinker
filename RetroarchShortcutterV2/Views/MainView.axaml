@@ -6,14 +6,8 @@
              xmlns:vm="clr-namespace:RetroarchShortcutterV2.ViewModels"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.MainView"
-             x:DataType="vm:MainViewModel"
-             
-			 Name="View1" Loaded="View2_Loaded" Unloaded="View1_Unloaded">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
+	
 	<Grid RowDefinitions="Auto, *, Auto">
 		<!--Top-->
 		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Aqua">

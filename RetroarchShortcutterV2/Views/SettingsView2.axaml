@@ -5,7 +5,7 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.SettingsView2"
-             Name="SettingsView2-1">
+             Name="SettingsView2_1" Loaded="SettingsView2_1_Loaded">
     
     <Grid Name="gridConfigAll2" RowDefinitions="Auto, *">
         <!--CONTENT-->
@@ -69,7 +69,7 @@
 		            <Label FontSize="12" Content="Solo para Windows"/>
 		            <Rectangle Height="4"/>
 		            <TextBlock FontSize="10" TextWrapping="Wrap"
-		                       Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut."/>
+		                       Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut creado."/>
 		            <!--SAVE ICO CONTROLS-->
 		            <Grid Name="panelWindowsOnlyControls2" Margin="0,5" ColumnDefinitions="*,3.66*,Auto">
 			            <TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center"

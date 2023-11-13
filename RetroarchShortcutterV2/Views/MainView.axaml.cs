@@ -1,4 +1,4 @@
-﻿//using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
@@ -36,7 +36,6 @@ public partial class MainView : UserControl
 
     // Window Object
     private MainWindow ParentWindow;
-    private TopLevel topLevel;
     
     private bool FirstTimeLoad = true;
     private string DefLinRAIcon;
@@ -60,12 +59,11 @@ public partial class MainView : UserControl
         if (FirstTimeLoad)
         {
             System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
-            topLevel = TopLevel.GetTopLevel(this);
             SettingsOps.BuildConfFile();
             settings = FileOps.LoadSettingsFO();
             System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
             System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
-            FileOps.SetDesktopDir(topLevel);
+            FileOps.SetDesktopDir(ParentWindow);
         
             // TODO: El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -165,7 +163,7 @@ public partial class MainView : UserControl
     {
         txtRADir.Text = settings.DEFRADir;
         OutputLink.RAdir = settings.DEFRADir;
-        FileOps.SetROMPadre(settings.DEFROMPath, topLevel);
+        FileOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
 
         // TODO: refactorizar esta parte sin ayuda de null
         if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
@@ -324,7 +322,7 @@ public partial class MainView : UserControl
         if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }
         else { opt = PickerOpt.OpenOpts.LINico; }
         
-        string file = await FileOps.OpenFileAsync(opt, topLevel);
+        string file = await FileOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             int newIndex = comboICONDir.ItemCount;
@@ -386,7 +384,7 @@ public partial class MainView : UserControl
         PickerOpt.OpenOpts opt;
         if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
         else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
-        string file = await FileOps.OpenFileAsync(opt, topLevel);
+        string file = await FileOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.RAdir = file;
@@ -404,7 +402,7 @@ public partial class MainView : UserControl
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, topLevel);
+        string file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.ROMdir = file;
@@ -449,7 +447,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, topLevel);
+        var file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             if (!comboConfig.Items.Contains(file))
@@ -490,7 +488,7 @@ public partial class MainView : UserControl
         if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }
         else { opt = PickerOpt.SaveOpts.LINdesktop; }
         
-        var file = await FileOps.SaveFileAsync(opt, topLevel);
+        var file = await FileOps.SaveFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.LNKdir = file;
@@ -613,7 +611,7 @@ public partial class MainView : UserControl
 
     async void testing1(object sender, RoutedEventArgs e)
     {
-        Testing.FilePickerTesting(topLevel);
+        Testing.FilePickerTesting(ParentWindow);
     }
 #endif
 }
