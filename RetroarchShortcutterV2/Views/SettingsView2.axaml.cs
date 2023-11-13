@@ -135,4 +135,11 @@ public partial class SettingsView2 : UserControl
                 txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
             }
             #endregion
+
+#if DEBUG
+    void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
+    {
+        _ = sender.ToString();
+    }
+#endif
 }

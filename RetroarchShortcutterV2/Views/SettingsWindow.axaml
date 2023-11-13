@@ -12,6 +12,10 @@
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
 		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="SettingsWindow1_OnLoaded">
 	
+	<Window.Styles>
+		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
+	</Window.Styles>
+	
 	<Grid Name="gridConfigWindows" RowDefinitions="Auto, *, Auto, Auto">
 		<!--TOP-->
 		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>

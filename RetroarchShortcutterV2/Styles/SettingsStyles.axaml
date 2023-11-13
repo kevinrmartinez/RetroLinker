@@ -1,0 +1,37 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+          <StackPanel>
+              <Rectangle Height="2" StrokeThickness="1" Fill="Gray"/>
+              <Border Classes="SettingCatg">
+                  <StackPanel>
+                      <Label Content="MUESTRA"/>
+                      <Button Classes="SettingCatg" Content="BOTON"/>
+                      <CheckBox Classes="SettingCatg" Content="CHECKBOX"/>
+                  </StackPanel>
+              </Border>
+              <Rectangle Height="2" StrokeThickness="1" Fill="Gray"/>
+          </StackPanel> 
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Border.SettingCatg">
+        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Margin" Value="4,3"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="9"/>
+    </Style>
+    <Style Selector="CheckBox.SettingCatg">
+        <Setter Property="Margin" Value="3"/>
+    </Style>
+    <Style Selector="Button.SettingCatg">
+        <Setter Property="Margin" Value="0,0,3,0"/>
+    </Style>
+    <Style Selector="TextBox.SettingCatg">
+        <Setter Property="Margin" Value="2,0,0,0"/>
+    </Style>
+</Styles>
