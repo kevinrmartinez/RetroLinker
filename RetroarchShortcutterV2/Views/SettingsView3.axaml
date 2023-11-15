@@ -12,17 +12,53 @@
 	</UserControl.Styles>
 
 	<Grid RowDefinitions="Auto, Auto, *">
+		<!--Salida Default-->
 		<Border Grid.Row="0" Classes="SettingCatg">
 			<StackPanel>
 				<Label Content="Salida por Default"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<CheckBox Name="chkAlwaysOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut"/>
 				<Label Content="Directorio Default"/>
-				<Grid ColumnDefinitions="*, Auto, Auto">
+				<Grid Name="panelDEFLinkPath" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
 					<TextBox Grid.Column="0" Classes="SettingCatg"/>
-					<Button Grid.Column="1"/>
-					<Button Grid.Column="2" Classes="SettingCatg"/>
+					<Button Grid.Column="1" Name="btnDefLinkPath" Height="30"
+					        i:Attached.Icon="fa-folder-open"/>
+					<Button Grid.Column="2" Name="btnclrDefLinkPath" Height="30" Classes="SettingCatg">
+						<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+					</Button>
 				</Grid>
+			</StackPanel>
+		</Border>
+		
+	<!-- COPIAS	 -->
+		<Border Grid.Row="1" Classes="SettingCatg">
+			<StackPanel>
+				<Label Content="Copias de la Salida"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<CheckBox Name="chkLinkCopies" Classes="SettingCatg" Content="Realizar copias en:"/>
+				<Border Classes="SettingCatg">
+					<StackPanel>
+						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
+							<ListBoxItem CornerRadius="9" Background="Aqua">
+								<Grid ColumnDefinitions="*, Auto">
+									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows"/>
+									<Button Grid.Column="1" Height="30" Classes="SettingCatg">
+										<i:Icon Value="fa-trash" Foreground="Crimson"/>
+									</Button>
+								</Grid>
+							</ListBoxItem>
+							<ListBoxItem CornerRadius="9" Background="Aquamarine">
+								<Grid ColumnDefinitions="*, Auto, Auto" VerticalAlignment="Center">
+									<TextBox Grid.Column="0"/>
+									<Button Grid.Column="1" Name="btnLinkCopy" Height="30"
+									        i:Attached.Icon="fa-folder-open"/>
+									<Button Grid.Column="2" Name="btnaddLinkCopy" Height="30" 
+									        i:Attached.Icon="fa-plus"/>
+								</Grid>
+							</ListBoxItem>
+						</ListBox>
+					</StackPanel>
+				</Border>
 			</StackPanel>
 		</Border>
 	</Grid>

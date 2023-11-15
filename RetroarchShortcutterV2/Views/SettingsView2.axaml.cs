@@ -10,13 +10,12 @@ public partial class SettingsView2 : UserControl
     public SettingsView2()
     { InitializeComponent(); }
     
-    public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs, Settings _settings)
+    public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs)
     {
         InitializeComponent();
         MainAppWindow = mainWindow;
         ParentWindow = settingsWindow;
         DesktopOS = desktopOs;
-        settings = _settings;
     }
     
     // Window Obj
@@ -25,7 +24,6 @@ public partial class SettingsView2 : UserControl
     
     // PROPS/STATICS
     private bool FirstTimeLoad = true;
-    private Settings settings;
     private bool DesktopOS;
     
     // LOAD
@@ -41,17 +39,17 @@ public partial class SettingsView2 : UserControl
         }
         // Settings
         ApplySettingsToControls();
-        if (settings.UserAssetsPath == settings.ConvICONPath) 
+        if (ParentWindow.settings.UserAssetsPath == ParentWindow.settings.ConvICONPath) 
         { chkUseUserAssets.IsChecked = true; }
     }
     
     void ApplySettingsToControls()
     { 
-        txtUserAssets.Text = System.IO.Path.GetFullPath(settings.UserAssetsPath);
-        txtDefRADir.Text = settings.DEFRADir;
-        txtDefROMPath.Text = settings.DEFROMPath;
-        txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
-        chkExtractIco.IsChecked = settings.ExtractIco;
+        txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
+        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+        txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
+        chkExtractIco.IsChecked = ParentWindow.settings.ExtractIco;
     }
     
     // USER ASSETS
@@ -60,13 +58,13 @@ public partial class SettingsView2 : UserControl
                 string folder = await FileOps.OpenFolderAsync(template:0, ParentWindow);
                 // TODO: Resolver sin el uso de null
                 if (folder != null)
-                { txtUserAssets.Text = folder; settings.UserAssetsPath = folder; }
+                { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
             }
     
             void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
             {
                 txtUserAssets.Text = string.Empty; 
-                settings.UserAssetsPath = string.Empty;
+                ParentWindow.settings.UserAssetsPath = string.Empty;
             }
     
     
@@ -81,14 +79,14 @@ public partial class SettingsView2 : UserControl
                 if (file != null)
                 { 
                     txtDefRADir.Text = file; 
-                    settings.DEFRADir = file; 
+                    ParentWindow.settings.DEFRADir = file; 
                 }
             }
     
             void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
             {
                 txtDefRADir.Text = string.Empty; 
-                settings.DEFRADir = string.Empty;
+                ParentWindow.settings.DEFRADir = string.Empty;
             }
     
             // DIR PADRE
@@ -99,13 +97,13 @@ public partial class SettingsView2 : UserControl
                 if (folder != null)
                 { 
                     txtDefROMPath.Text = folder; 
-                    settings.DEFROMPath = folder; 
+                    ParentWindow.settings.DEFROMPath = folder; 
                 }
             }   // TODO: No parece aplicarce en ningun Linux
     
             void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
             {
-                txtDefROMPath.Text = string.Empty; settings.DEFROMPath = string.Empty;
+                txtDefROMPath.Text = string.Empty; ParentWindow.settings.DEFROMPath = string.Empty;
             }
             
             // ICONS
@@ -118,21 +116,21 @@ public partial class SettingsView2 : UserControl
                 if (folder != null)
                 {
                     txtIcoSavPath.Text = folder; 
-                    settings.ConvICONPath = folder;
+                    ParentWindow.settings.ConvICONPath = folder;
                 }
             }
 
             void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
             {
-                settings.ConvICONPath = FileOps.DefUserAssetsDir; 
-                txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
+                ParentWindow.settings.ConvICONPath = FileOps.DefUserAssetsDir; 
+                txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
             }
 
             void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
             {
                 panelWindowsOnlyControls2.IsEnabled = !(bool)chkUseUserAssets.IsChecked;
-                settings.ConvICONPath = settings.UserAssetsPath;
-                txtIcoSavPath.Text = System.IO.Path.GetFullPath(settings.ConvICONPath);
+                ParentWindow.settings.ConvICONPath = ParentWindow.settings.UserAssetsPath;
+                txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
             }
             #endregion
 

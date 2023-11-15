@@ -32,6 +32,6 @@
         <Setter Property="Margin" Value="0,0,3,0"/>
     </Style>
     <Style Selector="TextBox.SettingCatg">
-        <Setter Property="Margin" Value="2,0,0,0"/>
+        <Setter Property="Margin" Value="2,0,0,3"/>
     </Style>
 </Styles>

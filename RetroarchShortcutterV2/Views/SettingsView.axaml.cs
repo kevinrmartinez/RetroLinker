@@ -14,13 +14,12 @@ namespace RetroarchShortcutterV2.Views
         public SettingsView()
         { InitializeComponent(); }
 
-        public SettingsView(MainWindow _mainWindow, SettingsWindow parentWindow, bool desktopOs, Settings _settings)
+        public SettingsView(MainWindow _mainWindow, SettingsWindow parentWindow, bool desktopOs)
         {
             InitializeComponent();
             mainWindow = _mainWindow;
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
-            settings = _settings;
         }
         
         // Window Obj
@@ -29,7 +28,6 @@ namespace RetroarchShortcutterV2.Views
 
         // PROPS/STATICS
         private bool FirstTimeLoad = true;
-        private Settings settings;
         private bool DesktopOS;
         static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
@@ -46,10 +44,10 @@ namespace RetroarchShortcutterV2.Views
 
         void ApplySettingsToControls()
         { 
-            chkPrevCONFIG.IsChecked = settings.PrevConfig;
-            chkAllwaysDesktop.IsChecked = settings.AllwaysDesktop;
-            chkCpyUserIcon.IsChecked = settings.CpyUserIcon;
-            LoadTheme(settings.PreferedTheme);
+            chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
+            chkAllwaysDesktop.IsChecked = ParentWindow.settings.AllwaysDesktop;
+            chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
+            LoadTheme(ParentWindow.settings.PreferedTheme);
         }
         #endregion
 
@@ -78,12 +76,12 @@ namespace RetroarchShortcutterV2.Views
             if ((bool)ThemeSwitch.IsChecked)
             {
                 Application.Current.RequestedThemeVariant = dark_theme;
-                settings.PreferedTheme = 2;
+                ParentWindow.settings.PreferedTheme = 2;
             }
             else
             {
                 Application.Current.RequestedThemeVariant = light_theme;
-                settings.PreferedTheme = 1;
+                ParentWindow.settings.PreferedTheme = 1;
             }
         }
 
@@ -94,7 +92,7 @@ namespace RetroarchShortcutterV2.Views
                 // TODO: El designer de Avalonia se rompe en esta parte
                 Application.Current.RequestedThemeVariant = system_theme;
                 ThemeSwitch.IsEnabled = false;
-                settings.PreferedTheme = 0;
+                ParentWindow.settings.PreferedTheme = 0;
             }
             else
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }

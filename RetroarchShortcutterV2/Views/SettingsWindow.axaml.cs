@@ -25,17 +25,17 @@ namespace RetroarchShortcutterV2.Views
         private MainWindow ParentWindow;
 
         // PROPS/STATICS
-        private Settings settings;
         private bool DesktopOS = System.OperatingSystem.IsWindows();
         private SettingsView SettingsView1;
         private SettingsView2 SettingsView2;
+        public Settings settings { get; set; }
 
         #region LoadContent
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
         {
             LoadFromSettings();
-            SettingsView1 = new SettingsView(ParentWindow, this, DesktopOS, settings);
-            SettingsView2 = new SettingsView2(ParentWindow, this, DesktopOS, settings);
+            SettingsView1 = new SettingsView(ParentWindow, this, DesktopOS);
+            SettingsView2 = new SettingsView2(ParentWindow, this, DesktopOS);
             CCTab1.Content = SettingsView1;
             CCTab2.Content = SettingsView2;
         }
