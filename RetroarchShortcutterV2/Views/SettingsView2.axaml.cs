@@ -32,15 +32,12 @@ public partial class SettingsView2 : UserControl
         if (FirstTimeLoad)
         {
             if (!DesktopOS)
-            {
-                panelWindowsOnlyControls.IsEnabled = false;
-                txtDefRADir.IsReadOnly = false;
-            }
+            { txtDefRADir.IsReadOnly = false; }
+
+            FirstTimeLoad = false;
         }
         // Settings
         ApplySettingsToControls();
-        if (ParentWindow.settings.UserAssetsPath == ParentWindow.settings.ConvICONPath) 
-        { chkUseUserAssets.IsChecked = true; }
     }
     
     void ApplySettingsToControls()
@@ -48,8 +45,6 @@ public partial class SettingsView2 : UserControl
         txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
         txtDefRADir.Text = ParentWindow.settings.DEFRADir;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
-        txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
-        chkExtractIco.IsChecked = ParentWindow.settings.ExtractIco;
     }
     
     // USER ASSETS
@@ -105,39 +100,17 @@ public partial class SettingsView2 : UserControl
             {
                 txtDefROMPath.Text = string.Empty; ParentWindow.settings.DEFROMPath = string.Empty;
             }
-            
-            // ICONS
 
-            #region WINDOWS OS ONLY
-            async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
+            //UNLOAD
+            private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
             {
-                string folder = await FileOps.OpenFolderAsync(template:2, ParentWindow);
-                // TODO: Resolver sin el uso de null
-                if (folder != null)
-                {
-                    txtIcoSavPath.Text = folder; 
-                    ParentWindow.settings.ConvICONPath = folder;
-                }
+                _ = e.Source;
             }
-
-            void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
-            {
-                ParentWindow.settings.ConvICONPath = FileOps.DefUserAssetsDir; 
-                txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
-            }
-
-            void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
-            {
-                panelWindowsOnlyControls2.IsEnabled = !(bool)chkUseUserAssets.IsChecked;
-                ParentWindow.settings.ConvICONPath = ParentWindow.settings.UserAssetsPath;
-                txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
-            }
-            #endregion
-
 #if DEBUG
     void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
     {
         _ = sender.ToString();
     }
 #endif
+    
 }

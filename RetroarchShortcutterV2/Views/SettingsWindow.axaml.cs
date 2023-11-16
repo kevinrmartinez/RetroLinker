@@ -85,7 +85,7 @@ namespace RetroarchShortcutterV2.Views
             settings.PrevConfig = (bool)SettingsView1.chkPrevCONFIG.IsChecked;
             settings.AllwaysDesktop = (bool)SettingsView1.chkAllwaysDesktop.IsChecked;
             settings.CpyUserIcon = (bool)SettingsView1.chkCpyUserIcon.IsChecked;
-            settings.ExtractIco = (bool)SettingsView21.chkExtractIco.IsChecked;
+            settings.ExtractIco = (bool)SettingsView31.chkExtractIco.IsChecked;
             
             SettingsOps.WriteSettingsFile(settings);
             CloseView();

@@ -98,11 +98,18 @@ namespace RetroarchShortcutterV2.Views
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
         }
         
+        // UNLOAD
+        private void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
+        {
+            _ = e.ToString();
+        }
+        
 #if DEBUG
         void SettingsView2_Loaded(object sender, RoutedEventArgs e)
         {
             _ = sender.ToString();
         }
 #endif
+        
     }
 }
