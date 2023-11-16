@@ -34,7 +34,9 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Rutas de Destino">
-				
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab3" Margin="0,0,8,0"/>
+				</ScrollViewer>
 			</TabItem>
 		</TabControl>
 		

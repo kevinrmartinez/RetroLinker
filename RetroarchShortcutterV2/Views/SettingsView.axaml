@@ -5,7 +5,7 @@
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.SettingsView"
-			 Name="SettingsView1" Loaded="SettingsView2_Loaded">
+			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
   
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>

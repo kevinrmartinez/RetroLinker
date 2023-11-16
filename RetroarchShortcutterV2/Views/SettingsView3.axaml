@@ -5,7 +5,7 @@
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.SettingsView3"
-			 Name="SettingsView3_1">
+			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded2">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -39,7 +39,7 @@
 				<Border Classes="SettingCatg">
 					<StackPanel>
 						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
-							<ListBoxItem CornerRadius="9" Background="Aqua">
+							<ListBoxItem Name="lsboxDebug1" CornerRadius="9" Background="Aqua">
 								<Grid ColumnDefinitions="*, Auto">
 									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows"/>
 									<Button Grid.Column="1" Height="30" Classes="SettingCatg">
@@ -47,12 +47,10 @@
 									</Button>
 								</Grid>
 							</ListBoxItem>
-							<ListBoxItem CornerRadius="9" Background="Aquamarine">
-								<Grid ColumnDefinitions="*, Auto, Auto" VerticalAlignment="Center">
-									<TextBox Grid.Column="0"/>
-									<Button Grid.Column="1" Name="btnLinkCopy" Height="30"
-									        i:Attached.Icon="fa-folder-open"/>
-									<Button Grid.Column="2" Name="btnaddLinkCopy" Height="30" 
+							<ListBoxItem Name="lsboxaddLinkCopies" CornerRadius="9" Background="Aquamarine">
+								<Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
+									<ComboBox Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
+									<Button Name="btnaddLinkCopy" Grid.Column="1" Height="30" Click="BtnaddLinkCopy_OnClick2"
 									        i:Attached.Icon="fa-plus"/>
 								</Grid>
 							</ListBoxItem>
