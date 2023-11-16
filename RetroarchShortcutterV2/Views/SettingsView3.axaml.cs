@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.VisualTree;
-using Projektanker.Icons.Avalonia;
 using RetroarchShortcutterV2.Models;
 
 namespace RetroarchShortcutterV2.Views
@@ -29,6 +25,13 @@ namespace RetroarchShortcutterV2.Views
         // PROPS/STATICS
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
+
+        private List<string> defIcoSavPathList = new()
+        {
+            "Usar la carpeta UserAssets",
+            "Usar la carpeta de la ROM",
+            "Usar la carpeta de Retroarch",
+        };
         
         // LOAD
         private void SettingsView3_1_OnLoaded(object? sender, RoutedEventArgs e)
@@ -39,12 +42,14 @@ namespace RetroarchShortcutterV2.Views
                 if (!DesktopOS)
                 { panelWindowsOnlyControls.IsEnabled = false; }
 
+                comboIcoSavPath.ItemsSource = defIcoSavPathList;
+                comboIcoSavPath.SelectedIndex++;
                 FirstTimeLoad = false;
             }
             //Settings
             ApplySettingsToControls();
-            if (ParentWindow.settings.UserAssetsPath == ParentWindow.settings.ConvICONPath) 
-            { chkUseUserAssets.IsChecked = true; }
+            // if (ParentWindow.settings.UserAssetsPath == ParentWindow.settings.ConvICONPath) 
+            // { chkUseUserAssets.IsChecked = true; }
         }
         
         // FUNCIONES
@@ -118,7 +123,7 @@ namespace RetroarchShortcutterV2.Views
 
         void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
         {
-            panelWindowsOnlyControls2.IsEnabled = !(bool)chkUseUserAssets.IsChecked;
+            panelWindowsOnlyControls2.IsEnabled = !(bool)chkdefIcoSavPath.IsChecked;
             ParentWindow.settings.ConvICONPath = ParentWindow.settings.UserAssetsPath;
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
         }

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
+             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
              x:Class="RetroarchShortcutterV2.Views.SettingsView3"
 			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded2" Unloaded="SettingsView3_1_OnUnloaded">
 
@@ -63,17 +63,18 @@
 		<!--WINDOWS ONLY-->
 		<Border Grid.Row="2" Classes="SettingCatg">
 			<StackPanel Name="panelWindowsOnlyControls">
-				<Label FontSize="12" Content="Solo para Windows"/>
+				<Label Content="Salida de Archivos .ico (Solo para Windows)"/>
+				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Rectangle Height="4"/>
 				<TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
 				           Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut creado."/>
 				<!--SAVE ICO CONTROLS-->
 				<!--TODO: Cambiar la organizacion a titulo arriba, TextBox debajo-->
-				<Grid Name="panelWindowsOnlyControls2" Margin="0,5" ColumnDefinitions="*,3.66*,Auto">
-					<TextBlock Grid.Column="0" TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,0,0,0"
-					           Text="Eliga el directorio para dichos '.ico'"/>
-					<TextBox Name="txtIcoSavPath" Grid.Column="1" HorizontalAlignment="Stretch" IsReadOnly="True"/>
-			        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+				<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
+				           Text="Eliga el directorio para dichos '.ico'"/>
+				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
+					<TextBox Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
+			        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 				        <Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_Click"
 				                i:Attached.Icon="fa-folder-open"/>
 				        <Button Name="btnclrIcoSavPath" Height="30" Classes="SettingCatg" Click="btnclrIcoSavPath_Click">
@@ -81,11 +82,15 @@
 				        </Button>
 			        </StackPanel>
 				</Grid>
-				<Grid ColumnDefinitions="*, *">
-					<CheckBox Name="chkUseUserAssets" Grid.Column="0" Classes="SettingCatg" Content="Usar el folder UserAssets" IsCheckedChanged="chkUseUserAssets_Checked"
-					          ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
-					<CheckBox Name="chkExtractIco" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" 
+				<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
+					<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
+						<CheckBox Name="chkdefIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center"
+						          ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
+						<ComboBox Name="comboIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"/>
+					</Grid>
+					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" 
 					          ToolTip.Tip="Extrae el icono del ejecutable seleccionado como un '.ico'. Se guarda en la direccion elegida arriba."/>
+					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="El .ico lleva el nombre de Shortcut"/>
 				</Grid>
 			</StackPanel>
 		</Border>
