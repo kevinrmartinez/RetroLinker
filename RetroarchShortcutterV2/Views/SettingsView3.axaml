@@ -17,13 +17,13 @@
 			<StackPanel>
 				<Label Content="Salida por Default"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkAlwaysOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut"/>
+				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut"/>
 				<Label Content="Directorio Default"/>
-				<Grid Name="panelDEFLinkPath" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
+				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
 					<TextBox Grid.Column="0" Classes="SettingCatg"/>
-					<Button Grid.Column="1" Name="btnDefLinkPath" Height="30"
+					<Button Grid.Column="1" Name="btnDefLinkOutput" Height="30"
 					        i:Attached.Icon="fa-folder-open"/>
-					<Button Grid.Column="2" Name="btnclrDefLinkPath" Height="30" Classes="SettingCatg">
+					<Button Grid.Column="2" Name="btnclrDefLinkOutput" Height="30" Classes="SettingCatg">
 						<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 					</Button>
 				</Grid>
@@ -69,7 +69,6 @@
 				<TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
 				           Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut creado."/>
 				<!--SAVE ICO CONTROLS-->
-				<!--TODO: Cambiar la organizacion a titulo arriba, TextBox debajo-->
 				<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
 				           Text="Eliga el directorio para dichos '.ico'"/>
 				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
@@ -84,9 +83,9 @@
 				</Grid>
 				<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
 					<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
-						<CheckBox Name="chkdefIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center"
+						<CheckBox Name="chkMakeLinkCopy" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center"
 						          ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
-						<ComboBox Name="comboIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"/>
+						<ComboBox Name="comboMakeLinkCopy" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"/>
 					</Grid>
 					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" 
 					          ToolTip.Tip="Extrae el icono del ejecutable seleccionado como un '.ico'. Se guarda en la direccion elegida arriba."/>

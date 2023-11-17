@@ -173,7 +173,7 @@ public partial class MainView : UserControl
 
         txtLINKDir.Watermark = "Super Mario Bros";
         txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
-        if (!settings.AllwaysDesktop) { LinkDirSetting(); }
+        if (settings.AllwaysAskOutput) { LinkDirSetting(); }
         else { LinkNameSetting(); }
     }
 
@@ -502,7 +502,7 @@ public partial class MainView : UserControl
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (settings.AllwaysDesktop)
+        if (!settings.AllwaysAskOutput)
         {
             if (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
             { lblLinkDeskDir.Content = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS); }
@@ -533,7 +533,7 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Manejo del link en caso de 'AllwaysDesktop = true'
-        if (settings.AllwaysDesktop && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
+        if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
             OutputLink.LNKdir = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS);
         }

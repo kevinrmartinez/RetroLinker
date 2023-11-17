@@ -42,8 +42,8 @@ namespace RetroarchShortcutterV2.Views
                 if (!DesktopOS)
                 { panelWindowsOnlyControls.IsEnabled = false; }
 
-                comboIcoSavPath.ItemsSource = defIcoSavPathList;
-                comboIcoSavPath.SelectedIndex++;
+                comboMakeLinkCopy.ItemsSource = defIcoSavPathList;
+                comboMakeLinkCopy.SelectedIndex++;
                 FirstTimeLoad = false;
             }
             //Settings
@@ -56,7 +56,7 @@ namespace RetroarchShortcutterV2.Views
         void ApplySettingsToControls()
         {
             
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
             chkExtractIco.IsChecked = ParentWindow.settings.ExtractIco;
         }
         
@@ -111,21 +111,21 @@ namespace RetroarchShortcutterV2.Views
             if (folder != null)
             {
                 txtIcoSavPath.Text = folder; 
-                ParentWindow.settings.ConvICONPath = folder;
+                ParentWindow.settings.IcoSavPath = folder;
             }
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            ParentWindow.settings.ConvICONPath = FileOps.DefUserAssetsDir; 
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
+            ParentWindow.settings.IcoSavPath = FileOps.DefUserAssetsDir; 
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
         }
 
         void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
         {
-            panelWindowsOnlyControls2.IsEnabled = !(bool)chkdefIcoSavPath.IsChecked;
-            ParentWindow.settings.ConvICONPath = ParentWindow.settings.UserAssetsPath;
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.ConvICONPath);
+            panelWindowsOnlyControls2.IsEnabled = !(bool)chkMakeLinkCopy.IsChecked;
+            ParentWindow.settings.IcoSavPath = ParentWindow.settings.UserAssetsPath;
+            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
         }
         #endregion
         

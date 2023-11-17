@@ -207,8 +207,8 @@ namespace RetroarchShortcutterV2.Models
         public static string CpyIconToUsrSet(string og_path)
         {
             string name = Path.GetFileName(og_path);
-            string new_path = Path.Combine(LoadedSettings.ConvICONPath, name);
-            CheckUsrSetDir(LoadedSettings.ConvICONPath);
+            string new_path = Path.Combine(LoadedSettings.IcoSavPath, name);
+            CheckUsrSetDir(LoadedSettings.IcoSavPath);
             if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
             else 
             {

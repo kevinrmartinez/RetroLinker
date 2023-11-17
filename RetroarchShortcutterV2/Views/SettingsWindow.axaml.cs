@@ -83,7 +83,7 @@ namespace RetroarchShortcutterV2.Views
             if (!DesktopOS) { settings.DEFRADir = SettingsView21.txtDefRADir.Text; }
             // Set bools
             settings.PrevConfig = (bool)SettingsView1.chkPrevCONFIG.IsChecked;
-            settings.AllwaysDesktop = (bool)SettingsView1.chkAllwaysDesktop.IsChecked;
+            settings.AllwaysAskOutput = (bool)SettingsView31.chkAlwaysAskOutput.IsChecked;
             settings.CpyUserIcon = (bool)SettingsView1.chkCpyUserIcon.IsChecked;
             settings.ExtractIco = (bool)SettingsView31.chkExtractIco.IsChecked;
             
