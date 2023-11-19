@@ -207,6 +207,15 @@ namespace RetroarchShortcutterV2.Models
             return new_dir;
         }
         
+        public static string GetDeskLinkPath(string link_name, string LinkPath, bool OS)
+        {
+            string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
+            new_dir += (OS) ? WinLinkExt : LinLinkExt;
+            new_dir = Path.Combine(LinkPath, new_dir);
+            return new_dir;
+        }
+        
         public static string CpyIconToUsrSet(string og_path)
         {
             string name = Path.GetFileName(og_path);

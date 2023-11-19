@@ -1,16 +1,15 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
+using MsBox.Avalonia.Enums;
 using RetroarchShortcutterV2.Models;
 using RetroarchShortcutterV2.Models.Icons;
 using System.Threading.Tasks;
 using Avalonia.Styling;
-using MsBox.Avalonia.Enums;
 
 namespace RetroarchShortcutterV2.Views;
 
@@ -48,8 +47,11 @@ public partial class MainView : UserControl
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
-
     
+    // TODO: Implementar codigo de hacer copias del Output
+    // TODO: Implementar los casos especialos de donde se guardan los .ico
+    // TODO: Implementar el cambio de nombre para los .ico
+    // TODO: Implementar evento de manejo de tema
     #region LOAD EVENTS
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
@@ -170,8 +172,8 @@ public partial class MainView : UserControl
 
         txtLINKDir.Watermark = "Super Mario Bros";
         txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
-        if (settings.AllwaysAskOutput) { LinkDirSetting(); }
-        else { LinkNameSetting(); }
+        if (settings.AllwaysAskOutput) { LinkCustomPathSetting(); }
+        else { LinkLoadedPathSetting(); }
     }
 
     void WinFuncImport()
@@ -233,7 +235,7 @@ public partial class MainView : UserControl
         }
     }
 
-    void LinkDirSetting()
+    void LinkCustomPathSetting()
     {
         lblLinkDir.IsVisible = true;
         lblLinkName.IsVisible = false;
@@ -242,7 +244,7 @@ public partial class MainView : UserControl
         lblLinkDeskDir.IsVisible = false;
     }
 
-    void LinkNameSetting()
+    void LinkLoadedPathSetting()
     {
         lblLinkDir.IsVisible = false;
         lblLinkName.IsVisible = true;
@@ -250,7 +252,7 @@ public partial class MainView : UserControl
         txtLINKDir.AcceptsReturn = false;
         btnLINKDir.IsEnabled = false;
         lblLinkDeskDir.IsVisible = true;
-        lblLinkDeskDir.Content = FileOps.UserDesktop;
+        lblLinkDeskDir.Content = settings.DEFLinkOutput;
     }
 
     void FillIconBoxes(string DIR)
@@ -289,6 +291,12 @@ public partial class MainView : UserControl
         var msBox = MessageBoxManager.GetMessageBoxCustom(customParams);
         var result = await msBox.ShowWindowDialogAsync(ParentWindow);
         return result;
+    }
+
+    void ValidateLINBin()
+    {
+        if (OutputLink.RAdir == txtRADir.Text) return;
+        OutputLink.RAdir = string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
     }
     #endregion
 
@@ -417,10 +425,9 @@ public partial class MainView : UserControl
 
     #region RACore Controls
     // CORE
-    // TODO
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
-        
+        // TODO    
     }
     #endregion
 
@@ -455,11 +462,10 @@ public partial class MainView : UserControl
             comboConfig.SelectedItem = file;
         }
     }
-
-    // TODO
+    
     void btnAppendConfig_Click(object sender, RoutedEventArgs e)
     {
-        
+        // TODO
     }
     #endregion
 
@@ -472,20 +478,18 @@ public partial class MainView : UserControl
             var msbox_params = new MessageBoxStandardParams()
             {
                 ContentTitle = "Observacion",
-                ContentHeader = "El nombre utilizado aqui sera utilizado como el campo 'Name' del archivo, y como nombre del archivo en si.",
+                ContentHeader = "El nombre utilizado aqui sera utilizado como el campo 'Name' del archivo .desktop, y como nombre del archivo en si.",
                 ContentMessage = "Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancel para no volver a mostrar este mensaje.",
                 ButtonDefinitions = ButtonEnum.OkCancel,
                 Icon = Icon.Folder
             };
-            var box_result = await MessageBoxPopUp(msbox_params);
-            if (box_result == ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
+            var boxResult = await MessageBoxPopUp(msbox_params);
+            if (boxResult == ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
         }
         
         PickerOpt.SaveOpts opt;
-        if (DesktopOS) { opt = PickerOpt.SaveOpts.WINlnk; }
-        else { opt = PickerOpt.SaveOpts.LINdesktop; }
-        
-        var file = await FileOps.SaveFileAsync(opt, ParentWindow);
+        opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
+        string file = await FileOps.SaveFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.LNKdir = file;
@@ -499,15 +503,13 @@ public partial class MainView : UserControl
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (!settings.AllwaysAskOutput)
-        {
-            if (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
-            { lblLinkDeskDir.Content = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS); }
-            else { lblLinkDeskDir.Content = FileOps.UserDesktop; }
-        }
+        if (settings.AllwaysAskOutput) return;
+        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDeskLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS) 
+                                                                             : FileOps.UserDesktop;
     }
     #endregion
 
+    
     // EXECUTE
     // La accion ocurre aqui
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
@@ -524,15 +526,15 @@ public partial class MainView : UserControl
         OutputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : OutputLink.ROMfile;
 
         // Validar que haya ejecutable (LINUX)
-        if (string.IsNullOrEmpty(OutputLink.RAdir) && !txtRADir.IsReadOnly) { OutputLink.RAdir = txtRADir.Text; }
+        ValidateLINBin();
 
         // Validando que haya un core
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
-        // Manejo del link en caso de 'AllwaysDesktop = true'
+        // Manejo del link en caso de 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
-            OutputLink.LNKdir = FileOps.GetDeskLinkPath(txtLINKDir.Text, DesktopOS);
+            OutputLink.LNKdir = FileOps.GetDeskLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS);
         }
 
         // Validando que haya descripcion o no
@@ -554,16 +556,18 @@ public partial class MainView : UserControl
         }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((!string.IsNullOrEmpty(OutputLink.RAdir)) && (!string.IsNullOrEmpty(OutputLink.ROMdir)) && (!string.IsNullOrEmpty(OutputLink.ROMcore)) && (!string.IsNullOrEmpty(OutputLink.LNKdir)))
+        if ((!string.IsNullOrEmpty(OutputLink.RAdir)) && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
+                                                      && (!string.IsNullOrEmpty(OutputLink.ROMcore)) 
+                                                      && (!string.IsNullOrEmpty(OutputLink.LNKdir)))
         { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "[Info]"); }
         else
         {
             ShortcutPosible = false;
-            msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
+            msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = Icon.Forbidden;
             MessageBoxPopUp(msbox_params);
         }
 
-        while (ShortcutPosible)
+        if (ShortcutPosible)
         {
             // Comillas para directorios que iran de parametros...
             // para el directorio de la ROM
@@ -578,13 +582,13 @@ public partial class MainView : UserControl
             if (Shortcutter.BuildWinShortcut(OutputLink, DesktopOS) || Shortcutter.BuildLinShorcut(OutputLink, DesktopOS))
             {
                 msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
+                msbox_params.Icon = Icon.Success;
                 MessageBoxPopUp(msbox_params);
             }
             else
             {
                 msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
+                msbox_params.Icon = Icon.Error; 
                 MessageBoxPopUp(msbox_params);
             }
             ShortcutPosible = false;

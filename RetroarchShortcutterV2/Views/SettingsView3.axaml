@@ -60,6 +60,8 @@
 			</StackPanel>
 		</Border>
 		
+		<!--IDEA: Permitir cambiar el directorio de iconos guardados-->
+		
 		<!--WINDOWS ONLY-->
 		<Border Grid.Row="2" Classes="SettingCatg">
 			<StackPanel Name="panelWindowsOnlyControls">
