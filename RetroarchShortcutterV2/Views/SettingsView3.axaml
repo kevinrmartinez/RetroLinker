@@ -5,7 +5,7 @@
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
              x:Class="RetroarchShortcutterV2.Views.SettingsView3"
-			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded2" Unloaded="SettingsView3_1_OnUnloaded">
+			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded" Unloaded="SettingsView3_1_OnUnloaded">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -17,13 +17,13 @@
 			<StackPanel>
 				<Label Content="Salida por Default"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut"/>
+				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut" IsCheckedChanged="ChkAlwaysAskOutput_IsCheckedChanged"/>
 				<Label Content="Directorio Default"/>
 				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
-					<TextBox Grid.Column="0" Classes="SettingCatg"/>
-					<Button Grid.Column="1" Name="btnDefLinkOutput" Height="30"
+					<TextBox Name="txtDEFLinkOutput" Grid.Column="0" IsReadOnly="True" Classes="SettingCatg"/>
+					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Click="BtnDefLinkOutput_OnClick"
 					        i:Attached.Icon="fa-folder-open"/>
-					<Button Grid.Column="2" Name="btnclrDefLinkOutput" Height="30" Classes="SettingCatg">
+					<Button Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">
 						<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 					</Button>
 				</Grid>
@@ -35,7 +35,7 @@
 			<StackPanel>
 				<Label Content="Copias de la Salida"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkLinkCopies" Classes="SettingCatg" Content="Realizar copias en:"/>
+				<CheckBox Name="chkMakeLinkCopy" Classes="SettingCatg" Content="Realizar copias en:" IsCheckedChanged="ChkMakeLinkCopy_IsCheckedChanged"/>
 				<Border Classes="SettingCatg">
 					<StackPanel>
 						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
@@ -83,13 +83,14 @@
 				</Grid>
 				<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
 					<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
-						<CheckBox Name="chkMakeLinkCopy" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center"
+						<CheckBox Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center" IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
 						          ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
-						<ComboBox Name="comboMakeLinkCopy" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"/>
+						<ComboBox Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"
+						          DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
 					</Grid>
-					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" 
+					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"
 					          ToolTip.Tip="Extrae el icono del ejecutable seleccionado como un '.ico'. Se guarda en la direccion elegida arriba."/>
-					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="El .ico lleva el nombre de Shortcut"/>
+					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="El .ico lleva el nombre de Shortcut" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"/>
 				</Grid>
 			</StackPanel>
 		</Border>

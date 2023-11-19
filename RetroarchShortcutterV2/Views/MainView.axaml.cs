@@ -20,8 +20,7 @@ public partial class MainView : UserControl
     public MainView()
     { 
         InitializeComponent();
-        System.DateTime now = System.DateTime.Now;
-        timeSpan = now - App.LaunchTime;
+        timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
     }
     
@@ -29,8 +28,7 @@ public partial class MainView : UserControl
     { 
         InitializeComponent();
         ParentWindow = mainWindow;
-        System.DateTime now = System.DateTime.Now;
-        timeSpan = now - App.LaunchTime;
+        timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
     }
 
@@ -71,25 +69,24 @@ public partial class MainView : UserControl
             var cores_task = FileOps.LoadCores();
             var icon_task = FileOps.LoadIcons(DesktopOS);
         
-        // Condicion de OS
-        if (!DesktopOS)
-        {
-            if (string.IsNullOrEmpty(settings.DEFRADir)) 
-            { settings.DEFRADir = "retroarch"; }
-            txtRADir.IsReadOnly = false;
-            DefLinRAIcon = FileOps.GetRAIcons();
-        }
-        else
-        {
-            WinFuncImport();
-            IconItemSET = new();
-        }
-
-        ApplySettingsToControls();
-        comboCore_Loaded(cores_task);
-        comboConfig_Loaded();
-        comboICONDir_Loaded(icon_task);
-        // TODO: Evento de tutorial para nuevos usuarios
+            // Condicion de OS
+            if (!DesktopOS)
+            {
+                if (string.IsNullOrEmpty(settings.DEFRADir)) 
+                { settings.DEFRADir = "retroarch"; }
+                txtRADir.IsReadOnly = false;
+                DefLinRAIcon = FileOps.GetRAIcons();
+            }
+            else
+            {
+                WinFuncImport();
+                IconItemSET = new();
+            }
+            ApplySettingsToControls();
+            comboCore_Loaded(cores_task);
+            comboConfig_Loaded();
+            comboICONDir_Loaded(icon_task);
+            // TODO: Evento de tutorial para nuevos usuarios
 
             FirstTimeLoad = false;
             System.DateTime now = System.DateTime.Now;

@@ -45,7 +45,6 @@ namespace RetroarchShortcutterV2.Views
         void ApplySettingsToControls()
         { 
             chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
-            chkAllwaysDesktop.IsChecked = ParentWindow.settings.AllwaysDesktop;
             chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
             LoadTheme(ParentWindow.settings.PreferedTheme);
         }
@@ -97,15 +96,22 @@ namespace RetroarchShortcutterV2.Views
             else
             { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
         }
+
+        void View1ChecksHandle(object? sender, RoutedEventArgs e)
+        {
+            if ((sender as CheckBox) == null) return;
+            ParentWindow.settings.PrevConfig = (bool)chkPrevCONFIG.IsChecked;
+            ParentWindow.settings.CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
+        }
         
         // UNLOAD
-        private void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
+        void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
         {
             _ = e.ToString();
         }
         
 #if DEBUG
-        void SettingsView2_Loaded(object sender, RoutedEventArgs e)
+        void SettingsView1_Loaded2(object sender, RoutedEventArgs e)
         {
             _ = sender.ToString();
         }

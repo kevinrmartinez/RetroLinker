@@ -23,7 +23,7 @@
 					<StackPanel Orientation="Horizontal" Margin="0, 2">
 						<ToggleSwitch Name="ThemeSwitch" Content="Tema" OnContent="Dark" OffContent="Light" IsCheckedChanged="ThemeSwitch_CheckedChanged"/>
 						<Rectangle Width="18"/>
-						<CheckBox Name="ThemeDefault" Content="Según el Sistema" Margin="0,24,0,0" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+						<CheckBox Name="ThemeDefault" Content="Según el Sistema" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
 					</StackPanel>
 				</StackPanel>
 			</Border>
@@ -34,14 +34,13 @@
 					<Label Content="Otras Preferencias"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
-						<StackPanel Grid.Column="0">
-							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="Recordar archivos '.cfg' usados"/>
-							<!--<CheckBox Name="chkPrevICON" Content="Recordar iconos usados"/>-->
+						<StackPanel Grid.Column="0" Orientation="Vertical">
+							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="Recordar archivos '.cfg' usados" IsCheckedChanged="View1ChecksHandle"/>
 						</StackPanel>
 						<!--<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->
 						<StackPanel Grid.Column="2" Margin="3,0">
-							<CheckBox Name="chkAllwaysDesktop" Classes="SettingCatg" Content="Siempre crear Links en el Desktop"/>
+							<!-- <CheckBox Name="chkAllwaysDesktop" Classes="SettingCatg" Content="Siempre crear Links en el Desktop"/> -->
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -52,11 +51,8 @@
 				<StackPanel>
 					<Label Content="Preferencias de Iconos"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="Guardar copia de los iconos usados"
+					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="Guardar copia de los iconos usados" IsCheckedChanged="View1ChecksHandle"
 					          ToolTip.Tip="Copia el archivo seleccionado como icono al directorio de esta aplicacion (UserAssets), y usarlo desde ahí."/>
-					<!--Tambien hay que añadir un nuevo elemento el Settings-->
-				
-				
 				</StackPanel>
 			</Border>
 

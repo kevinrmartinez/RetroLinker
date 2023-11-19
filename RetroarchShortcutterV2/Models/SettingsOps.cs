@@ -3,14 +3,32 @@ using System.Collections.Generic;
 
 namespace RetroarchShortcutterV2.Models
 {
-    public class SettingsOps
+    public static class SettingsOps
     {
         private static Configuration settings_file = new();
         private static Section GeneralSettings = new("GeneralSettings");
         private static Section StoredConfigs = new("StoredConfigs");
         private static Settings CachedSettings = new();
         
-        public static List<string>? PrevConfigs { set; get; }
+        public static List<string>? PrevConfigs { get; set; }
+
+        public static string[] WINLinkPathCandidates { get; } = new[]
+        {
+            FileOps.UserDesktop,
+            FileOps.WINPublicDesktop,
+            FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu",
+            "C:\\ProgramData\\Microsoft\\Windows\\Start Menu"
+        };
+        public static string[] LINLinkPathCandidates { get; } = new[]
+        {
+            FileOps.UserDesktop,
+            FileOps.UserProfile + "/.local/share/applications",
+            "/usr/local/share/applications",
+            "/usr/share/applications"
+        };
+
+        public const string IcoSavROM = "_ROM";
+        public const string IcoSavRA = "_RA";
 
         public static void BuildConfFile()
         {

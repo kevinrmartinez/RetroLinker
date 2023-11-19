@@ -42,75 +42,75 @@ public partial class SettingsView2 : UserControl
     
     void ApplySettingsToControls()
     { 
+        // TODO: Decidirse si usar directorio relativo o absoluto
         txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
-        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+        txtDefRADir.Text = (string.IsNullOrEmpty(ParentWindow.settings.DEFRADir) && !DesktopOS) ? FileOps.LinuxRABin : ParentWindow.settings.DEFRADir;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
     
     // USER ASSETS
-            async void btnUserAssets_Click(object sender, RoutedEventArgs e)
-            {
-                string folder = await FileOps.OpenFolderAsync(template:0, ParentWindow);
-                // TODO: Resolver sin el uso de null
-                if (folder != null)
-                { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
-            }
+    async void btnUserAssets_Click(object sender, RoutedEventArgs e)
+    {
+        string folder = await FileOps.OpenFolderAsync(template:0, ParentWindow);
+        if (!string.IsNullOrWhiteSpace(folder))
+        { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
+    }
     
-            void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
-            {
-                txtUserAssets.Text = string.Empty; 
-                ParentWindow.settings.UserAssetsPath = string.Empty;
-            }
+    void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
+    {
+        ParentWindow.settings.UserAssetsPath = ParentWindow.DEFsettings.UserAssetsPath;
+        txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
+        
+    }
     
+    // EJECUTABLE
+    async void btnDefRADir_Click(object sender, RoutedEventArgs e)
+    {
+        PickerOpt.OpenOpts opt;
+        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :    // FilePicker Option para .exe de Windows
+                          PickerOpt.OpenOpts.RAout;     // FilePicker Option para .AppImage de Linux
+        string file = await FileOps.OpenFileAsync(template:opt, ParentWindow);
+        if (!string.IsNullOrWhiteSpace(file))
+        { 
+            txtDefRADir.Text = file; 
+            ParentWindow.settings.DEFRADir = file; 
+        }
+    }
     
-            // EJECUTABLE
-            async void btnDefRADir_Click(object sender, RoutedEventArgs e)
-            {
-                PickerOpt.OpenOpts opt;
-                if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
-                else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
-                string file = await FileOps.OpenFileAsync(opt, ParentWindow);
-                // TODO: Resolver sin el uso de null
-                if (file != null)
-                { 
-                    txtDefRADir.Text = file; 
-                    ParentWindow.settings.DEFRADir = file; 
-                }
-            }
+    void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
+    {
+        ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
+        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+        
+    }
     
-            void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
-            {
-                txtDefRADir.Text = string.Empty; 
-                ParentWindow.settings.DEFRADir = string.Empty;
-            }
+    // DIR PADRE
+    async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
+    {
+        string folder = await FileOps.OpenFolderAsync(template:1, ParentWindow);
+        if (!string.IsNullOrWhiteSpace(folder))
+        { 
+            txtDefROMPath.Text = folder; 
+            ParentWindow.settings.DEFROMPath = folder; 
+        }
+    }   // TODO: No parece aplicarce en ningun Linux
     
-            // DIR PADRE
-            async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
-            {
-                string folder = await FileOps.OpenFolderAsync(template:1, ParentWindow);
-                // TODO: Resolver sin el uso de null
-                if (folder != null)
-                { 
-                    txtDefROMPath.Text = folder; 
-                    ParentWindow.settings.DEFROMPath = folder; 
-                }
-            }   // TODO: No parece aplicarce en ningun Linux
-    
-            void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
-            {
-                txtDefROMPath.Text = string.Empty; ParentWindow.settings.DEFROMPath = string.Empty;
-            }
+    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
+    {
+        ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
+        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+    }
 
-            //UNLOAD
-            private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
-            {
-                _ = e.Source;
-            }
+    //UNLOAD
+    private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _ = e.Source;
+    }
+    
 #if DEBUG
     void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
     {
         _ = sender.ToString();
     }
 #endif
-    
 }

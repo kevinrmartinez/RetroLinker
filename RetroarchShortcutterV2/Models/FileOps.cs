@@ -21,6 +21,7 @@ namespace RetroarchShortcutterV2.Models
         public const short MAX_PATH = 255;  // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
+        public const string LinuxRABin = "retroarch";
         public const string DotDesktopRAIcon = "retroarch";
         
 
@@ -31,6 +32,9 @@ namespace RetroarchShortcutterV2.Models
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
                                                 // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static readonly string WINPublicUser = "C:\\Users\\Public";
+        public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
+        
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
         private static Settings LoadedSettings;
@@ -127,7 +131,6 @@ namespace RetroarchShortcutterV2.Models
 
         public static async Task SetDesktopDir(TopLevel topLevel)
         {
-
             DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
             // '??=' le asigna valor solo si esta null
         }

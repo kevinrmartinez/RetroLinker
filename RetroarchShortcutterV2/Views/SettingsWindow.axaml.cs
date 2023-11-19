@@ -30,6 +30,7 @@ namespace RetroarchShortcutterV2.Views
         private SettingsView2 SettingsView21;
         private SettingsView3 SettingsView31;
         public Settings settings { get; set; }
+        public Settings DEFsettings { get; } = new();
 
         #region LoadContent
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
@@ -70,9 +71,8 @@ namespace RetroarchShortcutterV2.Views
             var result = await msbox.ShowWindowDialogAsync(ParentWindow);
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
-                settings = new();
                 //SettingsOps.PrevConfigs = new();
-                SettingsOps.WriteSettingsFile(settings);
+                SettingsOps.WriteSettingsFile(DEFsettings);
                 CloseView();
             }
                 
