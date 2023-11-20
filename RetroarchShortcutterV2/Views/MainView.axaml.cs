@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -48,7 +49,6 @@ public partial class MainView : UserControl
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
     
-    // TODO: Implementar codigo de hacer copias del Output
     // TODO: Implementar los casos especialos de donde se guardan los .ico
     // TODO: Implementar el cambio de nombre para los .ico
     // TODO: Implementar evento de manejo de tema
@@ -504,7 +504,7 @@ public partial class MainView : UserControl
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (settings.AllwaysAskOutput) return;
-        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDeskLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS) 
+        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS) 
                                                                              : FileOps.UserDesktop;
     }
     #endregion
@@ -534,7 +534,7 @@ public partial class MainView : UserControl
         // Manejo del link en caso de 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
-            OutputLink.LNKdir = FileOps.GetDeskLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS);
+            OutputLink.LNKdir = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS);
         }
 
         // Validando que haya descripcion o no
@@ -578,18 +578,40 @@ public partial class MainView : UserControl
             if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
             { OutputLink.CONFfile = Utils.FixUnusualDirectories(OutputLink.CONFfile); }
 
-
-            if (Shortcutter.BuildWinShortcut(OutputLink, DesktopOS) || Shortcutter.BuildLinShorcut(OutputLink, DesktopOS))
+            // Manejo de Link Copies
+#if DEBUG
+            SettingsOps.LinkCopyPaths = new List<string>()
             {
-                msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
-                msbox_params.Icon = Icon.Success;
-                MessageBoxPopUp(msbox_params);
+                System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
+                System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
+            };
+#endif
+            if (settings.MakeLinkCopy)
+            {
+                OutputLink.LNKcpy = new string[SettingsOps.LinkCopyPaths.Count];
+                for (int i = 0; i < OutputLink.LNKcpy.Length; i++)
+                {
+                    OutputLink.LNKcpy[i] = System.IO.Path.Combine(SettingsOps.LinkCopyPaths[i],
+                        System.IO.Path.GetFileName(OutputLink.LNKdir));
+                }
             }
-            else
+
+            List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
+            if (opResult.Count == 1)
             {
-                msbox_params.ContentMessage = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error"; 
-                msbox_params.Icon = Icon.Error; 
-                MessageBoxPopUp(msbox_params);
+                if (!opResult[0].Error)
+                {
+                    msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
+                    msbox_params.Icon = Icon.Success;
+                    MessageBoxPopUp(msbox_params);
+                }
+                else
+                {
+                    msbox_params.ContentHeader = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error";
+                    msbox_params.ContentMessage = $"La operacion termino con el siguienete error:\n{opResult[0].eMesseage}";
+                    msbox_params.Icon = Icon.Error; 
+                    MessageBoxPopUp(msbox_params);
+                }
             }
             ShortcutPosible = false;
         }

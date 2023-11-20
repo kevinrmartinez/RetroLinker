@@ -1,4 +1,6 @@
-﻿namespace RetroarchShortcutterV2.Models
+﻿using System.Collections.Generic;
+
+namespace RetroarchShortcutterV2.Models
 {
     public class Shortcutter
     {
@@ -13,9 +15,10 @@
         public string Command { get; set; }     // 7
         public string? Desc { get; set; }       // 8
         public string LNKdir { get; set; }      // 9
-        public bool VerboseB { get; set; }      // 10
-        public bool FullscreenB { get; set; }   // 11
-        public bool AccessibilityB { get; set; }// 12
+        public string[] LNKcpy { get; set; }    // 10
+        public bool VerboseB { get; set; }      // 11
+        public bool FullscreenB { get; set; }   // 12
+        public bool AccessibilityB { get; set; }// 13
 
         public Shortcutter()
         {
@@ -25,17 +28,23 @@
             ROMcore = string.Empty;
             Command = string.Empty;
             LNKdir = string.Empty;
+            LNKcpy = System.Array.Empty<string>();
             VerboseB = false;
             FullscreenB = false;
             AccessibilityB = false;
         }
         #endregion
-
-
-        // Windows
-        public static bool BuildWinShortcut(Shortcutter link, bool OS)
+        
+        // OS Decider
+        public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
         {
-            if (!OS) { return false; }
+            return (os) ? BuildWinShortcut(link) : BuildLinShorcut(link);
+        }
+        
+        // Windows
+        private static List<ShortcutterResult> BuildWinShortcut(Shortcutter link)
+        {
+            var ResultList = new List<ShortcutterResult>();
             WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
 
             link.RApath = FileOps.GetDirFromPath(link.RAdir);
@@ -49,42 +58,110 @@
 
             link = Commander.CommandBuilder(link);
 
-            //IList<object>? shortcut_props = CreateObjList(shortcut);       // Crea un nueva IList de objetos que pueden ser null
-
             var CreateShortcutArgs = new object[]
             {
                 link.RAdir, link.RApath, link.Command,
                 link.ICONfile, link.Desc, link.LNKdir
             };
+
+            
+            var LinkResult = new ShortcutterResult(link.LNKdir);
+            ResultList.Add(LinkResult);
             System.Diagnostics.Trace.WriteLine($"Creando {System.IO.Path.GetFileName(link.LNKdir)} para Windows.", "[Info]");
-            try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); return true; }
+            try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); 
+                LinkResult.Messeage = LinkResult.Success1; }
             catch (System.Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                return false; 
+                LinkResult.Messeage = LinkResult.Faliure1;
+                LinkResult.Error = true;
+                LinkResult.eMesseage = e.Message;
             }
-        }   // El metodo es bool; true si tuvo exito, false en caso contrario
+
+            for (int i = 0; i < link.LNKcpy.Length; i++)
+            {
+                LinkResult = new ShortcutterResult(link.LNKcpy[i]);
+                ResultList.Add(LinkResult);
+                CreateShortcutArgs[5] = link.LNKcpy[i];
+                System.Diagnostics.Trace.WriteLine($"Creando {System.IO.Path.GetFileName(link.LNKcpy[i])} para Windows.", "[Info]");
+                try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs);
+                    LinkResult.Messeage = LinkResult.Success1; }
+                catch (System.Exception e)
+                {
+                    System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKcpy[i])}!", "[Erro]");
+                    System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                    LinkResult.Messeage = LinkResult.Faliure1;
+                    LinkResult.Error = true;
+                    LinkResult.eMesseage = e.Message;
+                }
+            }
+            
+            return ResultList;
+        }   // 
 
         // Linux
-        public static bool BuildLinShorcut(Shortcutter link, bool OS)
+        private static List<ShortcutterResult> BuildLinShorcut(Shortcutter link)
         {
-            if (OS) { return false; }
-
+            var ResultList = new List<ShortcutterResult>();
             link = Commander.CommandBuilder(link);
             //link.Command = link.Command.Replace("\"", "\'");
             if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
             { link.ICONfile = FileOps.DotDesktopRAIcon; }
+            
             string[] NameFix = FileOps.FixLinkName(link.LNKdir);
             link.LNKdir = NameFix[0];
+            var LinkResult = new ShortcutterResult(link.LNKdir);
+            ResultList.Add(LinkResult);
             
-            try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]); return true; }
+            try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]);
+                LinkResult.Messeage = LinkResult.Success1; }
             catch (System.Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKdir}'!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                return false; 
+                LinkResult.Messeage = LinkResult.Faliure1;
+                LinkResult.Error = true;
+                LinkResult.eMesseage = e.Message;
             }
+
+            for (int i = 0; i < link.LNKcpy.Length; i++)
+            {
+                NameFix = FileOps.FixLinkName(link.LNKcpy[i]);
+                link.LNKcpy[i] = NameFix[0];
+                LinkResult = new ShortcutterResult(link.LNKcpy[i]);
+                ResultList.Add(LinkResult);
+                
+                try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]);
+                    LinkResult.Messeage = LinkResult.Success1; }
+                catch (System.Exception e)
+                {
+                    System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKcpy[i]}'!", "[Erro]");
+                    System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                    LinkResult.Messeage = LinkResult.Faliure1;
+                    LinkResult.Error = true;
+                    LinkResult.eMesseage = e.Message;
+                }
+            }
+            return ResultList;
+        }
+    }
+
+    
+    public class ShortcutterResult
+    {
+        public string OutputDir { get; set; }
+        public string? Messeage { get; set; }
+        public bool Error { get; set; }
+        public string? eMesseage { get; set; }
+
+        
+        public readonly string Success1 = "Operacion realizada con exito";
+        public readonly string Faliure1 = "Operacion ha fracasado";
+
+        public ShortcutterResult(string outputDir)
+        {
+            OutputDir = outputDir;
         }
     }
 }

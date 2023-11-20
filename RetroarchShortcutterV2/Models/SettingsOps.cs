@@ -11,6 +11,8 @@ namespace RetroarchShortcutterV2.Models
         private static Settings CachedSettings = new();
         
         public static List<string>? PrevConfigs { get; set; }
+        // TODO: Implementar la carga y guardado* de LinkCopyPaths
+        public static List<string>? LinkCopyPaths { get; set; }
 
         public static string[] WINLinkPathCandidates { get; } = new[]
         {
