@@ -5,7 +5,7 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroarchShortcutterV2.Views.SettingsView2"
-             Name="SettingsView2_1" Loaded="SettingsView2_1_Loaded" Unloaded="SettingsView2_1_OnUnloaded">
+             Name="SettingsView2_1" Loaded="SettingsView2_1_Loaded">
 	
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -21,9 +21,9 @@
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
 					           Text="En la carpeta UserAssets se guardan las copias de los iconos y la fuente de los Cores disponibles (cores.txt)."/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
+					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
-						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
 							<Button Name="btnUserAssets" Height="30" Click="btnUserAssets_Click"
 							        i:Attached.Icon="fa-folder-open"/>
 							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_Click">
@@ -39,9 +39,12 @@
 				<StackPanel>
 					<Label Content="Ejecutable Preferido de RetroArch"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
-						<TextBox Name="txtDefRADir" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
-						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
+						<TextBox Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+						<Button Name="btnApplyUserAssets" Grid.Column="1" Height="30" CornerRadius="7" Margin="0,0,2,3" Click="BtnApplyUserAssets_Click">
+							<i:Icon Value="fa-check" Foreground="ForestGreen"/>
+						</Button>
+						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
 							<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_Click"
 							        i:Attached.Icon="fa-folder-open"/>
 							<Button Name="btnclrDefRADir" Height="30" Classes="SettingCatg" Click="btnclrDefRADir_Click">

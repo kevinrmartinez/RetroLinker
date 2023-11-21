@@ -29,13 +29,7 @@ public partial class SettingsView2 : UserControl
     // LOAD
     void SettingsView2_1_Loaded(object sender, RoutedEventArgs e)
     {
-        if (FirstTimeLoad)
-        {
-            if (!DesktopOS)
-            { txtDefRADir.IsReadOnly = false; }
-
-            FirstTimeLoad = false;
-        }
+        
         // Settings
         ApplySettingsToControls();
     }
@@ -44,7 +38,9 @@ public partial class SettingsView2 : UserControl
     { 
         // TODO: Decidirse si usar directorio relativo o absoluto
         txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
+        txtDefRADir.IsReadOnly = DesktopOS;
         txtDefRADir.Text = (string.IsNullOrEmpty(ParentWindow.settings.DEFRADir) && !DesktopOS) ? FileOps.LinuxRABin : ParentWindow.settings.DEFRADir;
+        btnApplyUserAssets.IsVisible = !DesktopOS;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
     
@@ -64,6 +60,13 @@ public partial class SettingsView2 : UserControl
     }
     
     // EJECUTABLE
+    private void BtnApplyUserAssets_Click(object? sender, RoutedEventArgs e)
+    {
+        var _grid = (sender as Control).Parent as Grid;
+        var txtbox = _grid.Children[0] as TextBox;
+        if (!string.IsNullOrWhiteSpace(txtbox.Text)) ParentWindow.settings.DEFRADir = txtbox.Text;
+    }
+    
     async void btnDefRADir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;

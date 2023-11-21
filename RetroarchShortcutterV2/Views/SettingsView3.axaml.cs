@@ -49,6 +49,10 @@ namespace RetroarchShortcutterV2.Views
                 { candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates); }
 
                 //candidateCopiesPath.Add(list);
+                foreach (var path in SettingsOps.LinkCopyPaths)
+                {
+                    lsboxLinkCopies.Items.Add(AddLinkCopyItem(path));
+                }
                 candidateCopiesPath.Add("Otro...");
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
                 comboaddLinkCopy.SelectedIndex = 0;
@@ -70,7 +74,9 @@ namespace RetroarchShortcutterV2.Views
             txtDEFLinkOutput.Text = ParentWindow.settings.DEFLinkOutput;
             chkMakeLinkCopy.IsChecked = ParentWindow.settings.MakeLinkCopy;
             lsboxLinkCopies.IsEnabled = ParentWindow.settings.MakeLinkCopy;
-            if (DesktopOS) ValidateSavIcoPath(ParentWindow.settings.IcoSavPath);
+
+            if (!DesktopOS) return;
+            ValidateSavIcoPath(ParentWindow.settings.IcoSavPath);
             chkExtractIco.IsChecked = ParentWindow.settings.ExtractIco;
             chkIcoLinkName.IsChecked = ParentWindow.settings.IcoLinkName;
         }
@@ -126,6 +132,11 @@ namespace RetroarchShortcutterV2.Views
             // TODO: Decidir si usar ruta absoluta o relativa
             ParentWindow.settings.IcoSavPath = path;
         }
+
+        int NextCpoyItemIndex()
+        {
+            return (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
+        }
         
         void refresh_comboaddLinkCopy()
         {
@@ -154,14 +165,6 @@ namespace RetroarchShortcutterV2.Views
             var chk = sender as CheckBox;
             ParentWindow.settings.AllwaysAskOutput = (bool)chk.IsChecked;
             panelDEFLinkOutput.IsEnabled = !(bool)chk.IsChecked;
-            // if ((bool)chk.IsChecked)
-            // {
-            //     panelDEFLinkOutput.IsEnabled = false;
-            // }
-            // else
-            // {
-            //     panelDEFLinkOutput.IsEnabled = true;
-            // }
         }
         
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
@@ -193,13 +196,14 @@ namespace RetroarchShortcutterV2.Views
         void BtnaddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
         {
             string currentItem = comboaddLinkCopy.SelectedItem.ToString();
-            if (string.IsNullOrEmpty(currentItem)) { }
-            else
+            if (string.IsNullOrWhiteSpace(currentItem)) return;
+
+            if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem))
             {
-                int newItemIndex = (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
-                lsboxLinkCopies.Items.Insert(newItemIndex, AddLinkCopyItem(currentItem));
-                comboaddLinkCopy.SelectedIndex = 0;
+                lsboxLinkCopies.Items.Insert(NextCpoyItemIndex(), AddLinkCopyItem(currentItem));
+                ParentWindow.SetLinkCopyPaths.Add(currentItem);
             }
+            comboaddLinkCopy.SelectedIndex = 0;
         }
         
         void btnTrashCopyItem(object sender, RoutedEventArgs e)
@@ -207,6 +211,7 @@ namespace RetroarchShortcutterV2.Views
             var parentGrid = (sender as Control).Parent as Grid;
             
             var path = (parentGrid.Children[0] as Label).Content.ToString();
+            ParentWindow.SetLinkCopyPaths.Remove(path);
             
             var parentListBoxItem = parentGrid.Parent as ListBoxItem;
             lsboxLinkCopies.Items.Remove(parentListBoxItem);

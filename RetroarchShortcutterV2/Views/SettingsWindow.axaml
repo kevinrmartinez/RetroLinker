@@ -55,7 +55,7 @@
 					<TextBlock Text="Descartar"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnCONSettings" Click="btnCONSettings_Click">
+			<Button Name="btnCONSettings" Click="btnSAVESettings_Click">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-check" Foreground="Green"/>
 					<TextBlock Text="Confirmar"/>

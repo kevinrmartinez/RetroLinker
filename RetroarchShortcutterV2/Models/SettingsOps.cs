@@ -8,11 +8,11 @@ namespace RetroarchShortcutterV2.Models
         private static Configuration settings_file = new();
         private static Section GeneralSettings = new("GeneralSettings");
         private static Section StoredConfigs = new("StoredConfigs");
+        private static Section StoredLinkPaths = new("StoredLinkPaths");
         private static Settings CachedSettings = new();
         
         public static List<string>? PrevConfigs { get; set; }
-        // TODO: Implementar la carga y guardado* de LinkCopyPaths
-        public static List<string>? LinkCopyPaths { get; set; }
+        public static List<string>? LinkCopyPaths { get; set; } = new();
 
         public static string[] WINLinkPathCandidates { get; } = new[]
         {
@@ -64,16 +64,16 @@ namespace RetroarchShortcutterV2.Models
                 System.Diagnostics.Trace.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.", "[Info]");
                 try
                 {
-                    Configuration settings_file = LoadConfiguration(FileOps.SettingFileBin);
+                    Configuration settingsLoad_file = LoadConfiguration(FileOps.SettingFileBin);
                     // Manejo de los settings generales, presentes en la clase Settings
-                    GeneralSettings = settings_file["GeneralSettings"];
+                    GeneralSettings = settingsLoad_file["GeneralSettings"];
                     GeneralSettings.SetValuesTo(settings);
                     // Manejo de error: en caso de que el archivo se lea incorrectamente, los campos not-null apareceran null
                     if (string.IsNullOrEmpty(settings.UserAssetsPath))
                     { throw new System.IO.InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
                     GeneralSettings.SetValuesTo(CachedSettings);
 
-                    StoredConfigs = settings_file["StoredConfigs"];
+                    StoredConfigs = settingsLoad_file["StoredConfigs"];
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
                     {
@@ -81,8 +81,16 @@ namespace RetroarchShortcutterV2.Models
                         for (int i = 0; i < dir_count; i++)
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
                         FileOps.ConfigDir.AddRange(PrevConfigs);
-                        System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.", "[Info]");
                     }
+
+                    StoredLinkPaths = settingsLoad_file["StoredLinkPaths"];
+                    int path_count = StoredLinkPaths.SettingCount;
+                    if (path_count > 0)
+                    {
+                        for (int i = 0; i < path_count; i++)
+                        { LinkCopyPaths.Add(StoredLinkPaths[i].StringValue); }
+                    }
+                    System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.", "[Info]");
                 }
                 catch (System.Exception e)
                 {
@@ -106,13 +114,21 @@ namespace RetroarchShortcutterV2.Models
                 GeneralSettings.GetValuesFrom(settings);
                 if (PrevConfigs != null)
                 {
-                    int dir_count = PrevConfigs.Count;
-                    string key;
-                    for (int i = 0; i < dir_count; i++)
+                    int dirCount = PrevConfigs.Count;
+                    for (int i = 0; i < dirCount; i++)
                     {
-                        key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
+                        string key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
                     }
                 }
+                if (LinkCopyPaths.Count > 0)
+                {
+                    int pathCount = LinkCopyPaths.Count;
+                    for (int i = 0; i < pathCount; i++)
+                    {
+                        string key = $"path{i}"; StoredLinkPaths[key].StringValue = LinkCopyPaths[i];
+                    }
+                }
+                
                 CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
                 System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");

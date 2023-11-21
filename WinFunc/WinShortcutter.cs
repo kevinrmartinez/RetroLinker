@@ -8,7 +8,6 @@ namespace WinFunc
     {
         public static void CreateShortcut(string Exec, string path, string command, string Iconfile, string Desc, string Link)
         {
-
             var shell = new WshShell();
             //var shortcut = shell.CreateShortcut(System.IO.Path.GetFullPath(Dest)) as IWshShortcut;
             var shortcut = (IWshShortcut)shell.CreateShortcut(Link);
@@ -16,7 +15,7 @@ namespace WinFunc
             shortcut.Arguments = command;
             shortcut.WorkingDirectory = path;
             shortcut.Description = Desc;
-            if (string.IsNullOrEmpty(Iconfile)) { shortcut.IconLocation = Iconfile; }
+            if (!string.IsNullOrEmpty(Iconfile)) { shortcut.IconLocation = Iconfile; }
             shortcut.Save();
         }
 

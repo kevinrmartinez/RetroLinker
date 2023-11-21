@@ -580,11 +580,11 @@ public partial class MainView : UserControl
 
             // Manejo de Link Copies
 #if DEBUG
-            SettingsOps.LinkCopyPaths = new List<string>()
-            {
-                System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
-                System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
-            };
+            // SettingsOps.LinkCopyPaths = new List<string>()
+            // {
+            //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
+            //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
+            // };
 #endif
             if (settings.MakeLinkCopy)
             {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -31,6 +32,7 @@ namespace RetroarchShortcutterV2.Views
         private SettingsView3 SettingsView31;
         public Settings settings { get; set; }
         public Settings DEFsettings { get; } = new();
+        public List<string> SetLinkCopyPaths { get; set; }
 
         #region LoadContent
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
@@ -47,6 +49,7 @@ namespace RetroarchShortcutterV2.Views
         void LoadFromSettings()
         {
             settings = SettingsOps.GetCachedSettings();
+            SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
         }
         #endregion
         
@@ -72,22 +75,17 @@ namespace RetroarchShortcutterV2.Views
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
                 //SettingsOps.PrevConfigs = new();
+                SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettingsFile(DEFsettings);
                 CloseView();
             }
                 
         }
 
-        void btnCONSettings_Click(object sender, RoutedEventArgs e)
+        void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
-            if (!DesktopOS) { settings.DEFRADir = SettingsView21.txtDefRADir.Text; }
-            // Set bools
-            settings.PrevConfig = (bool)SettingsView1.chkPrevCONFIG.IsChecked;
-            settings.AllwaysAskOutput = (bool)SettingsView31.chkAlwaysAskOutput.IsChecked;
-            settings.CpyUserIcon = (bool)SettingsView1.chkCpyUserIcon.IsChecked;
-            settings.ExtractIco = (bool)SettingsView31.chkExtractIco.IsChecked;
-            
             SettingsOps.WriteSettingsFile(settings);
+            SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             CloseView();
         }
 
