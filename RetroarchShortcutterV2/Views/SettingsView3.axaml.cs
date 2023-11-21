@@ -51,7 +51,7 @@ namespace RetroarchShortcutterV2.Views
                 //candidateCopiesPath.Add(list);
                 foreach (var path in SettingsOps.LinkCopyPaths)
                 {
-                    lsboxLinkCopies.Items.Add(AddLinkCopyItem(path));
+                    lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));
                 }
                 candidateCopiesPath.Add("Otro...");
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
@@ -133,7 +133,7 @@ namespace RetroarchShortcutterV2.Views
             ParentWindow.settings.IcoSavPath = path;
         }
 
-        int NextCpoyItemIndex()
+        int NextCopyItemIndex()
         {
             return (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
         }
@@ -200,7 +200,7 @@ namespace RetroarchShortcutterV2.Views
 
             if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem))
             {
-                lsboxLinkCopies.Items.Insert(NextCpoyItemIndex(), AddLinkCopyItem(currentItem));
+                lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
                 ParentWindow.SetLinkCopyPaths.Add(currentItem);
             }
             comboaddLinkCopy.SelectedIndex = 0;

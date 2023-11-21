@@ -25,7 +25,7 @@ namespace RetroarchShortcutterV2.Models
         public const string DotDesktopRAIcon = "retroarch";
         
 
-        public static List<string> ConfigDir { get; private set; } = new() { "Default" };
+        public static List<string> ConfigDir { get; private set; }
         public static readonly List<string> WinConvertibleIconsExt = new() { "*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz" };
         public static readonly List<string> LinIconsExt = new() { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" };
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -34,6 +34,7 @@ namespace RetroarchShortcutterV2.Models
                                                 // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static readonly string WINPublicUser = "C:\\Users\\Public";
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
+        //public static readonly string SettingFileBin = Path.Combine(UserProfile, "RS_settings.dat");
         
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
@@ -50,14 +51,23 @@ namespace RetroarchShortcutterV2.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
-            System.Diagnostics.Debug.WriteLine("Settings cargadas para FileOps.", "[Info]");
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para FileOps.", "[Debg]");
+            BuildConfigDir();
             return LoadedSettings;
         }
 
         public static Settings LoadCachedSettingsFO()
         {
             LoadedSettings = SettingsOps.GetCachedSettings();
+            BuildConfigDir();
             return LoadedSettings;
+        }
+
+        public static void BuildConfigDir()
+        {
+            const string NormalRAconfig = "Default";
+            ConfigDir = new List<string>() { NormalRAconfig };
+            if (LoadedSettings.PrevConfig) ConfigDir.AddRange(SettingsOps.PrevConfigs);
         }
         #endregion
 

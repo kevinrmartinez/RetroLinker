@@ -74,7 +74,7 @@ namespace RetroarchShortcutterV2.Views
             var result = await msbox.ShowWindowDialogAsync(ParentWindow);
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
-                //SettingsOps.PrevConfigs = new();
+                SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettingsFile(DEFsettings);
                 CloseView();
@@ -84,6 +84,7 @@ namespace RetroarchShortcutterV2.Views
 
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
+            if (SetLinkCopyPaths.Count == 0) settings.MakeLinkCopy = false;
             SettingsOps.WriteSettingsFile(settings);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             CloseView();

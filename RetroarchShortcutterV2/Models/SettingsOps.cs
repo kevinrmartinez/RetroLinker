@@ -10,8 +10,8 @@ namespace RetroarchShortcutterV2.Models
         private static Section StoredConfigs = new("StoredConfigs");
         private static Section StoredLinkPaths = new("StoredLinkPaths");
         private static Settings CachedSettings = new();
-        
-        public static List<string>? PrevConfigs { get; set; }
+
+        public static List<string>? PrevConfigs { get; set; } = new();
         public static List<string>? LinkCopyPaths { get; set; } = new();
 
         public static string[] WINLinkPathCandidates { get; } = new[]
@@ -35,22 +35,14 @@ namespace RetroarchShortcutterV2.Models
         public static void BuildConfFile()
         {
             settings_file.Add(GeneralSettings);
-            var settings_props = Utils.ExtractClassProperties(typeof(Settings));
-            foreach (string setting in settings_props)
+            var settingsProps = Utils.ExtractClassProperties(typeof(Settings));
+            foreach (string setting in settingsProps)
             {
                 GeneralSettings.Add(setting);
             }
-            // GeneralSettings.Add(new Setting("UserAssetsPath"));
-            // GeneralSettings.Add(new Setting("DEFRADir"));
-            // GeneralSettings.Add(new Setting("DEFROMPath"));
-            // GeneralSettings.Add(new Setting("PrevConfig"));
-            // GeneralSettings.Add(new Setting("AllwaysDesktop"));
-            // GeneralSettings.Add(new Setting("CpyUserIcon"));
-            // GeneralSettings.Add(new Setting("ConvICONPath"));
-            // GeneralSettings.Add(new Setting("ExtractIco"));
-            // GeneralSettings.Add(new Setting("PreferedTheme"));
-            // GeneralSettings.Add(new Setting("LinDesktopPopUp"));
             System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcampos.", "[Debg]");
+            settings_file.Add(StoredConfigs);
+            settings_file.Add(StoredLinkPaths);
         }
 
         private static Configuration LoadConfiguration(string configDIR) => Configuration.LoadFromBinaryFile(configDIR);
@@ -73,16 +65,16 @@ namespace RetroarchShortcutterV2.Models
                     { throw new System.IO.InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
                     GeneralSettings.SetValuesTo(CachedSettings);
 
+                    PrevConfigs = new List<string>();
                     StoredConfigs = settingsLoad_file["StoredConfigs"];
                     int dir_count = StoredConfigs.SettingCount;
                     if (dir_count > 0)
                     {
-                        PrevConfigs = new List<string>();
                         for (int i = 0; i < dir_count; i++)
                         { PrevConfigs.Add(StoredConfigs[i].StringValue); }
-                        FileOps.ConfigDir.AddRange(PrevConfigs);
                     }
 
+                    LinkCopyPaths = new List<string>();
                     StoredLinkPaths = settingsLoad_file["StoredLinkPaths"];
                     int path_count = StoredLinkPaths.SettingCount;
                     if (path_count > 0)
@@ -112,7 +104,7 @@ namespace RetroarchShortcutterV2.Models
             try 
             {
                 GeneralSettings.GetValuesFrom(settings);
-                if (PrevConfigs != null)
+                if (PrevConfigs.Count > 0)
                 {
                     int dirCount = PrevConfigs.Count;
                     for (int i = 0; i < dirCount; i++)

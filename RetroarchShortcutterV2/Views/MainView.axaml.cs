@@ -111,11 +111,11 @@ public partial class MainView : UserControl
 
     void comboConfig_Loaded()
     {
-        for (int i = 0; i < FileOps.ConfigDir.Count; i++)
+        foreach (var config in FileOps.ConfigDir)
         {
-            comboConfig.Items.Add(FileOps.ConfigDir[i]);
+            comboConfig.Items.Add(config);
         }
-        comboConfig.SelectedIndex++;
+        comboConfig.SelectedIndex = 0;
     }
 
     async void comboICONDir_Loaded(Task<System.Collections.Generic.List<string>> icon_task)
@@ -163,12 +163,8 @@ public partial class MainView : UserControl
         txtRADir.Text = settings.DEFRADir;
         OutputLink.RAdir = settings.DEFRADir;
         FileOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
-
-        // TODO: refactorizar esta parte sin ayuda de null
-        if (settings.PrevConfig && SettingsOps.PrevConfigs == null) { SettingsOps.PrevConfigs = new(); }
-        else if (!settings.PrevConfig && SettingsOps.PrevConfigs != null) { SettingsOps.PrevConfigs = null; }
-        if (SettingsOps.PrevConfigs != null) { PrevConfigsCount = SettingsOps.PrevConfigs.Count; }
-        else { PrevConfigsCount = -1; }     // -1 ayuda a indicar que la lista en cuestión no existe
+        
+        PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
 
         txtLINKDir.Watermark = "Super Mario Bros";
         txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
@@ -621,8 +617,8 @@ public partial class MainView : UserControl
     void View1_Unloaded(object sender, RoutedEventArgs e)
     {
         var cachedSettings = SettingsOps.GetCachedSettings();
-        var settingsChanged = !settings.Equals(cachedSettings);
-        if ( ((PrevConfigsCount != SettingsOps.PrevConfigs?.Count) && (PrevConfigsCount > -1)) || settingsChanged) 
+        bool settingsChanged = !settings.Equals(cachedSettings);
+        if ( ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) || settingsChanged) 
         { SettingsOps.WriteSettingsFile(settings); }  
     }
 
