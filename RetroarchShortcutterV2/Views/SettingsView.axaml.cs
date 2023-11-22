@@ -71,7 +71,7 @@ namespace RetroarchShortcutterV2.Views
         
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // TODO: El designer de Avalonia se rompe en esta parte
+            // El designer de Avalonia se rompe en esta parte
             if ((bool)ThemeSwitch.IsChecked)
             {
                 Application.Current.RequestedThemeVariant = dark_theme;
@@ -88,7 +88,7 @@ namespace RetroarchShortcutterV2.Views
         {
             if ((bool)ThemeDefault.IsChecked)
             {
-                // TODO: El designer de Avalonia se rompe en esta parte
+                // El designer de Avalonia se rompe en esta parte
                 Application.Current.RequestedThemeVariant = system_theme;
                 ThemeSwitch.IsEnabled = false;
                 ParentWindow.settings.PreferedTheme = 0;

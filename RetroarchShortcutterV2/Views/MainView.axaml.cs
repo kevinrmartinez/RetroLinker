@@ -49,8 +49,6 @@ public partial class MainView : UserControl
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     public bool DesktopOS = System.OperatingSystem.IsWindows();
     
-    // TODO: Implementar los casos especialos de donde se guardan los .ico
-    // TODO: Implementar el cambio de nombre para los .ico
     // TODO: Implementar evento de manejo de tema
     #region LOAD EVENTS
     // LOADS
@@ -65,7 +63,7 @@ public partial class MainView : UserControl
             System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
             FileOps.SetDesktopDir(ParentWindow);
         
-            // TODO: El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
+            // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
         
             var cores_task = FileOps.LoadCores();
@@ -118,18 +116,14 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    async void comboICONDir_Loaded(Task<System.Collections.Generic.List<string>> icon_task)
+    async void comboICONDir_Loaded(Task<List<string>> icon_task)
     {
         var icons_list = await icon_task;
         comboICONDir.Items.Add("Default");
-        // TODO: refactorizar esta parte sin ayuda de null
-        if (icons_list != null)
+        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", "[Info]");
+        foreach (var iconFile in icons_list)
         {
-            System.Diagnostics.Debug.WriteLine("Lista de iconos importada", "[Info]");
-            for (int i = 0; i < icons_list.Count; i++)
-            {
-                comboICONDir.Items.Add(icons_list[i]);
-            }
+            comboICONDir.Items.Add(iconFile);
         }
         comboICONDir.SelectedIndex++;
         rdoIconDef.IsChecked = true;
@@ -540,11 +534,22 @@ public partial class MainView : UserControl
         // Icono del ejecutable (Default)
         if (comboICONDir.SelectedIndex == 0)
         { OutputLink.ICONfile = string.Empty; }
+        // TODO: Conciderar mover esta parte despues de la validacion
         else
         {
             // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
             if (IconItemSET.ConvertionRequiered)
-            { OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET); }
+            {
+                OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
+                string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir; 
+                OutputLink.ICONfile = settings.IcoSavPath switch
+                {
+                    SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
+                    SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
+                    _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
+                };
+                if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
+            }
 
             // En caso de tener que copiar el icono provisto por el usuario
             if (settings.CpyUserIcon)

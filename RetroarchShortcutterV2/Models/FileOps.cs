@@ -18,33 +18,35 @@ namespace RetroarchShortcutterV2.Models
         public const string tempIco = "temp.ico";
         public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
         public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
-        public const short MAX_PATH = 255;  // TODO: Aplicar en todas partes!
+        public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
         public const string DotDesktopRAIcon = "retroarch";
-        
+
 
         public static List<string> ConfigDir { get; private set; }
-        public static readonly List<string> WinConvertibleIconsExt = new() { "*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz" };
+
+        public static readonly List<string> WinConvertibleIconsExt =
+            new() { "*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz" };
+
         public static readonly List<string> LinIconsExt = new() { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" };
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
-                                                // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+
+        // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
         public static readonly string WINPublicUser = "C:\\Users\\Public";
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         //public static readonly string SettingFileBin = Path.Combine(UserProfile, "RS_settings.dat");
-        
+
         public static IStorageFolder? DesktopFolder { get; private set; }
         public static IStorageFolder? ROMPadreDir { get; private set; }
         private static Settings LoadedSettings;
 
-        //public static List<string> _logging = new();
 
         #region Settings
-        //public static bool ExistSettingsFile() => (File.Exists(SettingFile));
-        //public static bool ChkSettingsFile() => File.ReadAllText(SettingFile) != null;
 
         public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
 
@@ -69,31 +71,38 @@ namespace RetroarchShortcutterV2.Models
             ConfigDir = new List<string>() { NormalRAconfig };
             if (LoadedSettings.PrevConfig) ConfigDir.AddRange(SettingsOps.PrevConfigs);
         }
+
         #endregion
 
 
         #region Load
+
         public static async Task<string[]> LoadCores()
         {
             string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
-            if (File.Exists(file)) 
+            if (File.Exists(file))
             {
                 System.Diagnostics.Trace.WriteLine($"Empezando la lectura de {file}.", "[Info]");
                 var cores = await File.ReadAllLinesAsync(file);
                 System.Diagnostics.Trace.WriteLine($"Completada la lectura de {file}.", "[Info]");
                 return cores;
             }
-            else 
-            { System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!", "[Info]"); return Array.Empty<string>(); }
+            else
+            {
+                System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!", "[Info]");
+                return Array.Empty<string>();
+            }
         }
 
         public static async Task<List<string>> LoadIcons(bool OS)
         {
+            // TODO: Ser capaz de retornar un error en caso de darse
             IconProc.IconItemsList = new();
             try
             {
                 List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
-                System.Diagnostics.Trace.WriteLine($"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.", "[Info]");
+                System.Diagnostics.Trace.WriteLine(
+                    $"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.", "[Info]");
                 for (int i = 0; i < files.Count; i++)
                 {
                     string ext = Path.GetExtension(files[i]);
@@ -101,40 +110,59 @@ namespace RetroarchShortcutterV2.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (WinConvertibleIconsExt.Contains("*"+ext) || (ext is ".exe"))
-                        { IconProc.IconItemsList.Add(new IconsItems(filename, filepath, true)); }
-                        else if (ext is ".ico") 
-                        { IconProc.IconItemsList.Add(new IconsItems(filename, filepath, false)); }
+                        if (WinConvertibleIconsExt.Contains("*" + ext) || (ext is ".exe"))
+                        {
+                            IconProc.IconItemsList.Add(new IconsItems(filename, filepath, true));
+                        }
+                        else if (ext is ".ico")
+                        {
+                            IconProc.IconItemsList.Add(new IconsItems(filename, filepath, false));
+                        }
                     }
                     else
                     {
-                        if (LinIconsExt.Contains("*"+ext))
-                        { IconProc.IconItemsList.Add(new IconsItems(filename, filepath)); }
+                        if (LinIconsExt.Contains("*" + ext))
+                        {
+                            IconProc.IconItemsList.Add(new IconsItems(filename, filepath));
+                        }
                     }
                 }
-                if (files.Count == 0) 
-                { System.Diagnostics.Trace.WriteLine($"No se encontraron archivos en {LoadedSettings.UserAssetsPath}.", "[Info]"); return new List<string>(); }
-                else { System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.", "[Info]"); }
+
+                if (files.Count == 0)
+                {
+                    System.Diagnostics.Trace.WriteLine(
+                        $"No se encontraron archivos en {LoadedSettings.UserAssetsPath}.", "[Info]");
+                    return new List<string>();
+                }
+                else
+                {
+                    System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.",
+                        "[Info]");
+                }
+
                 files.Clear();
                 int newindex = 1;
                 foreach (var file in IconProc.IconItemsList)
-                { 
-                    files.Add(file.FileName); 
-                    file.comboIconIndex = newindex; 
-                    newindex++; 
+                {
+                    files.Add(file.FileName);
+                    file.comboIconIndex = newindex;
+                    newindex++;
                 }
+
                 return files;
             }
 
-            catch (DirectoryNotFoundException) 
+            catch (DirectoryNotFoundException)
             {
-                System.Diagnostics.Trace.WriteLine($"No se encontro el directorio '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}'.", "[Warn]");
-                return new List<string>(); 
+                System.Diagnostics.Trace.WriteLine(
+                    $"No se encontro el directorio '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}'.", "[Warn]");
+                return new List<string>();
             }
             catch (Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"Ha ocurrido un error en la carga de iconos.", "[Erro]");
-                System.Diagnostics.Debug.WriteLine($"En FileOps, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                System.Diagnostics.Debug.WriteLine(
+                    $"En FileOps, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
                 return new List<string>();
             }
         }
@@ -144,15 +172,26 @@ namespace RetroarchShortcutterV2.Models
             DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
             // '??=' le asigna valor solo si esta null
         }
+
         #endregion
+
+        #region FUNCTIONS
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
 
-        public static bool CheckUsrSetDir(string dir)
+        public static bool CheckUsrSetDir(string path)
         {
-            try { Directory.CreateDirectory(dir); return true; }
-            catch { Console.WriteLine("No se puede crear la carpeta " + dir); return false; }
-            // TODO: mostrar msbox indicando problema
+            // TODO: Ser capaz de retornar un error en caso de darse
+            try
+            {
+                Directory.CreateDirectory(path);
+                return true;
+            }
+            catch
+            {
+                Console.WriteLine("No se puede crear la carpeta " + path);
+                return false;
+            }
         }
 
         public static Uri GetDefaultIcon() => new Uri(DEFicon1);
@@ -166,10 +205,34 @@ namespace RetroarchShortcutterV2.Models
         public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
         {
             if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
-            { ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre); }
+            {
+                ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre);
+            }
         }
 
+        public static string GetDeskLinkPath(string link_name, bool OS)
+        {
+            string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
+            new_dir += (OS) ? WinLinkExt : LinLinkExt;
+            new_dir = Path.Combine(UserDesktop, new_dir);
+            return new_dir;
+        }
+
+        public static string GetDefinedLinkPath(string link_name, string LinkPath, bool OS)
+        {
+            string new_dir = Path.GetFileNameWithoutExtension(link_name);
+            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
+            new_dir += (OS) ? WinLinkExt : LinLinkExt;
+            new_dir = Path.Combine(LinkPath, new_dir);
+            return new_dir;
+        }
+
+        #endregion
+
+
         #region FileDialogs
+
         public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.OpenPickerOpt(template);
@@ -178,7 +241,7 @@ namespace RetroarchShortcutterV2.Models
             return dir;
         }
 
-        public static async Task<string> OpenFolderAsync(byte template ,TopLevel topLevel)
+        public static async Task<string> OpenFolderAsync(byte template, TopLevel topLevel)
         {
             FolderPickerOpenOptions opt = new()
             {
@@ -192,12 +255,12 @@ namespace RetroarchShortcutterV2.Models
                     _ => "Eliga el directorio..."
                 }
             };
-            
+
             var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
             string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
             return dir;
         }
-        
+
         public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
         {
             var opt = PickerOpt.SavePickerOpt(template);
@@ -206,45 +269,48 @@ namespace RetroarchShortcutterV2.Models
             string dir = (file != null) ? file.Path.LocalPath : string.Empty;
             return dir;
         }
+
         #endregion
 
-        public static string GetDeskLinkPath(string link_name, bool OS)
+        #region ICONS
+
+        public static string CpyIconToUsrSet(string ogPath)
         {
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
-            new_dir += (OS) ? WinLinkExt : LinLinkExt;
-            new_dir = Path.Combine(UserDesktop, new_dir);
-            return new_dir;
-        }
-        
-        public static string GetDefinedLinkPath(string link_name, string LinkPath, bool OS)
-        {
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
-            new_dir += (OS) ? WinLinkExt : LinLinkExt;
-            new_dir = Path.Combine(LinkPath, new_dir);
-            return new_dir;
-        }
-        
-        public static string CpyIconToUsrSet(string og_path)
-        {
-            string name = Path.GetFileName(og_path);
-            string new_path = Path.Combine(LoadedSettings.IcoSavPath, name);
+            string name = Path.GetFileName(ogPath);
+            string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
-            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
-            else 
+            if (File.Exists(newPath))
             {
-                File.Copy(og_path, new_path);
-                return Path.GetFullPath(new_path);
+                return Path.GetFullPath(newPath);
             }
+
+            File.Copy(ogPath, newPath);
+            return Path.GetFullPath(newPath);
         }
-        
+
+        public static string CpyIconToCustomSet(string ogPath, string destPath)
+        {
+            destPath = Path.GetDirectoryName(destPath);
+            string name = Path.GetFileName(ogPath);
+            string newPath = Path.Combine(destPath, name);
+            if (File.Exists(newPath))
+            {
+                return Path.GetFullPath(newPath);
+            }
+
+            File.Copy(ogPath, newPath);
+            return Path.GetFullPath(newPath);
+        }
+
         public static string CpyIconToUsrAss(string og_path)
         {
             string name = Path.GetFileName(og_path);
             string new_path = Path.Combine(LoadedSettings.UserAssetsPath, name);
-            if (File.Exists(new_path)) { return Path.GetFullPath(new_path); }
-            else 
+            if (File.Exists(new_path))
+            {
+                return Path.GetFullPath(new_path);
+            }
+            else
             {
                 File.Copy(og_path, new_path);
                 return Path.GetFullPath(new_path);
@@ -253,7 +319,11 @@ namespace RetroarchShortcutterV2.Models
 
         public static bool IsVectorImage(string svg_file) => (Path.GetExtension(svg_file) is ".svg" or "svgz");
 
+        #endregion
+
+
         #region Windows Only Ops
+
         public static bool IsWinEXE(string exe_file) => (Path.GetExtension(exe_file) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
@@ -273,33 +343,55 @@ namespace RetroarchShortcutterV2.Models
             string new_dir = Path.Combine(UserTemp, icoName);
             CheckUsrSetDir(UserTemp);
             ImageMagick.MagickImage icon_image = new();
-            if (selectedIconItem.IconStream != null) { selectedIconItem.IconStream.Position = 0; }
+            if (selectedIconItem.IconStream != null)
+            {
+                selectedIconItem.IconStream.Position = 0;
+            }
+
             switch (icoExt)
             {
                 case ".svg" or ".svgz":
                     icon_image = IconProc.ImageConvert(selectedIconItem.IconStream);
                     icon_image.Write(new_dir);
-                    new_dir = CpyIconToUsrSet(new_dir);
+                    //new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
-                    if (LoadedSettings.ExtractIco) 
-                    { 
+                    if (LoadedSettings.ExtractIco)
+                    {
                         icon_image = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
                         icon_image.Write(new_dir);
-                        new_dir = CpyIconToUsrSet(new_dir);
+                        //new_dir = CpyIconToUsrSet(new_dir);
                     }
-                    else { new_dir = selectedIconItem.FilePath; }
+                    else
+                    {
+                        new_dir = selectedIconItem.FilePath;
+                    }
+
                     break;
-                
+
                 default:
                     icon_image = IconProc.ImageConvert(selectedIconItem.FilePath);
                     icon_image.Write(new_dir);
-                    new_dir = CpyIconToUsrSet(new_dir);
+                    //new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
+
             //settings.Dispose();
             return new_dir;
         }
+
+        public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
+        {
+            string iconPath = GetDirFromPath(linkObj.ICONfile);
+            string linkName = Path.GetFileNameWithoutExtension(linkObj.LNKdir) + ".ico";
+            string newIconPath = Path.Combine(iconPath, linkName);
+            
+            File.Copy(linkObj.ICONfile, newIconPath, true);
+            File.Delete(linkObj.ICONfile);
+            
+            return newIconPath;
+        }
+
         #endregion
 
         #region Linux Only
