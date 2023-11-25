@@ -1,5 +1,5 @@
 ﻿/*
-    <one line to give the program's name and a brief idea of what it does.>
+    A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
