@@ -8,7 +8,7 @@
 		Width="800" Height="550" MinWidth="790" MinHeight="530"
         x:Class="RetroarchShortcutterV2.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="RetroarchShortcutterV2"
+        Title="RetroLinker (beta)"
 		WindowStartupLocation="CenterScreen" Name="MainWindow1">
         
         <TransitioningContentControl Name="MainCC1">

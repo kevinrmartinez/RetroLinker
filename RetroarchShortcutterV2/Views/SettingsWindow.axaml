@@ -8,7 +8,7 @@
         Width="750" Height="550" MinWidth="600" MinHeight="530"
         x:Class="RetroarchShortcutterV2.Views.SettingsWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="RetroarchShortcutterV2 Settings"
+        Title="RetroLinker Settings"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
 		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="SettingsWindow1_OnLoaded">
 	
@@ -18,7 +18,7 @@
 	
 	<Grid Name="gridConfigWindows" RowDefinitions="Auto, *, Auto, Auto">
 		<!--TOP-->
-		<Rectangle Grid.Row="0" Fill="Gray" Height="15"/>
+		<!-- <Rectangle Grid.Row="0" Fill="Gray" Height="15"/> -->
 		
 		<!--Body Tabs-->
 		<TabControl Grid.Row="1">
@@ -41,29 +41,29 @@
 		</TabControl>
 		
 		<!--CONTROLES-->
-		<StackPanel Grid.Row="2" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
+		<StackPanel Grid.Row="2" Height="48" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 
-			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click">
+			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-arrow-rotate-left"/>
-					<TextBlock Text="Default"/>
+					<TextBlock Text="Default" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnDISSettings" Click="btnDISSettings_Click">
+			<Button Name="btnDISSettings" Click="btnDISSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-x" Foreground="Crimson"/>
-					<TextBlock Text="Descartar"/>
+					<TextBlock Text="Descartar" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnCONSettings" Click="btnSAVESettings_Click">
+			<Button Name="btnCONSettings" Click="btnSAVESettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-check" Foreground="Green"/>
-					<TextBlock Text="Confirmar"/>
+					<TextBlock Text="Confirmar" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 		</StackPanel>
 
 		<!--BOTTOM-->
-		<Rectangle Grid.Row="3" Fill="Gray" Height="15"/>
+		<!-- <Rectangle Grid.Row="3" Fill="Gray" Height="15"/> -->
 	</Grid>
 </Window>

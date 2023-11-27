@@ -37,14 +37,14 @@ namespace RetroarchShortcutterV2.Models
             FileOps.WINPublicDesktop,
             FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu",
             "C:\\ProgramData\\Microsoft\\Windows\\Start Menu"
-        };
+        };  // Source: https://en.wikipedia.org/wiki/Start_menu
         public static string[] LINLinkPathCandidates { get; } = new[]
         {
             FileOps.UserDesktop,
             FileOps.UserProfile + "/.local/share/applications",
             "/usr/local/share/applications",
             "/usr/share/applications"
-        };
+        };  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
 
         public const string IcoSavROM = "_ROM";
         public const string IcoSavRA = "_RA";
