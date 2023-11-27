@@ -23,7 +23,7 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
     public class FuncLoader
     {
         // Este .dll debe estar presente junto al ejecutable! (Windows)
-        public const string WinFunc = "WinFunc.dll";
+        public const string WinFunc = "RetroLinkerWinLib.dll";
         static Assembly DLL;
 
         public static void ImportWinFunc()

@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <AssemblyName>RetroarchShortcutter(V2)</AssemblyName>
+    <AssemblyName>RetroLinker</AssemblyName>
     <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
@@ -20,10 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RetroarchShortcutterV2\RetroarchShortcutterV2.csproj" />
+    <ProjectReference Include="..\RetroarchShortcutterV2\RetroLinker.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="RetroLinkerWinLib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="WinFunc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

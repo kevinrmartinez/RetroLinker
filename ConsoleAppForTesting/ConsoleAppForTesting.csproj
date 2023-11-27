@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinFunc\WinFunc.csproj" />
+    <ProjectReference Include="..\WinFunc\RetroLinkerWin.csproj" />
   </ItemGroup>
 
   <ItemGroup>

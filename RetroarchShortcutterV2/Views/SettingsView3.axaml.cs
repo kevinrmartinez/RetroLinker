@@ -155,12 +155,6 @@ namespace RetroarchShortcutterV2.Views
             return (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
         }
         
-        void refresh_comboaddLinkCopy()
-        {
-            comboaddLinkCopy.ItemsSource = null;
-            comboaddLinkCopy.ItemsSource = ListTest;
-        }
-        
         ListBoxItem AddLinkCopyItem(string Dir)
         {
             var NewItem = new ListBoxItem();
@@ -306,7 +300,7 @@ namespace RetroarchShortcutterV2.Views
                 int newItemIndex = (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
                 lsboxLinkCopies.Items.Insert(newItemIndex, (AddLinkCopyItem(ListTest[i])));
             }
-            refresh_comboaddLinkCopy();
+            refresh_comboaddLinkCopyDBG();
             comboaddLinkCopy.SelectedIndex++;
         }
         
@@ -315,7 +309,13 @@ namespace RetroarchShortcutterV2.Views
             int newItemIndex = (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
             lsboxLinkCopies.Items.Insert(newItemIndex, AddLinkCopyItem("Cuarto"));
             // ListTest.Add("Cuarto");
-            refresh_comboaddLinkCopy();
+            refresh_comboaddLinkCopyDBG();
+        }
+        
+        void refresh_comboaddLinkCopyDBG()
+        {
+            comboaddLinkCopy.ItemsSource = null;
+            comboaddLinkCopy.ItemsSource = ListTest;
         }
 #endif
     }

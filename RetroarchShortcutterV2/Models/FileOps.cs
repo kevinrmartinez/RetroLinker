@@ -28,13 +28,13 @@ namespace RetroarchShortcutterV2.Models
 {
     public class FileOps
     {
-        //public const string SettingFile = "RS_settings.cfg";
-        public const string SettingFileBin = "RS_settings.dat";
+        //public const string SettingFile = "RLsettings.cfg";
+        public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
-        public const string DEFicon1 = "avares://RetroarchShortcutterV2/Assets/Icons/retroarch.ico";
-        public const string NoAplica = "avares://RetroarchShortcutterV2/Assets/Images/no-aplica.png";
+        public const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
+        public const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
         public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
