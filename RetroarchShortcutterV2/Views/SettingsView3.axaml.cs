@@ -43,6 +43,7 @@ namespace RetroarchShortcutterV2.Views
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
 
+        private const string StrAddCustomCopyPath = "Otro...";
         private List<string> candidateCopiesPath = new();
         private List<string> defIcoSavPathList = new()
         {
@@ -70,7 +71,7 @@ namespace RetroarchShortcutterV2.Views
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));
                 }
-                candidateCopiesPath.Add("Otro...");
+                candidateCopiesPath.Add(StrAddCustomCopyPath);
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
                 comboaddLinkCopy.SelectedIndex = 0;
                 txtDEFLinkOutput.Watermark = FileOps.UserDesktop;
@@ -204,12 +205,21 @@ namespace RetroarchShortcutterV2.Views
             //lsboxLinkCopies.IsVisible = (bool)chk.IsChecked;
         }
 
-        void BtnaddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
+        async void BtnaddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
         {
             string currentItem = comboaddLinkCopy.SelectedItem.ToString();
             if (string.IsNullOrWhiteSpace(currentItem)) return;
 
-            if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem))
+            if (currentItem == StrAddCustomCopyPath)
+            {
+                string folder = await FileOps.OpenFolderAsync(template:3, ParentWindow);
+                if (!string.IsNullOrWhiteSpace(folder))
+                {
+                    lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
+                    ParentWindow.SetLinkCopyPaths.Add(folder);
+                }
+            }
+            else if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem))
             {
                 lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
                 ParentWindow.SetLinkCopyPaths.Add(currentItem);

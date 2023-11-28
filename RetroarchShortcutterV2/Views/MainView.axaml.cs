@@ -503,7 +503,7 @@ public partial class MainView : UserControl
             txtLINKDir.Text = OutputLink.LNKdir;
         }
 #if DEBUG
-        //else { Testing.LinShortcutTest(DesktopOS); }
+        else { Testing.LinShortcutTest(DesktopOS); }
         //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
 #endif
     }
@@ -585,54 +585,52 @@ public partial class MainView : UserControl
             MessageBoxPopUp(msbox_params);
         }
 
-        if (ShortcutPosible)
-        {
-            // Comillas para directorios que iran de parametros...
-            // para el directorio de la ROM
-            if (OutputLink.ROMdir != Commander.contentless) 
-            { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
+        if (!ShortcutPosible) return;
+        // Comillas para directorios que iran de parametros...
+        // para el directorio de la ROM
+        if (OutputLink.ROMdir != Commander.contentless) 
+        { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
 
-            // para el archivo config
-            if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
-            { OutputLink.CONFfile = Utils.FixUnusualDirectories(OutputLink.CONFfile); }
+        // para el archivo config
+        if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
+        { OutputLink.CONFfile = Utils.FixUnusualDirectories(OutputLink.CONFfile); }
 
-            // Manejo de Link Copies
+        // Manejo de Link Copies
 #if DEBUG
-            // SettingsOps.LinkCopyPaths = new List<string>()
-            // {
-            //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
-            //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
-            // };
+        // SettingsOps.LinkCopyPaths = new List<string>()
+        // {
+        //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
+        //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
+        // };
 #endif
-            if (settings.MakeLinkCopy)
+        if (settings.MakeLinkCopy)
+        {
+            OutputLink.LNKcpy = new string[SettingsOps.LinkCopyPaths.Count];
+            for (int i = 0; i < OutputLink.LNKcpy.Length; i++)
             {
-                OutputLink.LNKcpy = new string[SettingsOps.LinkCopyPaths.Count];
-                for (int i = 0; i < OutputLink.LNKcpy.Length; i++)
-                {
-                    OutputLink.LNKcpy[i] = System.IO.Path.Combine(SettingsOps.LinkCopyPaths[i],
-                        System.IO.Path.GetFileName(OutputLink.LNKdir));
-                }
+                OutputLink.LNKcpy[i] = System.IO.Path.Combine(SettingsOps.LinkCopyPaths[i],
+                    System.IO.Path.GetFileName(OutputLink.LNKdir));
             }
-
-            List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
-            if (opResult.Count == 1)
-            {
-                if (!opResult[0].Error)
-                {
-                    msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
-                    msbox_params.Icon = Icon.Success;
-                    MessageBoxPopUp(msbox_params);
-                }
-                else
-                {
-                    msbox_params.ContentHeader = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error";
-                    msbox_params.ContentMessage = $"La operacion termino con el siguienete error:\n{opResult[0].eMesseage}";
-                    msbox_params.Icon = Icon.Error; 
-                    MessageBoxPopUp(msbox_params);
-                }
-            }
-            ShortcutPosible = false;
         }
+
+        List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
+        if (opResult.Count == 1)
+        {
+            if (!opResult[0].Error)
+            {
+                msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
+                msbox_params.Icon = Icon.Success;
+                MessageBoxPopUp(msbox_params);
+            }
+            else
+            {
+                msbox_params.ContentHeader = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error";
+                msbox_params.ContentMessage = $"La operacion termino con el siguienete error:\n{opResult[0].eMesseage}";
+                msbox_params.Icon = Icon.Error; 
+                MessageBoxPopUp(msbox_params);
+            }
+        }
+        ShortcutPosible = false;
     }
 
     // CLOSING

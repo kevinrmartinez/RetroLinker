@@ -30,10 +30,10 @@ namespace RetroarchShortcutterV2.Models
             Shortcutter.BuildShortcut(lnk, OS);
 
             lnk.Command = $"-L mgba \"{System.IO.Path.Combine(FileOps.UserProfile, "Fire Emblem - The Binding Blade.gba")}\"";
-            lnk.LNKdir = "Fire Emblem 6.desktop";
+            lnk.LNKdir = System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop");
             string[] NameFix = FileOps.FixLinkName(lnk.LNKdir);
             lnk.LNKdir = NameFix[0];
-            LinFunc.LinShortcutter.CreateShortcutIni(lnk, NameFix[1]);
+            LinFunc.LinShortcutter.CreateShortcut(lnk, NameFix[1], byte.MaxValue);
         }
     }
 }

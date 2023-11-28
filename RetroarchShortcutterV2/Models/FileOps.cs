@@ -268,6 +268,7 @@ namespace RetroarchShortcutterV2.Models
                     0 => "Eliga el directorio de UserAssets",
                     1 => "Eliga el directorio padre de ROMs",
                     2 => "Eliga el directorio donde guardar los .ico",
+                    3 => "Eliga el directorio donde crear la copia",
                     // Esta opcion no deberia pasar
                     _ => "Eliga el directorio..."
                 }

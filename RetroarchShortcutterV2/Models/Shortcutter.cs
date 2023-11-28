@@ -131,7 +131,7 @@ namespace RetroarchShortcutterV2.Models
             var LinkResult = new ShortcutterResult(link.LNKdir);
             ResultList.Add(LinkResult);
             
-            try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]);
+            try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], byte.MaxValue);
                 LinkResult.Messeage = LinkResult.Success1; }
             catch (System.Exception e)
             {
@@ -149,7 +149,7 @@ namespace RetroarchShortcutterV2.Models
                 LinkResult = new ShortcutterResult(link.LNKcpy[i]);
                 ResultList.Add(LinkResult);
                 
-                try { LinFunc.LinShortcutter.CreateShortcutIni(link, NameFix[1]);
+                try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], makeCopyIndex:(byte)i);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {

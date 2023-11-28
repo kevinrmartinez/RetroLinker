@@ -25,95 +25,44 @@ namespace LinFunc;
 
 public static class LinShortcutter
 {
-    private const string lineComment = "# Creado con RetroarchShortcutter V2";  // No se como poner el comentario...
+    private const string lineComment = "# Creado con RetroLinker";  // No se como poner el comentario...
     private const string line1 = "";
     private const string line2 = "[Desktop Entry]";
     private const string notify = "StartupNotify=false";
-    private const string cat = "Game";
+    private const string cat = "Categories=Game";
     private const string type = "Type=Application";
 
-    // Overload original, con una lista de objetos
-    public static void CreateShortcut(IList<object> _shortcut, string name, bool verbose)
+    // Overload con un objeto Shortcut <- En Uso
+    public static void CreateShortcut(Shortcutter _shortcut, string name, byte makeCopyIndex)
     {
-        string dir = _shortcut[9].ToString();
-
         List<string> shortcut = new()
         {
             line1,
-            line2
+            lineComment,
+            line2,
+            cat
         };
 
-        if (_shortcut[8] != null) { shortcut.Add("Comment=" + _shortcut[8].ToString()); }
-        else { shortcut.Add("Comment="); }
+        shortcut.Add($"Comment={_shortcut.Desc}");
 
-        shortcut.Add("Exec=" + _shortcut[0].ToString() + " " + _shortcut[7].ToString());
+        shortcut.Add($"Exec={_shortcut.RAdir} {_shortcut.Command}");
 
-        if (_shortcut[6] != null) { shortcut.Add("Icon=" + _shortcut[6].ToString()); }
-        else { shortcut.Add("Icon=retroarch"); }    // No esta garantizado que funcione
+        string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? "retroarch" : _shortcut.ICONfile;
+        shortcut.Add($"Icon={_iconFile}");   // No esta garantizado que funcione
 
         shortcut.Add("Name=" + name);
-        shortcut.Add(notify);
+        // shortcut.Add(notify);
 
-        if (verbose) { shortcut.Add("Terminal=true"); }
-        else { shortcut.Add("Terminal=false"); }
+        string _terminal = (_shortcut.VerboseB) ? "true" : "false";
+        shortcut.Add($"Terminal={_terminal}");
 
         shortcut.Add(type);
 
-        File.WriteAllLines( dir, shortcut, Encoding.UTF8);
-    }
-
-    // Overload con un objeto Shortcut
-    public static void CreateShortcut(Shortcutter _shortcut)
-    {
-        //string dir = _shortcut.LNKdir;
-        string name = Path.GetFileNameWithoutExtension(_shortcut.LNKdir);
-
-        List<string> shortcut = new()
-        {
-            line1,
-            line2
-        };
-
-        if (_shortcut.Desc != null) { shortcut.Add("Comment=" + _shortcut.Desc.ToString()); }
-        else { shortcut.Add("Comment="); }
-
-        shortcut.Add("Exec=" + _shortcut.RAdir + " " + _shortcut.Command);
-
-        if (_shortcut.ICONfile != null) { shortcut.Add("Icon=" + _shortcut.ICONfile); }
-        else { shortcut.Add("Icon=retroarch"); }    // No esta garantizado que funcione
-
-        shortcut.Add("Name=" + name);
-        shortcut.Add(notify);
-
-        if (_shortcut.VerboseB) { shortcut.Add("Terminal=true"); }
-        else { shortcut.Add("Terminal=false"); }
-
-        shortcut.Add(type);
-
-        File.WriteAllLines(_shortcut.LNKdir, shortcut, Encoding.UTF8);
-    }
-
-    // Version con SharpConfig <- IN USE
-    public static void CreateShortcutIni(Shortcutter _shortcut, string name)
-    { 
-        System.Diagnostics.Trace.WriteLine($"Creando {_shortcut.LNKdir} para Linux.", "[Info]");
-        Configuration.OutputRawStringValues = true;
-        Configuration desktop_file = new();
-            
-        Section DesktopEntry = desktop_file["Desktop Entry"];
-        DesktopEntry.Comment = lineComment;
-        DesktopEntry["Categories"].StringValue = cat;
-        DesktopEntry["Comment"].StringValue = _shortcut.Desc;
-        DesktopEntry["Exec"].StringValue = $"{_shortcut.RAdir} {_shortcut.Command}" + "\""; // SharpConfig elimina el ultima ", hay que volverla a añadir
-        DesktopEntry["Icon"].StringValue = _shortcut.ICONfile;
-        DesktopEntry["Name"].StringValue = name;
-        //DesktopEntry["StartupNotify"].StringValue = "true";
-        DesktopEntry["Terminal"].StringValue = (_shortcut.VerboseB) ? "true" : "false";
-        DesktopEntry["Type"].StringValue = "Application";
-
-        desktop_file.SaveToFile(_shortcut.LNKdir);
-        System.Diagnostics.Trace.WriteLine($"{_shortcut.LNKdir} creado con exito.", "[Info]");
-        SetExecPermissions(_shortcut.LNKdir);
+        string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.LNKdir : _shortcut.LNKcpy[makeCopyIndex];
+        // TODO: Mover esta parte a FileOps.cs
+        File.WriteAllLines(outputFile, shortcut, Encoding.UTF8); 
+        System.Diagnostics.Trace.WriteLine($"{outputFile} creado con exito.", "[Info]");
+        SetExecPermissions(outputFile);
     }
 
     private static async System.Threading.Tasks.Task SetExecPermissions(string dir)

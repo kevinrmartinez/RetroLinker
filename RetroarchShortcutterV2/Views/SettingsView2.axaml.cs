@@ -56,7 +56,7 @@ public partial class SettingsView2 : UserControl
         // TODO: Decidirse si usar directorio relativo o absoluto
         txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
         txtDefRADir.IsReadOnly = DesktopOS;
-        txtDefRADir.Text = (string.IsNullOrEmpty(ParentWindow.settings.DEFRADir) && !DesktopOS) ? FileOps.LinuxRABin : ParentWindow.settings.DEFRADir;
+        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
         btnApplyUserAssets.IsVisible = !DesktopOS;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
