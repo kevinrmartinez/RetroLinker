@@ -614,6 +614,7 @@ public partial class MainView : UserControl
         }
 
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
+        // Single Shortcut
         if (opResult.Count == 1)
         {
             if (!opResult[0].Error)
@@ -627,6 +628,51 @@ public partial class MainView : UserControl
                 msbox_params.ContentHeader = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error";
                 msbox_params.ContentMessage = $"La operacion termino con el siguienete error:\n{opResult[0].eMesseage}";
                 msbox_params.Icon = Icon.Error; 
+                MessageBoxPopUp(msbox_params);
+            }
+        }
+        // Multiple Shortcut
+        else
+        {
+            bool hasErrors = false;
+            for (int i = 0; i < opResult.Count; i++)
+            {
+                if (opResult[i].Error) { hasErrors = true; break; }
+            }
+
+            if (!hasErrors)
+            {
+                msbox_params.ContentMessage = "Todos los shortcuts fueron creados con éxtio"; msbox_params.ContentTitle = "Éxito";
+                msbox_params.Icon = Icon.Success;
+                MessageBoxPopUp(msbox_params);
+            }
+            else
+            {
+                msbox_params.ContentHeader = "Ha ocurrido un error al crear algunos shortcuts:";
+                int successCount = 0;
+                int errorCount = 0;
+                string content = string.Empty;
+                for (int i = 0; i < opResult.Count; i++)
+                {
+                    if (opResult[i].Error)
+                    {
+                        errorCount++;
+                        string outputPath = opResult[i].OutputDir + ": ";
+                        content = string.Concat(content, outputPath);
+                        content = string.Concat(content, opResult[i].Messeage);
+                        content = string.Concat(content, "\n");
+                    }
+                    else
+                    { 
+                        successCount++;
+                        string outputPath = opResult[i].OutputDir + ": ";
+                        content = string.Concat(content, outputPath);
+                        content = string.Concat(content, opResult[i].Messeage);
+                        content = string.Concat(content, "\n");
+                    }
+                }
+                msbox_params.Icon = (successCount > 0) ? Icon.Warning : Icon.Error;
+                msbox_params.ContentMessage = content;
                 MessageBoxPopUp(msbox_params);
             }
         }

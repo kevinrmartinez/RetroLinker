@@ -16,28 +16,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using RetroarchShortcutterV2.Models;
-using SharpConfig;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace LinFunc;
 
 public static class LinShortcutter
 {
-    private const string lineComment = "# Creado con RetroLinker";  // No se como poner el comentario...
+    private const string lineComment = " # Creado con RetroLinker";  // No se como poner el comentario...
     private const string line1 = "";
     private const string line2 = "[Desktop Entry]";
     private const string notify = "StartupNotify=false";
     private const string cat = "Categories=Game";
-    private const string type = "Type=Application";
+    private const string linktype = "Type=Application";
 
     // Overload con un objeto Shortcut <- En Uso
     public static void CreateShortcut(Shortcutter _shortcut, string name, byte makeCopyIndex)
     {
         List<string> shortcut = new()
         {
-            line1,
+            // line1,
             lineComment,
             line2,
             cat
@@ -56,11 +54,22 @@ public static class LinShortcutter
         string _terminal = (_shortcut.VerboseB) ? "true" : "false";
         shortcut.Add($"Terminal={_terminal}");
 
-        shortcut.Add(type);
+        shortcut.Add(linktype);
 
         string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.LNKdir : _shortcut.LNKcpy[makeCopyIndex];
+
+        for (int i = 0; i < shortcut.Count; i++)
+        {
+            shortcut[i] = string.Concat(shortcut[i], "\n");
+        }
+
+        string fullOutputString = string.Concat(shortcut);
+        var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
+        File.WriteAllBytes(outputFile, outputBytes);
+
         // TODO: Mover esta parte a FileOps.cs
-        File.WriteAllLines(outputFile, shortcut, Encoding.UTF8); 
+        //File.WriteAllBytes();
+        //File.WriteAllLines(outputFile, shortcut, Encoding.UTF8); 
         System.Diagnostics.Trace.WriteLine($"{outputFile} creado con exito.", "[Info]");
         SetExecPermissions(outputFile);
     }

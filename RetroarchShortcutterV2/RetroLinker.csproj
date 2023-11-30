@@ -70,4 +70,10 @@
     <EmbeddedResource Remove="Models\Settings\**" />
     <None Remove="Models\Settings\**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\Icons\retroarch.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
+  </ItemGroup>
 </Project>

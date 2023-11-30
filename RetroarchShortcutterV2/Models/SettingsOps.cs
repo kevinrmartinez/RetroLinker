@@ -116,29 +116,29 @@ namespace RetroarchShortcutterV2.Models
 
         public static Settings GetCachedSettings() => CachedSettings;
 
-        public static void WriteSettingsFile(Settings settings)
+        public static void WriteSettingsFile(Settings savingSettings)
         {
+            GeneralSettings.GetValuesFrom(savingSettings);
+            if (PrevConfigs.Count > 0)
+            {
+                int dirCount = PrevConfigs.Count;
+                for (int i = 0; i < dirCount; i++)
+                {
+                    string key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
+                }
+            }
+            if (LinkCopyPaths.Count > 0)
+            {
+                int pathCount = LinkCopyPaths.Count;
+                for (int i = 0; i < pathCount; i++)
+                {
+                    string key = $"path{i}"; StoredLinkPaths[key].StringValue = LinkCopyPaths[i];
+                }
+            }
+                
+            CachedSettings = savingSettings;
             try 
             {
-                GeneralSettings.GetValuesFrom(settings);
-                if (PrevConfigs.Count > 0)
-                {
-                    int dirCount = PrevConfigs.Count;
-                    for (int i = 0; i < dirCount; i++)
-                    {
-                        string key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
-                    }
-                }
-                if (LinkCopyPaths.Count > 0)
-                {
-                    int pathCount = LinkCopyPaths.Count;
-                    for (int i = 0; i < pathCount; i++)
-                    {
-                        string key = $"path{i}"; StoredLinkPaths[key].StringValue = LinkCopyPaths[i];
-                    }
-                }
-                
-                CachedSettings = settings;
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
                 System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");
             }
@@ -146,7 +146,7 @@ namespace RetroarchShortcutterV2.Models
             { 
                 System.Diagnostics.Trace.WriteLine($"Incapaz de escribir el archivo {FileOps.SettingFileBin}!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
-                CachedSettings = new();
+                // CachedSettings = new();
             }
         }
         
@@ -195,8 +195,8 @@ namespace RetroarchShortcutterV2.Models
         
         public string GetBase64()
         {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
-            var objectstring = GetString();
-            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectstring);
+            var objectString = GetString();
+            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectString);
             var object64 = System.Convert.ToBase64String(objectBytes);
             return object64;
         }

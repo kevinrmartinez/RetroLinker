@@ -173,8 +173,8 @@ namespace RetroarchShortcutterV2.Models
         public string? eMesseage { get; set; }
 
         
-        public readonly string Success1 = "Operacion realizada con exito";
-        public readonly string Faliure1 = "Operacion ha fracasado";
+        public readonly string Success1 = "La creacion del shortcut realizada con exito";
+        public readonly string Faliure1 = "La creacion del shortcut ha fracasado";
 
         public ShortcutterResult(string outputDir)
         {
