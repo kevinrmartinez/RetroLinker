@@ -23,7 +23,7 @@ namespace LinFunc;
 
 public static class LinShortcutter
 {
-    private const string lineComment = " # Creado con RetroLinker";  // No se como poner el comentario...
+    private const string lineComment = "# Creado con RetroLinker";  // No se como poner el comentario...
     private const string line1 = "";
     private const string line2 = "[Desktop Entry]";
     private const string notify = "StartupNotify=false";

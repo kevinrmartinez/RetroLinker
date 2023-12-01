@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
@@ -634,11 +635,7 @@ public partial class MainView : UserControl
         // Multiple Shortcut
         else
         {
-            bool hasErrors = false;
-            for (int i = 0; i < opResult.Count; i++)
-            {
-                if (opResult[i].Error) { hasErrors = true; break; }
-            }
+            bool hasErrors = opResult.Any(r => r.Error);
 
             if (!hasErrors)
             {
@@ -654,29 +651,18 @@ public partial class MainView : UserControl
                 string content = string.Empty;
                 for (int i = 0; i < opResult.Count; i++)
                 {
-                    if (opResult[i].Error)
-                    {
-                        errorCount++;
-                        string outputPath = opResult[i].OutputDir + ": ";
-                        content = string.Concat(content, outputPath);
-                        content = string.Concat(content, opResult[i].Messeage);
-                        content = string.Concat(content, "\n");
-                    }
-                    else
-                    { 
-                        successCount++;
-                        string outputPath = opResult[i].OutputDir + ": ";
-                        content = string.Concat(content, outputPath);
-                        content = string.Concat(content, opResult[i].Messeage);
-                        content = string.Concat(content, "\n");
-                    }
+                    string outputPath = opResult[i].OutputDir + ": ";
+                    content = string.Concat(content, outputPath);
+                    content = string.Concat(content, opResult[i].Messeage);
+                    content = string.Concat(content, "\n");
+                    if (opResult[i].Error) { errorCount++; }
+                    else { successCount++; }
                 }
                 msbox_params.Icon = (successCount > 0) ? Icon.Warning : Icon.Error;
                 msbox_params.ContentMessage = content;
                 MessageBoxPopUp(msbox_params);
             }
         }
-        ShortcutPosible = false;
     }
 
     // CLOSING
