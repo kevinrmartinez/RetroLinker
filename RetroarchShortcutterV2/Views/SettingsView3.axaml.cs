@@ -15,12 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using RetroarchShortcutterV2.Models;
+using RetroLinker.Models;
 
-namespace RetroarchShortcutterV2.Views
+namespace RetroLinker.Views
 {
     public partial class SettingsView3 : UserControl
     {
@@ -181,7 +182,7 @@ namespace RetroarchShortcutterV2.Views
         
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
-            string folder = await FileOps.OpenFolderAsync(template:0, ParentWindow);
+            string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
             if (!string.IsNullOrWhiteSpace(folder))
             {
                 txtDEFLinkOutput.Text = folder;
@@ -212,7 +213,7 @@ namespace RetroarchShortcutterV2.Views
 
             if (currentItem == StrAddCustomCopyPath)
             {
-                string folder = await FileOps.OpenFolderAsync(template:3, ParentWindow);
+                string folder = await AvaloniaOps.OpenFolderAsync(template:3, ParentWindow);
                 if (!string.IsNullOrWhiteSpace(folder))
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
@@ -244,7 +245,7 @@ namespace RetroarchShortcutterV2.Views
         #region WINDOWS OS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            string folder = await FileOps.OpenFolderAsync(template:2, ParentWindow);
+            string folder = await AvaloniaOps.OpenFolderAsync(template:2, ParentWindow);
             if (!string.IsNullOrWhiteSpace(folder))
             {
                 txtIcoSavPath.Text = folder; 

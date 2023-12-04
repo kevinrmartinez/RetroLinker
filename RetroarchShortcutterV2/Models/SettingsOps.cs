@@ -15,10 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using SharpConfig;
-using System.Collections.Generic;
 
-namespace RetroarchShortcutterV2.Models
+using System.Collections.Generic;
+using SharpConfig;
+
+namespace RetroLinker.Models
 {
     public static class SettingsOps
     {

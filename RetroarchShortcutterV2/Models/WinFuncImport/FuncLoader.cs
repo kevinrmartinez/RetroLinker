@@ -15,12 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System;
 using System.Reflection;
 
-namespace RetroarchShortcutterV2.Models.WinFuncImport
+namespace RetroLinker.Models.WinFuncImport
 {
-    public class FuncLoader
+    public static class FuncLoader
     {
         // Este .dll debe estar presente junto al ejecutable! (Windows)
         public const string WinFunc = "RetroLinkerWinLib.dll";

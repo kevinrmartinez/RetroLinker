@@ -15,16 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
-using RetroarchShortcutterV2.Models;
 
-namespace RetroarchShortcutterV2.Views
+namespace RetroLinker.Views
 {
     public partial class SettingsView : UserControl
     {

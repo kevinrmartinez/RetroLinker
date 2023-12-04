@@ -15,14 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using RetroLinker.ViewModels;
+using RetroLinker.Views;
 
-using RetroarchShortcutterV2.ViewModels;
-using RetroarchShortcutterV2.Views;
-
-namespace RetroarchShortcutterV2;
+namespace RetroLinker;
 
 public partial class App : Application
 {

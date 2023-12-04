@@ -15,15 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System;
-
 using Avalonia;
-using Avalonia.Dialogs;
-//using Avalonia.ReactiveUI;
-using Projektanker.Icons.Avalonia.FontAwesome;
 using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
+//using Avalonia.ReactiveUI;
 
-namespace RetroarchShortcutterV2.Desktop;
+namespace RetroLinker.Desktop;
 
 class Program
 {

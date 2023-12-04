@@ -15,20 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System;
 using System.Drawing;
 using System.IO;
 using TsudaKageyu;
 
-namespace WinFunc
+namespace RetroLinkerWin
 {
-    public class WinIconProc
+    public static class WinIconProc
     {
-        public static MemoryStream ExtractIco(string DIR)
+        public static MemoryStream ExtractIco(string dir)
         {
             // Extraer el primer icono
             var stream = new MemoryStream();
-            var IcoExtracr = new IconExtractor(DIR);
+            var IcoExtracr = new IconExtractor(dir);
             //int index = IcoExtracr.Count - 1;
             Icon exeIco = IcoExtracr.GetIcon(0);          
             exeIco.Save(stream);
@@ -36,18 +37,18 @@ namespace WinFunc
             return stream;
         }
 
-        public static MemoryStream ExtractIcoByIndex(string DIR, int INDEX)
+        public static MemoryStream ExtractIcoByIndex(string dir, int index)
         {
             // Extraer el icono especificado por indice
             var stream = new MemoryStream();
-            var IcoExtracr = new IconExtractor(DIR);
-            if (INDEX >= IcoExtracr.Count) 
+            var IcoExtracr = new IconExtractor(dir);
+            if (index >= IcoExtracr.Count) 
             {
                 Console.WriteLine("El indice indicado no existe!");
                 Console.WriteLine("Intentando indice inferior");
-                INDEX = IcoExtracr.Count - 1;
+                index = IcoExtracr.Count - 1;
             }
-            Icon exeIco = IcoExtracr.GetIcon(INDEX);
+            Icon exeIco = IcoExtracr.GetIcon(index);
             exeIco.Save(stream);
             stream.Position = 0;
             return stream;

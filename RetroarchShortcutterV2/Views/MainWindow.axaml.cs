@@ -15,9 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using Avalonia.Controls;
 
-namespace RetroarchShortcutterV2.Views;
+namespace RetroLinker.Views;
 
 public partial class MainWindow : Window
 {

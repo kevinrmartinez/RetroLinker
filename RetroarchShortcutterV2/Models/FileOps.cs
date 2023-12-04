@@ -15,26 +15,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Avalonia.Controls;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
-using RetroarchShortcutterV2.Models.Icons;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using RetroLinker.Models.Icons;
 
-namespace RetroarchShortcutterV2.Models
+namespace RetroLinker.Models
 {
-    public class FileOps
+    public static class FileOps
     {
         //public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
-        public const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
-        public const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
         public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
@@ -57,9 +53,7 @@ namespace RetroarchShortcutterV2.Models
         public static readonly string WINPublicUser = "C:\\Users\\Public";
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         //public static readonly string SettingFileBin = Path.Combine(UserProfile, "RS_settings.dat");
-
-        public static IStorageFolder? DesktopFolder { get; private set; }
-        public static IStorageFolder? ROMPadreDir { get; private set; }
+        
         private static Settings LoadedSettings;
 
 
@@ -183,13 +177,6 @@ namespace RetroarchShortcutterV2.Models
                 return new List<string>();
             }
         }
-
-        public static async Task SetDesktopDir(TopLevel topLevel)
-        {
-            DesktopFolder ??= await topLevel.StorageProvider.TryGetFolderFromPathAsync(UserDesktop);
-            // '??=' le asigna valor solo si esta null
-        }
-
         #endregion
 
         #region FUNCTIONS
@@ -210,23 +197,7 @@ namespace RetroarchShortcutterV2.Models
                 return false;
             }
         }
-
-        public static Uri GetDefaultIcon() => new Uri(DEFicon1);
-
-        public static Uri GetNAimage() => new Uri(NoAplica);
-
-        public static Bitmap GetBitmap(string path) => new Bitmap(path);
-
-        public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
-
-        public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
-        {
-            if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
-            {
-                ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre);
-            }
-        }
-
+        
         public static string GetDeskLinkPath(string link_name, bool OS)
         {
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
@@ -243,49 +214,6 @@ namespace RetroarchShortcutterV2.Models
             new_dir += (OS) ? WinLinkExt : LinLinkExt;
             new_dir = Path.Combine(LinkPath, new_dir);
             return new_dir;
-        }
-
-        #endregion
-
-
-        #region FileDialogs
-
-        public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel)
-        {
-            var opt = PickerOpt.OpenPickerOpt(template);
-            var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-            string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
-            return dir;
-        }
-
-        public static async Task<string> OpenFolderAsync(byte template, TopLevel topLevel)
-        {
-            FolderPickerOpenOptions opt = new()
-            {
-                AllowMultiple = false,
-                Title = template switch
-                {
-                    0 => "Eliga el directorio de UserAssets",
-                    1 => "Eliga el directorio padre de ROMs",
-                    2 => "Eliga el directorio donde guardar los .ico",
-                    3 => "Eliga el directorio donde crear la copia",
-                    // Esta opcion no deberia pasar
-                    _ => "Eliga el directorio..."
-                }
-            };
-
-            var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-            string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
-            return dir;
-        }
-
-        public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
-        {
-            var opt = PickerOpt.SavePickerOpt(template);
-            var file_task = topLevel.StorageProvider.SaveFilePickerAsync(opt);
-            var file = await file_task;
-            string dir = (file != null) ? file.Path.LocalPath : string.Empty;
-            return dir;
         }
 
         #endregion
@@ -412,7 +340,7 @@ namespace RetroarchShortcutterV2.Models
 
         #endregion
 
-        #region Linux Only
+        #region Linux Only Ops
 
         public static string[] FixLinkName(string LinkDir)
         {
@@ -462,7 +390,7 @@ namespace RetroarchShortcutterV2.Models
 
 
 #if DEBUG
-        public static string IconExtractTest() => "F:\\Zero Fox\\Anime Icon Matcher.exe";
+        public static string IconExtractTest() => "C:\\Windows\\system32\\notepad.exe";
 #endif
     }
 }

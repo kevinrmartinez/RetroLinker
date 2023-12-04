@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 
-namespace RetroarchShortcutterV2.Models
+namespace RetroLinker.Models
 {
     public class Testing
     {

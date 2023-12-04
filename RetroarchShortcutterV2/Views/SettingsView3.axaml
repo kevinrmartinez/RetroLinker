@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
-             x:Class="RetroarchShortcutterV2.Views.SettingsView3"
+             x:Class="RetroLinker.Views.SettingsView3"
 			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded" Unloaded="SettingsView3_1_OnUnloaded">
 
 	<UserControl.Styles>

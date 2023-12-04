@@ -15,13 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Avalonia.Controls;
-using Avalonia.Media.Imaging;
-using RetroarchShortcutterV2.Models;
-using RetroarchShortcutterV2.Views;
-using System.Runtime.Intrinsics.Arm;
 
-namespace RetroarchShortcutterV2.ViewModels;
+namespace RetroLinker.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {

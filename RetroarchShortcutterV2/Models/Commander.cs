@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-namespace RetroarchShortcutterV2.Models
+namespace RetroLinker.Models
 {
-    public class Commander
+    public static class Commander
     {
         public const string contentless = "Contentless";
         const string verbose = "-v ";

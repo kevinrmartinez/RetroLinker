@@ -15,22 +15,24 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Models;
 using MsBox.Avalonia.Enums;
-using RetroarchShortcutterV2.Models;
-using RetroarchShortcutterV2.Models.Icons;
-using System.Threading.Tasks;
-using Avalonia.Styling;
+using MsBox.Avalonia.Models;
+using RetroLinker.Models;
+using RetroLinker.Models.Icons;
+using RetroLinker.Models.WinFuncImport;
 
-namespace RetroarchShortcutterV2.Views;
+namespace RetroLinker.Views;
 
 public partial class MainView : UserControl
 {
@@ -79,7 +81,6 @@ public partial class MainView : UserControl
             settings = FileOps.LoadSettingsFO();
             System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
             System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
-            FileOps.SetDesktopDir(ParentWindow);
         
             // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -174,7 +175,7 @@ public partial class MainView : UserControl
     {
         txtRADir.Text = settings.DEFRADir;
         OutputLink.RAdir = settings.DEFRADir;
-        FileOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
+        AvaloniaOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
 
@@ -186,10 +187,10 @@ public partial class MainView : UserControl
 
     void WinFuncImport()
     {
-        try { Models.WinFuncImport.FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+        try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
         catch (System.Exception eMain)
         {
-            System.Diagnostics.Trace.WriteLine($"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!", "[Erro]");
+            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinFunc} ha fallado!", "[Erro]");
             System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
             lock (this)
             { WinFuncImportFail(eMain); }
@@ -221,7 +222,7 @@ public partial class MainView : UserControl
             ShowInCenter = true,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
             ContentTitle = "Error Fatal",
-            ContentHeader = $"El importado de {Models.WinFuncImport.FuncLoader.WinFunc} ha fallado!",
+            ContentHeader = $"El importado de {FuncLoader.WinFunc} ha fallado!",
             ContentMessage = $"El importado a fallado con el siguiente error:\n{eMain.Message}\n\nSin este módulo el programa no puede cumplir su funcion.",
             ButtonDefinitions = diag_btns
         };
@@ -265,7 +266,7 @@ public partial class MainView : UserControl
 
     void FillIconBoxes(string DIR)
     {
-        ICONimage = FileOps.GetBitmap(DIR);
+        ICONimage = AvaloniaOps.GetBitmap(DIR);
         pic16.Source = ICONimage;
         pic32.Source = ICONimage;
         pic64.Source = ICONimage;
@@ -335,7 +336,7 @@ public partial class MainView : UserControl
         if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }
         else { opt = PickerOpt.OpenOpts.LINico; }
         
-        string file = await FileOps.OpenFileAsync(opt, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             int newIndex = comboICONDir.ItemCount;
@@ -365,7 +366,7 @@ public partial class MainView : UserControl
             if (IconItemSET.IconStream != null)
             {
                 IconItemSET.IconStream.Position = 0;
-                var bitm = FileOps.GetBitmap(IconItemSET.IconStream);
+                var bitm = AvaloniaOps.GetBitmap(IconItemSET.IconStream);
                 FillIconBoxes(bitm);
             }
             //else if (!DesktopOS && FileOps.IsVectorImage(item))
@@ -375,7 +376,7 @@ public partial class MainView : UserControl
                 { FillIconBoxes(OutputLink.ICONfile); }
                 catch 
                 {
-                    Bitmap bitm = new(AssetLoader.Open(FileOps.GetNAimage()));
+                    Bitmap bitm = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
                     FillIconBoxes(bitm);
                     panelIconNoImage.IsVisible = true;
                 } 
@@ -383,7 +384,7 @@ public partial class MainView : UserControl
         }
         else
         {   // llena los controles pic con el icono default (Indice 0)
-            Bitmap bitm = new(AssetLoader.Open(FileOps.GetDefaultIcon()));
+            Bitmap bitm = new(AssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
             FillIconBoxes(bitm);
         }
     }
@@ -397,7 +398,7 @@ public partial class MainView : UserControl
         PickerOpt.OpenOpts opt;
         if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
         else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
-        string file = await FileOps.OpenFileAsync(opt, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.RAdir = file;
@@ -415,7 +416,7 @@ public partial class MainView : UserControl
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.ROMdir = file;
@@ -459,7 +460,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await FileOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow);
+        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             if (!comboConfig.Items.Contains(file))
@@ -497,7 +498,7 @@ public partial class MainView : UserControl
         
         PickerOpt.SaveOpts opt;
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
-        string file = await FileOps.SaveFileAsync(template:opt, ParentWindow);
+        string file = await AvaloniaOps.SaveFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.LNKdir = file;

@@ -15,27 +15,29 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Avalonia.Platform.Storage;
-using System.Collections.Generic;
 
-namespace RetroarchShortcutterV2.Models
+using System.Collections.Generic;
+using Avalonia.Platform.Storage;
+
+namespace RetroLinker.Models
 {
-    public class PickerOpt
+    public static class PickerOpt
     {
         static readonly FilePickerFileType ejecutable = new("Ejecutables") { Patterns = new string[] { "*.exe" } };
         static readonly FilePickerFileType appimage = new("AppImage") { Patterns = new string[] { "*.AppImage" } };
+        static readonly FilePickerFileType shellscripts = new("Script files") { Patterns = new string[] { "*.sh" } };
         static readonly FilePickerFileType config_file = new("Config Files") { Patterns = new string[] { "*.cfg" } };
         static readonly FilePickerFileType win_icon_files = new("Windows Icons") { Patterns = new string[] { "*.ico" } };
         static readonly FilePickerFileType conv_icon = new("Convertible Images") { Patterns = FileOps.WinConvertibleIconsExt };
         static readonly FilePickerFileType lin_icon_files = new("Icon Files") { Patterns = FileOps.LinIconsExt };
         static readonly FilePickerFileType win_lnk = new("Windows Shortcut") { Patterns = new string[] { "*.lnk" } };
-        static readonly FilePickerFileType lin_lnk = new("Desktop link") { Patterns = new string[] { "*.desktop" } };
+        static readonly FilePickerFileType lin_lnk = new("Desktop Entry") { Patterns = new string[] { "*.desktop" } };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAout, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
 
         static List<FilePickerFileType> RADirFileTypes_win = new() { ejecutable, FilePickerFileTypes.All };
-        static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, FilePickerFileTypes.All };
+        static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, shellscripts, FilePickerFileTypes.All };
         static List<FilePickerFileType> CONFIGDirFileTypes = new() { config_file, FilePickerFileTypes.TextPlain };
         static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, ejecutable, conv_icon };
         static List<FilePickerFileType> ICONfileTypes2 = new() { lin_icon_files };
@@ -61,22 +63,22 @@ namespace RetroarchShortcutterV2.Models
                     options.AllowMultiple = false;
                     options.Title = "Eliga la ROM que desea linkear";
                     //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
-                    if (FileOps.ROMPadreDir != null)
-                    { options.SuggestedStartLocation = FileOps.ROMPadreDir; }
+                    if (AvaloniaOps.ROMPadreDir != null)
+                    { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
                     // FIXME: No funciona con los FilePicker de las distros
                     break;
 
                 // Retroarch config
                 case OpenOpts.RAcfg:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga el Config que desea linkear";
+                    options.Title = "Eliga el archivo Config que desea especificar";
                     options.FileTypeFilter = CONFIGDirFileTypes;
                     break;
 
                 // Windows icon
                 case OpenOpts.WINico:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga un archivo para como icono";
+                    options.Title = "Eliga un archivo de icono";
                     options.FileTypeFilter = ICONfileTypes;
                     break;
 
@@ -90,7 +92,7 @@ namespace RetroarchShortcutterV2.Models
                 // Linux images for icons
                 case OpenOpts.LINico:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga un archivo para como icono";
+                    options.Title = "Eliga un archivo de icono";
                     options.FileTypeFilter = ICONfileTypes2;
                     break;
 

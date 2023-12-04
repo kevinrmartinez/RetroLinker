@@ -15,12 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Projektanker.Icons.Avalonia;
 
-namespace RetroarchShortcutterV2.Styles;
+namespace RetroLinker.Styles;
 
 public class LinkCopyItemGrid
 {

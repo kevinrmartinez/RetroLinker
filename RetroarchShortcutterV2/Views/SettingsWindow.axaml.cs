@@ -15,15 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
-using RetroarchShortcutterV2.Models;
+using RetroLinker.Models;
 
-namespace RetroarchShortcutterV2.Views
+namespace RetroLinker.Views
 {
     public partial class SettingsWindow : Window
     {

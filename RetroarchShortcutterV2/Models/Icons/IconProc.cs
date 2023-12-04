@@ -15,14 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using ImageMagick;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ImageMagick;
 
-namespace RetroarchShortcutterV2.Models.Icons
+namespace RetroLinker.Models.Icons
 {
-    public class IconProc
+    public static class IconProc
     {
         const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
         public static List<IconsItems> IconItemsList { get; set; }

@@ -15,10 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 using System;
 using System.Reflection;
 
-namespace RetroarchShortcutterV2.Models.WinFuncImport
+namespace RetroLinker.Models.WinFuncImport
 {
     public class WinFuncMethods : IEquatable<WinFuncMethods>
     {
@@ -28,9 +29,9 @@ namespace RetroarchShortcutterV2.Models.WinFuncImport
 
         public WinFuncMethods(string name, object instance, MethodInfo methodInfo) 
         {
-            this.MethodName = name;
-            this.ObjInstance = instance;
-            this.MInfo = methodInfo;
+            MethodName = name;
+            ObjInstance = instance;
+            MInfo = methodInfo;
         }
 
         public bool Equals(WinFuncMethods other)

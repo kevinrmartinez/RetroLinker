@@ -15,12 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Avalonia;
+
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using RetroarchShortcutterV2.Models;
+using RetroLinker.Models;
 
-namespace RetroarchShortcutterV2.Views;
+namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
@@ -64,7 +64,7 @@ public partial class SettingsView2 : UserControl
     // USER ASSETS
     async void btnUserAssets_Click(object sender, RoutedEventArgs e)
     {
-        string folder = await FileOps.OpenFolderAsync(template:0, ParentWindow);
+        string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
         if (!string.IsNullOrWhiteSpace(folder))
         { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
     }
@@ -89,7 +89,7 @@ public partial class SettingsView2 : UserControl
         PickerOpt.OpenOpts opt;
         opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :    // FilePicker Option para .exe de Windows
                           PickerOpt.OpenOpts.RAout;     // FilePicker Option para .AppImage de Linux
-        string file = await FileOps.OpenFileAsync(template:opt, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrWhiteSpace(file))
         { 
             txtDefRADir.Text = file; 
@@ -107,7 +107,7 @@ public partial class SettingsView2 : UserControl
     // DIR PADRE
     async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
     {
-        string folder = await FileOps.OpenFolderAsync(template:1, ParentWindow);
+        string folder = await AvaloniaOps.OpenFolderAsync(template:1, ParentWindow);
         if (!string.IsNullOrWhiteSpace(folder))
         { 
             txtDefROMPath.Text = folder; 

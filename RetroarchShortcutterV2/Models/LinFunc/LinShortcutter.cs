@@ -15,11 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using RetroarchShortcutterV2.Models;
+
 using System.Collections.Generic;
 using System.IO;
 
-namespace LinFunc;
+namespace RetroLinker.Models.LinFunc;
 
 public static class LinShortcutter
 {
