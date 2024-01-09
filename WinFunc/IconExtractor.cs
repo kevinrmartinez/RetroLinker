@@ -33,7 +33,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace TsudaKageyu
+namespace RetroLinkerWin
 {
     public class IconExtractor
     {

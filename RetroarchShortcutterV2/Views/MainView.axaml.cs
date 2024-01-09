@@ -50,6 +50,7 @@ public partial class MainView : UserControl
         ParentWindow = mainWindow;
         timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+        // System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("es");
     }
 
     // Window Object
@@ -190,7 +191,7 @@ public partial class MainView : UserControl
         try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
         catch (System.Exception eMain)
         {
-            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinFunc} ha fallado!", "[Erro]");
+            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", "[Erro]");
             System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
             lock (this)
             { WinFuncImportFail(eMain); }
@@ -222,7 +223,7 @@ public partial class MainView : UserControl
             ShowInCenter = true,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
             ContentTitle = "Error Fatal",
-            ContentHeader = $"El importado de {FuncLoader.WinFunc} ha fallado!",
+            ContentHeader = $"El importado de {FuncLoader.WinOnlyLib} ha fallado!",
             ContentMessage = $"El importado a fallado con el siguiente error:\n{eMain.Message}\n\nSin este módulo el programa no puede cumplir su funcion.",
             ButtonDefinitions = diag_btns
         };

@@ -91,7 +91,7 @@ namespace RetroLinker.Models
             catch (System.Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "[Erro]");
-                System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
                 LinkResult.Messeage = LinkResult.Faliure1;
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
@@ -108,7 +108,7 @@ namespace RetroLinker.Models
                 catch (System.Exception e)
                 {
                     System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKcpy[i])}!", "[Erro]");
-                    System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinFunc}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                    System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
                     LinkResult.Messeage = LinkResult.Faliure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;

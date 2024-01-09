@@ -16,7 +16,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,5 +30,22 @@
     <None Update="WinFunc.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Remove="net7.0\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Remove="net7.0\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="net7.0\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="net7.0\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Remove="net7.0\**" />
   </ItemGroup>
 </Project>

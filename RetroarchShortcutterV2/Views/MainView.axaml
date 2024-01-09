@@ -3,7 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
+			 xmlns:locale="clr-namespace:RetroLinker.Assets.Translations"
+			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
 			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
 	
@@ -12,7 +13,7 @@
 		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
 			<Rectangle Grid.Column="0" Width="40"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<Label Content="RetroLinker" FontWeight="Bold"/>	
+				<Label Content="{x:Static locale:Res_MainView.lblTITLE}" FontWeight="Bold"/>	
 			</StackPanel>
 			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
 			        i:Attached.Icon="fa-gear" FontSize="24"/>
@@ -29,7 +30,7 @@
 
 				<!-- ROW1 - RetroArch Directory -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
-					<Label Margin="0,5,0,0" Content="Ejecutable de RetroArch*"/>
+					<Label Margin="0,5,0,0" Content="{x:Static locale:Res_MainView.lblRAexec}"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="retroarch.exe"/>
 						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="Explorar"

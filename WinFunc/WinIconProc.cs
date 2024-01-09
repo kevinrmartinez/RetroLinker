@@ -19,11 +19,10 @@
 using System;
 using System.Drawing;
 using System.IO;
-using TsudaKageyu;
 
 namespace RetroLinkerWin
 {
-    public static class WinIconProc
+    public class WinIconProc
     {
         public static MemoryStream ExtractIco(string dir)
         {

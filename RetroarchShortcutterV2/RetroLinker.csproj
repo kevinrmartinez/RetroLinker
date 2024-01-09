@@ -15,29 +15,20 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
-  
   <ItemGroup>
-    <None Remove="Styles\webfonts\uicons-regular-rounded.css" />
-    <None Remove="Styles\webfonts\uicons-regular-rounded.eot" />
-    <None Remove="Styles\webfonts\uicons-regular-rounded.html" />
-    <None Remove="Styles\webfonts\uicons-regular-rounded.woff" />
-    <None Remove="Styles\webfonts\uicons-regular-rounded.woff2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.5" />
+    <PackageReference Include="Avalonia" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.6" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
-      <Version>11.0.5</Version>
+      <Version>11.0.6</Version>
     </PackageReference>
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.4.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.5.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="8.3.0" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.0.1" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.0.1" />
     <PackageReference Include="sharpconfig" Version="3.2.9.1" />
   </ItemGroup>
 
@@ -57,23 +48,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\Images\" />
-  </ItemGroup>
-
-  <ItemGroup>
 	  <AvaloniaResource Include="Styles\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaXaml Remove="Models\Settings\**" />
-    <Compile Remove="Models\Settings\**" />
-    <EmbeddedResource Remove="Models\Settings\**" />
-    <None Remove="Models\Settings\**" />
+    <EmbeddedResource Update="Assets\Translations\Res_MainView.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Res_MainView.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Assets\Translations\Res_MainView.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Res_MainView.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Update="Assets\Icons\retroarch.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\Translations\Res_MainView.es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\Translations\Res_MainView.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Res_MainView.Designer.cs</LastGenOutput>
     </AvaloniaResource>
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace TsudaKageyu
+namespace RetroLinkerWin
 {
     internal static class IENativeMethods
     {

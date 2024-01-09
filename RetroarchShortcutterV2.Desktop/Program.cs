@@ -20,6 +20,7 @@ using System;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
+
 //using Avalonia.ReactiveUI;
 
 namespace RetroLinker.Desktop;

@@ -24,21 +24,22 @@ namespace RetroLinker.Models.WinFuncImport
     public static class FuncLoader
     {
         // Este .dll debe estar presente junto al ejecutable! (Windows)
-        public const string WinFunc = "RetroLinkerWinLib.dll";
-        static Assembly DLL;
+        public const string WinOnlyLib = "RetroLinkerWinLib.dll";
+        private const string WinOnlyNamespace = "RetroLinkerWin";
+        private static Assembly DLL;
 
         public static void ImportWinFunc()
         {
-            System.Diagnostics.Trace.WriteLine($"Importando {WinFunc}...", "[Info]");
-            DLL = Assembly.LoadFrom(WinFunc);
-            System.Diagnostics.Trace.WriteLine($"{WinFunc} fue importado exitosamente.", "[Info]");
-            System.Diagnostics.Debug.WriteLine($"{WinFunc} importado como '{DLL.FullName}'.", "[Info]");
+            System.Diagnostics.Trace.WriteLine($"Importando {WinOnlyLib}...", "[Info]");
+            DLL = Assembly.LoadFrom(WinOnlyLib);
+            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} fue importado exitosamente.", "[Info]");
+            System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} importado como '{DLL.FullName}'.", "[Info]");
         }
 
         public static WinFuncMethods GetShortcutMethod()
         {
             const string mName = "CreateShortcut";
-            var WinShortcutter = DLL.GetType("WinFunc.WinShortcutter");
+            var WinShortcutter = DLL.GetType($"{WinOnlyNamespace}.WinShortcutter");
             var objWinShortcutter = Activator.CreateInstance(WinShortcutter);
 
             var methodArgsTypes = new Type[]
@@ -54,7 +55,7 @@ namespace RetroLinker.Models.WinFuncImport
         public static WinFuncMethods GetIcoExtractMethod()
         {
             const string mName = "ExtractIco";
-            var WinShortcutter = DLL.GetType("WinFunc.WinIconProc");
+            var WinShortcutter = DLL.GetType($"{WinOnlyNamespace}.WinIconProc");
             var objWinShortcutter = Activator.CreateInstance(WinShortcutter);
 
             var methodArgsTypes = new Type[]
@@ -68,7 +69,7 @@ namespace RetroLinker.Models.WinFuncImport
         public static WinFuncMethods GetIcoExecuterMethod()
         {
             const string mName = "Main";
-            var WinShortcutter = DLL.GetType("WinFunc.Executer");
+            var WinShortcutter = DLL.GetType($"{WinOnlyNamespace}.Executer");
             var objWinShortcutter = Activator.CreateInstance(WinShortcutter);
 
             MethodInfo method = WinShortcutter.GetMethod(mName);
