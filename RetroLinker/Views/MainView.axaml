@@ -59,7 +59,7 @@
 						<Label Content="Core*"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"/>
-							<Button Name="btnSubSys" Grid.Column="1" Content="Subsystem" IsEnabled="False" ToolTip.Tip="Subsystem"
+							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="Subsystem"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
 						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="'cores.txt' No encontrado!" IsVisible="False"/>

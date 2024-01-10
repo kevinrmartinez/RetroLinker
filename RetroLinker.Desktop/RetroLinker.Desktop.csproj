@@ -20,32 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RetroarchShortcutterV2\RetroLinker.csproj" />
+    <ProjectReference Include="..\RetroLinker\RetroLinker.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="RetroLinkerWinLib.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="WinFunc.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Remove="net7.0\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AvaloniaXaml Remove="net7.0\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="net7.0\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="net7.0\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Remove="net7.0\**" />
   </ItemGroup>
 </Project>

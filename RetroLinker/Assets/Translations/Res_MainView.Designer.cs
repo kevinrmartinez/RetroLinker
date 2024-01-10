@@ -62,7 +62,7 @@ namespace RetroLinker.Assets.Translations {
         /// </summary>
         public static string lblRAexec {
             get {
-                return ResourceManager.GetString("lblRAexec", resourceCulture);
+                return ResourceManager.GetString("lblRADir", resourceCulture);
             }
         }
         
