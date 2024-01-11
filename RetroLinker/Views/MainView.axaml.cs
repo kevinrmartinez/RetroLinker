@@ -41,7 +41,7 @@ public partial class MainView : UserControl
     { 
         InitializeComponent();
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+        System.Diagnostics.Debug.WriteLine(@"Ejecuacion tras MainView(): {1}", timeSpan, "[Time]");
     }
     
     public MainView(MainWindow mainWindow)
@@ -49,7 +49,7 @@ public partial class MainView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine($"Ejecuacion tras MainView(): {timeSpan}", "[Time]");
+        System.Diagnostics.Debug.WriteLine(@"Ejecuacion tras MainView(): {1}", timeSpan, "[Time]");
         // System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("es");
     }
 
@@ -93,6 +93,7 @@ public partial class MainView : UserControl
             if (!DesktopOS)
             {
                 if (string.IsNullOrEmpty(settings.DEFRADir)) 
+                    //TODO: move retroarch to a constant, maybe an universal constant
                 { settings.DEFRADir = "retroarch"; }
                 txtRADir.IsReadOnly = false;
                 DefLinRAIcon = FileOps.GetRAIcons();
@@ -200,6 +201,7 @@ public partial class MainView : UserControl
 
     async Task WinFuncImportFail(System.Exception eMain)
     {
+        //TODO: Figure out a localizable solution
         const string retry_btn = "Retry";
         const string abort_btn = "Abort";
         ButtonDefinition[] diag_btns;
@@ -222,7 +224,7 @@ public partial class MainView : UserControl
             MaxWidth = 550,
             ShowInCenter = true,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
-            ContentTitle = "Error Fatal",
+            ContentTitle = "",
             ContentHeader = $"El importado de {FuncLoader.WinOnlyLib} ha fallado!",
             ContentMessage = $"El importado a fallado con el siguiente error:\n{eMain.Message}\n\nSin este módulo el programa no puede cumplir su funcion.",
             ButtonDefinitions = diag_btns

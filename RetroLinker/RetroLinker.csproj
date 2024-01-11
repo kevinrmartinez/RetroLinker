@@ -50,19 +50,7 @@
   <ItemGroup>
 	  <AvaloniaResource Include="Styles\**" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Assets\Translations\Res_MainView.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Res_MainView.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="Assets\Translations\Res_MainView.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Res_MainView.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <AvaloniaResource Update="Assets\Icons\retroarch.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

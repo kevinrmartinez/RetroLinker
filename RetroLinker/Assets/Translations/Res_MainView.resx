@@ -27,7 +27,7 @@
     <data name="lblROMDir" xml:space="preserve">
         <value>ROM directory*</value>
     </data>
-    <data name="tipContentless" xml:space="preserve">
+    <data name="chkContentless" xml:space="preserve">
         <value>Contentless</value>
     </data>
     <data name="lblCore" xml:space="preserve">
@@ -68,5 +68,44 @@
     </data>
     <data name="txtDesc_tip" xml:space="preserve">
         <value>Adds a description to the new shortcut</value>
+    </data>
+    <data name="btnExecute" xml:space="preserve">
+        <value>Execute</value>
+    </data>
+    <data name="lblICON" xml:space="preserve">
+        <value>Icon selection</value>
+    </data>
+    <data name="rdoIconDef" xml:space="preserve">
+        <value>Default</value>
+    </data>
+    <data name="rdoIconCus" xml:space="preserve">
+        <value>Custom</value>
+    </data>
+    <data name="lblIconNoImage" xml:space="preserve">
+        <value>This item cannot be displayed</value>
+    </data>
+    <data name="tipBrowse" xml:space="preserve">
+        <value>Browse</value>
+    </data>
+    <data name="tipPatches" xml:space="preserve">
+        <value>Patches</value>
+    </data>
+    <data name="tipAppendConfig" xml:space="preserve">
+        <value>Append Config</value>
+    </data>
+    <data name="btnRetry" xml:space="preserve">
+        <value>Retry</value>
+    </data>
+    <data name="btnAbort" xml:space="preserve">
+        <value>Abort</value>
+    </data>
+    <data name="dllErrorHead" xml:space="preserve">
+        <value />
+    </data>
+    <data name="dllErrorTitle" xml:space="preserve">
+        <value>Fatal Error</value>
+    </data>
+    <data name="dllErrorMess" xml:space="preserve">
+        <value />
     </data>
 </root>
