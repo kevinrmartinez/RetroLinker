@@ -41,7 +41,7 @@ public partial class MainView : UserControl
     { 
         InitializeComponent();
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(@"Ejecuacion tras MainView(): {1}", timeSpan, "[Time]");
+        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TIMEtrace);
     }
     
     public MainView(MainWindow mainWindow)
@@ -49,7 +49,7 @@ public partial class MainView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(@"Ejecuacion tras MainView(): {1}", timeSpan, "[Time]");
+        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TIMEtrace);
         // System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("es");
     }
 
@@ -77,11 +77,11 @@ public partial class MainView : UserControl
     {
         if (FirstTimeLoad)
         {
-            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", "[Info]");
+            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.INFOtrace);
             SettingsOps.BuildConfFile();
             settings = FileOps.LoadSettingsFO();
-            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", "[Info]");
-            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), "[Debg]");
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.INFOtrace);
+            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DEBGtrace);
         
             // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -112,7 +112,7 @@ public partial class MainView : UserControl
             FirstTimeLoad = false;
             System.DateTime now = System.DateTime.Now;
             timeSpan = now - App.LaunchTime;
-            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", "[Time]");
+            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", App.TIMEtrace);
         }
         else
         {
@@ -123,7 +123,7 @@ public partial class MainView : UserControl
     async void comboCore_Loaded(Task<string[]> cores_task)
     {
         var cores = await cores_task;
-        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", "[Info]");
+        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", App.INFOtrace);
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
      }
@@ -141,7 +141,7 @@ public partial class MainView : UserControl
     {
         var icons_list = await icon_task;
         comboICONDir.Items.Add("Default");
-        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", "[Info]");
+        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", App.INFOtrace);
         foreach (var iconFile in icons_list)
         {
             comboICONDir.Items.Add(iconFile);
@@ -168,8 +168,8 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         CurrentTheme = settings.PreferedTheme;
-        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", "[Info]");
-        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", "[Debg]");
+        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", App.INFOtrace);
+        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", App.DEBGtrace);
         return theme;
     }
 
@@ -192,8 +192,8 @@ public partial class MainView : UserControl
         try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
         catch (System.Exception eMain)
         {
-            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", "[Erro]");
-            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", "[Erro]");
+            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", App.ERROtrace);
+            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", App.ERROtrace);
             lock (this)
             { WinFuncImportFail(eMain); }
         }
@@ -582,7 +582,7 @@ public partial class MainView : UserControl
         if ((!string.IsNullOrEmpty(OutputLink.RAdir)) && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
                                                       && (!string.IsNullOrEmpty(OutputLink.ROMcore)) 
                                                       && (!string.IsNullOrEmpty(OutputLink.LNKdir)))
-        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", "[Info]"); }
+        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", App.INFOtrace); }
         else
         {
             ShortcutPosible = false;

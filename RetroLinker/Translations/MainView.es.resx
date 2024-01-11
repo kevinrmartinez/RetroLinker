@@ -1,4 +1,4 @@
-<root>
+﻿<root>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -70,5 +70,8 @@
     </data>
     <data name="dllErrorTitle" xml:space="preserve">
         <value>Error Fatal</value>
+    </data>
+    <data name="tipIconNoImage" xml:space="preserve">
+        <value>El programa no puede visualizar el icono seleccionado. Sin embargo, el archivo será usado al crear el shortcut.</value>
     </data>
 </root>

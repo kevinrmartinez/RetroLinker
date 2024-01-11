@@ -26,6 +26,10 @@ namespace RetroLinker;
 
 public partial class App : Application
 {
+    public const string TIMEtrace = "[Time]";
+    public const string DEBGtrace = "[Debg]";
+    public const string INFOtrace = "[Info]";
+    public const string ERROtrace = "[Erro]";
     public static System.DateTime LaunchTime = System.DateTime.Now;
     public override void Initialize()
     {

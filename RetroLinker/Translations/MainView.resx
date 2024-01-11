@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
@@ -101,5 +101,8 @@
     </data>
     <data name="dllErrorTitle" xml:space="preserve">
         <value>Fatal Error</value>
+    </data>
+    <data name="tipIconNoImage" xml:space="preserve">
+        <value>The program can not display the selected icon. However, the selectited file will be used to create the shortcut.</value>
     </data>
 </root>

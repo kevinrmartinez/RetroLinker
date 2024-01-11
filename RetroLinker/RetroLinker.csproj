@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6" />
@@ -46,36 +50,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-	  <AvaloniaResource Include="Styles\**" />
-  </ItemGroup>
   
   <ItemGroup>
-    <AvaloniaResource Update="Assets\Icons\retroarch.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </AvaloniaResource>
-    <AvaloniaResource Update="Assets\Translations\Res_MainView.es.resx">
+    <EmbeddedResource Update="Translations\MainView.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Update="Assets\Translations\Res_MainView.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Res_MainView.Designer.cs</LastGenOutput>
-    </AvaloniaResource>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Update="Assets\Translations\ResXMainView.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ResXMainView.Designer.cs</LastGenOutput>
+      <LastGenOutput>MainView.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="Assets\Translations\ResXMainView.Designer.cs">
+    <Compile Update="Translations\MainView.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ResXMainView.resx</DependentUpon>
+      <DependentUpon>MainView.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
