@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
@@ -99,13 +99,7 @@
     <data name="btnAbort" xml:space="preserve">
         <value>Abort</value>
     </data>
-    <data name="dllErrorHead" xml:space="preserve">
-        <value />
-    </data>
     <data name="dllErrorTitle" xml:space="preserve">
         <value>Fatal Error</value>
-    </data>
-    <data name="dllErrorMess" xml:space="preserve">
-        <value />
     </data>
 </root>

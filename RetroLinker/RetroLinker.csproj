@@ -63,4 +63,19 @@
       <LastGenOutput>Res_MainView.Designer.cs</LastGenOutput>
     </AvaloniaResource>
   </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Assets\Translations\ResXMainView.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResXMainView.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Assets\Translations\ResXMainView.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResXMainView.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

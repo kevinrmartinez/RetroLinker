@@ -13,7 +13,7 @@
 		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
 			<Rectangle Grid.Column="0" Width="40"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<Label Content="{x:Static locale:Res_MainView.lblTITLE}" FontWeight="Bold"/>	
+				<Label Content="{x:Static locale:ResXMainView.lblTITLE}" FontWeight="Bold"/>
 			</StackPanel>
 			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
 			        i:Attached.Icon="fa-gear" FontSize="24"/>
