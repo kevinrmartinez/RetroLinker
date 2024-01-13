@@ -5,8 +5,8 @@ As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready fo
 
 ## Compatible Retroarch parameters
 - core*
-- - with content
-- - contentless
+  - with content
+  - contentless
 - custom Config file
 - fullscreen
 - verbose

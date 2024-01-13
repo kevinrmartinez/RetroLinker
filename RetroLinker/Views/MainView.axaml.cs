@@ -26,11 +26,11 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using RetroLinker.Models;
 using RetroLinker.Models.Icons;
 using RetroLinker.Models.WinFuncImport;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
 
@@ -41,7 +41,7 @@ public partial class MainView : UserControl
     { 
         InitializeComponent();
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TIMEtrace);
+        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
     }
     
     public MainView(MainWindow mainWindow)
@@ -49,7 +49,7 @@ public partial class MainView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TIMEtrace);
+        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
         // System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("es");
     }
 
@@ -68,7 +68,7 @@ public partial class MainView : UserControl
 
     // true = Windows. false = Linux.
     // Esto es asumiendo que solo podra correr en Windows y Linux.
-    public bool DesktopOS = System.OperatingSystem.IsWindows();
+    private bool DesktopOS = System.OperatingSystem.IsWindows();
     
     // TODO: Implementar evento de manejo de tema
     #region LOAD EVENTS
@@ -77,11 +77,11 @@ public partial class MainView : UserControl
     {
         if (FirstTimeLoad)
         {
-            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.INFOtrace);
+            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
             SettingsOps.BuildConfFile();
             settings = FileOps.LoadSettingsFO();
-            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.INFOtrace);
-            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DEBGtrace);
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
+            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
         
             // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -93,8 +93,7 @@ public partial class MainView : UserControl
             if (!DesktopOS)
             {
                 if (string.IsNullOrEmpty(settings.DEFRADir)) 
-                    //TODO: move retroarch to a constant, maybe an universal constant
-                { settings.DEFRADir = "retroarch"; }
+                { settings.DEFRADir = App.RetroBin; }
                 txtRADir.IsReadOnly = false;
                 DefLinRAIcon = FileOps.GetRAIcons();
             }
@@ -112,7 +111,7 @@ public partial class MainView : UserControl
             FirstTimeLoad = false;
             System.DateTime now = System.DateTime.Now;
             timeSpan = now - App.LaunchTime;
-            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", App.TIMEtrace);
+            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", App.TimeTrace);
         }
         else
         {
@@ -123,7 +122,7 @@ public partial class MainView : UserControl
     async void comboCore_Loaded(Task<string[]> cores_task)
     {
         var cores = await cores_task;
-        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", App.INFOtrace);
+        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", App.InfoTrace);
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
      }
@@ -140,8 +139,8 @@ public partial class MainView : UserControl
     async void comboICONDir_Loaded(Task<List<string>> icon_task)
     {
         var icons_list = await icon_task;
-        comboICONDir.Items.Add("Default");
-        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", App.INFOtrace);
+        comboICONDir.Items.Add(resMainView.comboDefItem);
+        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", App.InfoTrace);
         foreach (var iconFile in icons_list)
         {
             comboICONDir.Items.Add(iconFile);
@@ -168,14 +167,15 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         CurrentTheme = settings.PreferedTheme;
-        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", App.INFOtrace);
-        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", App.DEBGtrace);
+        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", App.InfoTrace);
+        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", App.DebgTrace);
         return theme;
     }
 
     void ApplySettingsToControls()
     {
-        txtRADir.Text = settings.DEFRADir;
+        if (!string.IsNullOrEmpty(settings.DEFRADir))
+        { txtRADir.Text = settings.DEFRADir; }
         OutputLink.RAdir = settings.DEFRADir;
         AvaloniaOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
         
@@ -192,8 +192,8 @@ public partial class MainView : UserControl
         try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
         catch (System.Exception eMain)
         {
-            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", App.ERROtrace);
-            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", App.ERROtrace);
+            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", App.ErroTrace);
+            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", App.ErroTrace);
             lock (this)
             { WinFuncImportFail(eMain); }
         }
@@ -201,9 +201,8 @@ public partial class MainView : UserControl
 
     async Task WinFuncImportFail(System.Exception eMain)
     {
-        //TODO: Figure out a localizable solution
-        const string retry_btn = "Retry";
-        const string abort_btn = "Abort";
+        string retry_btn = resMainView.btnRetry;
+        string abort_btn = resMainView.btnAbort;
         ButtonDefinition[] diag_btns;
         if (retrycount < 6)
         {
@@ -224,26 +223,21 @@ public partial class MainView : UserControl
             MaxWidth = 550,
             ShowInCenter = true,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
-            ContentTitle = "",
-            ContentHeader = $"El importado de {FuncLoader.WinOnlyLib} ha fallado!",
-            ContentMessage = $"El importado a fallado con el siguiente error:\n{eMain.Message}\n\nSin este módulo el programa no puede cumplir su funcion.",
+            ContentTitle = resMainView.genFatalError,
+            ContentHeader = string.Format(resMainView.dllErrorHead, FuncLoader.WinOnlyLib),
+            ContentMessage = string.Format(resMainView.dllErrorMess, eMain.Message),
             ButtonDefinitions = diag_btns
         };
 
         var diag_result = await MessageBoxPopUp(msb_params);
-        switch (diag_result)
+        if (diag_result == abort_btn)
         {
-            case abort_btn:
-                ParentWindow.Close();
-                break;
-
-            case retry_btn:
-                retrycount++;
-                WinFuncImport();
-                break;
-
-            default:
-                break;
+            ParentWindow.Close();
+        }
+        else if (diag_result == retry_btn)
+        {
+            retrycount++;
+            WinFuncImport();
         }
     }
 
@@ -285,7 +279,7 @@ public partial class MainView : UserControl
         pic128.Source = ICONimage;
     }
     
-    async Task<ButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
+    async Task<MsBox.Avalonia.Enums.ButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
     {
         standardParams.WindowIcon = ParentWindow.Icon;
         standardParams.MaxWidth = 550;
@@ -489,14 +483,14 @@ public partial class MainView : UserControl
         {
             var msbox_params = new MessageBoxStandardParams()
             {
-                ContentTitle = "Observacion",
-                ContentHeader = "El nombre utilizado aqui sera utilizado como el campo 'Name' del archivo .desktop, y como nombre del archivo en si.",
-                ContentMessage = "Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancel para no volver a mostrar este mensaje.",
-                ButtonDefinitions = ButtonEnum.OkCancel,
-                Icon = Icon.Folder
+                ContentTitle = resMainView.LinPopUp_Title,
+                ContentHeader = resMainView.LinPopUp_Head,
+                ContentMessage = resMainView.LinPopUp_Mess,
+                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
+                Icon = MsBox.Avalonia.Enums.Icon.Folder
             };
             var boxResult = await MessageBoxPopUp(msbox_params);
-            if (boxResult == ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
+            if (boxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
         }
         
         PickerOpt.SaveOpts opt;
@@ -508,8 +502,12 @@ public partial class MainView : UserControl
             txtLINKDir.Text = OutputLink.LNKdir;
         }
 #if DEBUG
-        else { Testing.LinShortcutTest(DesktopOS); }
-        //else { var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm); }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine("Running on debug...");
+            // Testing.LinShortcutTest(DesktopOS);
+            // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
+        }
 #endif
     }
 
@@ -526,6 +524,7 @@ public partial class MainView : UserControl
     // La accion ocurre aqui
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
+        // TODO: Implement a control lock to prevent fields changing during operations
         bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
 
@@ -579,20 +578,25 @@ public partial class MainView : UserControl
         }
 
         // REQUIERED FIELDS VALIDATION!
-        if ((!string.IsNullOrEmpty(OutputLink.RAdir)) && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
-                                                      && (!string.IsNullOrEmpty(OutputLink.ROMcore)) 
-                                                      && (!string.IsNullOrEmpty(OutputLink.LNKdir)))
-        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", App.INFOtrace); }
+        if ((!string.IsNullOrEmpty(OutputLink.RAdir)) 
+         && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
+         && (!string.IsNullOrEmpty(OutputLink.ROMcore))
+         && (!string.IsNullOrEmpty(OutputLink.LNKdir))
+         )
+        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", App.InfoTrace); }
         else
         {
             ShortcutPosible = false;
-            msbox_params.ContentMessage = "Faltan campos Requeridos"; msbox_params.ContentTitle = "Sin Effecto"; msbox_params.Icon = Icon.Forbidden;
+            msbox_params.ContentMessage = resMainView.popMissReq_Mess; 
+            msbox_params.ContentTitle = resMainView.popMissReq_Title; 
+            msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
             MessageBoxPopUp(msbox_params);
         }
 
         if (!ShortcutPosible) return;
         // Comillas para directorios que iran de parametros...
         // para el directorio de la ROM
+        // TODO: Use the Contentless checkbox
         if (OutputLink.ROMdir != Commander.contentless) 
         { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
 
@@ -610,6 +614,7 @@ public partial class MainView : UserControl
 #endif
         if (settings.MakeLinkCopy)
         {
+            //TODO: Move operation to FileOps
             OutputLink.LNKcpy = new string[SettingsOps.LinkCopyPaths.Count];
             for (int i = 0; i < OutputLink.LNKcpy.Length; i++)
             {
@@ -624,15 +629,17 @@ public partial class MainView : UserControl
         {
             if (!opResult[0].Error)
             {
-                msbox_params.ContentMessage = "El shortcut fue creado con éxtio"; msbox_params.ContentTitle = "Éxito";
-                msbox_params.Icon = Icon.Success;
+                msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess; 
+                msbox_params.ContentTitle = resMainView.genSucces;
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);
             }
             else
             {
-                msbox_params.ContentHeader = "Ha ocurrido un error al crear el shortcut."; msbox_params.ContentTitle = "Error";
-                msbox_params.ContentMessage = $"La operacion termino con el siguienete error:\n{opResult[0].eMesseage}";
-                msbox_params.Icon = Icon.Error; 
+                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
+                msbox_params.ContentTitle = resMainView.genError;
+                msbox_params.ContentMessage = string.Format(resMainView.popSingleOutput0_Head, opResult[0].eMesseage);
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 MessageBoxPopUp(msbox_params);
             }
         }
@@ -643,13 +650,14 @@ public partial class MainView : UserControl
 
             if (!hasErrors)
             {
-                msbox_params.ContentMessage = "Todos los shortcuts fueron creados con éxtio"; msbox_params.ContentTitle = "Éxito";
-                msbox_params.Icon = Icon.Success;
+                msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
+                msbox_params.ContentTitle = resMainView.genSucces;
+                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);
             }
             else
             {
-                msbox_params.ContentHeader = "Ha ocurrido un error al crear algunos shortcuts:";
+                msbox_params.ContentHeader = resMainView.popMultiOutput0_Head;
                 int successCount = 0;
                 int errorCount = 0;
                 string content = string.Empty;
@@ -662,7 +670,8 @@ public partial class MainView : UserControl
                     if (opResult[i].Error) { errorCount++; }
                     else { successCount++; }
                 }
-                msbox_params.Icon = (successCount > 0) ? Icon.Warning : Icon.Error;
+                msbox_params.ContentTitle = resMainView.genWarning;
+                msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
                 msbox_params.ContentMessage = content;
                 MessageBoxPopUp(msbox_params);
             }

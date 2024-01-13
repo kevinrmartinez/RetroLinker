@@ -68,10 +68,52 @@
     <data name="btnRetry" xml:space="preserve">
         <value>Reintentar</value>
     </data>
-    <data name="dllErrorTitle" xml:space="preserve">
+    <data name="genFatalError" xml:space="preserve">
         <value>Error Fatal</value>
     </data>
     <data name="tipIconNoImage" xml:space="preserve">
         <value>El programa no puede visualizar el icono seleccionado. Sin embargo, el archivo será usado al crear el shortcut.</value>
+    </data>
+    <data name="dllErrorHead" xml:space="preserve">
+        <value>El importado de {0} ha fallado!</value>
+    </data>
+    <data name="dllErrorMess" xml:space="preserve">
+        <value>El importado a fallado con el siguiente error:\n{0}\n\nSin este módulo el programa no puede cumplir su funcion.</value>
+    </data>
+    <data name="LinPopUp_Title" xml:space="preserve">
+        <value>Observacion</value>
+    </data>
+    <data name="LinPopUp_Head" xml:space="preserve">
+        <value>El nombre utilizado aqui sera utilizado como el nombre visible del link, y como nombre del archivo en si.</value>
+    </data>
+    <data name="LinPopUp_Mess" xml:space="preserve">
+        <value>Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancelar para no volver a mostrar este mensaje.</value>
+    </data>
+    <data name="popMissReq_Title" xml:space="preserve">
+        <value>Faltan Campos</value>
+    </data>
+    <data name="popMissReq_Mess" xml:space="preserve">
+        <value>Faltan campos requeridos</value>
+    </data>
+    <data name="popSingleOutput1_Mess" xml:space="preserve">
+        <value>El archivo de link fue creado con éxtio</value>
+    </data>
+    <data name="genSucces" xml:space="preserve">
+        <value>Éxito</value>
+    </data>
+    <data name="popSingleOutput0_Head" xml:space="preserve">
+        <value>Ha ocurrido un error al crear el link</value>
+    </data>
+    <data name="popSingleOutput0_Mess" xml:space="preserve">
+        <value>La operacion falló con el siguienete error:\n{0}</value>
+    </data>
+    <data name="popMultiOutput1_Mess" xml:space="preserve">
+        <value>Todos los links fueron creados con éxtio</value>
+    </data>
+    <data name="genWarning" xml:space="preserve">
+        <value>Advertencia</value>
+    </data>
+    <data name="popMultiOutput0_Head" xml:space="preserve">
+        <value>Ha ocurrido un error al crear algunos links:</value>
     </data>
 </root>

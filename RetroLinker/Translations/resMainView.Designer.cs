@@ -21,14 +21,14 @@ namespace RetroLinker.Translations {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class MainView {
+    public class resMainView {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MainView() {
+        internal resMainView() {
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace RetroLinker.Translations {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RetroLinker.Translations.MainView", typeof(MainView).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RetroLinker.Translations.resMainView", typeof(resMainView).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -123,11 +123,65 @@ namespace RetroLinker.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default.
+        /// </summary>
+        public static string comboDefItem {
+            get {
+                return ResourceManager.GetString("comboDefItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The import of {0} has failed!.
+        /// </summary>
+        public static string dllErrorHead {
+            get {
+                return ResourceManager.GetString("dllErrorHead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The import has failed with the following error:\n{0}\n\nWithout this library the program cannot accomplish its function..
+        /// </summary>
+        public static string dllErrorMess {
+            get {
+                return ResourceManager.GetString("dllErrorMess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string genError {
+            get {
+                return ResourceManager.GetString("genError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fatal Error.
         /// </summary>
-        public static string dllErrorTitle {
+        public static string genFatalError {
             get {
-                return ResourceManager.GetString("dllErrorTitle", resourceCulture);
+                return ResourceManager.GetString("genFatalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Succes.
+        /// </summary>
+        public static string genSucces {
+            get {
+                return ResourceManager.GetString("genSucces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        public static string genWarning {
+            get {
+                return ResourceManager.GetString("genWarning", resourceCulture);
             }
         }
         
@@ -236,6 +290,96 @@ namespace RetroLinker.Translations {
         public static string lblTITLE {
             get {
                 return ResourceManager.GetString("lblTITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name used here will be used as the visible name of the link, and as the name of the file itself..
+        /// </summary>
+        public static string LinPopUp_Head {
+            get {
+                return ResourceManager.GetString("LinPopUp_Head", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to However, blank spaces will be replaced by &apos;-&apos; in the file name, for standard and convenience reasons.\n\n\nPress Cancel to no longer display this message..
+        /// </summary>
+        public static string LinPopUp_Mess {
+            get {
+                return ResourceManager.GetString("LinPopUp_Mess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notice.
+        /// </summary>
+        public static string LinPopUp_Title {
+            get {
+                return ResourceManager.GetString("LinPopUp_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requiered fields are missing.
+        /// </summary>
+        public static string popMissReq_Mess {
+            get {
+                return ResourceManager.GetString("popMissReq_Mess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Fields.
+        /// </summary>
+        public static string popMissReq_Title {
+            get {
+                return ResourceManager.GetString("popMissReq_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error while creating some links:.
+        /// </summary>
+        public static string popMultiOutput0_Head {
+            get {
+                return ResourceManager.GetString("popMultiOutput0_Head", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All links were created succesfully.
+        /// </summary>
+        public static string popMultiOutput1_Mess {
+            get {
+                return ResourceManager.GetString("popMultiOutput1_Mess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error has ocurred while creating the link.
+        /// </summary>
+        public static string popSingleOutput0_Head {
+            get {
+                return ResourceManager.GetString("popSingleOutput0_Head", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The operation falied with the following error:\n{0}.
+        /// </summary>
+        public static string popSingleOutput0_Mess {
+            get {
+                return ResourceManager.GetString("popSingleOutput0_Mess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The link file has been created succesfully.
+        /// </summary>
+        public static string popSingleOutput1_Mess {
+            get {
+                return ResourceManager.GetString("popSingleOutput1_Mess", resourceCulture);
             }
         }
         

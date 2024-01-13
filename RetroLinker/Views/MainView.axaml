@@ -13,7 +13,7 @@
 		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
 			<Rectangle Grid.Column="0" Width="40"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<Label Content="{x:Static locale:MainView.lblTITLE}" FontWeight="Bold"/>
+				<Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/>
 			</StackPanel>
 			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
 			        i:Attached.Icon="fa-gear" FontSize="24"/>
@@ -30,10 +30,10 @@
 
 				<!-- ROW1 - RetroArch Directory -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
-					<Label Margin="0,5,0,0" Content="{x:Static locale:MainView.lblRADir}"/>
+					<Label Margin="0,5,0,0" Content="{x:Static locale:resMainView.lblRADir}"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="retroarch.exe"/>
-						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static locale:MainView.tipBrowse}"
+						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>
 				</StackPanel>
@@ -41,14 +41,14 @@
 				<!-- ROW2 - ROM Directory -->
 				<StackPanel Name="panelROMDir" Grid.Row="2">
 					<StackPanel Orientation="Horizontal" Margin="5,5,0,0" Spacing="12">
-						<Label Margin="0,5,0,0" Content="{x:Static locale:MainView.lblROMDir}"/>
-						<CheckBox Name="chkContentless" Content="{x:Static locale:MainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
+						<Label Margin="0,5,0,0" Content="{x:Static locale:resMainView.lblROMDir}"/>
+						<CheckBox Name="chkContentless" Content="{x:Static locale:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
-							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static locale:MainView.tipBrowse}"/>
-							<Button Name="btnPatches" IsEnabled="False" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static locale:MainView.tipPatches}"/>
+							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}"/>
+							<Button Name="btnPatches" IsEnabled="False" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static locale:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -59,22 +59,22 @@
 						<Label Content="Core*"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"/>
-							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="{x:Static locale:MainView.tipSubSys}"
+							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="{x:Static locale:resMainView.tipSubSys}"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
-						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="{x:Static locale:MainView.lblNoCores}" IsVisible="False"/>
+						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="{x:Static locale:resMainView.lblNoCores}" IsVisible="False"/>
 					</StackPanel>
 					
 
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
-						<Label Content="{x:Static locale:MainView.lblConfig}"/>
+						<Label Content="{x:Static locale:resMainView.lblConfig}"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
 									  SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
-								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static locale:MainView.tipBrowse}" Click="btnCONFIGDir_Click" 
+								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnCONFIGDir_Click" 
 										i:Attached.Icon="fa-folder-open" FontSize="18"/>
-								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static locale:MainView.tipAppendConfig}" Click="btnAppendConfig_Click" IsEnabled="False"
+								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static locale:resMainView.tipAppendConfig}" Click="btnAppendConfig_Click" IsEnabled="False"
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>
@@ -86,20 +86,20 @@
 				<!-- ROW4 - Link Save Directory & other arguments -->
 				<StackPanel Name="panelLINKDir" Grid.Row="4">
 					<StackPanel Orientation="Horizontal" Margin="5,10,0,0" Spacing="12">
-						<CheckBox Name="chkFull" Content="{x:Static locale:MainView.chkFull}"/>
-						<CheckBox Name="chkVerb" Content="{x:Static locale:MainView.chkVerb}"/>
-						<CheckBox Name="chkAccessi" Content="{x:Static locale:MainView.chkAccessi}"/>
+						<CheckBox Name="chkFull" Content="{x:Static locale:resMainView.chkFull}"/>
+						<CheckBox Name="chkVerb" Content="{x:Static locale:resMainView.chkVerb}"/>
+						<CheckBox Name="chkAccessi" Content="{x:Static locale:resMainView.chkAccessi}"/>
 					</StackPanel>
-					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:MainView.lblLinkDir}"/>
-					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static locale:MainView.lblLinkName}"/>
+					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkDir}"/>
+					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkName}"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk" TextChanged="txtLINKDir_TextChanged"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="1" ToolTip.Tip="{x:Static locale:MainView.tipBrowse}" Click="btnLINKDir_Click"
+						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="1" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
-						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:MainView.lblLinkDeskDir}" FontSize="11"/>
+						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:resMainView.lblLinkDeskDir}" FontSize="11"/>
 					</Grid>
-					<Label Margin="3,0" Content="{x:Static locale:MainView.lblDesc}" ToolTip.Tip="{x:Static locale:MainView.txtDesc_tip}"/>
-					<TextBox Name="txtDesc" Margin="3,0" Watermark="{x:Static locale:MainView.txtDesc_mark}" ToolTip.Tip="{x:Static locale:MainView.txtDesc_tip}"/>
+					<Label Margin="3,0" Content="{x:Static locale:resMainView.lblDesc}" ToolTip.Tip="{x:Static locale:resMainView.txtDesc_tip}"/>
+					<TextBox Name="txtDesc" Margin="3,0" Watermark="{x:Static locale:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static locale:resMainView.txtDesc_tip}"/>
 				</StackPanel>
 
 
@@ -113,7 +113,7 @@
 							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
 							Height="55" 
-							Content="{x:Static locale:MainView.btnExecute}"
+							Content="{x:Static locale:resMainView.btnExecute}"
 							Click="btnEXECUTE_Click"/>
 				</Panel>
 			</Grid>
@@ -125,12 +125,12 @@
 			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" ShowGridLines="False">
 				<Rectangle Grid.Row="0" Height="15"/>
 				<StackPanel Grid.Row="1">
-					<Label Content="{x:Static locale:MainView.lblICON}"/>
+					<Label Content="{x:Static locale:resMainView.lblICON}"/>
 					<Border BorderThickness="1" BorderBrush="Gray">
 						<StackPanel>
 							<StackPanel Orientation="Horizontal" Spacing="14">
-								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:MainView.rdoIconDef}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
-								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:MainView.rdoIconCus}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconDef}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconCus}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 							</StackPanel>
 							<!--Icon Control-->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
@@ -140,9 +140,9 @@
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"
-										ToolTip.Tip="{x:Static locale:MainView.tipIconNoImage}">
+										ToolTip.Tip="{x:Static locale:resMainView.tipIconNoImage}">
 								<Label VerticalAlignment="Center" i:Attached.Icon="fa-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
-								<Label VerticalAlignment="Center" Content="{x:Static locale:MainView.lblIconNoImage}" FontSize="12"/>
+								<Label VerticalAlignment="Center" Content="{x:Static locale:resMainView.lblIconNoImage}" FontSize="12"/>
 							</StackPanel>
 
 							<!--pic128-->
