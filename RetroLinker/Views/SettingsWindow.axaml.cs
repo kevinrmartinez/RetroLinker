@@ -79,8 +79,8 @@ namespace RetroLinker.Views
         {
             MessageBoxStandardParams msparams = new()
             {
-                ContentTitle = "Restaurar Defaults",
-                ContentMessage = "�Est� seguro de restaurar la configuracion default?",
+                ContentTitle = RetroLinker.Translations.resSettingsWindow.popDefaults_Title,
+                ContentMessage = RetroLinker.Translations.resSettingsWindow.popDefaults_Mess,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
                 EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,

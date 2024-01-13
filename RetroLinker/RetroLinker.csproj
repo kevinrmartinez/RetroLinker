@@ -56,6 +56,13 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MainView.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resSettingsWindow.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>resSettingsWindow.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainView.es.resx">
+      <DependentUpon>resMainView.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -63,6 +70,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resMainView.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resSettingsWindow.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resSettingsWindow.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
