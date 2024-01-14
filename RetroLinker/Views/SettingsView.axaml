@@ -3,9 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView"
-			 Name="SettingsView1" Loaded="SettingsView1_Loaded" Unloaded="SettingsView1_OnUnloaded">
+			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
   
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -18,12 +19,13 @@
 			<!--APARIENCIA-->
 			<Border Grid.Row="0" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="Apariencia"/>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_Appearance}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<StackPanel Orientation="Horizontal" Margin="0, 2">
-						<ToggleSwitch Name="ThemeSwitch" Content="Tema" OnContent="Dark" OffContent="Light" IsCheckedChanged="ThemeSwitch_CheckedChanged"/>
+						<ToggleSwitch Name="swtThemeSwitch" Content="{x:Static locale:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged"
+						              OnContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_Off}"/>
 						<Rectangle Width="18"/>
-						<CheckBox Name="ThemeDefault" Content="Según el Sistema" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+						<CheckBox Name="chkThemeDefault" Content="{x:Static locale:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
 					</StackPanel>
 				</StackPanel>
 			</Border>
@@ -31,11 +33,11 @@
 			<!--OTRAS PREFERENCIAS-->
 			<Border Grid.Row="1" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="Otras Preferencias"/>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_OtherGeneral}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
 						<StackPanel Grid.Column="0" Orientation="Vertical">
-							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="Recordar archivos '.cfg' usados" IsCheckedChanged="View1ChecksHandle"/>
+							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkPrevCONFIG}" IsCheckedChanged="View1ChecksHandle"/>
 						</StackPanel>
 						<!--<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->
@@ -49,10 +51,10 @@
 			<!--ICONOS-->
 			<Border Grid.Row="2" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="Preferencias de Iconos"/>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_IconsGeneral}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="Guardar copia de los iconos usados" IsCheckedChanged="View1ChecksHandle"
-					          ToolTip.Tip="Copia el archivo seleccionado como icono al directorio de esta aplicacion (UserAssets), y usarlo desde ahí."/>
+					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkCpyUserIcon}" IsCheckedChanged="View1ChecksHandle"
+					          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipCpyUserIcon}"/>
 				</StackPanel>
 			</Border>
 

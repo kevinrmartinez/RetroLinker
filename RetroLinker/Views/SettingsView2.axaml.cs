@@ -46,14 +46,13 @@ public partial class SettingsView2 : UserControl
     // LOAD
     void SettingsView2_1_Loaded(object sender, RoutedEventArgs e)
     {
-        
         // Settings
         ApplySettingsToControls();
     }
     
     void ApplySettingsToControls()
     { 
-        // TODO: Decidirse si usar directorio relativo o absoluto
+        // Absolute path
         txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
         txtDefRADir.IsReadOnly = DesktopOS;
         txtDefRADir.Text = ParentWindow.settings.DEFRADir;
@@ -120,17 +119,17 @@ public partial class SettingsView2 : UserControl
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
-
-    //UNLOAD
-    private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
-    {
-        _ = e.Source;
-    }
+    
     
 #if DEBUG
     void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
     {
         _ = sender.ToString();
+    }
+    //UNLOAD
+    private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _ = e.Source;
     }
 #endif
 }

@@ -57,11 +57,14 @@
       <LastGenOutput>MainView.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Translations\resSettingsWindow.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resSettingsWindow.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Translations\resMainView.es.resx">
       <DependentUpon>resMainView.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resSettingsWindow.es.resx">
+      <DependentUpon>resSettingsWindow.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   

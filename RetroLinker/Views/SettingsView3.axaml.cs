@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Views
 {
@@ -44,13 +45,13 @@ namespace RetroLinker.Views
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
 
-        private const string StrAddCustomCopyPath = "Otro...";
+        private string StrAddCustomCopyPath = resSettingsWindow.strAddCustomCopyPath;
         private List<string> candidateCopiesPath = new();
         private List<string> defIcoSavPathList = new()
         {
-            "Usar la carpeta UserAssets",
-            "Usar la carpeta de la ROM",
-            "Usar la carpeta de Retroarch",
+            resSettingsWindow.strDefIcoSavPathItem0,
+            resSettingsWindow.strDefIcoSavPathItem1,
+            resSettingsWindow.strDefIcoSavPathItem2,
         };
         
         // LOAD
@@ -131,8 +132,8 @@ namespace RetroLinker.Views
             txtIcoSavPath.Text = index switch
             {
                 0 => ParentWindow.settings.UserAssetsPath,
-                1 => "Segun el ROM",
-                2 => "Segun el ejecutable de Retroarch"
+                1 => resSettingsWindow.txtIcoSavPath1,
+                2 => resSettingsWindow.txtIcoSavPath2
             };
             ParentWindow.settings.IcoSavPath = index switch
             {
@@ -256,7 +257,6 @@ namespace RetroLinker.Views
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
             ParentWindow.settings.IcoSavPath = ParentWindow.DEFsettings.IcoSavPath;
-            // TODO: Decidir si usar ruta relativa o absoluta
             txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
         }
 

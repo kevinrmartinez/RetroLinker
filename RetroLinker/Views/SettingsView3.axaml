@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
              x:Class="RetroLinker.Views.SettingsView3"
 			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded" Unloaded="SettingsView3_1_OnUnloaded">
@@ -15,10 +16,10 @@
 		<!--DEFAULT OUTPUT-->
 		<Border Grid.Row="0" Classes="SettingCatg">
 			<StackPanel>
-				<Label Content="Salida por Default"/>
+				<Label Content="{x:Static locale:resSettingsWindow.lblCat_DEFLinkOutput}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="Preguntar siempre el destino del Shortcut" IsCheckedChanged="ChkAlwaysAskOutput_IsCheckedChanged"/>
-				<Label Content="Directorio Default"/>
+				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkAlwaysAskOutput}" IsCheckedChanged="ChkAlwaysAskOutput_IsCheckedChanged"/>
+				<Label Content="{x:Static locale:resSettingsWindow.lblDEFLinkOutput}"/>
 				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
 					<TextBox Name="txtDEFLinkOutput" Grid.Column="0" IsReadOnly="True" Classes="SettingCatg"/>
 					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Click="BtnDefLinkOutput_OnClick"
@@ -33,20 +34,22 @@
 		<!--OUTPUT COPIES-->
 		<Border Grid.Row="1" Classes="SettingCatg">
 			<StackPanel>
-				<Label Content="Copias de la Salida"/>
+				<Label Content="{x:Static locale:resSettingsWindow.lblCat_MakeLinkCopy}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkMakeLinkCopy" Classes="SettingCatg" Content="Realizar copias en:" IsCheckedChanged="ChkMakeLinkCopy_IsCheckedChanged"/>
+				<CheckBox Name="chkMakeLinkCopy" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkMakeLinkCopy}" IsCheckedChanged="ChkMakeLinkCopy_IsCheckedChanged"/>
 				<Border Classes="SettingCatg">
 					<StackPanel>
 						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
+							<!--DEGUB-->
 							<ListBoxItem Name="lsboxDebug1" CornerRadius="9" Background="Aqua">
 								<Grid ColumnDefinitions="*, Auto">
-									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows"/>
+									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows\Temp"/>
 									<Button Grid.Column="1" Height="30" Classes="SettingCatg">
 										<i:Icon Value="fa-trash" Foreground="Crimson"/>
 									</Button>
 								</Grid>
 							</ListBoxItem>
+							<!--DEGUB-->
 							<ListBoxItem Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
 								<Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
 									<ComboBox Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
@@ -65,14 +68,14 @@
 		<!--WINDOWS ONLY-->
 		<Border Grid.Row="2" Classes="SettingCatg">
 			<StackPanel Name="panelWindowsOnlyControls">
-				<Label Content="Salida de Archivos .ico (Solo para Windows)"/>
+				<Label Content="{x:Static locale:resSettingsWindow.lblCat_IcoOutput}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Rectangle Height="4"/>
 				<TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
-				           Text="Cuando se usa .png o .jpg/jepg como un icono en Windows, la aplicacion convierte dicho archivo a un '.ico'. Este se debe guardar en un directorio siempre accesible por el shortcut creado."/>
+				           Text="{x:Static locale:resSettingsWindow.blcIcoOutout}"/>
 				<!--SAVE ICO CONTROLS-->
 				<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
-				           Text="Eliga el directorio para dichos '.ico'"/>
+				           Text="{x:Static locale:resSettingsWindow.blcIcoSavPath}"/>
 				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
 					<TextBox Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
 			        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -86,13 +89,13 @@
 				<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
 					<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
 						<CheckBox Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center" IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
-						          ToolTip.Tip="Usar la carpeta seleccionada arriba para guardar los iconos convertidos."/>
+						          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
 						<ComboBox Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"
 						          DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
 					</Grid>
-					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="Extraer los el icono del '.exe' para el uso" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"
-					          ToolTip.Tip="Extrae el icono del ejecutable seleccionado como un '.ico'. Se guarda en la direccion elegida arriba."/>
-					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="El .ico lleva el nombre de Shortcut" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"/>
+					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkExtractIco}" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"
+					          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipExtractIco}"/>
+					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkIcoLinkName}" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"/>
 				</Grid>
 			</StackPanel>
 		</Border>

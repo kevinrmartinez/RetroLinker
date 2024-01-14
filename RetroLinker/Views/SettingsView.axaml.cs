@@ -72,13 +72,13 @@ namespace RetroLinker.Views
             switch (ThemeCode)
             {
                 case 1: // Case de que el tema sea 'claro'
-                    ThemeSwitch.IsChecked = false;
+                    swtThemeSwitch.IsChecked = false;
                     break;
                 case 2: // Case de que el tema sea 'oscuro'
-                    ThemeSwitch.IsChecked = true;
+                    swtThemeSwitch.IsChecked = true;
                     break;
                 default:// Case de culaquier otro caso (0 = tema segun el sistema)
-                    ThemeDefault.IsChecked = true;
+                    chkThemeDefault.IsChecked = true;
                     break;
             }
         }
@@ -86,7 +86,7 @@ namespace RetroLinker.Views
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             // El designer de Avalonia se rompe en esta parte
-            if ((bool)ThemeSwitch.IsChecked)
+            if ((bool)swtThemeSwitch.IsChecked)
             {
                 Application.Current.RequestedThemeVariant = dark_theme;
                 ParentWindow.settings.PreferedTheme = 2;
@@ -100,15 +100,15 @@ namespace RetroLinker.Views
 
         void ThemeDefault_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            if ((bool)ThemeDefault.IsChecked)
+            if ((bool)chkThemeDefault.IsChecked)
             {
                 // El designer de Avalonia se rompe en esta parte
                 Application.Current.RequestedThemeVariant = system_theme;
-                ThemeSwitch.IsEnabled = false;
+                swtThemeSwitch.IsEnabled = false;
                 ParentWindow.settings.PreferedTheme = 0;
             }
             else
-            { ThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
+            { swtThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
         }
 
         void View1ChecksHandle(object? sender, RoutedEventArgs e)
@@ -118,16 +118,15 @@ namespace RetroLinker.Views
             ParentWindow.settings.CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
         }
         
-        // UNLOAD
-        void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
-        {
-            _ = e.ToString();
-        }
-        
 #if DEBUG
         void SettingsView1_Loaded2(object sender, RoutedEventArgs e)
         {
             _ = sender.ToString();
+        }
+        // UNLOAD
+        void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
+        {
+            _ = e.ToString();
         }
 #endif
         

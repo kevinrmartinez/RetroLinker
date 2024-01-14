@@ -21,7 +21,7 @@ namespace RetroLinker.Translations {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class resSettingsWindow {
+    public class resSettingsWindow {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -35,7 +35,7 @@ namespace RetroLinker.Translations {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RetroLinker.Translations.resSettingsWindow", typeof(resSettingsWindow).Assembly);
@@ -50,7 +50,7 @@ namespace RetroLinker.Translations {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -60,9 +60,189 @@ namespace RetroLinker.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When you use .png or .jpg/jpeg as an icon in Windows, the application converts that file to an &apos;.ico&apos;. This must be saved in a directory always accessible by the Link created..
+        /// </summary>
+        public static string blcIcoOutout {
+            get {
+                return ResourceManager.GetString("blcIcoOutout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the directory for converted &apos;.ico&apos; files.
+        /// </summary>
+        public static string blcIcoSavPath {
+            get {
+                return ResourceManager.GetString("blcIcoSavPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copies of the icons and the source of the available Cores (cores.txt) are saved in the &apos;UserAssets&apos; folder..
+        /// </summary>
+        public static string blcUserAssets {
+            get {
+                return ResourceManager.GetString("blcUserAssets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allways ask the output path of the Link.
+        /// </summary>
+        public static string chkAlwaysAskOutput {
+            get {
+                return ResourceManager.GetString("chkAlwaysAskOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save a copy of selected icons.
+        /// </summary>
+        public static string chkCpyUserIcon {
+            get {
+                return ResourceManager.GetString("chkCpyUserIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extract the icon from the &apos;.exe&apos; before using it.
+        /// </summary>
+        public static string chkExtractIco {
+            get {
+                return ResourceManager.GetString("chkExtractIco", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extracted .ico takes the same name as the Link.
+        /// </summary>
+        public static string chkIcoLinkName {
+            get {
+                return ResourceManager.GetString("chkIcoLinkName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make copies in:.
+        /// </summary>
+        public static string chkMakeLinkCopy {
+            get {
+                return ResourceManager.GetString("chkMakeLinkCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remember selected config files.
+        /// </summary>
+        public static string chkPrevCONFIG {
+            get {
+                return ResourceManager.GetString("chkPrevCONFIG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System Theme.
+        /// </summary>
+        public static string chkThemeDefault {
+            get {
+                return ResourceManager.GetString("chkThemeDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        public static string lblCat_Appearance {
+            get {
+                return ResourceManager.GetString("lblCat_Appearance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UserAssets Path.
+        /// </summary>
+        public static string lblCat_AserAssets {
+            get {
+                return ResourceManager.GetString("lblCat_AserAssets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link Output.
+        /// </summary>
+        public static string lblCat_DEFLinkOutput {
+            get {
+                return ResourceManager.GetString("lblCat_DEFLinkOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prefered Retroarch Executable.
+        /// </summary>
+        public static string lblCat_DefRADir {
+            get {
+                return ResourceManager.GetString("lblCat_DefRADir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ROMs Parent Directory.
+        /// </summary>
+        public static string lblCat_DefROMPath {
+            get {
+                return ResourceManager.GetString("lblCat_DefROMPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Icons Settings.
+        /// </summary>
+        public static string lblCat_IconsGeneral {
+            get {
+                return ResourceManager.GetString("lblCat_IconsGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .ico files output (Windows only).
+        /// </summary>
+        public static string lblCat_IcoOutput {
+            get {
+                return ResourceManager.GetString("lblCat_IcoOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Link Copies.
+        /// </summary>
+        public static string lblCat_MakeLinkCopy {
+            get {
+                return ResourceManager.GetString("lblCat_MakeLinkCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Settings.
+        /// </summary>
+        public static string lblCat_OtherGeneral {
+            get {
+                return ResourceManager.GetString("lblCat_OtherGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allways output to this path.
+        /// </summary>
+        public static string lblDEFLinkOutput {
+            get {
+                return ResourceManager.GetString("lblDEFLinkOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to restore the default settings?.
         /// </summary>
-        internal static string popDefaults_Mess {
+        public static string popDefaults_Mess {
             get {
                 return ResourceManager.GetString("popDefaults_Mess", resourceCulture);
             }
@@ -71,16 +251,79 @@ namespace RetroLinker.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Restore Defaults.
         /// </summary>
-        internal static string popDefaults_Title {
+        public static string popDefaults_Title {
             get {
                 return ResourceManager.GetString("popDefaults_Title", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Other....
+        /// </summary>
+        public static string strAddCustomCopyPath {
+            get {
+                return ResourceManager.GetString("strAddCustomCopyPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the UserAssets path.
+        /// </summary>
+        public static string strDefIcoSavPathItem0 {
+            get {
+                return ResourceManager.GetString("strDefIcoSavPathItem0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the ROM path.
+        /// </summary>
+        public static string strDefIcoSavPathItem1 {
+            get {
+                return ResourceManager.GetString("strDefIcoSavPathItem1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Retroarch path.
+        /// </summary>
+        public static string strDefIcoSavPathItem2 {
+            get {
+                return ResourceManager.GetString("strDefIcoSavPathItem2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Theme.
+        /// </summary>
+        public static string swtThemeSwitch {
+            get {
+                return ResourceManager.GetString("swtThemeSwitch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light.
+        /// </summary>
+        public static string swtThemeSwitch_Off {
+            get {
+                return ResourceManager.GetString("swtThemeSwitch_Off", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark.
+        /// </summary>
+        public static string swtThemeSwitch_On {
+            get {
+                return ResourceManager.GetString("swtThemeSwitch_On", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
-        internal static string tabGeneral {
+        public static string tabGeneral {
             get {
                 return ResourceManager.GetString("tabGeneral", resourceCulture);
             }
@@ -89,7 +332,7 @@ namespace RetroLinker.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Output Paths.
         /// </summary>
-        internal static string tabOutput {
+        public static string tabOutput {
             get {
                 return ResourceManager.GetString("tabOutput", resourceCulture);
             }
@@ -98,9 +341,54 @@ namespace RetroLinker.Translations {
         /// <summary>
         ///   Looks up a localized string similar to App Paths.
         /// </summary>
-        internal static string tabPaths {
+        public static string tabPaths {
             get {
                 return ResourceManager.GetString("tabPaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the selected icon file to this app&apos;s directory (UserAssets), and use the copy to create the links..
+        /// </summary>
+        public static string tipCpyUserIcon {
+            get {
+                return ResourceManager.GetString("tipCpyUserIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracts the icon from the executable file as an &apos;.ico&apos;. It&apos;s outputed in the directory selected above..
+        /// </summary>
+        public static string tipExtractIco {
+            get {
+                return ResourceManager.GetString("tipExtractIco", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the directory selected above to store the converted icons..
+        /// </summary>
+        public static string tipUseDefaultIcoSavPath {
+            get {
+                return ResourceManager.GetString("tipUseDefaultIcoSavPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alongside the ROM.
+        /// </summary>
+        public static string txtIcoSavPath1 {
+            get {
+                return ResourceManager.GetString("txtIcoSavPath1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alongside RetroArch executable.
+        /// </summary>
+        public static string txtIcoSavPath2 {
+            get {
+                return ResourceManager.GetString("txtIcoSavPath2", resourceCulture);
             }
         }
     }

@@ -36,9 +36,10 @@ namespace RetroLinker.Models
         {
             FileOps.UserDesktop,
             FileOps.WINPublicDesktop,
-            FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu",
-            "C:\\ProgramData\\Microsoft\\Windows\\Start Menu"
+            FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs",
+            "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
         };  // Source: https://en.wikipedia.org/wiki/Start_menu
+        
         public static string[] LINLinkPathCandidates { get; } = new[]
         {
             FileOps.UserDesktop,
