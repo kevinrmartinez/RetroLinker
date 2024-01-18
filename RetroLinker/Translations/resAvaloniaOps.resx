@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="dlgFolderUserAssets" xml:space="preserve">
+        <value>Pick a directory for UserAssets</value>
+    </data>
+    <data name="dlgFolderROMParent" xml:space="preserve">
+        <value>Pick your ROMs' parent directory </value>
+    </data>
+    <data name="dlgFolderIcoOutput" xml:space="preserve">
+        <value>Pick the directory to output the ".ico" files</value>
+    </data>
+    <data name="dlgFolderLinkCopy" xml:space="preserve">
+        <value>Pick a directory to make a copy</value>
+    </data>
+    <data name="dlgFolderFallback" xml:space="preserve">
+        <value>Pick a directory...</value>
+    </data>
+    <data name="pckFileTypeExe" xml:space="preserve">
+        <value>Executables</value>
+    </data>
+    <data name="pckFileTypeAppI" xml:space="preserve">
+        <value>AppImages</value>
+    </data>
+    <data name="pckFileTypeSh" xml:space="preserve">
+        <value>Script files</value>
+    </data>
+    <data name="pckFileTypeConf" xml:space="preserve">
+        <value>Config Files</value>
+    </data>
+    <data name="pckFileTypeIco" xml:space="preserve">
+        <value>Windows Icons</value>
+    </data>
+    <data name="pckFileTypeConvI" xml:space="preserve">
+        <value>Valid Image Files</value>
+    </data>
+    <data name="pckFileTypeIcon" xml:space="preserve">
+        <value>Icon Files</value>
+    </data>
+    <data name="pckFileTypeWinLnk" xml:space="preserve">
+        <value>Windows Shortcut</value>
+    </data>
+    <data name="pckFileTypeLinLnk" xml:space="preserve">
+        <value>Desktop Entry</value>
+    </data>
+</root>

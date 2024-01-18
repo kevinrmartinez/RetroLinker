@@ -22,13 +22,14 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Models;
 
 public static class AvaloniaOps
 {
-    public const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
-    public const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
+    private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
+    private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
     
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMPadreDir { get; private set; }
@@ -68,12 +69,12 @@ public static class AvaloniaOps
             AllowMultiple = false,
             Title = template switch
             {
-                0 => "Eliga el directorio de UserAssets",
-                1 => "Eliga el directorio padre de ROMs",
-                2 => "Eliga el directorio donde guardar los .ico",
-                3 => "Eliga el directorio donde crear la copia",
+                0 => resAvaloniaOps.dlgFolderUserAssets,
+                1 => resAvaloniaOps.dlgFolderROMParent,
+                2 => resAvaloniaOps.dlgFolderIcoOutput,
+                3 => resAvaloniaOps.dlgFolderLinkCopy,
                 // Esta opcion no deberia pasar
-                _ => "Eliga el directorio..."
+                _ => resAvaloniaOps.dlgFolderFallback
             }
         };
 

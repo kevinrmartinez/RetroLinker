@@ -18,28 +18,29 @@
 
 using System.Collections.Generic;
 using Avalonia.Platform.Storage;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Models
 {
     public static class PickerOpt
     {
-        static readonly FilePickerFileType ejecutable = new("Ejecutables") { Patterns = new string[] { "*.exe" } };
-        static readonly FilePickerFileType appimage = new("AppImage") { Patterns = new string[] { "*.AppImage" } };
-        static readonly FilePickerFileType shellscripts = new("Script files") { Patterns = new string[] { "*.sh" } };
-        static readonly FilePickerFileType config_file = new("Config Files") { Patterns = new string[] { "*.cfg" } };
-        static readonly FilePickerFileType win_icon_files = new("Windows Icons") { Patterns = new string[] { "*.ico" } };
-        static readonly FilePickerFileType conv_icon = new("Convertible Images") { Patterns = FileOps.WinConvertibleIconsExt };
-        static readonly FilePickerFileType lin_icon_files = new("Icon Files") { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk = new("Windows Shortcut") { Patterns = new string[] { "*.lnk" } };
-        static readonly FilePickerFileType lin_lnk = new("Desktop Entry") { Patterns = new string[] { "*.desktop" } };
+        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = new string[] { "*.exe" } };
+        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = new string[] { "*.AppImage" } };
+        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = new string[] { "*.sh" } };
+        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = new string[] { "*.cfg" } };
+        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = new string[] { "*.ico" } };
+        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinConvertibleIconsExt };
+        static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
+        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = new string[] { "*.lnk" } };
+        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = new string[] { "*.desktop" } };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAout, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
 
-        static List<FilePickerFileType> RADirFileTypes_win = new() { ejecutable, FilePickerFileTypes.All };
+        static List<FilePickerFileType> RADirFileTypes_win = new() { win_exe, FilePickerFileTypes.All };
         static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, shellscripts, FilePickerFileTypes.All };
         static List<FilePickerFileType> CONFIGDirFileTypes = new() { config_file, FilePickerFileTypes.TextPlain };
-        static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, ejecutable, conv_icon };
+        static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, win_exe, conv_icon };
         static List<FilePickerFileType> ICONfileTypes2 = new() { lin_icon_files };
         static List<FilePickerFileType> WinShorTypes = new() { win_lnk };
         static List<FilePickerFileType> LinShorTypes = new() { lin_lnk };

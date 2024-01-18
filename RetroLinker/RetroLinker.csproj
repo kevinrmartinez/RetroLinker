@@ -66,6 +66,13 @@
     <EmbeddedResource Update="Translations\resSettingsWindow.es.resx">
       <DependentUpon>resSettingsWindow.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAvaloniaOps.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resAvaloniaOps.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAvaloniaOps.es.resx">
+      <DependentUpon>resAvaloniaOps.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -78,6 +85,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resSettingsWindow.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resAvaloniaOps.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resAvaloniaOps.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
