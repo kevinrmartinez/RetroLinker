@@ -185,13 +185,13 @@ namespace RetroLinker.Models
         {
             string objectstring = UserAssetsPath + DEFRADir + DEFROMPath + DEFLinkOutput + IcoSavPath;
             objectstring += PreferedTheme.ToString();
-            objectstring += (PrevConfig) ? "1" : "0";
+            objectstring += (PrevConfig)       ? "1" : "0";
             objectstring += (AllwaysAskOutput) ? "1" : "0";
-            objectstring += (MakeLinkCopy) ? "1" : "0"; 
-            objectstring += (CpyUserIcon) ? "1" : "0";
-            objectstring += (ExtractIco) ? "1" : "0";
-            objectstring += (IcoLinkName) ? "1" : "0";
-            objectstring += (LinDesktopPopUp) ? "1" : "0";
+            objectstring += (MakeLinkCopy)     ? "1" : "0"; 
+            objectstring += (CpyUserIcon)      ? "1" : "0";
+            objectstring += (ExtractIco)       ? "1" : "0";
+            objectstring += (IcoLinkName)      ? "1" : "0";
+            objectstring += (LinDesktopPopUp)  ? "1" : "0";
             return objectstring;
         }
         

@@ -60,4 +60,25 @@
     <data name="pckFileTypeLinLnk" xml:space="preserve">
         <value>Desktop Entry</value>
     </data>
+    <data name="dlgFileLINKDir" xml:space="preserve">
+        <value>Choose the Link output</value>
+    </data>
+    <data name="dlgFileOutFallback" xml:space="preserve">
+        <value>Choose the file output</value>
+    </data>
+    <data name="dlgFileRAexe" xml:space="preserve">
+        <value>Pick the ReatroArch executable</value>
+    </data>
+    <data name="dlgFileRAroms" xml:space="preserve">
+        <value>Pick the ROM you wish to link</value>
+    </data>
+    <data name="dlgFileRAcfg" xml:space="preserve">
+        <value>Specify a Config file</value>
+    </data>
+    <data name="dlgFileIcon" xml:space="preserve">
+        <value>Pick an icon file</value>
+    </data>
+    <data name="dlgFileInFallback" xml:space="preserve">
+        <value>Pick a file</value>
+    </data>
 </root>

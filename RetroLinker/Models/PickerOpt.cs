@@ -34,7 +34,7 @@ namespace RetroLinker.Models
         static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = new string[] { "*.lnk" } };
         static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = new string[] { "*.desktop" } };
 
-        public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAout, LINico } 
+        public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
 
         static List<FilePickerFileType> RADirFileTypes_win = new() { win_exe, FilePickerFileTypes.All };
@@ -55,14 +55,14 @@ namespace RetroLinker.Models
                 // Windows exe
                 case OpenOpts.RAexe:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga el ejecutable de RetroArch";
+                    options.Title = resAvaloniaOps.dlgFileRAexe;
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
                 // All files for ROMs
                 case OpenOpts.RAroms:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga la ROM que desea linkear";
+                    options.Title = resAvaloniaOps.dlgFileRAexe;
                     //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
                     if (AvaloniaOps.ROMPadreDir != null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
@@ -72,35 +72,35 @@ namespace RetroLinker.Models
                 // Retroarch config
                 case OpenOpts.RAcfg:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga el archivo Config que desea especificar";
+                    options.Title = resAvaloniaOps.dlgFileRAcfg;
                     options.FileTypeFilter = CONFIGDirFileTypes;
                     break;
 
                 // Windows icon
                 case OpenOpts.WINico:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga un archivo de icono";
+                    options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes;
                     break;
 
                 // Linux executable
-                case OpenOpts.RAout:
+                case OpenOpts.RAbin:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga el ejecutable de RetroArch";
+                    options.Title = resAvaloniaOps.dlgFileRAexe;
                     options.FileTypeFilter = RADirFileTypes_lin;
                     break;
 
                 // Linux images for icons
                 case OpenOpts.LINico:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga un archivo de icono";
+                    options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes2;
                     break;
 
                 // Esta opcion no deberia darse
                 default:
                     options.AllowMultiple = false;
-                    options.Title = "Eliga un archivo";
+                    options.Title = resAvaloniaOps.dlgFileInFallback;
                     break;
             }
             return options;
@@ -110,7 +110,7 @@ namespace RetroLinker.Models
         {
             var options = new FilePickerSaveOptions();
             options.ShowOverwritePrompt = true;
-            options.Title = "Eliga donde crear el shortcut/link";
+            options.Title = resAvaloniaOps.dlgFileLINKDir;
             switch (template) 
             {
                 // Windows .lnk
@@ -127,7 +127,7 @@ namespace RetroLinker.Models
                 
                 // Esta opcion de deberia pasar
                 default:
-                    options.Title = "Eliga donde guardar el archivo";
+                    options.Title = resAvaloniaOps.dlgFileOutFallback;
                     break;
             }
             return options;

@@ -116,4 +116,10 @@
     <data name="popMultiOutput0_Head" xml:space="preserve">
         <value>Ha ocurrido un error al crear algunos links:</value>
     </data>
+    <data name="popLinkSucces" xml:space="preserve">
+        <value>La creación del Link se realizo con éxito</value>
+    </data>
+    <data name="popLinkFailure" xml:space="preserve">
+        <value>La creación del Link ha fracasado</value>
+    </data>
 </root>

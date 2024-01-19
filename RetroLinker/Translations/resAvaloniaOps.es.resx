@@ -44,4 +44,25 @@
     <data name="pckFileTypeIcon" xml:space="preserve">
         <value>Archivos de Iconos</value>
     </data>
+    <data name="dlgFileLINKDir" xml:space="preserve">
+        <value>Eliga el destino del link</value>
+    </data>
+    <data name="dlgFileOutFallback" xml:space="preserve">
+        <value>Eliga donde guardar el archivo</value>
+    </data>
+    <data name="dlgFileRAexe" xml:space="preserve">
+        <value>Eliga el ejecutable de RetroArch</value>
+    </data>
+    <data name="dlgFileRAroms" xml:space="preserve">
+        <value>Eliga la ROM que desea linkear</value>
+    </data>
+    <data name="dlgFileRAcfg" xml:space="preserve">
+        <value>Especifique el archivo Config</value>
+    </data>
+    <data name="dlgFileIcon" xml:space="preserve">
+        <value>Eliga un archivo de icono</value>
+    </data>
+    <data name="dlgFileInFallback" xml:space="preserve">
+        <value>Eliga un archivo</value>
+    </data>
 </root>

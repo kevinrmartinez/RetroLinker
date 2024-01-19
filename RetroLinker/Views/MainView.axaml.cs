@@ -394,7 +394,7 @@ public partial class MainView : UserControl
     {
         PickerOpt.OpenOpts opt;
         if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
-        else { opt = PickerOpt.OpenOpts.RAout; }                  // FilePicker Option para .AppImage de Windows
+        else { opt = PickerOpt.OpenOpts.RAbin; }                  // FilePicker Option para .AppImage de Windows
         string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
@@ -667,7 +667,12 @@ public partial class MainView : UserControl
                     content = string.Concat(content, outputPath);
                     content = string.Concat(content, opResult[i].Messeage);
                     content = string.Concat(content, "\n");
-                    if (opResult[i].Error) { errorCount++; }
+                    if (opResult[i].Error)
+                    {
+                        content = string.Concat(content, $"=> \"{opResult[i].eMesseage}\" <=");
+                        content = string.Concat(content, "\n");
+                        errorCount++;
+                    }
                     else { successCount++; }
                 }
                 msbox_params.ContentTitle = resMainView.genWarning;

@@ -87,7 +87,7 @@ public partial class SettingsView2 : UserControl
     {
         PickerOpt.OpenOpts opt;
         opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :    // FilePicker Option para .exe de Windows
-                          PickerOpt.OpenOpts.RAout;     // FilePicker Option para .AppImage de Linux
+                          PickerOpt.OpenOpts.RAbin;     // FilePicker Option para .AppImage de Linux
         string file = await AvaloniaOps.OpenFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrWhiteSpace(file))
         { 

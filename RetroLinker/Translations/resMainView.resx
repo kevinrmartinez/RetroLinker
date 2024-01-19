@@ -103,7 +103,7 @@
         <value>Fatal Error</value>
     </data>
     <data name="tipIconNoImage" xml:space="preserve">
-        <value>The program can not display the selected icon. However, the selectited file will be used to create the shortcut.</value>
+        <value>The program can not display the selected icon. However, the selected file will be used to create the shortcut.</value>
     </data>
     <data name="dllErrorHead" xml:space="preserve">
         <value>The import of {0} has failed!</value>
@@ -124,33 +124,39 @@
         <value>However, blank spaces will be replaced by '-' in the file name, for standard and convenience reasons.\n\n\nPress Cancel to no longer display this message.</value>
     </data>
     <data name="popMissReq_Mess" xml:space="preserve">
-        <value>Requiered fields are missing</value>
+        <value>Required fields are missing</value>
     </data>
     <data name="popMissReq_Title" xml:space="preserve">
         <value>Missing Fields</value>
     </data>
     <data name="popSingleOutput1_Mess" xml:space="preserve">
-        <value>The link file has been created succesfully</value>
+        <value>The link file has been created successfully</value>
     </data>
     <data name="genSucces" xml:space="preserve">
-        <value>Succes</value>
+        <value>Success</value>
     </data>
     <data name="popSingleOutput0_Mess" xml:space="preserve">
-        <value>The operation falied with the following error:\n{0}</value>
+        <value>The operation failed with the following error:\n{0}</value>
     </data>
     <data name="popSingleOutput0_Head" xml:space="preserve">
-        <value>An error has ocurred while creating the link</value>
+        <value>An error has occurred while creating the link</value>
     </data>
     <data name="genError" xml:space="preserve">
         <value>Error</value>
     </data>
     <data name="popMultiOutput1_Mess" xml:space="preserve">
-        <value>All links were created succesfully</value>
+        <value>All links were created successfully</value>
     </data>
     <data name="popMultiOutput0_Head" xml:space="preserve">
-        <value>An error while creating some links:</value>
+        <value>An error has occurred while creating some links:</value>
     </data>
     <data name="genWarning" xml:space="preserve">
         <value>Warning</value>
+    </data>
+    <data name="popLinkSucces" xml:space="preserve">
+        <value>Link creation was successful</value>
+    </data>
+    <data name="popLinkFailure" xml:space="preserve">
+        <value>Link creation has failed</value>
     </data>
 </root>

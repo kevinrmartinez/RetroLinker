@@ -14,7 +14,7 @@ namespace RetroLinker.Translations {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class resAvaloniaOps {
+    public class resAvaloniaOps {
         
         private static System.Resources.ResourceManager resourceMan;
         
@@ -25,7 +25,7 @@ namespace RetroLinker.Translations {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
+        public static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
                     System.Resources.ResourceManager temp = new System.Resources.ResourceManager("RetroLinker.Translations.resAvaloniaOps", typeof(resAvaloniaOps).Assembly);
@@ -36,7 +36,7 @@ namespace RetroLinker.Translations {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Globalization.CultureInfo Culture {
+        public static System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -45,87 +45,129 @@ namespace RetroLinker.Translations {
             }
         }
         
-        internal static string dlgFolderUserAssets {
+        public static string dlgFolderUserAssets {
             get {
                 return ResourceManager.GetString("dlgFolderUserAssets", resourceCulture);
             }
         }
         
-        internal static string dlgFolderROMParent {
+        public static string dlgFolderROMParent {
             get {
                 return ResourceManager.GetString("dlgFolderROMParent", resourceCulture);
             }
         }
         
-        internal static string dlgFolderIcoOutput {
+        public static string dlgFolderIcoOutput {
             get {
                 return ResourceManager.GetString("dlgFolderIcoOutput", resourceCulture);
             }
         }
         
-        internal static string dlgFolderLinkCopy {
+        public static string dlgFolderLinkCopy {
             get {
                 return ResourceManager.GetString("dlgFolderLinkCopy", resourceCulture);
             }
         }
         
-        internal static string dlgFolderFallback {
+        public static string dlgFolderFallback {
             get {
                 return ResourceManager.GetString("dlgFolderFallback", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeExe {
+        public static string pckFileTypeExe {
             get {
                 return ResourceManager.GetString("pckFileTypeExe", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeAppI {
+        public static string pckFileTypeAppI {
             get {
                 return ResourceManager.GetString("pckFileTypeAppI", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeSh {
+        public static string pckFileTypeSh {
             get {
                 return ResourceManager.GetString("pckFileTypeSh", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeConf {
+        public static string pckFileTypeConf {
             get {
                 return ResourceManager.GetString("pckFileTypeConf", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeIco {
+        public static string pckFileTypeIco {
             get {
                 return ResourceManager.GetString("pckFileTypeIco", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeConvI {
+        public static string pckFileTypeConvI {
             get {
                 return ResourceManager.GetString("pckFileTypeConvI", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeIcon {
+        public static string pckFileTypeIcon {
             get {
                 return ResourceManager.GetString("pckFileTypeIcon", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeWinLnk {
+        public static string pckFileTypeWinLnk {
             get {
                 return ResourceManager.GetString("pckFileTypeWinLnk", resourceCulture);
             }
         }
         
-        internal static string pckFileTypeLinLnk {
+        public static string pckFileTypeLinLnk {
             get {
                 return ResourceManager.GetString("pckFileTypeLinLnk", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileLINKDir {
+            get {
+                return ResourceManager.GetString("dlgFileLINKDir", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileOutFallback {
+            get {
+                return ResourceManager.GetString("dlgFileOutFallback", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileRAexe {
+            get {
+                return ResourceManager.GetString("dlgFileRAexe", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileRAroms {
+            get {
+                return ResourceManager.GetString("dlgFileRAroms", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileRAcfg {
+            get {
+                return ResourceManager.GetString("dlgFileRAcfg", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileIcon {
+            get {
+                return ResourceManager.GetString("dlgFileIcon", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileInFallback {
+            get {
+                return ResourceManager.GetString("dlgFileInFallback", resourceCulture);
             }
         }
     }

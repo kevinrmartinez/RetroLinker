@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Models
 {
@@ -92,7 +93,7 @@ namespace RetroLinker.Models
             {
                 System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                LinkResult.Messeage = LinkResult.Faliure1;
+                LinkResult.Messeage = LinkResult.Failure1;
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
             }
@@ -109,7 +110,7 @@ namespace RetroLinker.Models
                 {
                     System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKcpy[i])}!", "[Erro]");
                     System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                    LinkResult.Messeage = LinkResult.Faliure1;
+                    LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
                 }
@@ -138,7 +139,7 @@ namespace RetroLinker.Models
             {
                 System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKdir}'!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                LinkResult.Messeage = LinkResult.Faliure1;
+                LinkResult.Messeage = LinkResult.Failure1;
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
             }
@@ -156,7 +157,7 @@ namespace RetroLinker.Models
                 {
                     System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKcpy[i]}'!", "[Erro]");
                     System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
-                    LinkResult.Messeage = LinkResult.Faliure1;
+                    LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
                 }
@@ -174,8 +175,8 @@ namespace RetroLinker.Models
         public string? eMesseage { get; set; }
 
         
-        public readonly string Success1 = "La creacion del shortcut realizada con exito";
-        public readonly string Faliure1 = "La creacion del shortcut ha fracasado";
+        public readonly string Success1 = resMainView.popLinkSucces;
+        public readonly string Failure1 = resMainView.popLinkFailure;
 
         public ShortcutterResult(string outputDir)
         {

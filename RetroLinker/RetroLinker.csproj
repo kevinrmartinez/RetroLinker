@@ -54,7 +54,7 @@
   <ItemGroup>
     <EmbeddedResource Update="Translations\resMainView.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>MainView.Designer.cs</LastGenOutput>
+      <LastGenOutput>resMainView.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Translations\resSettingsWindow.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
