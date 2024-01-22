@@ -17,25 +17,65 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
+using RetroLinker.Views;
 
 namespace RetroLinker.Models;
 
 public static class AvaloniaOps
 {
+    private static bool FirstLoad = true;
+    private static Task<string[]> coresTask;
+    private static Task<List<string>> iconTask;
+    private static string[] cores = Array.Empty<string>();
+    private static List<string> iconList = new List<string>();
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
+    
+    public static string DefLinRAIcon { get; private set; }
     
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMPadreDir { get; private set; }
 
     
     #region FUNCTIONS
+    public static Settings MainViewLoad(bool DesktopOS)
+    {
+        if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
+        System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
+        SettingsOps.BuildConfFile();
+        var settings = FileOps.LoadSettingsFO();
+        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
+        System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
+        
+        DefLinRAIcon = FileOps.GetRAIcons();
+        coresTask = FileOps.LoadCores();
+        iconTask = FileOps.LoadIcons(DesktopOS);
+
+        FirstLoad = false;
+        return settings;
+    }
+
+    public static async Task<string[]> GetCoresArray()
+    {
+        if (cores.Length != 0) return cores;
+        cores = await coresTask;
+        return cores;
+    }
+    
+    public static async Task<List<string>> GetIconList(bool OS)
+    {
+        if (iconList.Count != 0) return iconList;
+        iconList = await iconTask;
+        return iconList;
+    }
+    
     public static Uri GetDefaultIcon() => new Uri(DEFicon1);
 
     public static Uri GetNAimage() => new Uri(NoAplica);

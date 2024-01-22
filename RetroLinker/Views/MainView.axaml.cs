@@ -56,7 +56,7 @@ public partial class MainView : UserControl
     // Window Object
     private MainWindow ParentWindow;
     
-    private bool FirstTimeLoad = true;
+    private bool FormFirstLoad = true;
     private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int retrycount = 0;
@@ -75,19 +75,12 @@ public partial class MainView : UserControl
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        if (FirstTimeLoad)
+        if (FormFirstLoad)
         {
-            System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
-            SettingsOps.BuildConfFile();
-            settings = FileOps.LoadSettingsFO();
-            System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
-            System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
-        
+            settings = AvaloniaOps.MainViewLoad(DesktopOS);
+            
             // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
-        
-            var cores_task = FileOps.LoadCores();
-            var icon_task = FileOps.LoadIcons(DesktopOS);
         
             // Condicion de OS
             if (!DesktopOS)
@@ -95,7 +88,7 @@ public partial class MainView : UserControl
                 if (string.IsNullOrEmpty(settings.DEFRADir)) 
                 { settings.DEFRADir = App.RetroBin; }
                 txtRADir.IsReadOnly = false;
-                DefLinRAIcon = FileOps.GetRAIcons();
+                DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
             }
             else
             {
@@ -103,25 +96,23 @@ public partial class MainView : UserControl
                 IconItemSET = new();
             }
             ApplySettingsToControls();
-            comboCore_Loaded(cores_task);
+            comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
-            comboICONDir_Loaded(icon_task);
+            comboICONDir_Loaded(AvaloniaOps.GetIconList(DesktopOS));
             // TODO: Evento de tutorial para nuevos usuarios
-
-            FirstTimeLoad = false;
+            
             System.DateTime now = System.DateTime.Now;
             timeSpan = now - App.LaunchTime;
             System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", App.TimeTrace);
+            FormFirstLoad = false;
         }
         else
-        {
-            LoadNewSettings();
-        }
+        { LoadNewSettings(); }
     }
 
-    async void comboCore_Loaded(Task<string[]> cores_task)
+    async void comboCore_Loaded(Task<string[]> coresTask)
     {
-        var cores = await cores_task;
+        var cores = await coresTask;
         System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", App.InfoTrace);
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
@@ -136,12 +127,12 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    async void comboICONDir_Loaded(Task<List<string>> icon_task)
+    async void comboICONDir_Loaded(Task<List<string>> iconsTask)
     {
-        var icons_list = await icon_task;
+        var iconsList = await iconsTask;
         comboICONDir.Items.Add(resMainView.comboDefItem);
         System.Diagnostics.Debug.WriteLine("Lista de iconos importada", App.InfoTrace);
-        foreach (var iconFile in icons_list)
+        foreach (var iconFile in iconsList)
         {
             comboICONDir.Items.Add(iconFile);
         }
@@ -505,6 +496,7 @@ public partial class MainView : UserControl
         else
         {
             System.Diagnostics.Debug.WriteLine("Running on debug...");
+            ParentWindow.LocaleReload(LanguageManager.AvailableLocale.ES0);
             // Testing.LinShortcutTest(DesktopOS);
             // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }

@@ -66,7 +66,7 @@ namespace RetroLinker.Models
                     //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
                     if (AvaloniaOps.ROMPadreDir != null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
-                    // FIXME: No funciona con los FilePicker de las distros
+                    // TODO: No funciona con los FilePicker de las distros de linux
                     break;
 
                 // Retroarch config

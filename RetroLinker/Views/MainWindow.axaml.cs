@@ -17,6 +17,8 @@
 */
 
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using RetroLinker.Models;
 
 namespace RetroLinker.Views;
 
@@ -40,9 +42,17 @@ public partial class MainWindow : Window
         PatchesView
     }
     
-    public void ChangeContent(Window1Views1 views)
+    private void ChangeContent(Window1Views1 views)
     {
         
+    }
+
+    public void LocaleReload(LanguageManager.AvailableLocale locale)
+    {
+        LanguageManager.ChangeRuntimeLocale(locale);
+        MainCC1.Content = null;
+        PermaView = new MainView(this);
+        MainCC1.Content = PermaView;
     }
 
     public void ReturnToMainView(UserControl view)
