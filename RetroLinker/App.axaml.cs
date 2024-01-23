@@ -36,14 +36,14 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         System.TimeSpan launchTime = System.TimeSpan.FromTicks(LaunchTime.Ticks);
-        System.Diagnostics.Trace.WriteLine($"AppLoadTime: {launchTime}", "[Time]");
+        System.Diagnostics.Trace.WriteLine($"AppLoadTime: {launchTime}", TimeTrace);
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            System.Diagnostics.Debug.WriteLine("Iniciando MainWindow", "[Debg]");
+            System.Diagnostics.Debug.WriteLine("Iniciando MainWindow", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel()

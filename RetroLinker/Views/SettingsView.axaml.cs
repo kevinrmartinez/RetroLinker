@@ -20,6 +20,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using RetroLinker.Models;
+using RetroLinker.Styles;
 
 namespace RetroLinker.Views
 {
@@ -53,6 +55,7 @@ namespace RetroLinker.Views
         { 
             // Settings
             ApplySettingsToControls();
+            FillComboLocale();
             //System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", "[Debg]");
         }
 
@@ -62,9 +65,23 @@ namespace RetroLinker.Views
             chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
             LoadTheme(ParentWindow.settings.PreferedTheme);
         }
+
+        void FillComboLocale()
+        {
+            int index = comboLocale.SelectedIndex;
+            // LanguageManager.EnglishItem.ItemIndex = 0;
+            LanguageManager.EnglishItem.ItemIndex = index;
+            var item = LocaleComboItem.GetLocaleComboItem(LanguageManager.EnglishItem);
+            comboLocale.Items.Add(item);
+            index++;
+            
+            LanguageManager.SpanishItem.ItemIndex = index;
+            item = LocaleComboItem.GetLocaleComboItem(LanguageManager.SpanishItem);
+            comboLocale.Items.Add(item);
+        }
         #endregion
 
-        //APARIENCIA
+        // APARIENCE
         // TODO: Optimizar con el uso de un evento, posiblemente basado en el byte de tema
         void LoadTheme(byte ThemeCode)
         {
@@ -110,7 +127,15 @@ namespace RetroLinker.Views
             else
             { swtThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
         }
+        
+        
+        
+        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e)
+        {
+            
+        }
 
+        // OTHER PREFERENCES
         void View1ChecksHandle(object? sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox) == null) return;
@@ -129,6 +154,5 @@ namespace RetroLinker.Views
             _ = e.ToString();
         }
 #endif
-        
     }
 }

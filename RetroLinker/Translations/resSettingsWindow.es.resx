@@ -119,4 +119,7 @@
     <data name="txtIcoSavPath2" xml:space="preserve">
         <value>Junto al ejecutable de RetroArch</value>
     </data>
+    <data name="lblLocale" xml:space="preserve">
+        <value>Idioma</value>
+    </data>
 </root>

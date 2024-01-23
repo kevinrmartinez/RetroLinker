@@ -16,10 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Projektanker.Icons.Avalonia;
+using RetroLinker.Models;
 
 namespace RetroLinker.Styles;
 
@@ -80,5 +84,52 @@ public class LinkCopyItemGrid
     {
         NewItemText.Content = path;
         return NewItemGrid;
+    }
+}
+
+public class LocaleComboItem()
+{
+
+    public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
+    {
+        var item = new ComboBoxItem()
+        {
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            VerticalContentAlignment = VerticalAlignment.Center
+        };
+
+        item.Content = DefineNewLocaleComboItem(locale);
+        return item;
+    }
+
+    private static Grid DefineNewLocaleComboItem(LanguageItem locale)
+    {
+        var grid = new Grid();
+        grid.ColumnDefinitions = new ColumnDefinitions()
+        {
+            new ColumnDefinition(1, GridUnitType.Auto),
+            new ColumnDefinition(1, GridUnitType.Star)
+        };
+
+        var icon = new Image()
+        {
+            Source = new Bitmap(AssetLoader.Open(locale.LangIconPath))
+        };
+        var pictureBox = new Viewbox()
+        {
+            Width = 25,
+            Child = icon
+        };
+
+        var text = new Label()
+        {
+            Content = locale.Name
+        };
+        
+        Grid.SetColumn(pictureBox,0);
+        Grid.SetColumn(text,1);
+        grid.Children.Add(pictureBox);
+        grid.Children.Add(text);
+        return grid;
     }
 }

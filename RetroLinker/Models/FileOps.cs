@@ -26,7 +26,7 @@ namespace RetroLinker.Models
 {
     public static class FileOps
     {
-        //public const string SettingFile = "RLsettings.cfg";
+        public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssetsDir = "UserAssets";
         public const string CoresFile = "cores.txt";

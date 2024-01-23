@@ -21,12 +21,25 @@
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_Appearance}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<StackPanel Orientation="Horizontal" Margin="0, 2">
-						<ToggleSwitch Name="swtThemeSwitch" Content="{x:Static locale:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged"
-						              OnContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_Off}"/>
-						<Rectangle Width="18"/>
-						<CheckBox Name="chkThemeDefault" Content="{x:Static locale:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
-					</StackPanel>
+					<Grid ColumnDefinitions="*, Auto, *">
+						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0, 2">
+							<ToggleSwitch Name="swtThemeSwitch" Content="{x:Static locale:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged" Margin="3,0,0,0"
+							              OnContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_Off}"/>
+							<Rectangle Width="18"/>
+							<CheckBox Name="chkThemeDefault" Content="{x:Static locale:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+						</StackPanel>
+						<Rectangle Grid.Column="1" Stroke="Gray" StrokeThickness="2" StrokeDashArray="1"/>
+						<StackPanel Grid.Column="2">
+							<Label Margin="3,0,0,0" Content="{x:Static locale:resSettingsWindow.lblLocale}"/>
+							<Grid ColumnDefinitions="*, Auto">
+								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0,0,0" 
+								          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
+								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Classes="SettingCatg" Click="BtnLocale_OnClick">
+									<i:Icon Value="fa-check" FontSize="18" Foreground="Green"/>
+								</Button>
+							</Grid>
+						</StackPanel>
+					</Grid>
 				</StackPanel>
 			</Border>
 

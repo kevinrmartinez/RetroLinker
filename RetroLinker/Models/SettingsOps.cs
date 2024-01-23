@@ -142,6 +142,7 @@ namespace RetroLinker.Models
             try 
             {
                 settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
+                settings_file.SaveToFile(FileOps.SettingFile);
                 System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");
             }
             catch (System.Exception e)
@@ -172,6 +173,7 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public byte PreferedTheme { get; set; } = 0;
+        public string Language { get; set; } = LanguageManager.EnglishItem.Name;
         public bool LinDesktopPopUp { get; set; } = true;
 
         public Settings()
@@ -183,7 +185,12 @@ namespace RetroLinker.Models
         
         private string GetString()
         {
-            string objectstring = UserAssetsPath + DEFRADir + DEFROMPath + DEFLinkOutput + IcoSavPath;
+            string objectstring = UserAssetsPath + "\n" 
+                                                 + DEFRADir + "\n" 
+                                                 + DEFROMPath + "\n" 
+                                                 + DEFLinkOutput + "\n" 
+                                                 + IcoSavPath + "\n"
+                                                 + Language;
             objectstring += PreferedTheme.ToString();
             objectstring += (PrevConfig)       ? "1" : "0";
             objectstring += (AllwaysAskOutput) ? "1" : "0";

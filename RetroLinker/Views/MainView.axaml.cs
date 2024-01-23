@@ -50,7 +50,6 @@ public partial class MainView : UserControl
         ParentWindow = mainWindow;
         timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
-        // System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("es");
     }
 
     // Window Object
@@ -59,7 +58,7 @@ public partial class MainView : UserControl
     private bool FormFirstLoad = true;
     private string DefLinRAIcon;
     private int PrevConfigsCount;
-    private int retrycount = 0;
+    private int DLLErrorCount = 0;
     private byte CurrentTheme = 250;
     private Shortcutter OutputLink = new();
     private Settings settings;
@@ -195,7 +194,7 @@ public partial class MainView : UserControl
         string retry_btn = resMainView.btnRetry;
         string abort_btn = resMainView.btnAbort;
         ButtonDefinition[] diag_btns;
-        if (retrycount < 6)
+        if (DLLErrorCount < 6)
         {
             diag_btns = new[]
             {
@@ -227,7 +226,7 @@ public partial class MainView : UserControl
         }
         else if (diag_result == retry_btn)
         {
-            retrycount++;
+            DLLErrorCount++;
             WinFuncImport();
         }
     }
@@ -495,8 +494,7 @@ public partial class MainView : UserControl
 #if DEBUG
         else
         {
-            System.Diagnostics.Debug.WriteLine("Running on debug...");
-            ParentWindow.LocaleReload(LanguageManager.AvailableLocale.ES0);
+            System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
             // Testing.LinShortcutTest(DesktopOS);
             // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }
