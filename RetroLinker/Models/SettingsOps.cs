@@ -17,7 +17,7 @@
 */
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using SharpConfig;
 
 namespace RetroLinker.Models
@@ -54,12 +54,13 @@ namespace RetroLinker.Models
 
         public static void BuildConfFile()
         {
-            settings_file.Add(GeneralSettings);
+            // TODO: Replace SharpConfig as it is umpredictible at the moment
             var settingsProps = Utils.ExtractClassProperties(typeof(Settings));
             foreach (string setting in settingsProps)
             {
                 GeneralSettings.Add(setting);
             }
+            settings_file.Add(GeneralSettings);
             System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcampos.", "[Debg]");
             settings_file.Add(StoredConfigs);
             settings_file.Add(StoredLinkPaths);
@@ -121,6 +122,7 @@ namespace RetroLinker.Models
 
         public static void WriteSettingsFile(Settings savingSettings)
         {
+            GeneralSettings = new Section("GeneralSettings");
             GeneralSettings.GetValuesFrom(savingSettings);
             if (PrevConfigs.Count > 0)
             {
@@ -150,7 +152,6 @@ namespace RetroLinker.Models
             { 
                 System.Diagnostics.Trace.WriteLine($"Incapaz de escribir el archivo {FileOps.SettingFileBin}!", "[Erro]");
                 System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
-                // CachedSettings = new();
             }
         }
         
@@ -174,21 +175,24 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public byte PreferedTheme { get; set; } = 0;
-        public string Language { get; private set; } = DEFLanguage;
+        public string LanguageCulture { get; private set; } = DEFLanguage;
         public bool LinDesktopPopUp { get; set; } = true;
 
 
-        private const string DEFLanguage = "English";
+        private static readonly string DEFLanguage = "en_US";
         public Settings()
-        {
-            IcoSavPath = UserAssetsPath;
-        }
+        { IcoSavPath = UserAssetsPath; }
 
+        public CultureInfo GetLanguage() => new CultureInfo(LanguageCulture);
+        
+        public void SetLanguage(CultureInfo availableLocale)
+        { LanguageCulture = availableLocale.ToString(); }
+        
         public void SetLanguage(LanguageItem languageItem)
-        { Language = languageItem.Name; }
+        { LanguageCulture = LanguageManager.ResolveLocale(languageItem).ToString(); }
 
         public void SetDefaultLaunguage()
-        { Language = DEFLanguage; }
+        { LanguageCulture = DEFLanguage; }
         
         //public void Dispose() => this.Dispose();
         
@@ -199,7 +203,7 @@ namespace RetroLinker.Models
                                                  + DEFROMPath + "\n" 
                                                  + DEFLinkOutput + "\n" 
                                                  + IcoSavPath + "\n"
-                                                 + Language;
+                                                 + LanguageCulture;
             objectstring += PreferedTheme.ToString();
             objectstring += (PrevConfig)       ? "1" : "0";
             objectstring += (AllwaysAskOutput) ? "1" : "0";

@@ -16,9 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using RetroLinker.Models;
 using RetroLinker.ViewModels;
 using RetroLinker.Views;
 
@@ -43,6 +45,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            LanguageManager.FixLocale(new CultureInfo("en-US"));
             System.Diagnostics.Debug.WriteLine("Iniciando MainWindow", DebgTrace);
             desktop.MainWindow = new MainWindow
             {

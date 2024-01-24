@@ -187,8 +187,7 @@ public partial class MainView : UserControl
     void LoadLocalization()
     {
         if (FormFirstLoad) return;
-        var locale = LanguageManager.LanguageList.Find(l => l.Name == settings.Language).Culture;
-        ParentWindow.LocaleReload(locale);
+        ParentWindow.LocaleReload(settings);
     }
 
     void WinFuncImport()

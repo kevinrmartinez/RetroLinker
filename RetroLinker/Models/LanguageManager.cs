@@ -13,11 +13,6 @@ public static class LanguageManager
     private const string ENIcon = "avares://RetroLinkerLib/Assets/Icons/EN.png";
     private const string ESIcon = "avares://RetroLinkerLib/Assets/Icons/ES.png";
     
-    public enum AvailableLocale
-    {
-        EN0, ES0
-    }
-
     public static List<LanguageItem> LanguageList = new()
     {
         new LanguageItem
@@ -34,29 +29,62 @@ public static class LanguageManager
             new Uri(ESIcon)
         )
     };
+    
+    public static CultureInfo ResolveLocale(LanguageItem languageItem) => languageItem.Culture;
 
-    public static void SetLocale(AvailableLocale locale)
+    public static LanguageItem ResolveLocale(int index)
     {
-        CultureInfo selLocale = locale switch
+        // Defaults to en-US
+        LanguageItem item = LanguageList[0];
+        for (int i = 0; i < LanguageList.Count; i++)
         {
-            AvailableLocale.EN0 => ENLocale,
-            AvailableLocale.ES0 => ESLocale,
-            _ => ENLocale
-        };
-        ChangeRuntimeLocale(selLocale);
+            if (LanguageList[i].ItemIndex == index)
+            {
+                item = LanguageList[i];
+                break;
+            }
+        }
+        return item;
     }
 
-    public static bool ChangeRuntimeLocale(object cultureInfo)
+    public static LanguageItem ResolveLocale(CultureInfo cultureInfo)
     {
-        var locale = cultureInfo as CultureInfo;
-        var sameLocale = (Translations.resAvaloniaOps.Culture == locale);
+        int i;
+        for (i = 0; i < LanguageList.Count; i++)
+        {
+            if (LanguageList[i].Culture.Name == cultureInfo.Name) break;
+        }
+
+        return LanguageList[i];
+    }
+    
+    public static int GetLocaleIndex(Settings settings)
+    {
+        var item = ResolveLocale(new CultureInfo(settings.LanguageCulture));
+        return (int)item.ItemIndex;
+    }
+    
+    public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
+
+    public static bool SetLocale(Settings settings) => ChangeRuntimeLocale(new CultureInfo(settings.LanguageCulture));
+
+    private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
+    {
+        var sameLocale = (Translations.resMainView.Culture.Name == cultureInfo.Name);
         if (!sameLocale)
         {
-            Translations.resAvaloniaOps.Culture = locale;
-            Translations.resMainView.Culture = locale;
-            Translations.resSettingsWindow.Culture = locale;
+            Translations.resAvaloniaOps.Culture = cultureInfo;
+            Translations.resMainView.Culture = cultureInfo;
+            Translations.resSettingsWindow.Culture = cultureInfo;
         }
         return sameLocale;
+    }
+
+    public static void FixLocale(CultureInfo cultureInfo)
+    {
+        Translations.resAvaloniaOps.Culture = cultureInfo;
+        Translations.resMainView.Culture = cultureInfo;
+        Translations.resSettingsWindow.Culture = cultureInfo;
     }
 }
 

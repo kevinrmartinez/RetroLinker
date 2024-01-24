@@ -46,9 +46,9 @@ public partial class MainWindow : Window
         
     }
 
-    public void LocaleReload(object locale)
+    public void LocaleReload(Settings locale)
     {
-        if (LanguageManager.ChangeRuntimeLocale(locale)) return;
+        if (LanguageManager.SetLocale(locale)) return;
         MainCC1.Content = null;
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;

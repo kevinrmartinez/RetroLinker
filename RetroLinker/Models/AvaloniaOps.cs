@@ -53,8 +53,7 @@ public static class AvaloniaOps
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
         
-        var locale = LanguageManager.LanguageList.Find(l => l.Name == settings.Language).Culture;
-        LanguageManager.ChangeRuntimeLocale(locale);
+        LanguageManager.SetLocale(settings.GetLanguage());
         
         return settings;
     }

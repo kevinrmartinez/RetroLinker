@@ -56,7 +56,7 @@ namespace RetroLinker.Views
             if (FirstTimeLoad) FillComboLocale();
             // Settings
             ApplySettingsToControls();
-            //System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", "[Debg]");
+            System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", App.DebgTrace);
         }
 
         void ApplySettingsToControls()
@@ -64,8 +64,7 @@ namespace RetroLinker.Views
             chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
             chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
             LoadTheme(ParentWindow.settings.PreferedTheme);
-            var selectedLocale = LanguageManager.LanguageList.Find(l => l.Name == ParentWindow.settings.Language);
-            comboLocale.SelectedIndex = (int)selectedLocale.ItemIndex;
+            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
         }
 
         void FillComboLocale()
@@ -78,7 +77,6 @@ namespace RetroLinker.Views
                 comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
                 index++;
             }
-
             FirstTimeLoad = false;
         }
         #endregion
@@ -134,7 +132,7 @@ namespace RetroLinker.Views
         
         private void BtnLocale_OnClick(object? sender, RoutedEventArgs e)
         {
-            var locale = LanguageManager.LanguageList.Find(l => l.ItemIndex == comboLocale.SelectedIndex);
+            var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
             try
             { ParentWindow.settings.SetLanguage(locale); }
             catch
