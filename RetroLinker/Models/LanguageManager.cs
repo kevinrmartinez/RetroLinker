@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -17,22 +18,24 @@ public static class LanguageManager
         EN0, ES0
     }
 
-    public static LanguageItem EnglishItem = new LanguageItem
-    (
-        "English",
-        new Uri(ENIcon)
-    )
+    public static List<LanguageItem> LanguageList = new()
     {
-        DefaultLocale = true
+        new LanguageItem
+        (
+            "English",
+            ENLocale,
+            new Uri(ENIcon)
+        )
+        { DefaultLocale = true },
+        new LanguageItem
+        (
+            "Español",
+            ESLocale,
+            new Uri(ESIcon)
+        )
     };
 
-    public static LanguageItem SpanishItem = new LanguageItem
-    (
-        "Español",
-        new Uri(ESIcon)
-    );
-
-    public static void ChangeRuntimeLocale(AvailableLocale locale)
+    public static void SetLocale(AvailableLocale locale)
     {
         CultureInfo selLocale = locale switch
         {
@@ -40,28 +43,42 @@ public static class LanguageManager
             AvailableLocale.ES0 => ESLocale,
             _ => ENLocale
         };
-        Translations.resAvaloniaOps.Culture = selLocale;
-        Translations.resMainView.Culture = selLocale;
-        Translations.resSettingsWindow.Culture = selLocale;
+        ChangeRuntimeLocale(selLocale);
+    }
+
+    public static bool ChangeRuntimeLocale(object cultureInfo)
+    {
+        var locale = cultureInfo as CultureInfo;
+        var sameLocale = (Translations.resAvaloniaOps.Culture == locale);
+        if (!sameLocale)
+        {
+            Translations.resAvaloniaOps.Culture = locale;
+            Translations.resMainView.Culture = locale;
+            Translations.resSettingsWindow.Culture = locale;
+        }
+        return sameLocale;
     }
 }
 
 public class LanguageItem
 {
     public string Name { get; set; }
+    public CultureInfo Culture { get; set; }
     public Uri LangIconPath { get; set; }
     public int? ItemIndex { get; set; }
     public bool DefaultLocale { get; set; } = false;
 
-    public LanguageItem(string name, Uri langIconPath)
+    public LanguageItem(string name, CultureInfo culture, Uri langIconPath)
     {
         Name = name;
+        Culture = culture;
         LangIconPath = langIconPath;
     }
 
-    public LanguageItem(string name, Uri langIconPath, int itemIndex)
+    public LanguageItem(string name, CultureInfo culture, Uri langIconPath, int itemIndex)
     {
         Name = name;
+        Culture = culture;
         LangIconPath = langIconPath;
         ItemIndex = itemIndex;
     }

@@ -17,7 +17,6 @@
 */
 
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml.MarkupExtensions;
 using RetroLinker.Models;
 
 namespace RetroLinker.Views;
@@ -47,9 +46,9 @@ public partial class MainWindow : Window
         
     }
 
-    public void LocaleReload(LanguageManager.AvailableLocale locale)
+    public void LocaleReload(object locale)
     {
-        LanguageManager.ChangeRuntimeLocale(locale);
+        if (LanguageManager.ChangeRuntimeLocale(locale)) return;
         MainCC1.Content = null;
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;

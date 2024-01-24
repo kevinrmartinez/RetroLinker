@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using SharpConfig;
 
 namespace RetroLinker.Models
@@ -173,13 +174,21 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public byte PreferedTheme { get; set; } = 0;
-        public string Language { get; set; } = LanguageManager.EnglishItem.Name;
+        public string Language { get; private set; } = DEFLanguage;
         public bool LinDesktopPopUp { get; set; } = true;
 
+
+        private const string DEFLanguage = "English";
         public Settings()
         {
             IcoSavPath = UserAssetsPath;
         }
+
+        public void SetLanguage(LanguageItem languageItem)
+        { Language = languageItem.Name; }
+
+        public void SetDefaultLaunguage()
+        { Language = DEFLanguage; }
         
         //public void Dispose() => this.Dispose();
         

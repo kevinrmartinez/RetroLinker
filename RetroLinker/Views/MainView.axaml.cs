@@ -39,15 +39,21 @@ public partial class MainView : UserControl
     System.TimeSpan timeSpan;
     public MainView()
     { 
+        settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
-        timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
+        MainViewPostConstruct();
     }
     
     public MainView(MainWindow mainWindow)
     { 
+        settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
+        MainViewPostConstruct();
+    }
+
+    void MainViewPostConstruct()
+    {
         timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
     }
@@ -76,7 +82,7 @@ public partial class MainView : UserControl
     {
         if (FormFirstLoad)
         {
-            settings = AvaloniaOps.MainViewLoad(DesktopOS);
+            AvaloniaOps.MainViewLoad(DesktopOS);
             
             // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -146,6 +152,7 @@ public partial class MainView : UserControl
     {
         settings = FileOps.LoadCachedSettingsFO();
         ApplySettingsToControls();
+        LoadLocalization();
     }
     
     ThemeVariant LoadThemeVariant()
@@ -175,6 +182,13 @@ public partial class MainView : UserControl
         txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
         if (settings.AllwaysAskOutput) { LinkCustomPathSetting(); }
         else { LinkLoadedPathSetting(); }
+    }
+
+    void LoadLocalization()
+    {
+        if (FormFirstLoad) return;
+        var locale = LanguageManager.LanguageList.Find(l => l.Name == settings.Language).Culture;
+        ParentWindow.LocaleReload(locale);
     }
 
     void WinFuncImport()

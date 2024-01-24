@@ -24,7 +24,6 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
-using RetroLinker.Views;
 
 namespace RetroLinker.Models;
 
@@ -45,7 +44,7 @@ public static class AvaloniaOps
 
     
     #region FUNCTIONS
-    public static Settings MainViewLoad(bool DesktopOS)
+    public static Settings MainViewPreConstruct()
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
         System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
@@ -54,12 +53,19 @@ public static class AvaloniaOps
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
         
+        var locale = LanguageManager.LanguageList.Find(l => l.Name == settings.Language).Culture;
+        LanguageManager.ChangeRuntimeLocale(locale);
+        
+        return settings;
+    }
+
+    public static void MainViewLoad(bool DesktopOS)
+    {
         DefLinRAIcon = FileOps.GetRAIcons();
         coresTask = FileOps.LoadCores();
         iconTask = FileOps.LoadIcons(DesktopOS);
 
         FirstLoad = false;
-        return settings;
     }
 
     public static async Task<string[]> GetCoresArray()

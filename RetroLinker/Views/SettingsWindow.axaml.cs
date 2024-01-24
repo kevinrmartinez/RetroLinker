@@ -88,7 +88,7 @@ namespace RetroLinker.Views
 
             };
             var msbox = MessageBoxManager.GetMessageBoxStandard(msparams);
-            var result = await msbox.ShowWindowDialogAsync(ParentWindow);
+            var result = await msbox.ShowWindowDialogAsync(this);
             if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
             {
                 SettingsOps.PrevConfigs = new List<string>();

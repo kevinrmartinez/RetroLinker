@@ -53,9 +53,9 @@ namespace RetroLinker.Views
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         { 
+            if (FirstTimeLoad) FillComboLocale();
             // Settings
             ApplySettingsToControls();
-            FillComboLocale();
             //System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", "[Debg]");
         }
 
@@ -64,20 +64,22 @@ namespace RetroLinker.Views
             chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
             chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
             LoadTheme(ParentWindow.settings.PreferedTheme);
+            var selectedLocale = LanguageManager.LanguageList.Find(l => l.Name == ParentWindow.settings.Language);
+            comboLocale.SelectedIndex = (int)selectedLocale.ItemIndex;
         }
 
         void FillComboLocale()
         {
-            int index = comboLocale.SelectedIndex;
+            int index = (comboLocale.SelectedIndex >= 0) ? comboLocale.SelectedIndex : 0;
             // LanguageManager.EnglishItem.ItemIndex = 0;
-            LanguageManager.EnglishItem.ItemIndex = index;
-            var item = LocaleComboItem.GetLocaleComboItem(LanguageManager.EnglishItem);
-            comboLocale.Items.Add(item);
-            index++;
-            
-            LanguageManager.SpanishItem.ItemIndex = index;
-            item = LocaleComboItem.GetLocaleComboItem(LanguageManager.SpanishItem);
-            comboLocale.Items.Add(item);
+            foreach (var languageItem in LanguageManager.LanguageList)
+            {
+                languageItem.ItemIndex = index;
+                comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
+                index++;
+            }
+
+            FirstTimeLoad = false;
         }
         #endregion
 
@@ -132,7 +134,11 @@ namespace RetroLinker.Views
         
         private void BtnLocale_OnClick(object? sender, RoutedEventArgs e)
         {
-            
+            var locale = LanguageManager.LanguageList.Find(l => l.ItemIndex == comboLocale.SelectedIndex);
+            try
+            { ParentWindow.settings.SetLanguage(locale); }
+            catch
+            { ParentWindow.settings.SetDefaultLaunguage(); }
         }
 
         // OTHER PREFERENCES
