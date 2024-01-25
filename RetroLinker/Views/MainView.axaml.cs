@@ -103,7 +103,7 @@ public partial class MainView : UserControl
             ApplySettingsToControls();
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
-            comboICONDir_Loaded(AvaloniaOps.GetIconList(DesktopOS));
+            comboICONDir_Loaded(AvaloniaOps.GetIconList());
             // TODO: Evento de tutorial para nuevos usuarios
             
             System.DateTime now = System.DateTime.Now;
@@ -192,7 +192,11 @@ public partial class MainView : UserControl
 
     void WinFuncImport()
     {
-        try { FuncLoader.ImportWinFunc(); IconProc.StartImport(); }
+        try
+        {
+            FuncLoader.ImportWinFunc(); 
+            IconProc.StartImport();
+        }
         catch (System.Exception eMain)
         {
             System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", App.ErroTrace);

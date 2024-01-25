@@ -7,8 +7,8 @@ namespace RetroLinker.Models;
 
 public static class LanguageManager
 {
-    private static readonly CultureInfo ENLocale = new CultureInfo("en_US");
-    private static readonly CultureInfo ESLocale = new CultureInfo("es_ES");
+    public static readonly CultureInfo ENLocale = new CultureInfo("en_US");
+    public static readonly CultureInfo ESLocale = new CultureInfo("es_ES");
     
     private const string ENIcon = "avares://RetroLinkerLib/Assets/Icons/EN.png";
     private const string ESIcon = "avares://RetroLinkerLib/Assets/Icons/ES.png";
@@ -52,7 +52,7 @@ public static class LanguageManager
         int i;
         for (i = 0; i < LanguageList.Count; i++)
         {
-            if (LanguageList[i].Culture.Name == cultureInfo.Name) break;
+            if (LanguageList[i].Culture.Equals(cultureInfo)) break;
         }
 
         return LanguageList[i];
@@ -60,17 +60,17 @@ public static class LanguageManager
     
     public static int GetLocaleIndex(Settings settings)
     {
-        var item = ResolveLocale(new CultureInfo(settings.LanguageCulture));
+        var item = ResolveLocale(settings.LanguageCulture);
         return (int)item.ItemIndex;
     }
     
     public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
 
-    public static bool SetLocale(Settings settings) => ChangeRuntimeLocale(new CultureInfo(settings.LanguageCulture));
+    public static bool SetLocale(Settings settings) => ChangeRuntimeLocale(settings.LanguageCulture);
 
     private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
     {
-        var sameLocale = (Translations.resMainView.Culture.Name == cultureInfo.Name);
+        var sameLocale = (Translations.resMainView.Culture.Equals(cultureInfo));
         if (!sameLocale)
         {
             Translations.resAvaloniaOps.Culture = cultureInfo;

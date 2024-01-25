@@ -175,21 +175,19 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public byte PreferedTheme { get; set; } = 0;
-        public string LanguageCulture { get; private set; } = DEFLanguage;
+        public CultureInfo LanguageCulture { get; private set; } = DEFLanguage;
         public bool LinDesktopPopUp { get; set; } = true;
 
 
-        private static readonly string DEFLanguage = "en_US";
+        private static readonly CultureInfo DEFLanguage = LanguageManager.ENLocale;
         public Settings()
         { IcoSavPath = UserAssetsPath; }
-
-        public CultureInfo GetLanguage() => new CultureInfo(LanguageCulture);
         
         public void SetLanguage(CultureInfo availableLocale)
-        { LanguageCulture = availableLocale.ToString(); }
+        { LanguageCulture = availableLocale; }
         
         public void SetLanguage(LanguageItem languageItem)
-        { LanguageCulture = LanguageManager.ResolveLocale(languageItem).ToString(); }
+        { LanguageCulture = LanguageManager.ResolveLocale(languageItem); }
 
         public void SetDefaultLaunguage()
         { LanguageCulture = DEFLanguage; }

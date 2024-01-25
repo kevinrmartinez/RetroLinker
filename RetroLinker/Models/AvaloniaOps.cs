@@ -53,7 +53,7 @@ public static class AvaloniaOps
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
         
-        LanguageManager.SetLocale(settings.GetLanguage());
+        LanguageManager.SetLocale(settings.LanguageCulture);
         
         return settings;
     }
@@ -74,7 +74,7 @@ public static class AvaloniaOps
         return cores;
     }
     
-    public static async Task<List<string>> GetIconList(bool OS)
+    public static async Task<List<string>> GetIconList()
     {
         if (iconList.Count != 0) return iconList;
         iconList = await iconTask;
