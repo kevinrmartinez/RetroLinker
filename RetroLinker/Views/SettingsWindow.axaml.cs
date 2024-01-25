@@ -79,8 +79,8 @@ namespace RetroLinker.Views
         {
             MessageBoxStandardParams msparams = new()
             {
-                ContentTitle = RetroLinker.Translations.resSettingsWindow.popDefaults_Title,
-                ContentMessage = RetroLinker.Translations.resSettingsWindow.popDefaults_Mess,
+                ContentTitle = Translations.resSettingsWindow.popDefaults_Title,
+                ContentMessage = Translations.resSettingsWindow.popDefaults_Mess,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
                 EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,
@@ -101,9 +101,9 @@ namespace RetroLinker.Views
 
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
-            if (SetLinkCopyPaths.Count == 0) settings.MakeLinkCopy = false;
-            SettingsOps.WriteSettings(settings);
+            if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
+            SettingsOps.WriteSettings(settings);
             CloseView();
         }
 

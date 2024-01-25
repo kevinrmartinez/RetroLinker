@@ -132,4 +132,13 @@
     <data name="lblLocale" xml:space="preserve">
         <value>Language</value>
     </data>
+    <data name="btnDefault" xml:space="preserve">
+        <value>Default</value>
+    </data>
+    <data name="btnConfirm" xml:space="preserve">
+        <value>Confirmar</value>
+    </data>
+    <data name="btnDiscard" xml:space="preserve">
+        <value>Discard</value>
+    </data>
 </root>

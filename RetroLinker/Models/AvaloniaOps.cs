@@ -48,7 +48,6 @@ public static class AvaloniaOps
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
         System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
-        SettingsOps.BuildConfFile();
         var settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);

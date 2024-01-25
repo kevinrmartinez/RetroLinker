@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 namespace RetroLinker.Models;
 
@@ -29,6 +28,15 @@ public static class LanguageManager
             new Uri(ESIcon)
         )
     };
+
+    public static CultureInfo ResolveLocale(string cultureName)
+    {
+        foreach (var item in LanguageList)
+        {
+            if (item.Culture.Name == cultureName) return item.Culture;
+        }
+        return ENLocale;
+    }
     
     public static CultureInfo ResolveLocale(LanguageItem languageItem) => languageItem.Culture;
 

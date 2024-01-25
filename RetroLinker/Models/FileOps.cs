@@ -76,6 +76,8 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
+        public static string[] ReadSettingsFile() => File.ReadAllLines(SettingFileBin);
+        
         public static async void WriteSettingsFile(string settingString)
         {
             try

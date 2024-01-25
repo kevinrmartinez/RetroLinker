@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -29,6 +30,7 @@ namespace RetroLinker.Models
         private const string GeneralHeader = "[GENERAL]";
         private const string PrevConfigsHeader = "[PrevConfigs]";
         private const string LinkCopyPathsHeader = "[LinkCopyPaths]";
+        private const string InvalidDataMessage = "Invalid settings file!";
         private static Settings CachedSettings = new();
         
         public static List<string> PrevConfigs { get; set; } = new();
@@ -53,18 +55,125 @@ namespace RetroLinker.Models
         public const string IcoSavROM = "_ROM";
         public const string IcoSavRA = "_RA";
         
-
-        public static void BuildConfFile()
+        private static bool GeneralInPlace(string[] settingFile, int headerIndex, int generalCount)
         {
-            // TODO: Replace SharpConfig as it is umpredictible at the moment
-            WriteSettings(new Settings());
+            bool startCorrect = (settingFile[headerIndex + 1] == StartMark);
+            bool endCorrect = (settingFile[headerIndex + generalCount + 2] == EndMark);
+            
+            return startCorrect && endCorrect;
+        }
+
+        private static string[] GetSubSectionsValues(string[] settingFile, int sectIndex)
+        {
+            var valueList = new List<string>();
+            int valueCount = SubSectionCount(settingFile, sectIndex);
+            if (valueCount > 0)
+            {
+                for (int i = 0; i < valueCount; i++)
+                {
+                    int offset = sectIndex + 2 + i;
+                    valueList.Add(settingFile[offset]);
+                }
+            }
+            
+            return valueList.ToArray();
+        }
+
+        private static int SubSectionCount(string[] settingFile, int sectIndex)
+        {
+            int configsCount = 0;
+            bool validSection = false;
+            for (int i = sectIndex + 2; i < settingFile.Length; i++)
+            {
+                configsCount++;
+                if (settingFile[i] != EndMark) continue;
+                validSection = true;
+                break;
+            }
+            configsCount -= 1;
+            
+            if ((settingFile[sectIndex + 1] != StartMark) || !validSection) throw new System.IO.InvalidDataException(InvalidDataMessage);
+            return configsCount;
+        }
+
+        private static bool ResolveBool(string value)
+        {
+            int.TryParse(value, out var valueInt);
+            switch (valueInt)
+            {
+                case 0:
+                    return false;
+                case 1:
+                    return true;
+                default:
+                    throw new System.IO.InvalidDataException(InvalidDataMessage);
+            }
+        }
+
+        private static int ResolveNumber(string value)
+        {
+            bool parsed = int.TryParse(value, out var valueInt);
+            if (!parsed) throw new System.IO.InvalidDataException(InvalidDataMessage);
+            return valueInt;
         }
 
         public static Settings LoadSettings()
         {
             Settings settings = new();
             int generalCount = Utils.ExtractClassProperties(typeof(Settings)).Count;
-            
+
+            if (FileOps.ExistSettingsBinFile())
+            {
+                try
+                {
+                    var settingFile = FileOps.ReadSettingsFile();
+                    int headerIndex;
+                    for (headerIndex = 0; headerIndex < settingFile.Length; headerIndex++)
+                    { if (settingFile[headerIndex] == GeneralHeader) break; }
+                    if (GeneralInPlace(settingFile, headerIndex, generalCount))
+                    {
+                        int i = headerIndex + 1;
+                        settings.UserAssetsPath = settingFile[++i];
+                        settings.DEFRADir = settingFile[++i];
+                        settings.DEFROMPath = settingFile[++i];
+                        settings.PrevConfig = ResolveBool(settingFile[++i]);
+                        settings.AllwaysAskOutput = ResolveBool(settingFile[++i]);
+                        settings.DEFLinkOutput = settingFile[++i];
+                        settings.MakeLinkCopy = ResolveBool(settingFile[++i]);
+                        settings.CpyUserIcon = ResolveBool(settingFile[++i]);
+                        settings.IcoSavPath = settingFile[++i];
+                        settings.ExtractIco = ResolveBool(settingFile[++i]);
+                        settings.IcoLinkName = ResolveBool(settingFile[++i]);
+                        settings.PreferedTheme = (byte)ResolveNumber(settingFile[++i]);
+                        settings.SetLanguage(LanguageManager.ResolveLocale(settingFile[++i]));
+                        settings.LinDesktopPopUp = ResolveBool(settingFile[++i]);
+                    }
+                    else
+                    { throw new System.IO.InvalidDataException(InvalidDataMessage); }
+                    CachedSettings = settings;
+                    
+                    int prevIndex;
+                    for (prevIndex = headerIndex + generalCount; prevIndex < settingFile.Length; prevIndex++)
+                    { if (settingFile[prevIndex] == PrevConfigsHeader) break; }
+                    PrevConfigs.AddRange(GetSubSectionsValues(settingFile, prevIndex));
+
+                    int linkCopyIndex;
+                    for (linkCopyIndex = prevIndex + PrevConfigs.Count; linkCopyIndex < settingFile.Length; linkCopyIndex++)
+                    { if (settingFile[linkCopyIndex] == LinkCopyPathsHeader) break; }
+                    LinkCopyPaths.AddRange(GetSubSectionsValues(settingFile, linkCopyIndex));
+                    
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Trace.WriteLine($"There was a error while loading {FileOps.SettingFileBin}", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
+                    settings = new();
+                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting {FileOps.SettingFileBin}...", App.InfoTrace);
+                    WriteSettings(settings);
+                }  
+            }
+            else
+            { WriteSettings(settings); }
             return settings;
         }
 
@@ -79,14 +188,17 @@ namespace RetroLinker.Models
 
             fileString += "\n" + PrevConfigsHeader + "\n";
             fileString += StartMark + "\n";
-            fileString += Utils.GetStringFromList(PrevConfigs) + "\n";
+            if (!savingSettings.PrevConfig) PrevConfigs = new List<string>();
+            fileString += Utils.GetStringFromList(PrevConfigs);
             fileString += EndMark + "\n";
             
             fileString += "\n" + LinkCopyPathsHeader + "\n";
             fileString += StartMark + "\n";
-            fileString += Utils.GetStringFromList(LinkCopyPaths) + "\n";
+            if (!savingSettings.MakeLinkCopy) LinkCopyPaths = new List<string>();
+            fileString += Utils.GetStringFromList(LinkCopyPaths);
             fileString += EndMark + "\n";
-            
+
+            CachedSettings = savingSettings;
             FileOps.WriteSettingsFile(fileString);
         }
         
@@ -147,12 +259,13 @@ namespace RetroLinker.Models
                 $"{DEFROMPath}\n";
             objectString += (PrevConfig)       ? "1\n" : "0\n";
             objectString += (AllwaysAskOutput) ? "1\n" : "0\n";
+            objectString += $"{DEFLinkOutput}\n";
             objectString += (MakeLinkCopy)     ? "1\n" : "0\n"; 
             objectString += (CpyUserIcon)      ? "1\n" : "0\n";
             objectString += $"{IcoSavPath}\n";
             objectString += (ExtractIco)       ? "1\n" : "0\n";
             objectString += (IcoLinkName)      ? "1\n" : "0\n";
-            objectString += PreferedTheme.ToString();
+            objectString += $"{PreferedTheme.ToString()}\n";
             objectString += $"{LanguageCulture.Name}\n";
             objectString += (LinDesktopPopUp)  ? "1\n" : "0\n";
             return objectString;
