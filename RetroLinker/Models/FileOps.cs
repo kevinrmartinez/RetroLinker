@@ -76,6 +76,20 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
+        public static async void WriteSettingsFile(string settingString)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(SettingFileBin, settingString);
+                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} written successfully", App.InfoTrace);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine(e);
+            }
+        }
+
         public static void BuildConfigDir()
         {
             const string NormalRAconfig = "Default";

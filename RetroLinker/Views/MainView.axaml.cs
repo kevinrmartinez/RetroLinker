@@ -696,7 +696,7 @@ public partial class MainView : UserControl
         var cachedSettings = SettingsOps.GetCachedSettings();
         bool settingsChanged = !settings.Equals(cachedSettings);
         if ( ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) || settingsChanged) 
-        { SettingsOps.WriteSettingsFile(settings); }  
+        { SettingsOps.WriteSettings(settings); }  
     }
 
 #if DEBUG

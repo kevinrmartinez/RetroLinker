@@ -22,7 +22,7 @@ using System.Linq;
 
 namespace RetroLinker.Models
 {
-    public class Utils
+    public static class Utils
     {
         const string comilla = "\"";
         public static string FixUnusualDirectories(string dir)
@@ -42,7 +42,7 @@ namespace RetroLinker.Models
         {
             //var _type = _class.GetType();
             var _props = _type.GetProperties();
-            List<string> members = new List<string>();
+            var members = new List<string>();
 
             foreach (var member in _props)
             {
@@ -50,6 +50,16 @@ namespace RetroLinker.Models
             }
             
             return members;
+        }
+
+        public static string GetStringFromList(List<string> list)
+        {
+            string result = "";
+            foreach (var item in list)
+            {
+                result += $"{item}\n";
+            }
+            return result;
         }
     }
 }

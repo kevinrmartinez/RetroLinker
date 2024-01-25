@@ -18,20 +18,21 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using SharpConfig;
+using System.Text;
 
 namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
-        private static Configuration settings_file = new();
-        private static Section GeneralSettings = new("GeneralSettings");
-        private static Section StoredConfigs = new("StoredConfigs");
-        private static Section StoredLinkPaths = new("StoredLinkPaths");
+        private const string StartMark = "[START]";
+        private const string EndMark = "[END]";
+        private const string GeneralHeader = "[GENERAL]";
+        private const string PrevConfigsHeader = "[PrevConfigs]";
+        private const string LinkCopyPathsHeader = "[LinkCopyPaths]";
         private static Settings CachedSettings = new();
-
-        public static List<string>? PrevConfigs { get; set; } = new();
-        public static List<string>? LinkCopyPaths { get; set; } = new();
+        
+        public static List<string> PrevConfigs { get; set; } = new();
+        public static List<string> LinkCopyPaths { get; set; } = new();
 
         public static string[] WINLinkPathCandidates { get; } = new[]
         {
@@ -51,108 +52,42 @@ namespace RetroLinker.Models
 
         public const string IcoSavROM = "_ROM";
         public const string IcoSavRA = "_RA";
+        
 
         public static void BuildConfFile()
         {
             // TODO: Replace SharpConfig as it is umpredictible at the moment
-            var settingsProps = Utils.ExtractClassProperties(typeof(Settings));
-            foreach (string setting in settingsProps)
-            {
-                GeneralSettings.Add(setting);
-            }
-            settings_file.Add(GeneralSettings);
-            System.Diagnostics.Debug.WriteLine($"el campo GeneralSettings para setting_file creado con {GeneralSettings.SettingCount} subcampos.", "[Debg]");
-            settings_file.Add(StoredConfigs);
-            settings_file.Add(StoredLinkPaths);
+            WriteSettings(new Settings());
         }
-
-        private static Configuration LoadConfiguration(string configDIR) => Configuration.LoadFromBinaryFile(configDIR);
-        private static Configuration LoadConfiguration(System.IO.Stream configSTREAM) => Configuration.LoadFromBinaryStream(configSTREAM);
 
         public static Settings LoadSettings()
         {
             Settings settings = new();
-            if (FileOps.ExistSettingsBinFile())
-            {
-                System.Diagnostics.Trace.WriteLine($"Comenzando la carga de {FileOps.SettingFileBin}.", "[Info]");
-                try
-                {
-                    Configuration settingsLoad_file = LoadConfiguration(FileOps.SettingFileBin);
-                    // Manejo de los settings generales, presentes en la clase Settings
-                    GeneralSettings = settingsLoad_file["GeneralSettings"];
-                    GeneralSettings.SetValuesTo(settings);
-                    // Manejo de error: en caso de que el archivo se lea incorrectamente, los campos not-null apareceran null
-                    if (string.IsNullOrEmpty(settings.UserAssetsPath))
-                    { throw new System.IO.InvalidDataException($"El archivo {FileOps.SettingFileBin} no es valido."); }
-                    GeneralSettings.SetValuesTo(CachedSettings);
-
-                    PrevConfigs = new List<string>();
-                    StoredConfigs = settingsLoad_file["StoredConfigs"];
-                    int dir_count = StoredConfigs.SettingCount;
-                    if (dir_count > 0)
-                    {
-                        for (int i = 0; i < dir_count; i++)
-                        { PrevConfigs.Add(StoredConfigs[i].StringValue); }
-                    }
-
-                    LinkCopyPaths = new List<string>();
-                    StoredLinkPaths = settingsLoad_file["StoredLinkPaths"];
-                    int path_count = StoredLinkPaths.SettingCount;
-                    if (path_count > 0)
-                    {
-                        for (int i = 0; i < path_count; i++)
-                        { LinkCopyPaths.Add(StoredLinkPaths[i].StringValue); }
-                    }
-                    System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} cargado exitosamente.", "[Info]");
-                }
-                catch (System.Exception e)
-                {
-                    System.Diagnostics.Trace.WriteLine($"El archivo {FileOps.SettingFileBin} no se puedo cargar correctamente, sobreescribiendo...", "[Erro]");
-                    System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
-                    settings = new(); 
-                    WriteSettingsFile(settings);
-                }
-            }
-            else
-            { WriteSettingsFile(settings); }
+            int generalCount = Utils.ExtractClassProperties(typeof(Settings)).Count;
+            
             return settings;
         }
 
         public static Settings GetCachedSettings() => CachedSettings;
 
-        public static void WriteSettingsFile(Settings savingSettings)
+        public static void WriteSettings(Settings savingSettings)
         {
-            GeneralSettings = new Section("GeneralSettings");
-            GeneralSettings.GetValuesFrom(savingSettings);
-            if (PrevConfigs.Count > 0)
-            {
-                int dirCount = PrevConfigs.Count;
-                for (int i = 0; i < dirCount; i++)
-                {
-                    string key = $"dir{i}"; StoredConfigs[key].StringValue = PrevConfigs[i];
-                }
-            }
-            if (LinkCopyPaths.Count > 0)
-            {
-                int pathCount = LinkCopyPaths.Count;
-                for (int i = 0; i < pathCount; i++)
-                {
-                    string key = $"path{i}"; StoredLinkPaths[key].StringValue = LinkCopyPaths[i];
-                }
-            }
-                
-            CachedSettings = savingSettings;
-            try 
-            {
-                settings_file.SaveToBinaryFile(FileOps.SettingFileBin);
-                settings_file.SaveToFile(FileOps.SettingFile);
-                System.Diagnostics.Trace.WriteLine($"Archivo {FileOps.SettingFileBin} creado exitosamente.", "[Info]");
-            }
-            catch (System.Exception e)
-            { 
-                System.Diagnostics.Trace.WriteLine($"Incapaz de escribir el archivo {FileOps.SettingFileBin}!", "[Erro]");
-                System.Diagnostics.Debug.WriteLine($"En SettingsOps, el elemento {e.Source} a retornado el error {e.Message}", "[Erro]");
-            }
+            string fileString = GeneralHeader + "\n";
+            fileString += StartMark + "\n";
+            fileString += savingSettings.GetSavingString();
+            fileString += EndMark + "\n";
+
+            fileString += "\n" + PrevConfigsHeader + "\n";
+            fileString += StartMark + "\n";
+            fileString += Utils.GetStringFromList(PrevConfigs) + "\n";
+            fileString += EndMark + "\n";
+            
+            fileString += "\n" + LinkCopyPathsHeader + "\n";
+            fileString += StartMark + "\n";
+            fileString += Utils.GetStringFromList(LinkCopyPaths) + "\n";
+            fileString += EndMark + "\n";
+            
+            FileOps.WriteSettingsFile(fileString);
         }
         
 #if DEBUG
@@ -194,36 +129,38 @@ namespace RetroLinker.Models
         
         //public void Dispose() => this.Dispose();
         
-        private string GetString()
-        {
-            string objectstring = UserAssetsPath + "\n" 
-                                                 + DEFRADir + "\n" 
-                                                 + DEFROMPath + "\n" 
-                                                 + DEFLinkOutput + "\n" 
-                                                 + IcoSavPath + "\n"
-                                                 + LanguageCulture;
-            objectstring += PreferedTheme.ToString();
-            objectstring += (PrevConfig)       ? "1" : "0";
-            objectstring += (AllwaysAskOutput) ? "1" : "0";
-            objectstring += (MakeLinkCopy)     ? "1" : "0"; 
-            objectstring += (CpyUserIcon)      ? "1" : "0";
-            objectstring += (ExtractIco)       ? "1" : "0";
-            objectstring += (IcoLinkName)      ? "1" : "0";
-            objectstring += (LinDesktopPopUp)  ? "1" : "0";
-            return objectstring;
-        }
-        
         public string GetBase64()
         {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
             var objectString = GetString();
-            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectString);
-            var object64 = System.Convert.ToBase64String(objectBytes);
+            var object64 = GenerateBase64(objectString);
             return object64;
         }
+
+        public string GetSavingString() => GetString();
         
-        public string GetBase64(string objectString)
+        private string GetString()
+        {
+            // It may not be smart, but if it works...
+            string objectString = 
+                $"{UserAssetsPath}\n" +
+                $"{DEFRADir}\n" +
+                $"{DEFROMPath}\n";
+            objectString += (PrevConfig)       ? "1\n" : "0\n";
+            objectString += (AllwaysAskOutput) ? "1\n" : "0\n";
+            objectString += (MakeLinkCopy)     ? "1\n" : "0\n"; 
+            objectString += (CpyUserIcon)      ? "1\n" : "0\n";
+            objectString += $"{IcoSavPath}\n";
+            objectString += (ExtractIco)       ? "1\n" : "0\n";
+            objectString += (IcoLinkName)      ? "1\n" : "0\n";
+            objectString += PreferedTheme.ToString();
+            objectString += $"{LanguageCulture.Name}\n";
+            objectString += (LinDesktopPopUp)  ? "1\n" : "0\n";
+            return objectString;
+        }
+        
+        private string GenerateBase64(string objectString)
         {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
-            var objectBytes = System.Text.Encoding.UTF8.GetBytes(objectString);
+            var objectBytes = Encoding.UTF8.GetBytes(objectString);
             var object64 = System.Convert.ToBase64String(objectBytes);
             return object64;
         }

@@ -93,7 +93,7 @@ namespace RetroLinker.Views
             {
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
-                SettingsOps.WriteSettingsFile(DEFsettings);
+                SettingsOps.WriteSettings(DEFsettings);
                 CloseView();
             }
                 
@@ -102,7 +102,7 @@ namespace RetroLinker.Views
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
             if (SetLinkCopyPaths.Count == 0) settings.MakeLinkCopy = false;
-            SettingsOps.WriteSettingsFile(settings);
+            SettingsOps.WriteSettings(settings);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             CloseView();
         }
