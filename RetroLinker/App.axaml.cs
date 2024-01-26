@@ -31,6 +31,7 @@ public partial class App : Application
     public const string TimeTrace = "[Time]";
     public const string DebgTrace = "[Debg]";
     public const string InfoTrace = "[Info]";
+    public const string WarnTrace = "[Warn]";
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static System.DateTime LaunchTime = System.DateTime.Now;

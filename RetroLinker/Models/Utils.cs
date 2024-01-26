@@ -38,13 +38,13 @@ namespace RetroLinker.Models
             return newdir;
         }
 
-        public static List<string> ExtractClassProperties(Type _type)
+        public static List<string> ExtractClassProperties(Type type)
         {
             //var _type = _class.GetType();
-            var _props = _type.GetProperties();
+            var props = type.GetProperties();
             var members = new List<string>();
 
-            foreach (var member in _props)
+            foreach (var member in props)
             {
                 members.Add(member.Name);
             }

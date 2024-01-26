@@ -32,9 +32,9 @@
 						<StackPanel Grid.Column="2">
 							<Label Margin="3,0,0,0" Content="{x:Static locale:resSettingsWindow.lblLocale}"/>
 							<Grid ColumnDefinitions="*, Auto">
-								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0, 0, 0" 
+								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0,0,0" 
 								          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
-								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Classes="SettingCatg" Click="BtnLocale_OnClick">
+								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Margin="3" Click="BtnLocale_OnClick">
 									<i:Icon Value="fa-check" FontSize="18" Foreground="Green"/>
 								</Button>
 							</Grid>

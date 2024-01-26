@@ -64,7 +64,7 @@ namespace RetroLinker.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
-            System.Diagnostics.Debug.WriteLine("Settings cargadas para FileOps.", "[Debg]");
+            System.Diagnostics.Debug.WriteLine("Settings cargadas para FileOps.", App.DebgTrace);
             BuildConfigDir();
             return LoadedSettings;
         }
@@ -106,17 +106,18 @@ namespace RetroLinker.Models
 
         public static async Task<string[]> LoadCores()
         {
+            // TODO: Create a back up cores.txt that compiles with the app
             string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
             if (File.Exists(file))
             {
-                System.Diagnostics.Trace.WriteLine($"Empezando la lectura de {file}.", "[Info]");
+                System.Diagnostics.Trace.WriteLine($"Empezando la lectura de {file}.", App.InfoTrace);
                 var cores = await File.ReadAllLinesAsync(file);
-                System.Diagnostics.Trace.WriteLine($"Completada la lectura de {file}.", "[Info]");
+                System.Diagnostics.Trace.WriteLine($"Completada la lectura de {file}.", App.InfoTrace);
                 return cores;
             }
             else
             {
-                System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!", "[Info]");
+                System.Diagnostics.Trace.WriteLine($"El archivo {file} no fue encontrado!", App.InfoTrace);
                 return Array.Empty<string>();
             }
         }
@@ -129,7 +130,7 @@ namespace RetroLinker.Models
             {
                 List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
                 System.Diagnostics.Trace.WriteLine(
-                    $"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.", "[Info]");
+                    $"Comenzando la lectura de iconos en {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
                 for (int i = 0; i < files.Count; i++)
                 {
                     string ext = Path.GetExtension(files[i]);
@@ -158,14 +159,11 @@ namespace RetroLinker.Models
                 if (files.Count == 0)
                 {
                     System.Diagnostics.Trace.WriteLine(
-                        $"No se encontraron archivos en {LoadedSettings.UserAssetsPath}.", "[Info]");
+                        $"No se encontraron archivos en {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
                     return new List<string>();
                 }
                 else
-                {
-                    System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.",
-                        "[Info]");
-                }
+                { System.Diagnostics.Trace.WriteLine($"Se encontraron {IconProc.IconItemsList.Count} iconos.", App.InfoTrace); }
 
                 files.Clear();
                 int newindex = 1;
@@ -182,14 +180,14 @@ namespace RetroLinker.Models
             catch (DirectoryNotFoundException)
             {
                 System.Diagnostics.Trace.WriteLine(
-                    $"No se encontro el directorio '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}'.", "[Warn]");
+                    $"No se encontro el directorio '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}'.", App.WarnTrace);
                 return new List<string>();
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"Ha ocurrido un error en la carga de iconos.", "[Erro]");
+                System.Diagnostics.Trace.WriteLine($"Ha ocurrido un error en la carga de iconos.", App.ErroTrace);
                 System.Diagnostics.Debug.WriteLine(
-                    $"En FileOps, el elemento {e.Source} a retornado el error '{e.Message}'", "[Erro]");
+                    $"En FileOps, el elemento {e.Source} a retornado el error '{e.Message}'", App.ErroTrace);
                 return new List<string>();
             }
         }

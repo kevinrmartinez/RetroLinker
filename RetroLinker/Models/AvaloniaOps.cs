@@ -47,7 +47,7 @@ public static class AvaloniaOps
     public static Settings MainViewPreConstruct()
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        System.Diagnostics.Trace.WriteLine($"OS actual: {System.Environment.OSVersion.VersionString}.", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"OS actual: {Environment.OSVersion.VersionString}.", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
@@ -68,8 +68,7 @@ public static class AvaloniaOps
 
     public static async Task<string[]> GetCoresArray()
     {
-        if (cores.Length != 0) return cores;
-        cores = await coresTask;
+        if (cores.Length < 1) cores = await coresTask;
         return cores;
     }
     
@@ -135,6 +134,5 @@ public static class AvaloniaOps
         string dir = (file != null) ? file.Path.LocalPath : string.Empty;
         return dir;
     }
-
     #endregion
 }

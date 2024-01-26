@@ -17,6 +17,7 @@
 */
 
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -117,13 +118,14 @@ public class LocaleComboItem()
         };
         var pictureBox = new Viewbox()
         {
-            Width = 25,
+            Width = 35,
             Child = icon
         };
 
         var text = new Label()
         {
-            Content = locale.Name
+            Content = locale.Name,
+            Margin = new Thickness(3,0)
         };
         
         Grid.SetColumn(pictureBox,0);
