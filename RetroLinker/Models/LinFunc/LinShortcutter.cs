@@ -70,13 +70,13 @@ public static class LinShortcutter
         // TODO: Mover esta parte a FileOps.cs
         //File.WriteAllBytes();
         //File.WriteAllLines(outputFile, shortcut, Encoding.UTF8); 
-        System.Diagnostics.Trace.WriteLine($"{outputFile} creado con exito.", "[Info]");
+        System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
         SetExecPermissions(outputFile);
     }
 
     private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
     {
-        System.Diagnostics.Trace.WriteLine($"Intentando establecer permisos de ejecucion para {Path.GetFileName(dir)}.", "[Info]");
+        System.Diagnostics.Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
         var processStartInfo = new System.Diagnostics.ProcessStartInfo()
         {
             FileName = "chmod",
@@ -88,12 +88,12 @@ public static class LinShortcutter
         var process = new System.Diagnostics.Process()
             { StartInfo = processStartInfo };
 
-        System.Diagnostics.Trace.WriteLine($"Ejecutando chmod a+x {dir}...", "[Info]");
+        System.Diagnostics.Trace.WriteLine($"Executing chmod a+x {dir}...", App.InfoTrace);
         process.Start();
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
-        System.Diagnostics.Debug.WriteLine(error, "[Proc]");
-        System.Diagnostics.Trace.WriteLine(output, "[Proc]");
+        System.Diagnostics.Debug.WriteLine(error, App.DebgTrace);
+        System.Diagnostics.Trace.WriteLine(output, App.ErroTrace);
     }
 }

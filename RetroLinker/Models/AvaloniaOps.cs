@@ -47,10 +47,10 @@ public static class AvaloniaOps
     public static Settings MainViewPreConstruct()
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        System.Diagnostics.Trace.WriteLine($"OS actual: {Environment.OSVersion.VersionString}.", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"Current OS: {Environment.OSVersion.VersionString}.", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
-        System.Diagnostics.Debug.WriteLine("Settings cargadas para la MainView.", App.InfoTrace);
-        System.Diagnostics.Debug.WriteLine("Settings convertido a Base64:" + settings.GetBase64(), App.DebgTrace);
+        System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
+        System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
         
         LanguageManager.SetLocale(settings.LanguageCulture);
         

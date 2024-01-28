@@ -53,7 +53,7 @@ namespace RetroLinker.Views
         // LOADS
         void SettingsView1_Loaded(object sender, RoutedEventArgs e)
         { 
-            System.Diagnostics.Debug.WriteLine($"SettingView Cargado por primera vez? {FirstTimeLoad}", App.DebgTrace);
+            System.Diagnostics.Debug.WriteLine($"SettingView loaded for the fist time? {FirstTimeLoad}", App.DebgTrace);
             if (FirstTimeLoad) FillComboLocale();
             // Settings
             ApplySettingsToControls();

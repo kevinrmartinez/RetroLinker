@@ -47,7 +47,7 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             LanguageManager.FixLocale(new CultureInfo("en-US"));
-            System.Diagnostics.Debug.WriteLine("Iniciando MainWindow", DebgTrace);
+            System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel()

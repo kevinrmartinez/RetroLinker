@@ -38,10 +38,10 @@ class Program
         { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
         var TextfileTracer = new System.Diagnostics.TextWriterTraceListener("log.txt", "mainTextTracer")
         { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
-        System.Diagnostics.Trace.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
         System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
+        System.Diagnostics.Trace.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
 
-        System.Diagnostics.Trace.WriteLine("Iniciando AvaloniaApp", "[Info]");
+        System.Diagnostics.Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
         System.Diagnostics.Trace.Listeners.Remove(ConsoleTracer);

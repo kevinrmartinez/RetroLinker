@@ -86,13 +86,12 @@ namespace RetroLinker.Models
             
             var LinkResult = new ShortcutterResult(link.LNKdir);
             ResultList.Add(LinkResult);
-            System.Diagnostics.Trace.WriteLine($"Creando {System.IO.Path.GetFileName(link.LNKdir)} para Windows.", App.InfoTrace);
+            System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKdir}'...", App.InfoTrace);
             try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); 
                 LinkResult.Messeage = LinkResult.Success1; }
             catch (System.Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKdir)}!", App.ErroTrace);
-                System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"'{link.LNKdir}' could not be created!", App.ErroTrace);
                 LinkResult.Messeage = LinkResult.Failure1;
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
@@ -104,13 +103,12 @@ namespace RetroLinker.Models
                 LinkResult = new ShortcutterResult(link.LNKcpy[i]);
                 ResultList.Add(LinkResult);
                 CreateShortcutArgs[5] = link.LNKcpy[i];
-                System.Diagnostics.Trace.WriteLine($"Creando {System.IO.Path.GetFileName(link.LNKcpy[i])} para Windows.", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKcpy[i]}'...", App.InfoTrace);
                 try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"No se ha podido crear {System.IO.Path.GetFileName(link.LNKcpy[i])}!", App.ErroTrace);
-                    System.Diagnostics.Debug.WriteLine($"En {WinFuncImport.FuncLoader.WinOnlyLib}, el elemento {e.Source} a retornado el error '{e.Message}'", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"'{link.LNKcpy[i]}' could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -133,14 +131,14 @@ namespace RetroLinker.Models
             link.LNKdir = NameFix[0];
             var LinkResult = new ShortcutterResult(link.LNKdir);
             ResultList.Add(LinkResult);
-            
+            System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKdir}'...", App.InfoTrace);
             // TODO: Refactor this into less lines. Maybe just a single loop
+            
             try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], byte.MaxValue);
                 LinkResult.Messeage = LinkResult.Success1; }
             catch (System.Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKdir}'!", App.ErroTrace);
-                System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"'{link.LNKdir}' could not be created!", App.ErroTrace);
                 LinkResult.Messeage = LinkResult.Failure1;
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
@@ -152,13 +150,13 @@ namespace RetroLinker.Models
                 link.LNKcpy[i] = NameFix[0];
                 LinkResult = new ShortcutterResult(link.LNKcpy[i]);
                 ResultList.Add(LinkResult);
+                System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKcpy[i]}'...", App.InfoTrace);
                 
                 try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], makeCopyIndex:(byte)i);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"No se ha podido crear '{link.LNKcpy[i]}'!", App.ErroTrace);
-                    System.Diagnostics.Debug.WriteLine($"En LinShortcutter, el elemento {e.Source} a retornado el error '{e.Message}'", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"'{link.LNKcpy[i]}' could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;

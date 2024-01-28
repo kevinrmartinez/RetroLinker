@@ -49,13 +49,14 @@ public partial class MainView : UserControl
         settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
-        MainViewPostConstruct();
+        // MainViewPostConstruct();
+        timeSpan = System.DateTime.Now - App.LaunchTime;
+        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {timeSpan.ToString()}", App.TimeTrace);
     }
 
     void MainViewPostConstruct()
     {
-        timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine(string.Format("Tiempo de ejecuacion tras MainView(): {0}", timeSpan.ToString()), App.TimeTrace);
+        
     }
 
     // Window Object
@@ -108,7 +109,7 @@ public partial class MainView : UserControl
             
             System.DateTime now = System.DateTime.Now;
             timeSpan = now - App.LaunchTime;
-            System.Diagnostics.Debug.WriteLine($"Ejecuacion tras View1_Loaded(): {timeSpan}", App.TimeTrace);
+            System.Diagnostics.Debug.WriteLine($"Execution time after View1_Loaded(): {timeSpan}", App.TimeTrace);
             FormFirstLoad = false;
         }
         else
@@ -118,7 +119,7 @@ public partial class MainView : UserControl
     async void comboCore_Loaded(Task<string[]> coresTask)
     {
         var cores = await coresTask;
-        System.Diagnostics.Debug.WriteLine("Lista de Cores importada.", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine("Cores list imported.", App.InfoTrace);
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
      }
@@ -136,7 +137,7 @@ public partial class MainView : UserControl
     {
         var iconsList = await iconsTask;
         comboICONDir.Items.Add(resMainView.comboDefItem);
-        System.Diagnostics.Debug.WriteLine("Lista de iconos importada", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine("Icons list imported", App.InfoTrace);
         foreach (var iconFile in iconsList)
         {
             comboICONDir.Items.Add(iconFile);
@@ -164,8 +165,8 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         CurrentTheme = settings.PreferedTheme;
-        System.Diagnostics.Trace.WriteLine($"El tema solicitado fue: {theme}", App.InfoTrace);
-        System.Diagnostics.Debug.WriteLine($"Codigo en byte: {settings.PreferedTheme}", App.DebgTrace);
+        System.Diagnostics.Trace.WriteLine($"The requested theme was: {theme}", App.InfoTrace);
+        System.Diagnostics.Debug.WriteLine($"Index in byte: {settings.PreferedTheme}", App.DebgTrace);
         return theme;
     }
 
@@ -199,8 +200,8 @@ public partial class MainView : UserControl
         }
         catch (System.Exception eMain)
         {
-            System.Diagnostics.Trace.WriteLine($"El importado de {FuncLoader.WinOnlyLib} ha fallado!", App.ErroTrace);
-            System.Diagnostics.Debug.WriteLine($"En MainView, el elemento {eMain.Source} a retrornado el error {eMain.Message}", App.ErroTrace);
+            System.Diagnostics.Trace.WriteLine($"The importing of {FuncLoader.WinOnlyLib} has failed!", App.ErroTrace);
+            System.Diagnostics.Debug.WriteLine($"In MainView, the element {eMain.Source} had returned the error:\n {eMain.Message}", App.ErroTrace);
             lock (this)
             { WinFuncImportFail(eMain); }
         }
@@ -590,7 +591,7 @@ public partial class MainView : UserControl
          && (!string.IsNullOrEmpty(OutputLink.ROMcore))
          && (!string.IsNullOrEmpty(OutputLink.LNKdir))
          )
-        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("Todos los campos para el shortcut han sido aceptados", App.InfoTrace); }
+        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
         else
         {
             ShortcutPosible = false;

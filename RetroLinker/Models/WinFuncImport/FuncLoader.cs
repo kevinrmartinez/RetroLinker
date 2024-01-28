@@ -30,10 +30,10 @@ namespace RetroLinker.Models.WinFuncImport
 
         public static void ImportWinFunc()
         {
-            System.Diagnostics.Trace.WriteLine($"Importando {WinOnlyLib}...", "[Info]");
+            System.Diagnostics.Trace.WriteLine($"Importing {WinOnlyLib}...", App.InfoTrace);
             DLL = Assembly.LoadFrom(WinOnlyLib);
-            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} fue importado exitosamente.", "[Info]");
-            System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} importado como '{DLL.FullName}'.", "[Info]");
+            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} was imported successfully.", App.InfoTrace);
+            System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} imported as '{DLL.FullName}'.", App.DebgTrace);
         }
 
         public static WinFuncMethods GetShortcutMethod()
