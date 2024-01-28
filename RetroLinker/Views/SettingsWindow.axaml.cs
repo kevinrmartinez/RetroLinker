@@ -47,9 +47,9 @@ namespace RetroLinker.Views
         private SettingsView SettingsView1;
         private SettingsView2 SettingsView21;
         private SettingsView3 SettingsView31;
-        public Settings settings { get; set; }
-        public Settings DEFsettings { get; } = new();
-        public List<string> SetLinkCopyPaths { get; set; }
+        public Settings settings;
+        public Settings DEFsettings = new();
+        public List<string> SetLinkCopyPaths;
 
         #region LoadContent
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)

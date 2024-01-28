@@ -326,5 +326,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("popLinkFailure", resourceCulture);
             }
         }
+        
+        public static string LinPopUp_Mess2 {
+            get {
+                return ResourceManager.GetString("LinPopUp_Mess2", resourceCulture);
+            }
+        }
     }
 }

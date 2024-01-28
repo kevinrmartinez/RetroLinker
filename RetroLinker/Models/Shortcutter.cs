@@ -127,7 +127,7 @@ namespace RetroLinker.Models
             if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
             { link.ICONfile = FileOps.DotDesktopRAIcon; }
             
-            string[] NameFix = FileOps.FixLinkName(link.LNKdir);
+            string[] NameFix = FileOps.DesktopEntryName(link.LNKdir, link.ROMcore);
             link.LNKdir = NameFix[0];
             var LinkResult = new ShortcutterResult(link.LNKdir);
             ResultList.Add(LinkResult);
@@ -146,7 +146,7 @@ namespace RetroLinker.Models
 
             for (int i = 0; i < link.LNKcpy.Length; i++)
             {
-                NameFix = FileOps.FixLinkName(link.LNKcpy[i]);
+                NameFix = FileOps.DesktopEntryName(link.LNKcpy[i], link.ROMcore);
                 link.LNKcpy[i] = NameFix[0];
                 LinkResult = new ShortcutterResult(link.LNKcpy[i]);
                 ResultList.Add(LinkResult);

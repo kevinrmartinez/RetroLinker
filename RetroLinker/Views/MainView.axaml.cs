@@ -67,6 +67,7 @@ public partial class MainView : UserControl
     private int PrevConfigsCount;
     private int DLLErrorCount = 0;
     private byte CurrentTheme = 250;
+    // TODO: Make one Shortcutter that handles user input, and another for link process and output
     private Shortcutter OutputLink = new();
     private Settings settings;
     private Bitmap ICONimage;
@@ -493,7 +494,7 @@ public partial class MainView : UserControl
             {
                 ContentTitle = resMainView.LinPopUp_Title,
                 ContentHeader = resMainView.LinPopUp_Head,
-                ContentMessage = resMainView.LinPopUp_Mess,
+                ContentMessage = $"{resMainView.LinPopUp_Mess}\n\n\n{resMainView.LinPopUp_Mess2}",
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
                 Icon = MsBox.Avalonia.Enums.Icon.Folder
             };
@@ -552,9 +553,9 @@ public partial class MainView : UserControl
 
         // Manejo del link en caso de 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        {
-            OutputLink.LNKdir = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS);
-        }
+        { OutputLink.LNKdir = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS); }
+        else
+        { OutputLink.LNKdir = txtLINKDir.Text; }
 
         // Validando que haya descripcion o no
         OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;

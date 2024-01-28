@@ -126,6 +126,6 @@
         <value>Descartar</value>
     </data>
     <data name="btnConfirm" xml:space="preserve">
-        <value>Confirm</value>
+        <value>Confirmar</value>
     </data>
 </root>

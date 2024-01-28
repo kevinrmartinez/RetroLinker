@@ -133,7 +133,7 @@ namespace RetroLinker.Models
                     if (GeneralInPlace(settingFile, headerIndex, generalCount))
                     {
                         int i = headerIndex + 1;
-                        settings.UserAssetsPath = settingFile[++i];
+                        settings.UserAssetsPath = FileOps.ResolveUserAssets(settingFile[++i]);
                         settings.DEFRADir = settingFile[++i];
                         settings.DEFROMPath = settingFile[++i];
                         settings.PrevConfig = ResolveBool(settingFile[++i]);

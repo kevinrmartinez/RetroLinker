@@ -87,7 +87,7 @@
         <value>El nombre utilizado aqui sera utilizado como el nombre visible del link, y como nombre del archivo en si.</value>
     </data>
     <data name="LinPopUp_Mess" xml:space="preserve">
-        <value>Sin embargo los espacios en blanco seran reemplazados por '-' en el nombre de archivo, por razones de estandares y comodidad.\n\n\nPresione Cancelar para no volver a mostrar este mensaje.</value>
+        <value>Sin embargo los espacios en blanco seran reemplazados por '_' en el nombre de archivo, por razones de estandares y comodidad.</value>
     </data>
     <data name="popMissReq_Title" xml:space="preserve">
         <value>Faltan Campos</value>
@@ -121,5 +121,8 @@
     </data>
     <data name="popLinkFailure" xml:space="preserve">
         <value>La creación del Link ha fracasado</value>
+    </data>
+    <data name="LinPopUp_Mess2" xml:space="preserve">
+        <value>Presione Cancelar para no volver a mostrar este mensaje.</value>
     </data>
 </root>
