@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
+    <AssemblyName>RetroLinkerLib</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+
+  
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.7" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.7" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.7" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
+      <Version>11.0.7</Version>
+    </PackageReference>
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.5.0" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.0.1" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="UserAssets\cores.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="UserAssets\icon_dark.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="UserAssets\icon_light.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Icons\retroarch.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Translations\resMainView.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resMainView.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resSettingsWindow.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resSettingsWindow.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainView.es.resx">
+      <DependentUpon>resMainView.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resSettingsWindow.es.resx">
+      <DependentUpon>resSettingsWindow.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAvaloniaOps.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resAvaloniaOps.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAvaloniaOps.es.resx">
+      <DependentUpon>resAvaloniaOps.resx</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Translations\resMainView.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resMainView.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resSettingsWindow.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resSettingsWindow.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resAvaloniaOps.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resAvaloniaOps.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

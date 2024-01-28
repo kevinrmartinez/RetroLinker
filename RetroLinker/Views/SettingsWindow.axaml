@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:RetroLinker.Views"
+        xmlns:locale="clr-namespace:RetroLinker.Translations"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
+        Width="750" Height="550" MinWidth="600" MinHeight="530"
+        x:Class="RetroLinker.Views.SettingsWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="RetroLinker Settings"
+		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="SettingsWindow1_OnLoaded">
+	
+	<Window.Styles>
+		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
+	</Window.Styles>
+	
+	<Grid Name="gridConfigWindows" RowDefinitions="Auto, *, Auto, Auto">
+		<!--TOP-->
+		<!-- <Rectangle Grid.Row="0" Fill="Gray" Height="15"/> -->
+		
+		<!--Body Tabs-->
+		<TabControl Grid.Row="1">
+			<!--TODO: Crear e implementar un Data Template para los header-->
+			<TabItem Header="{x:Static locale:resSettingsWindow.tabGeneral}">
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="{x:Static locale:resSettingsWindow.tabPaths}">
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab2" Margin="0,0,8,0"/>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="{x:Static locale:resSettingsWindow.tabOutput}">
+				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
+					<ContentControl Name="CCTab3" Margin="0,0,8,0"/>
+				</ScrollViewer>
+			</TabItem>
+		</TabControl>
+		
+		<!--CONTROLES-->
+		<StackPanel Grid.Row="2" Height="48" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
+
+			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-arrow-rotate-left"/>
+					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDefault}" VerticalAlignment="Center"/>
+				</StackPanel>
+			</Button>
+			<Button Name="btnDISSettings" Click="btnDISSettings_Click" VerticalAlignment="Stretch">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-x" Foreground="Crimson"/>
+					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDiscard}" VerticalAlignment="Center"/>
+				</StackPanel>
+			</Button>
+			<Button Name="btnCONSettings" Click="btnSAVESettings_Click" VerticalAlignment="Stretch">
+				<StackPanel Orientation="Horizontal" Spacing="6">
+					<i:Icon Value="fa-check" Foreground="Green"/>
+					<TextBlock Text="{x:Static locale:resSettingsWindow.btnConfirm}" VerticalAlignment="Center"/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+		<!--BOTTOM-->
+		<!-- <Rectangle Grid.Row="3" Fill="Gray" Height="15"/> -->
+	</Grid>
+</Window>

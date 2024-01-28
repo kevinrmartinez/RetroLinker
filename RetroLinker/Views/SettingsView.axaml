@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
+             x:Class="RetroLinker.Views.SettingsView"
+			 Name="SettingsView1" Loaded="SettingsView1_Loaded">
+  
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
+	</UserControl.Styles>
+	
+	<Grid Name="gridConfigAll1" RowDefinitions="Auto, *">
+		<!--BODY/CONTENT-->
+		<Grid Name="gridConfigBody" Grid.Row="0" RowDefinitions="Auto, Auto, Auto, *" ShowGridLines="False">
+
+			<!--APARIENCIA-->
+			<Border Grid.Row="0" Classes="SettingCatg">
+				<StackPanel>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_Appearance}"/>
+					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<Grid ColumnDefinitions="*, Auto, *">
+						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0, 2">
+							<ToggleSwitch Name="swtThemeSwitch" Content="{x:Static locale:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged" Margin="3,0,0,0"
+							              OnContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static locale:resSettingsWindow.swtThemeSwitch_Off}"/>
+							<Rectangle Width="18"/>
+							<CheckBox Name="chkThemeDefault" Content="{x:Static locale:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+						</StackPanel>
+						<Rectangle Grid.Column="1" Stroke="Gray" StrokeThickness="2" StrokeDashArray="1"/>
+						<StackPanel Grid.Column="2">
+							<Label Margin="3,0,0,0" Content="{x:Static locale:resSettingsWindow.lblLocale}"/>
+							<Grid ColumnDefinitions="*, Auto">
+								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0,0,0" 
+								          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
+								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Margin="3" Click="BtnLocale_OnClick">
+									<i:Icon Value="fa-check" FontSize="18" Foreground="Green"/>
+								</Button>
+							</Grid>
+							
+						</StackPanel>
+					</Grid>
+				</StackPanel>
+			</Border>
+
+			<!--OTRAS PREFERENCIAS-->
+			<Border Grid.Row="1" Classes="SettingCatg">
+				<StackPanel>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_OtherGeneral}"/>
+					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
+						<StackPanel Grid.Column="0" Orientation="Vertical">
+							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkPrevCONFIG}" IsCheckedChanged="View1ChecksHandle"/>
+						</StackPanel>
+						<!--<Rectangle Grid.Column="1" Stroke="Gray"
+							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->
+						<StackPanel Grid.Column="2" Margin="3,0">
+							<!-- <CheckBox Name="chkAllwaysDesktop" Classes="SettingCatg" Content="Siempre crear Links en el Desktop"/> -->
+						</StackPanel>
+					</Grid>
+				</StackPanel>
+			</Border>
+
+			<!--ICONOS-->
+			<Border Grid.Row="2" Classes="SettingCatg">
+				<StackPanel>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_IconsGeneral}"/>
+					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkCpyUserIcon}" IsCheckedChanged="View1ChecksHandle"
+					          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipCpyUserIcon}"/>
+				</StackPanel>
+			</Border>
+
+		</Grid>
+
+		<!--SPACING-->
+		<Rectangle Grid.Row="1"/>
+		
+	</Grid>
+</UserControl>
