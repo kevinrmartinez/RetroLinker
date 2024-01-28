@@ -77,6 +77,17 @@ namespace RetroLinker.Models
         }
 
         public static string[] ReadSettingsFile() => File.ReadAllLines(SettingFileBin);
+
+        public static string ResolveUserAssets(string userAssetPath)
+        {
+            string fullPath = Path.GetFullPath(userAssetPath);
+            // var test1 = Directory.Exists(fullPath);
+            // var test2 = File.Exists(fullPath);
+            if (Directory.Exists(fullPath) && !File.Exists(fullPath))
+            { return userAssetPath; }
+            else
+            { throw new InvalidDataException("Invalid settings file!"); }
+        }
         
         public static async void WriteSettingsFile(string settingString)
         {
@@ -356,18 +367,25 @@ namespace RetroLinker.Models
 
         #region Linux Only Ops
 
-        public static string[] FixLinkName(string LinkDir)
+        public static string[] DesktopEntryName(string LinkDir, string core)
         {
+            const string appendix = "retroarch.";
+            const string whiteSpace = " ";
+            const string whiteSpaceReplacer = "_";
             string[] NameFix =
             {
                 // File Path
                 Path.GetFileName(LinkDir),
+                
                 // .desktop Name field
                 Path.GetFileNameWithoutExtension(LinkDir),
+                
                 // File Name
                 //LinkDir
             };
-            NameFix[0] = NameFix[0].Replace(" ", "-");
+            NameFix[0] = NameFix[0].Replace(whiteSpace, whiteSpaceReplacer);
+            NameFix[0] = NameFix[0].Insert(0, $"{core}.");
+            NameFix[0] = NameFix[0].Insert(0, appendix);
             //NameFix[2] = NameFix[0];
             NameFix[0] = Path.Combine(Path.GetDirectoryName(LinkDir), NameFix[0]);
             return NameFix;

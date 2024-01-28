@@ -121,7 +121,7 @@
         <value>The name used here will be used as the visible name of the link, and as the name of the file itself.</value>
     </data>
     <data name="LinPopUp_Mess" xml:space="preserve">
-        <value>However, blank spaces will be replaced by '-' in the file name, for standard and convenience reasons.\n\n\nPress Cancel to no longer display this message.</value>
+        <value>However, blank spaces will be replaced by '_' in the file name, for standard and convenience reasons.</value>
     </data>
     <data name="popMissReq_Mess" xml:space="preserve">
         <value>Required fields are missing</value>
@@ -158,5 +158,8 @@
     </data>
     <data name="popLinkFailure" xml:space="preserve">
         <value>Link creation has failed</value>
+    </data>
+    <data name="LinPopUp_Mess2" xml:space="preserve">
+        <value>Press Cancel to no longer display this message.</value>
     </data>
 </root>
