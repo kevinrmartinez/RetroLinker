@@ -49,14 +49,13 @@ public partial class MainView : UserControl
         settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
-        // MainViewPostConstruct();
-        timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {timeSpan.ToString()}", App.TimeTrace);
+        MainViewPostConstruct();
     }
 
     void MainViewPostConstruct()
     {
-        
+        timeSpan = System.DateTime.Now - App.LaunchTime;
+        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {timeSpan.ToString()}", App.TimeTrace);
     }
 
     // Window Object
@@ -486,6 +485,11 @@ public partial class MainView : UserControl
 
     #region LinkDir Controls
     // Link Directory
+    private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e)
+    {
+        System.Diagnostics.Trace.WriteLine("COMING SOON");
+    }
+    
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
         if (!DesktopOS && settings.LinDesktopPopUp)

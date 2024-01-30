@@ -162,4 +162,7 @@
     <data name="LinPopUp_Mess2" xml:space="preserve">
         <value>Press Cancel to no longer display this message.</value>
     </data>
+    <data name="btnMoreParams" xml:space="preserve">
+        <value>More</value>
+    </data>
 </root>

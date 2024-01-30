@@ -78,7 +78,8 @@ public static class LanguageManager
 
     private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
     {
-        var sameLocale = (Translations.resMainView.Culture.Equals(cultureInfo));
+        // var sameLocale = true;
+        var sameLocale = Translations.resMainView.Culture.Equals(cultureInfo);
         if (!sameLocale)
         {
             Translations.resAvaloniaOps.Culture = cultureInfo;

@@ -85,11 +85,16 @@
 
 				<!-- ROW4 - Link Save Directory & other arguments -->
 				<StackPanel Name="panelLINKDir" Grid.Row="4">
-					<StackPanel Orientation="Horizontal" Margin="5,10,0,0" Spacing="12">
-						<CheckBox Name="chkFull" Content="{x:Static locale:resMainView.chkFull}"/>
-						<CheckBox Name="chkVerb" Content="{x:Static locale:resMainView.chkVerb}"/>
-						<CheckBox Name="chkAccessi" Content="{x:Static locale:resMainView.chkAccessi}"/>
-					</StackPanel>
+					<Grid ColumnDefinitions="Auto, *, Auto">
+						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5,10,0,0" Spacing="12">
+							<CheckBox Name="chkFull" Content="{x:Static locale:resMainView.chkFull}"/>
+							<CheckBox Name="chkVerb" Content="{x:Static locale:resMainView.chkVerb}"/>
+							<CheckBox Name="chkAccessi" Content="{x:Static locale:resMainView.chkAccessi}"/>
+							<!-- <CheckBox Content="Go to Menu on Fail"/> -->
+						</StackPanel>
+						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" 
+						        Content="{x:Static locale:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
+					</Grid>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkDir}"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkName}"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">

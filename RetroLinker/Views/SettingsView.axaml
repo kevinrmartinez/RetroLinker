@@ -44,8 +44,18 @@
 				</StackPanel>
 			</Border>
 
-			<!--OTRAS PREFERENCIAS-->
+			<!--ICONOS-->
 			<Border Grid.Row="1" Classes="SettingCatg">
+				<StackPanel>
+					<Label Content="{x:Static locale:resSettingsWindow.lblCat_IconsGeneral}"/>
+					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkCpyUserIcon}" IsCheckedChanged="View1ChecksHandle"
+					          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipCpyUserIcon}"/>
+				</StackPanel>
+			</Border>
+			
+			<!--OTRAS PREFERENCIAS-->
+			<Border Grid.Row="2" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_OtherGeneral}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
@@ -59,16 +69,6 @@
 							<!-- <CheckBox Name="chkAllwaysDesktop" Classes="SettingCatg" Content="Siempre crear Links en el Desktop"/> -->
 						</StackPanel>
 					</Grid>
-				</StackPanel>
-			</Border>
-
-			<!--ICONOS-->
-			<Border Grid.Row="2" Classes="SettingCatg">
-				<StackPanel>
-					<Label Content="{x:Static locale:resSettingsWindow.lblCat_IconsGeneral}"/>
-					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkCpyUserIcon}" IsCheckedChanged="View1ChecksHandle"
-					          ToolTip.Tip="{x:Static locale:resSettingsWindow.tipCpyUserIcon}"/>
 				</StackPanel>
 			</Border>
 
