@@ -76,7 +76,7 @@ public partial class MainView : UserControl
     // Esto es asumiendo que solo podra correr en Windows y Linux.
     private bool DesktopOS = System.OperatingSystem.IsWindows();
     
-    // TODO: Implementar evento de manejo de tema
+    // TODO: Implement an Event for theme handling
     #region LOAD EVENTS
     // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
@@ -85,10 +85,10 @@ public partial class MainView : UserControl
         {
             AvaloniaOps.MainViewLoad(DesktopOS);
             
-            // El designer de Avalonia se rompe en esta parte, buscar una manera alterna de realizar en DEGUB, o algo especifico de designer
+            // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
         
-            // Condicion de OS
+            // Based on current OS
             if (!DesktopOS)
             {
                 if (string.IsNullOrEmpty(settings.DEFRADir)) 
@@ -105,7 +105,7 @@ public partial class MainView : UserControl
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
             comboICONDir_Loaded(AvaloniaOps.GetIconList());
-            // TODO: Evento de tutorial para nuevos usuarios
+            // TODO: Tutorial event for new users
             
             System.DateTime now = System.DateTime.Now;
             timeSpan = now - App.LaunchTime;
@@ -324,7 +324,7 @@ public partial class MainView : UserControl
     }
 
     #region Icon Controls
-    // Usuario llenando object del Icono
+    // Icon fields
     void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
     {
         if ((bool)rdoIconDef.IsChecked)
@@ -358,13 +358,13 @@ public partial class MainView : UserControl
         }
     }
 
-    // Solucion del SelectionChangedEventArgs gracias a snurre en stackoverflow.com
+    // Solution of SelectionChangedEventArgs thanks to snurre @ stackoverflow.com
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {   
         int selectedIndex = comboICONDir.SelectedIndex;
         panelIconNoImage.IsVisible = false;
         if (selectedIndex > 0)
-        {   // llena los controles pic con los iconos provistos por el usuario
+        {   // Fill the PictureBoxes with the icons provided by the user
             IconItemSET = IconProc.IconItemsList.Find(Item => Item.comboIconIndex == selectedIndex);
             OutputLink.ICONfile = IconItemSET.FilePath;
             
@@ -388,21 +388,21 @@ public partial class MainView : UserControl
             }
         }
         else
-        {   // llena los controles pic con el icono default (Indice 0)
+        {   // Fill the PictureBoxes with the default icon (Index 0)
             Bitmap bitm = new(AssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
             FillIconBoxes(bitm);
         }
     }
     #endregion
 
-    // Usuario llenando object del link
+    // Link fields
     #region RADirectory Controls
     // RetroArch Directory
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }        // FilePicker Option para .exe de Windows
-        else { opt = PickerOpt.OpenOpts.RAbin; }                  // FilePicker Option para .AppImage de Windows
+        if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }
+        else { opt = PickerOpt.OpenOpts.RAbin; }
         string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
@@ -534,7 +534,6 @@ public partial class MainView : UserControl
 
     
     // EXECUTE
-    // La accion ocurre aqui
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         // TODO: Implement a control lock to prevent fields changing during operations
@@ -546,32 +545,32 @@ public partial class MainView : UserControl
         OutputLink.FullscreenB = (bool)chkFull.IsChecked;
         OutputLink.AccessibilityB = (bool)chkAccessi.IsChecked;
 
-        // Validando si sera contentless o no
+        // Validating contentless or not
         OutputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : OutputLink.ROMfile;
 
-        // Validar que haya ejecutable (LINUX)
+        // Validate theres an executable (Linux)
         ValidateLINBin();
 
-        // Validando que haya un core
+        // Validate theres a core
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
-        // Manejo del link en caso de 'AllwaysAskOutput = false'
+        // Link handling in case of 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
         { OutputLink.LNKdir = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS); }
         else
         { OutputLink.LNKdir = txtLINKDir.Text; }
 
-        // Validando que haya descripcion o no
+        // Validate theres a description
         OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
 
-        // Manejo de iconos
-        // Icono del ejecutable (Default)
+        // Icons handling
+        // RA binary icon (Default)
         if (comboICONDir.SelectedIndex == 0)
         { OutputLink.ICONfile = string.Empty; }
-        // TODO: Conciderar mover esta parte despues de la validacion
+        // TODO: Concider moving this part after the required fields check
         else
         {
-            // En caso de ser Winodws OS, hay que convertir las imagenes a .ico
+            // If it is Windows OS, the images have to be converted to .ico
             if (IconItemSET.ConvertionRequiered)
             {
                 OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
@@ -585,7 +584,7 @@ public partial class MainView : UserControl
                 if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
             }
 
-            // En caso de tener que copiar el icono provisto por el usuario
+            // In case of 'CpyUserIcon = true'
             if (settings.CpyUserIcon)
             { OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile); }
         }
@@ -607,17 +606,17 @@ public partial class MainView : UserControl
         }
 
         if (!ShortcutPosible) return;
-        // Comillas para directorios que iran de parametros...
-        // para el directorio de la ROM
+        // Double quotes for directories that are parameters ->
+        // -> for the ROM file
         // TODO: Use the Contentless checkbox
         if (OutputLink.ROMdir != Commander.contentless) 
         { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
 
-        // para el archivo config
+        // -> for the config file
         if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
         { OutputLink.CONFfile = Utils.FixUnusualDirectories(OutputLink.CONFfile); }
 
-        // Manejo de Link Copies
+        // Link Copies handling
 #if DEBUG
         // SettingsOps.LinkCopyPaths = new List<string>()
         // {
