@@ -13,9 +13,9 @@
 	</UserControl.Styles>
     
 	<Grid Name="gridConfigAll2" RowDefinitions="Auto, *">
-        <!--CONTENT-->
+        <!-- CONTENT -->
         <Grid Grid.Row="0" RowDefinitions="Auto, Auto, Auto, Auto">
-            <!--USER ASSETS-->
+            <!-- USER ASSETS -->
 			<Border Grid.Row="0" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_AserAssets}"/>
@@ -35,7 +35,7 @@
 				</StackPanel>
 			</Border>
 
-			<!--EJECUTABLE-->
+			<!-- RA EXECUTABLE -->
 			<Border Grid.Row="1" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_DefRADir}"/>
@@ -56,7 +56,7 @@
 				</StackPanel>
 			</Border>
 
-			<!--DIR PADRE-->
+			<!-- DEFAULT ROM PATH -->
 			<Border Grid.Row="2" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_DefROMPath}"/>

@@ -87,7 +87,7 @@ namespace RetroLinker.Views
             // { chkUseUserAssets.IsChecked = true; }
         }
         
-        // FUNCIONES
+        // FUNCTIONS
         void ApplySettingsToControls()
         {
             chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
@@ -153,10 +153,7 @@ namespace RetroLinker.Views
             ParentWindow.settings.IcoSavPath = path;
         }
 
-        int NextCopyItemIndex()
-        {
-            return (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
-        }
+        int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
         
         ListBoxItem AddLinkCopyItem(string Dir)
         {
@@ -207,7 +204,7 @@ namespace RetroLinker.Views
             //lsboxLinkCopies.IsVisible = (bool)chk.IsChecked;
         }
 
-        async void BtnaddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
+        async void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
         {
             string currentItem = comboaddLinkCopy.SelectedItem.ToString();
             if (string.IsNullOrWhiteSpace(currentItem)) return;

@@ -21,9 +21,9 @@
 		<!--TOP-->
 		<!-- <Rectangle Grid.Row="0" Fill="Gray" Height="15"/> -->
 		
-		<!--Body Tabs-->
+		<!-- BODIES TAB CONTROL -->
 		<TabControl Grid.Row="1">
-			<!--TODO: Crear e implementar un Data Template para los header-->
+			<!--TODO: Create or implement a Data Template for the tabs header-->
 			<TabItem Header="{x:Static locale:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
@@ -41,7 +41,7 @@
 			</TabItem>
 		</TabControl>
 		
-		<!--CONTROLES-->
+		<!-- CONTROLS -->
 		<StackPanel Grid.Row="2" Height="48" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 
 			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">

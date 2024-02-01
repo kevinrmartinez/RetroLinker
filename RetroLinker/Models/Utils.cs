@@ -24,17 +24,17 @@ namespace RetroLinker.Models
 {
     public static class Utils
     {
-        const string comilla = "\"";
+        const string DoubleQuotes = "\"";
         public static string FixUnusualDirectories(string dir)
         {
             string newdir = dir;
             const int FirstElement = 0;
             int LastElement = newdir.Length - 1;
             
-            if (newdir.ElementAt(FirstElement) != comilla.ElementAt(0))
-            { newdir = newdir.Insert(FirstElement, comilla); }
-            if (newdir.ElementAt(LastElement) != comilla.ElementAt(0))
-            { newdir += comilla; }
+            if (newdir.ElementAt(FirstElement) != DoubleQuotes.ElementAt(0))
+            { newdir = newdir.Insert(FirstElement, DoubleQuotes); }
+            if (newdir.ElementAt(LastElement) != DoubleQuotes.ElementAt(0))
+            { newdir += DoubleQuotes; }
             return newdir;
         }
 

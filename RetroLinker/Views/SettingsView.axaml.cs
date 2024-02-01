@@ -82,19 +82,19 @@ namespace RetroLinker.Views
         #endregion
 
         // APARIENCE
-        // TODO: Optimizar con el uso de un evento, posiblemente basado en el byte de tema
+        // TODO: Refactorize using an event, possibly based in the theme byte
         void LoadTheme(byte ThemeCode)
         {
-            // El designer de Avalonia se rompe en esta parte, asi que puse una condicion para DEBUG
+            // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
             switch (ThemeCode)
             {
-                case 1: // Case de que el tema sea 'claro'
+                case 1: // Light
                     swtThemeSwitch.IsChecked = false;
                     break;
-                case 2: // Case de que el tema sea 'oscuro'
+                case 2: // Dark
                     swtThemeSwitch.IsChecked = true;
                     break;
-                default:// Case de culaquier otro caso (0 = tema segun el sistema)
+                default:// Any other case (0 = System Theme)
                     chkThemeDefault.IsChecked = true;
                     break;
             }
@@ -102,7 +102,7 @@ namespace RetroLinker.Views
         
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // El designer de Avalonia se rompe en esta parte
+            // Avalonia's Designer gets borked on this part
             if ((bool)swtThemeSwitch.IsChecked)
             {
                 Application.Current.RequestedThemeVariant = dark_theme;
@@ -119,7 +119,7 @@ namespace RetroLinker.Views
         {
             if ((bool)chkThemeDefault.IsChecked)
             {
-                // El designer de Avalonia se rompe en esta parte
+                // Avalonia's Designer gets borked on this part
                 Application.Current.RequestedThemeVariant = system_theme;
                 swtThemeSwitch.IsEnabled = false;
                 ParentWindow.settings.PreferedTheme = 0;

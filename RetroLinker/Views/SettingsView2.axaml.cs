@@ -75,7 +75,7 @@ public partial class SettingsView2 : UserControl
         
     }
     
-    // EJECUTABLE
+    // RA EXECUTABLE
     private void BtnApplyUserAssets_Click(object? sender, RoutedEventArgs e)
     {
         var _grid = (sender as Control).Parent as Grid;
@@ -86,8 +86,8 @@ public partial class SettingsView2 : UserControl
     async void btnDefRADir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :    // FilePicker Option para .exe de Windows
-                          PickerOpt.OpenOpts.RAbin;     // FilePicker Option para .AppImage de Linux
+        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :
+                          PickerOpt.OpenOpts.RAbin;
         string file = await AvaloniaOps.OpenFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrWhiteSpace(file))
         { 
@@ -103,7 +103,7 @@ public partial class SettingsView2 : UserControl
         
     }
     
-    // DIR PADRE
+    // DEFAULT ROM PATH
     async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
     {
         string folder = await AvaloniaOps.OpenFolderAsync(template:1, ParentWindow);
@@ -112,7 +112,7 @@ public partial class SettingsView2 : UserControl
             txtDefROMPath.Text = folder; 
             ParentWindow.settings.DEFROMPath = folder; 
         }
-    }   // TODO: No parece aplicarce en ningun Linux
+    }   // TODO: Doesn´t seem to work on Linux
     
     void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
     {

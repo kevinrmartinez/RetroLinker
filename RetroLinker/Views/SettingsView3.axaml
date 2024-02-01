@@ -13,7 +13,7 @@
 	</UserControl.Styles>
 
 	<Grid RowDefinitions="Auto, Auto, Auto, *">
-		<!--DEFAULT OUTPUT-->
+		<!-- DEFAULT OUTPUT -->
 		<Border Grid.Row="0" Classes="SettingCatg">
 			<StackPanel>
 				<Label Content="{x:Static locale:resSettingsWindow.lblCat_DEFLinkOutput}"/>
@@ -31,7 +31,7 @@
 			</StackPanel>
 		</Border>
 		
-		<!--OUTPUT COPIES-->
+		<!-- OUTPUT COPIES -->
 		<Border Grid.Row="1" Classes="SettingCatg">
 			<StackPanel>
 				<Label Content="{x:Static locale:resSettingsWindow.lblCat_MakeLinkCopy}"/>
@@ -40,7 +40,7 @@
 				<Border Classes="SettingCatg">
 					<StackPanel>
 						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
-							<!--DEGUB-->
+							<!-- DEGUB -->
 							<ListBoxItem Name="lsboxDebug1" CornerRadius="9" Background="Aqua">
 								<Grid ColumnDefinitions="*, Auto">
 									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows\Temp"/>
@@ -49,11 +49,11 @@
 									</Button>
 								</Grid>
 							</ListBoxItem>
-							<!--DEGUB-->
+							<!-- DEGUB -->
 							<ListBoxItem Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
 								<Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
 									<ComboBox Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
-									<Button Name="btnaddLinkCopy" Grid.Column="1" Height="30" Click="BtnaddLinkCopy_OnClick"
+									<Button Name="btnaddLinkCopy" Grid.Column="1" Height="30" Click="BtnAddLinkCopy_OnClick"
 									        i:Attached.Icon="fa-plus"/>
 								</Grid>
 							</ListBoxItem>
@@ -63,9 +63,7 @@
 			</StackPanel>
 		</Border>
 		
-		<!--IDEA: Permitir cambiar el directorio de iconos guardados-->
-		
-		<!--WINDOWS ONLY-->
+		<!-- WINDOWS ONLY -->
 		<Border Grid.Row="2" Classes="SettingCatg">
 			<StackPanel Name="panelWindowsOnlyControls">
 				<Label Content="{x:Static locale:resSettingsWindow.lblCat_IcoOutput}"/>
@@ -73,7 +71,7 @@
 				<Rectangle Height="4"/>
 				<TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
 				           Text="{x:Static locale:resSettingsWindow.blcIcoOutout}"/>
-				<!--SAVE ICO CONTROLS-->
+				<!-- SAVE ICO CONTROLS -->
 				<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
 				           Text="{x:Static locale:resSettingsWindow.blcIcoSavPath}"/>
 				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
@@ -101,7 +99,7 @@
 		</Border>
 		<!-- <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/> -->
 		
-		<!--SPACING-->
+		<!-- SPACING -->
 		<Rectangle Grid.Row="3"/>
 		
 	</Grid>

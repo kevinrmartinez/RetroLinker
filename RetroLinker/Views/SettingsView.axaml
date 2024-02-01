@@ -13,10 +13,10 @@
 	</UserControl.Styles>
 	
 	<Grid Name="gridConfigAll1" RowDefinitions="Auto, *">
-		<!--BODY/CONTENT-->
+		<!-- BODY/CONTENT -->
 		<Grid Name="gridConfigBody" Grid.Row="0" RowDefinitions="Auto, Auto, Auto, *" ShowGridLines="False">
 
-			<!--APARIENCIA-->
+			<!-- APPEARANCE -->
 			<Border Grid.Row="0" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_Appearance}"/>
@@ -44,7 +44,7 @@
 				</StackPanel>
 			</Border>
 
-			<!--ICONOS-->
+			<!-- ICONS -->
 			<Border Grid.Row="1" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_IconsGeneral}"/>
@@ -54,7 +54,7 @@
 				</StackPanel>
 			</Border>
 			
-			<!--OTRAS PREFERENCIAS-->
+			<!-- OTHER SETTINGS -->
 			<Border Grid.Row="2" Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static locale:resSettingsWindow.lblCat_OtherGeneral}"/>

@@ -34,7 +34,6 @@ namespace RetroLinker.Views
         
         public SettingsWindow(MainWindow parentWindow)
         {
-            // Este constructor existe para facilitar la creacion de esta ventana como un PopUp
             InitializeComponent();
             ParentWindow = parentWindow;
         }
@@ -72,7 +71,6 @@ namespace RetroLinker.Views
         
         
         #region Window/Dialog Controls
-        // Window/Dialog Controls
         void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseView();
 
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
