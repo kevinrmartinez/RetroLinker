@@ -26,6 +26,7 @@ namespace RetroLinker.Models
 {
     public static class FileOps
     {
+        public const string AppName = "RetroLinker";
         public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssetsDir = "UserAssets";
@@ -47,12 +48,11 @@ namespace RetroLinker.Models
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), "RetroarchShortcutterV2");
-
-        // Solucion a los directorios de diferentes OSs, gracias a Vilmir en stackoverflow.com
+        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), AppName);
+        // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
+        
         public static readonly string WINPublicUser = "C:\\Users\\Public";
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
-        //public static readonly string SettingFileBin = Path.Combine(UserProfile, "RS_settings.dat");
         
         private static Settings LoadedSettings;
 
@@ -103,7 +103,7 @@ namespace RetroLinker.Models
             }
         }
 
-        public static void BuildConfigDir()
+        private static void BuildConfigDir()
         {
             const string NormalRAconfig = "Default";
             ConfigDir = new List<string>() { NormalRAconfig };
@@ -135,7 +135,7 @@ namespace RetroLinker.Models
 
         public static async Task<List<string>> LoadIcons(bool OS)
         {
-            // TODO: Ser capaz de retornar un error en caso de darse
+            // TODO: Be able to return errors
             IconProc.IconItemsList = new();
             try
             {
@@ -197,7 +197,7 @@ namespace RetroLinker.Models
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"An error has ocurred while loading icons.", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"An error has occurred while loading icons.", App.ErroTrace);
                 System.Diagnostics.Debug.WriteLine(
                     $"In FileOps, he element {e.Source} has returned the error:\n{e.Message}", App.ErroTrace);
                 return new List<string>();
@@ -211,7 +211,7 @@ namespace RetroLinker.Models
 
         public static bool CheckUsrSetDir(string path)
         {
-            // TODO: Ser capaz de retornar un error en caso de darse
+            // TODO: Be able to return errors
             try
             {
                 Directory.CreateDirectory(path);
@@ -219,13 +219,14 @@ namespace RetroLinker.Models
             }
             catch
             {
-                Console.WriteLine("No se puede crear la carpeta " + path);
+                System.Diagnostics.Trace.WriteLine($"The folder {path} could not be created", App.ErroTrace);
                 return false;
             }
         }
         
         public static string GetDeskLinkPath(string link_name, bool OS)
         {
+            // TODO: Possibly redundant
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
             new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
             new_dir += (OS) ? WinLinkExt : LinLinkExt;
@@ -236,12 +237,17 @@ namespace RetroLinker.Models
         public static string GetDefinedLinkPath(string link_name, string LinkPath, bool OS)
         {
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
-            new_dir += (OS) ? WinLinkExt : LinLinkExt;
+            if (OS)
+            { new_dir += WinLinkExt; }
+            else
+            {
+                new_dir = new_dir.Replace(" ", "_");
+                new_dir = new_dir.Insert(0, $"{LinuxRABin}.'core'.");
+                new_dir += LinLinkExt;
+            }
             new_dir = Path.Combine(LinkPath, new_dir);
             return new_dir;
         }
-
         #endregion
 
         #region ICONS
@@ -276,6 +282,7 @@ namespace RetroLinker.Models
 
         public static string CpyIconToUsrAss(string og_path)
         {
+            // TODO: Possibly redundant
             string name = Path.GetFileName(og_path);
             string new_path = Path.Combine(LoadedSettings.UserAssetsPath, name);
             if (File.Exists(new_path))
@@ -300,13 +307,12 @@ namespace RetroLinker.Models
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
+            // TODO: Possibly redundant
             var iconstream = IconProc.IcoExtraction(icondir);
             var objicon = new IconsItems(null, icondir, iconstream, index, true);
             IconProc.IconItemsList.Add(objicon);
             return objicon;
         }
-
-        //public static MemoryStream GetExeIcoStream(string file_path) => IconProc.IcoExtraction(file_path);
 
         public static string SaveWinIco(IconsItems selectedIconItem)
         {
@@ -335,20 +341,16 @@ namespace RetroLinker.Models
                         //new_dir = CpyIconToUsrSet(new_dir);
                     }
                     else
-                    {
-                        new_dir = selectedIconItem.FilePath;
-                    }
-
+                    { new_dir = selectedIconItem.FilePath; }
                     break;
 
-                default:
+                default: // .jpg, .png, etc
                     icon_image = IconProc.ImageConvert(selectedIconItem.FilePath);
                     icon_image.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
-
-            //settings.Dispose();
+            
             return new_dir;
         }
 
@@ -394,29 +396,8 @@ namespace RetroLinker.Models
         
         public static string GetRAIcons()
         {
-            // TODO: Decidir si se utilizara este metodo
-            // TODO: Escanear los .desktop de RA existentes
-            const string RA = "retroarch";
-            const string RAsvg = "retroarch.svg";
-            const string RApng = "retroarch.png";
-            string[] CommonIconPaths = new[]
-            {
-                "/usr/share/pixmaps/",
-                "/usr/share/app-install/icons/",
-                $"{Path.Combine(UserProfile, ".local", "share", "icons") + "\\"}",
-                "/usr/share/retroarch/"
-                //,"/snap/retroarch/"
-            };
-            string icon_dir = string.Empty;
-            for (int i = 0; i < CommonIconPaths.Length; i++)
-            {
-                
-                if (File.Exists(CommonIconPaths[i] + RAsvg))
-                { icon_dir = CommonIconPaths[i] + RAsvg; break; }
-                if (File.Exists(CommonIconPaths[i] + RApng))
-                { icon_dir = CommonIconPaths[i] + RAsvg; break; }
-            }
-            return (string.IsNullOrEmpty(icon_dir)) ? RA : icon_dir;
+            // TODO: Find a way to use xdg-desktop-icon and/or xdg-icon-resource to access linux desktop icon files
+            return string.Empty;
         }
 
         #endregion

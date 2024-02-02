@@ -24,8 +24,8 @@ namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
-    public SettingsView2()
-    { InitializeComponent(); }
+    // public SettingsView2()
+    // { InitializeComponent(); }
     
     public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs)
     {

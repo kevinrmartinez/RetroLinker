@@ -37,23 +37,17 @@ namespace RetroLinker.Views;
 public partial class MainView : UserControl
 {
     System.TimeSpan timeSpan;
-    public MainView()
-    { 
-        settings = AvaloniaOps.MainViewPreConstruct();
-        InitializeComponent();
-        MainViewPostConstruct();
-    }
+    // public MainView()
+    // { 
+    //     settings = AvaloniaOps.MainViewPreConstruct();
+    //     InitializeComponent();
+    // }
     
     public MainView(MainWindow mainWindow)
     { 
         settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
-        MainViewPostConstruct();
-    }
-
-    void MainViewPostConstruct()
-    {
         timeSpan = System.DateTime.Now - App.LaunchTime;
         System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {timeSpan.ToString()}", App.TimeTrace);
     }
@@ -73,7 +67,6 @@ public partial class MainView : UserControl
     private IconsItems IconItemSET;
 
     // true = Windows. false = Linux.
-    // Esto es asumiendo que solo podra correr en Windows y Linux.
     private bool DesktopOS = System.OperatingSystem.IsWindows();
     
     // TODO: Implement an Event for theme handling
@@ -609,7 +602,7 @@ public partial class MainView : UserControl
         // Double quotes for directories that are parameters ->
         // -> for the ROM file
         // TODO: Use the Contentless checkbox
-        if (OutputLink.ROMdir != Commander.contentless) 
+        if (!(bool)chkContentless.IsChecked) 
         { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
 
         // -> for the config file

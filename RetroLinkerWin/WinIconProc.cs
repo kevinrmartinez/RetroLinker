@@ -26,7 +26,7 @@ namespace RetroLinkerWin
     {
         public static MemoryStream ExtractIco(string dir)
         {
-            // Extraer el primer icono
+            // Extract the first icon
             var stream = new MemoryStream();
             var IcoExtracr = new IconExtractor(dir);
             //int index = IcoExtracr.Count - 1;
@@ -38,7 +38,7 @@ namespace RetroLinkerWin
 
         public static MemoryStream ExtractIcoByIndex(string dir, int index)
         {
-            // Extraer el icono especificado por indice
+            // Extract the icon specified by the index
             var stream = new MemoryStream();
             var IcoExtracr = new IconExtractor(dir);
             if (index >= IcoExtracr.Count) 

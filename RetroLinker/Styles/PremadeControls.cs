@@ -89,7 +89,7 @@ public class LinkCopyItemGrid
     }
 }
 
-public class LocaleComboItem()
+public class LocaleComboItem
 {
 
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)

@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -122,6 +121,7 @@ namespace RetroLinker.Models
             Settings settings = new();
             int generalCount = Utils.ExtractClassProperties(typeof(Settings)).Count;
 
+            // TODO: Explain this mess...
             if (FileOps.ExistSettingsBinFile())
             {
                 try
@@ -163,7 +163,7 @@ namespace RetroLinker.Models
                     LinkCopyPaths.AddRange(GetSubSectionsValues(settingFile, linkCopyIndex));
                     
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     System.Diagnostics.Trace.WriteLine($"There was a error while loading {FileOps.SettingFileBin}", App.ErroTrace);
                     System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
@@ -181,6 +181,7 @@ namespace RetroLinker.Models
 
         public static void WriteSettings(Settings savingSettings)
         {
+            // TODO: Explain this mess...
             string fileString = GeneralHeader + "\n";
             fileString += StartMark + "\n";
             fileString += savingSettings.GetSavingString();
@@ -242,7 +243,7 @@ namespace RetroLinker.Models
         //public void Dispose() => this.Dispose();
         
         public string GetBase64()
-        {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
+        {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
             var objectString = GetString();
             var object64 = GenerateBase64(objectString);
             return object64;
@@ -272,7 +273,7 @@ namespace RetroLinker.Models
         }
         
         private string GenerateBase64(string objectString)
-        {   // Solucion gracias a Kevin Driedger en Stackoverflow.com 
+        {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
             var objectBytes = Encoding.UTF8.GetBytes(objectString);
             var object64 = System.Convert.ToBase64String(objectBytes);
             return object64;

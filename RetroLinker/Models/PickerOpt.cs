@@ -97,8 +97,9 @@ namespace RetroLinker.Models
                     options.FileTypeFilter = ICONfileTypes2;
                     break;
 
-                // Esta opcion no deberia darse
+                // This part should never happen...
                 default:
+                    System.Diagnostics.Debug.WriteLine("This part should never happen...", App.DebgTrace);
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileInFallback;
                     break;
@@ -125,8 +126,9 @@ namespace RetroLinker.Models
                     options.FileTypeChoices = LinShorTypes;
                     break;
                 
-                // Esta opcion de deberia pasar
+                // This part should never happen...
                 default:
+                    System.Diagnostics.Debug.WriteLine("This part should never happen...", App.DebgTrace);
                     options.Title = resAvaloniaOps.dlgFileOutFallback;
                     break;
             }

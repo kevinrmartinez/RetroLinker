@@ -23,12 +23,12 @@ namespace RetroLinker.Models.LinFunc;
 
 public static class LinShortcutter
 {
-    private const string lineComment = "# Creado con RetroLinker";  // No se como poner el comentario...
-    private const string line1 = "";
-    private const string line2 = "[Desktop Entry]";
-    private const string notify = "StartupNotify=false";
-    private const string cat = "Categories=Game";
-    private const string linktype = "Type=Application";
+    private const string CommentLine = "# Creado con RetroLinker";
+    private const string BlankLine = "";
+    private const string EntryHeader = "[Desktop Entry]";
+    private const string Notify = "StartupNotify=false";
+    private const string Categ = "Categories=Game";
+    private const string LinkType = "Type=Application";
 
     // Overload con un objeto Shortcut <- En Uso
     public static void CreateShortcut(Shortcutter _shortcut, string name, byte makeCopyIndex)
@@ -36,17 +36,17 @@ public static class LinShortcutter
         List<string> shortcut = new()
         {
             // line1,
-            lineComment,
-            line2,
-            cat
+            CommentLine,
+            EntryHeader,
+            Categ
         };
 
         shortcut.Add($"Comment={_shortcut.Desc}");
 
         shortcut.Add($"Exec={_shortcut.RAdir} {_shortcut.Command}");
 
-        string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? "retroarch" : _shortcut.ICONfile;
-        shortcut.Add($"Icon={_iconFile}");   // No esta garantizado que funcione
+        string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? FileOps.DotDesktopRAIcon : _shortcut.ICONfile;
+        shortcut.Add($"Icon={_iconFile}");
 
         shortcut.Add("Name=" + name);
         // shortcut.Add(notify);
@@ -54,7 +54,7 @@ public static class LinShortcutter
         string _terminal = (_shortcut.VerboseB) ? "true" : "false";
         shortcut.Add($"Terminal={_terminal}");
 
-        shortcut.Add(linktype);
+        shortcut.Add(LinkType);
 
         string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.LNKdir : _shortcut.LNKcpy[makeCopyIndex];
 
@@ -65,11 +65,10 @@ public static class LinShortcutter
 
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
+        // TODO: Mover esta parte a FileOps.cs with a try-catch
         File.WriteAllBytes(outputFile, outputBytes);
-
-        // TODO: Mover esta parte a FileOps.cs
-        //File.WriteAllBytes();
-        //File.WriteAllLines(outputFile, shortcut, Encoding.UTF8); 
+        
+        
         System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
         SetExecPermissions(outputFile);
     }

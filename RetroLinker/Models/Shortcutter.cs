@@ -54,7 +54,7 @@ namespace RetroLinker.Models
         }
         #endregion
         
-        // OS Decider
+        // Link Creatinon - OS selection
         public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
         {
             return (os) ? BuildWinShortcut(link) : BuildLinShorcut(link);
@@ -68,15 +68,17 @@ namespace RetroLinker.Models
 
             link.RApath = FileOps.GetDirFromPath(link.RAdir);
 
-            // Adicion de comillas para manejo de directorios no inusuales...
-            // para el WorkingDirectory de RetroArch
+            // Double quotes for directories that are parameters ->
+            // -> for RetroArch's WorkingDirectory
             link.RApath = Utils.FixUnusualDirectories(link.RApath);
 
-            // para el ejecutable de RetroArch
+            // -> for RetroArch's executable
             link.RAdir = Utils.FixUnusualDirectories(link.RAdir);
 
+            // Building the arguments
             link = Commander.CommandBuilder(link);
 
+            // Grouping the .lnk parameters
             var CreateShortcutArgs = new object[]
             {
                 link.RAdir, link.RApath, link.Command,
@@ -116,19 +118,23 @@ namespace RetroLinker.Models
             }
             
             return ResultList;
-        }   // 
+        }
 
         // Linux
         private static List<ShortcutterResult> BuildLinShorcut(Shortcutter link)
         {
             var ResultList = new List<ShortcutterResult>();
+            
+            // Building the arguments
             link = Commander.CommandBuilder(link);
             //link.Command = link.Command.Replace("\"", "\'");
             if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
             { link.ICONfile = FileOps.DotDesktopRAIcon; }
             
+            // Applying 'Free Desktop' to link name
             string[] NameFix = FileOps.DesktopEntryName(link.LNKdir, link.ROMcore);
             link.LNKdir = NameFix[0];
+            
             var LinkResult = new ShortcutterResult(link.LNKdir);
             ResultList.Add(LinkResult);
             System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKdir}'...", App.InfoTrace);
@@ -167,9 +173,9 @@ namespace RetroLinker.Models
     }
 
     
-    public class ShortcutterResult
+    public class ShortcutterResult(string outputDir)
     {
-        public string OutputDir { get; set; }
+        public string OutputDir { get; set; } = outputDir;
         public string? Messeage { get; set; }
         public bool Error { get; set; }
         public string? eMesseage { get; set; }
@@ -177,10 +183,5 @@ namespace RetroLinker.Models
         
         public readonly string Success1 = resMainView.popLinkSucces;
         public readonly string Failure1 = resMainView.popLinkFailure;
-
-        public ShortcutterResult(string outputDir)
-        {
-            OutputDir = outputDir;
-        }
     }
 }

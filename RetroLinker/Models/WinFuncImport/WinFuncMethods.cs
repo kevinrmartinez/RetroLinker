@@ -23,9 +23,9 @@ namespace RetroLinker.Models.WinFuncImport
 {
     public class WinFuncMethods : IEquatable<WinFuncMethods>
     {
-        public string MethodName { get; set; }
-        public object ObjInstance { get; set; }
-        public MethodInfo MInfo { get; set; }
+        public string MethodName { get; }
+        public object ObjInstance { get; }
+        public MethodInfo MInfo { get; }
 
         public WinFuncMethods(string name, object instance, MethodInfo methodInfo) 
         {

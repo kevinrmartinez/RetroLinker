@@ -20,12 +20,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ImageMagick;
+using RetroLinker.Models.WinFuncImport;
 
 namespace RetroLinker.Models.Icons
 {
     public static class IconProc
     {
-        const int MaxRes = 256; // Magick no permite trabajar icos mas grandes...
+        const int MaxRes = 256; // Magick can't work with bigger .ico files...
         public static List<IconsItems> IconItemsList { get; set; }
 
         static WinFuncImport.WinFuncMethods ExtractIco;
@@ -50,9 +51,8 @@ namespace RetroLinker.Models.Icons
         {
             var ICOGeo = new MagickGeometry(MaxRes)
             { IgnoreAspectRatio = false };
+            // TODO: Below here deserves an explanation
             bool IsSquare = (ICO.BaseHeight == ICO.BaseWidth);
-            //if (ICO.Height > MaxRes || ICO.Width > MaxRes) { ICO.Resize(ICOGeo); }
-            //else { ICO.Scale(ICOGeo); }
             ICO.Scale(ICOGeo);
             if (!IsSquare) { ICO.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent); }
             return ICO;
@@ -60,9 +60,11 @@ namespace RetroLinker.Models.Icons
 
         public static MemoryStream GetStream(string DIR)
         {
-            // Fijar el background transparente antes de leer lar imagen. Solucion gracias a Micah y Mateen Ulhaq en stackoverflow.com
+            // Set the background transparent before reading the image.
+            // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
             var IMG = new MagickImage()
             { BackgroundColor = MagickColors.Transparent };
+            
             var ImgStream = new MemoryStream();
             IMG.Read(DIR);
             IMG.Format = MagickFormat.Png32;
@@ -99,7 +101,11 @@ namespace RetroLinker.Models.Icons
                 MemoryStream icoMS = ExtractIco.MInfo.Invoke(ExtractIco.ObjInstance, Args) as MemoryStream;
                 return icoMS;
             }
-            catch { Console.WriteLine("WinFunc no pude extraer el icono!"); Console.Beep(); return new MemoryStream(); }
+            catch
+            {
+                System.Diagnostics.Trace.WriteLine($"{FuncLoader.WinOnlyLib} couldn't extract the desired Icon!", App.ErroTrace);
+                return new MemoryStream();
+            }
         }
 
         /* Posible implementacion para extraer un icono especifico de un .exe o .dll */
@@ -117,25 +123,7 @@ namespace RetroLinker.Models.Icons
         /// <returns>A MagickImage instance in the .ico format</returns>
         public static MagickImage SaveIcoToMagick(MemoryStream iconStream) => new MagickImage(iconStream, MagickFormat.Ico);
         #endregion
-
-
-#if DEBUG
-        public static void TestWriteToFile()
-        {
-            var image = new MagickImage("E:\\CommonDevAssets\\ava1.1.png");
-
-            int sizeMajor = int.Max(image.Width, image.Height);
-            if (image.Height > MaxRes || image.Width > MaxRes)
-            { image.InterpolativeResize(MaxRes, MaxRes, PixelInterpolateMethod.Bilinear); }
-            else
-            {
-                int i;
-                for (i = MaxRes; i > sizeMajor; i /= 2) { }
-                image.AdaptiveResize(i, i);
-            }
-            image.Write("E:\\CommonDevAssets\\zero-icon.ico", MagickFormat.Ico);
-        }
-#endif
+        
     }
     
     
