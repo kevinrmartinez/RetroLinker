@@ -89,7 +89,7 @@
 							<CheckBox Name="chkVerb" Content="{x:Static locale:resMainView.chkVerb}"/>
 							<CheckBox Name="chkAccessi" Content="{x:Static locale:resMainView.chkAccessi}"/>
 						</StackPanel>
-						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" 
+						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" IsEnabled="False"
 						        Content="{x:Static locale:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
 					</Grid>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkDir}"/>

@@ -150,11 +150,20 @@ namespace RetroLinker.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The import has failed with the following error:\n{0}\n\nWithout this library the program cannot accomplish its function..
+        ///   Looks up a localized string similar to The import has failed with the following error:.
         /// </summary>
         public static string dllErrorMess {
             get {
                 return ResourceManager.GetString("dllErrorMess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Without this library the program cannot accomplish its function..
+        /// </summary>
+        public static string dllErrorMess2 {
+            get {
+                return ResourceManager.GetString("dllErrorMess2", resourceCulture);
             }
         }
         
@@ -402,7 +411,7 @@ namespace RetroLinker.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The operation failed with the following error:\n{0}.
+        ///   Looks up a localized string similar to The operation failed with the following error:.
         /// </summary>
         public static string popSingleOutput0_Mess {
             get {

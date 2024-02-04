@@ -248,6 +248,16 @@ namespace RetroLinker.Models
             new_dir = Path.Combine(LinkPath, new_dir);
             return new_dir;
         }
+
+        public static string[] GetLinkCopyPaths(List<string> linkCopyList, string liknBaseOpuput)
+        {
+            var LinkCopies = new string[linkCopyList.Count];
+            for (int i = 0; i < LinkCopies.Length; i++)
+            {
+                LinkCopies[i] = Path.Combine(SettingsOps.LinkCopyPaths[i], Path.GetFileName(liknBaseOpuput));
+            }
+            return LinkCopies;
+        }
         #endregion
 
         #region ICONS
