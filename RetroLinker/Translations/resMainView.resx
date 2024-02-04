@@ -109,7 +109,7 @@
         <value>The import of {0} has failed!</value>
     </data>
     <data name="dllErrorMess" xml:space="preserve">
-        <value>The import has failed with the following error:\n{0}\n\nWithout this library the program cannot accomplish its function.</value>
+        <value>The import has failed with the following error:</value>
     </data>
     <data name="comboDefItem" xml:space="preserve">
         <value>Default</value>
@@ -136,7 +136,7 @@
         <value>Success</value>
     </data>
     <data name="popSingleOutput0_Mess" xml:space="preserve">
-        <value>The operation failed with the following error:\n{0}</value>
+        <value>The operation failed with the following error:</value>
     </data>
     <data name="popSingleOutput0_Head" xml:space="preserve">
         <value>An error has occurred while creating the link</value>
@@ -164,5 +164,8 @@
     </data>
     <data name="btnMoreParams" xml:space="preserve">
         <value>More</value>
+    </data>
+    <data name="dllErrorMess2" xml:space="preserve">
+        <value>Without this library the program cannot accomplish its function.</value>
     </data>
 </root>

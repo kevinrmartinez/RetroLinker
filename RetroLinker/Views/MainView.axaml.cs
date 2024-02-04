@@ -226,7 +226,7 @@ public partial class MainView : UserControl
             Icon = MsBox.Avalonia.Enums.Icon.Error,
             ContentTitle = resMainView.genFatalError,
             ContentHeader = string.Format(resMainView.dllErrorHead, FuncLoader.WinOnlyLib),
-            ContentMessage = string.Format(resMainView.dllErrorMess, eMain.Message),
+            ContentMessage = $"{resMainView.dllErrorMess}\n{eMain.Message}\n\n{resMainView.dllErrorMess2}",
             ButtonDefinitions = diag_btns
         };
 
@@ -601,7 +601,6 @@ public partial class MainView : UserControl
         if (!ShortcutPosible) return;
         // Double quotes for directories that are parameters ->
         // -> for the ROM file
-        // TODO: Use the Contentless checkbox
         if (!(bool)chkContentless.IsChecked) 
         { OutputLink.ROMdir = Utils.FixUnusualDirectories(OutputLink.ROMdir); }
 
@@ -610,23 +609,8 @@ public partial class MainView : UserControl
         { OutputLink.CONFfile = Utils.FixUnusualDirectories(OutputLink.CONFfile); }
 
         // Link Copies handling
-#if DEBUG
-        // SettingsOps.LinkCopyPaths = new List<string>()
-        // {
-        //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test1"),
-        //     System.IO.Path.Combine(FileOps.UserDesktop, "testing", "test2"),
-        // };
-#endif
         if (settings.MakeLinkCopy)
-        {
-            //TODO: Move operation to FileOps
-            OutputLink.LNKcpy = new string[SettingsOps.LinkCopyPaths.Count];
-            for (int i = 0; i < OutputLink.LNKcpy.Length; i++)
-            {
-                OutputLink.LNKcpy[i] = System.IO.Path.Combine(SettingsOps.LinkCopyPaths[i],
-                    System.IO.Path.GetFileName(OutputLink.LNKdir));
-            }
-        }
+        { OutputLink.LNKcpy = FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.LNKdir); }
 
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
         // Single Shortcut
@@ -634,7 +618,7 @@ public partial class MainView : UserControl
         {
             if (!opResult[0].Error)
             {
-                msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess; 
+                msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
                 msbox_params.ContentTitle = resMainView.genSucces;
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);

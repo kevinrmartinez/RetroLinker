@@ -78,7 +78,7 @@
         <value>El importado de {0} ha fallado!</value>
     </data>
     <data name="dllErrorMess" xml:space="preserve">
-        <value>El importado a fallado con el siguiente error:\n{0}\n\nSin este módulo el programa no puede cumplir su funcion.</value>
+        <value>El importado a fallado con el siguiente error:</value>
     </data>
     <data name="LinPopUp_Title" xml:space="preserve">
         <value>Observacion</value>
@@ -105,7 +105,7 @@
         <value>Ha ocurrido un error al crear el link</value>
     </data>
     <data name="popSingleOutput0_Mess" xml:space="preserve">
-        <value>La operacion falló con el siguienete error:\n{0}</value>
+        <value>La operacion falló con el siguienete error:</value>
     </data>
     <data name="popMultiOutput1_Mess" xml:space="preserve">
         <value>Todos los links fueron creados con éxtio</value>
@@ -127,5 +127,8 @@
     </data>
     <data name="btnMoreParams" xml:space="preserve">
         <value>Más</value>
+    </data>
+    <data name="dllErrorMess2" xml:space="preserve">
+        <value>Sin este módulo el programa no puede cumplir su funcion.</value>
     </data>
 </root>

@@ -23,7 +23,6 @@ namespace RetroLinker.Models.WinFuncImport
 {
     public static class FuncLoader
     {
-        // Este .dll debe estar presente junto al ejecutable! (Windows)
         public const string WinOnlyLib = "RetroLinkerWinLib.dll";
         private const string WinOnlyNamespace = "RetroLinkerWin";
         private static Assembly DLL;
@@ -32,8 +31,8 @@ namespace RetroLinker.Models.WinFuncImport
         {
             System.Diagnostics.Trace.WriteLine($"Importing {WinOnlyLib}...", App.InfoTrace);
             DLL = Assembly.LoadFrom(WinOnlyLib);
-            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} was imported successfully.", App.InfoTrace);
-            System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} imported as '{DLL.FullName}'.", App.DebgTrace);
+            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} was loaded successfully.", App.InfoTrace);
+            System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} loaded as '{DLL.FullName}'.", App.DebgTrace);
         }
 
         public static WinFuncMethods GetShortcutMethod()
@@ -56,6 +55,8 @@ namespace RetroLinker.Models.WinFuncImport
         {
             const string mName = "ExtractIco";
             var WinShortcutter = DLL.GetType($"{WinOnlyNamespace}.WinIconProc");
+            System.Diagnostics.Debug.WriteLine($"Loaded type is: {WinShortcutter.FullName}", App.DebgTrace);
+            System.Diagnostics.Trace.WriteLineIf((WinShortcutter != null), $"{WinOnlyLib} was imported successfully.", App.InfoTrace);
             var objWinShortcutter = Activator.CreateInstance(WinShortcutter);
 
             var methodArgsTypes = new Type[]
