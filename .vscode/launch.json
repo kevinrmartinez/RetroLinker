@@ -4,15 +4,15 @@
         {
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+            // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/RetroarchShortcutterV2.Desktop/bin/Debug/net7.0/RetroarchShortcutter(V2).dll",
+            "program": "${workspaceFolder}/RetroLinker.Desktop/bin/Debug/net8.0/RetroLinker.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/RetroarchShortcutterV2.Desktop",
+            "cwd": "${workspaceFolder}/RetroLinker.Desktop",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false
@@ -21,43 +21,6 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
-        },
-        {
-            "name": ".NET Core SSH Attach 1",
-            "type": "coreclr",
-            "request": "attach",
-            "processName": "RetroarchShortcutter(V2)",
-            //"processId": "${command:pickRemoteProcess}",
-            "pipeTransport": {
-                "pipeProgram": "ssh",
-                "pipeArgs": [ "-i", "C:\\Users\\force\\.ssh\\vmkey1", "-T", "zerofox@192.168.50.10" ],
-                "debuggerPath": "~/vsdbg/vsdbg",
-                "pipeCwd": "${workspaceRoot}",
-                "quoteArgs": true
-            },
-            "sourceFileMap": {
-                "/home/zerofox/src/RSV2": "${workspaceRoot}"
-            }
-        },
-        {
-            "name": ".NET Core SSH Attach 2",
-            "type": "coreclr",
-            "request": "attach",
-            "processName": "RetroarchShortcutter(V2)",
-            //"processId": "${command:pickRemoteProcess}",
-            "pipeTransport": {
-                "pipeProgram": "ssh",
-                "pipeArgs": [ "-i", "C:\\Users\\force\\.ssh\\vmkey1", "-T", "zerofox@192.168.50.11" ],
-                "debuggerPath": "~/vsdbg/vsdbg",
-                "pipeCwd": "${workspaceRoot}",
-                "quoteArgs": true
-            },
-            "sourceFileMap": {
-                "/home/zerofox/src/RSV2": "${workspaceRoot}"
-            }
         }
-    ],
-    "logging": {
-        "engineLogging": true
-     }
+    ]
 }
