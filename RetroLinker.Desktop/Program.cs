@@ -21,7 +21,6 @@ using System.IO;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
-
 //using Avalonia.ReactiveUI;
 
 namespace RetroLinker.Desktop;
@@ -36,22 +35,15 @@ class Program
     {
         TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
 
-        //File.Create("log.txt");
-        var ConsoleTracer = new System.Diagnostics.ConsoleTraceListener()
-        { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
-        var TextfileTracer = new System.Diagnostics.TextWriterTraceListener("log.txt", "mainTextTracer")
-        { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
-        System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
-
+        StartStopLogging(true);
         System.Diagnostics.Trace.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
 
         System.Diagnostics.Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
-        System.Diagnostics.Trace.Listeners.Remove(ConsoleTracer);
-        ConsoleTracer.Close();
-        System.Diagnostics.Trace.Listeners.Remove(TextfileTracer);
-        TextfileTracer.Close();
+        
+        // App Closing
+        StartStopLogging(false);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
@@ -63,5 +55,34 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
+    }
+
+    private static System.Diagnostics.ConsoleTraceListener ConsoleTracer;
+    private static System.Diagnostics.TextWriterTraceListener TextfileTracer;
+    private const string LogFile = "log.txt";
+
+    private static void StartStopLogging(bool period)
+    {
+        if (period)
+        {
+            try
+            {   File.Delete(LogFile);   }
+            catch
+            {   System.Diagnostics.Trace.WriteLine($"{LogFile} could not be deleted", "[Erro]"); }
+            
+            ConsoleTracer = new()
+            { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
+            TextfileTracer = new(LogFile, "mainTextTracer")
+            { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
+            
+            System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
+        }
+        else
+        {
+            System.Diagnostics.Trace.Listeners.Remove(ConsoleTracer);
+            ConsoleTracer.Close();
+            System.Diagnostics.Trace.Listeners.Remove(TextfileTracer);
+            TextfileTracer.Close();
+        }
     }
 }
