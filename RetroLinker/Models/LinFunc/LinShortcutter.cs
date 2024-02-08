@@ -65,21 +65,20 @@ public static class LinShortcutter
 
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
-        // TODO: Mover esta parte a FileOps.cs with a try-catch
-        File.WriteAllBytes(outputFile, outputBytes);
         
-        
-        System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
-        SetExecPermissions(outputFile);
+        // If file write is successful, set execution permissions
+        if (FileOps.WriteDesktopEntry(outputFile, outputBytes)) SetExecPermissions(outputFile);
     }
 
     private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
     {
+        const string permExec = "chmod";
+        const string permComm = "-c ug+x";
         System.Diagnostics.Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
         var processStartInfo = new System.Diagnostics.ProcessStartInfo()
         {
-            FileName = "chmod",
-            Arguments = $"-c a+x {dir}",
+            FileName = permExec,
+            Arguments = $"{permComm} {dir}",
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
@@ -87,7 +86,7 @@ public static class LinShortcutter
         var process = new System.Diagnostics.Process()
             { StartInfo = processStartInfo };
 
-        System.Diagnostics.Trace.WriteLine($"Executing chmod a+x {dir}...", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"Executing {permExec} {permComm}...", App.InfoTrace);
         process.Start();
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();

@@ -98,8 +98,7 @@ namespace RetroLinker.Models
                 LinkResult.Error = true;
                 LinkResult.eMesseage = e.Message;
             }
-
-            // TODO: Without elevation, some paths will return with permissions error
+            
             for (int i = 0; i < link.LNKcpy.Length; i++)
             {
                 LinkResult = new ShortcutterResult(link.LNKcpy[i]);

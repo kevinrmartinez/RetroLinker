@@ -251,12 +251,27 @@ namespace RetroLinker.Models
 
         public static string[] GetLinkCopyPaths(List<string> linkCopyList, string liknBaseOpuput)
         {
-            var LinkCopies = new string[linkCopyList.Count];
-            for (int i = 0; i < LinkCopies.Length; i++)
+            var linkCopies = new string[linkCopyList.Count];
+            for (int i = 0; i < linkCopies.Length; i++)
             {
-                LinkCopies[i] = Path.Combine(SettingsOps.LinkCopyPaths[i], Path.GetFileName(liknBaseOpuput));
+                linkCopies[i] = Path.Combine(SettingsOps.LinkCopyPaths[i], Path.GetFileName(liknBaseOpuput));
             }
-            return LinkCopies;
+            return linkCopies;
+        }
+
+        public static bool WriteDesktopEntry(string outputFile, byte[] fileBytes)
+        {
+            try
+            {
+                File.WriteAllBytes(outputFile, fileBytes);
+                System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
+                return true;
+            }
+            catch
+            {
+                System.Diagnostics.Trace.WriteLine($"{outputFile} could not be written!", App.ErroTrace);
+                return false;
+            }
         }
         #endregion
 

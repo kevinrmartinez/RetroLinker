@@ -47,13 +47,17 @@ namespace RetroLinker.Models.Icons
             return ICO;
         }
 
-        public static MagickImage ResizeToIco(MagickImage ICO)
+        private static MagickImage ResizeToIco(MagickImage ICO)
         {
+            // ICOGeo is a square geometry equals to MaxRes
             var ICOGeo = new MagickGeometry(MaxRes)
             { IgnoreAspectRatio = false };
-            // TODO: Below here deserves an explanation
+            // IsSquare is true if the image is a square (Height = Width)
             bool IsSquare = (ICO.BaseHeight == ICO.BaseWidth);
+            
+            // Transform the image into the geometry ICOGeo, if it's not square it will rescale into its original Aspect Ratio 
             ICO.Scale(ICOGeo);
+            // if it's not square, the image will be extended into MaxRes, it will be centered, and i'll in front of a transparent background  
             if (!IsSquare) { ICO.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent); }
             return ICO;
         }
