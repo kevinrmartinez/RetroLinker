@@ -30,6 +30,7 @@ namespace RetroLinker.Models
         public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssetsDir = "UserAssets";
+        public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
         public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
@@ -126,16 +127,31 @@ namespace RetroLinker.Models
             file = externalCores;
             return true;
         }
+
+        public static string DumpStreamToFile(Stream fileStream)
+        {
+            fileStream.Position = 0;
+            var temporalFile = Path.Combine(UserTemp, tempFile);
+            var streamReader = new StreamReader(fileStream);
+            var streamWriter = File.CreateText(temporalFile);
+            string line;
+            while ((line = streamReader.ReadLine()) != null)
+            {
+                streamWriter.WriteLine(line);
+            }
+
+            streamWriter.Close();
+            return temporalFile;
+        }
         
-        public static async Task<string[]> LoadCores(FileStream file)
+        public static async Task<string[]> LoadCores(string file)
         {
             // TODO: Create a back up cores.txt that compiles with the app
             // string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
             if (file.Length > 0)
             {
                 System.Diagnostics.Trace.WriteLine($"Starting reading of {file}.", App.InfoTrace);
-                var reader = new StreamReader(file);
-                var cores = reader.ReadToEnd().Replace("\n","").Split('\t');
+                var cores = await File.ReadAllLinesAsync(file);
                 System.Diagnostics.Trace.WriteLine($"Completed reading of {file}.", App.InfoTrace);
                 return cores;
             }

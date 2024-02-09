@@ -62,17 +62,15 @@ public static class AvaloniaOps
     public static void MainViewLoad(bool DesktopOS)
     {
         DefLinRAIcon = FileOps.GetRAIcons();
+
         string coreFile;
-        FileStream coreStream;
         if (!FileOps.GetCoreFile(out coreFile))
         {
-            coreStream = (FileStream)AssetLoader.Open(GetDefaultCores());
+            var assetStream = AssetLoader.Open(GetDefaultCores());
+            coreFile = FileOps.DumpStreamToFile(assetStream);
         }
-        else
-        {
-            coreStream = File.Open(coreFile, FileMode.Open);
-        }
-        coresTask = FileOps.LoadCores(coreStream);
+        coresTask = FileOps.LoadCores(coreFile);
+        
         iconTask = FileOps.LoadIcons(DesktopOS);
 
         FirstLoad = false;
