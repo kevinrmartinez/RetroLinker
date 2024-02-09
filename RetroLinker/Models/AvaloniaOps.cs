@@ -22,6 +22,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
 
@@ -34,6 +35,7 @@ public static class AvaloniaOps
     private static Task<List<string>> iconTask;
     private static string[] cores = Array.Empty<string>();
     private static List<string> iconList = new List<string>();
+    private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
     
@@ -60,7 +62,17 @@ public static class AvaloniaOps
     public static void MainViewLoad(bool DesktopOS)
     {
         DefLinRAIcon = FileOps.GetRAIcons();
-        coresTask = FileOps.LoadCores();
+        string coreFile;
+        FileStream coreStream;
+        if (!FileOps.GetCoreFile(out coreFile))
+        {
+            coreStream = (FileStream)AssetLoader.Open(GetDefaultCores());
+        }
+        else
+        {
+            coreStream = File.Open(coreFile, FileMode.Open);
+        }
+        coresTask = FileOps.LoadCores(coreStream);
         iconTask = FileOps.LoadIcons(DesktopOS);
 
         FirstLoad = false;
@@ -78,6 +90,8 @@ public static class AvaloniaOps
         iconList = await iconTask;
         return iconList;
     }
+
+    public static Uri GetDefaultCores() => new Uri(CoreList);
     
     public static Uri GetDefaultIcon() => new Uri(DEFicon1);
 
@@ -116,7 +130,7 @@ public static class AvaloniaOps
                 1 => resAvaloniaOps.dlgFolderROMParent,
                 2 => resAvaloniaOps.dlgFolderIcoOutput,
                 3 => resAvaloniaOps.dlgFolderLinkCopy,
-                // Esta opcion no deberia pasar
+                // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
             }
         };

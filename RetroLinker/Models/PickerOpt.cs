@@ -59,17 +59,26 @@ namespace RetroLinker.Models
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
-                // All files for ROMs
+                // ROM files (all files)
                 case OpenOpts.RAroms:
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAexe;
-                    //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
+                    options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
                     if (AvaloniaOps.ROMPadreDir != null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
-                    // TODO: No funciona con los FilePicker de las distros de linux
+                    // TODO: Doesn't work with most FilePickers of linux distros
+                    /*
+                     * From the XDG Portal Docs:
+                     * 
+                     * "Suggested folder from which the files should be opened.
+                     * The portal implementation is free to ignore this option."
+                     *
+                     * The DBus FilePicker added a way to force the start location and AvaloniaUI 11.0.6 implemented it,
+                     * but is very new and it doesn't solves GTK pickers...
+                     */
                     break;
 
-                // Retroarch config
+                // RetroArch config
                 case OpenOpts.RAcfg:
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAcfg;

@@ -115,14 +115,27 @@ namespace RetroLinker.Models
 
         #region Load
 
-        public static async Task<string[]> LoadCores()
+        public static bool GetCoreFile(out string file)
+        {
+            string externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
+            if (!File.Exists(externalCores))
+            {
+                file = string.Empty;
+                return false;
+            }
+            file = externalCores;
+            return true;
+        }
+        
+        public static async Task<string[]> LoadCores(FileStream file)
         {
             // TODO: Create a back up cores.txt that compiles with the app
-            string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
-            if (File.Exists(file))
+            // string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
+            if (file.Length > 0)
             {
                 System.Diagnostics.Trace.WriteLine($"Starting reading of {file}.", App.InfoTrace);
-                var cores = await File.ReadAllLinesAsync(file);
+                var reader = new StreamReader(file);
+                var cores = reader.ReadToEnd().Replace("\n","").Split('\t');
                 System.Diagnostics.Trace.WriteLine($"Completed reading of {file}.", App.InfoTrace);
                 return cores;
             }
