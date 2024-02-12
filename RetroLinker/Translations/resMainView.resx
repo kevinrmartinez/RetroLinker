@@ -168,4 +168,13 @@
     <data name="dllErrorMess2" xml:space="preserve">
         <value>Without this library the program cannot accomplish its function.</value>
     </data>
+    <data name="popIconsError_Tittle" xml:space="preserve">
+        <value>Error importing icons</value>
+    </data>
+    <data name="popIconsError_Mess" xml:space="preserve">
+        <value>There was an error importing the icon list.</value>
+    </data>
+    <data name="popIconsError_Mess2" xml:space="preserve">
+        <value>Details:</value>
+    </data>
 </root>

@@ -131,4 +131,13 @@
     <data name="dllErrorMess2" xml:space="preserve">
         <value>Sin este módulo el programa no puede cumplir su funcion.</value>
     </data>
+    <data name="popIconsError_Tittle" xml:space="preserve">
+        <value>Error al importar iconos</value>
+    </data>
+    <data name="popIconsError_Mess2" xml:space="preserve">
+        <value>Detalles:</value>
+    </data>
+    <data name="popIconsError_Mess" xml:space="preserve">
+        <value>Hubo un error al importar la lista de iconos.</value>
+    </data>
 </root>

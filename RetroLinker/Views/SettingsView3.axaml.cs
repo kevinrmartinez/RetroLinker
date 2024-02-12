@@ -67,8 +67,8 @@ namespace RetroLinker.Views
                 }
                 else
                 { candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates); }
-
-                //candidateCopiesPath.Add(list);
+                txtDEFLinkOutput.ItemsSource = candidateCopiesPath;
+                
                 foreach (var path in SettingsOps.LinkCopyPaths)
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));

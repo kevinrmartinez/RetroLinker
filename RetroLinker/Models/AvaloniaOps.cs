@@ -32,9 +32,9 @@ public static class AvaloniaOps
 {
     private static bool FirstLoad = true;
     private static Task<string[]> coresTask;
-    private static Task<List<string>> iconTask;
+    private static Task<object[]> iconTask;
     private static string[] cores = Array.Empty<string>();
-    private static List<string> iconList = new List<string>();
+    private static object[] iconList = Array.Empty<object>();
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
@@ -82,9 +82,9 @@ public static class AvaloniaOps
         return cores;
     }
     
-    public static async Task<List<string>> GetIconList()
+    public static async Task<object[]> GetIconList()
     {
-        if (iconList.Count != 0) return iconList;
+        if (iconList.Length != 0) return iconList;
         iconList = await iconTask;
         return iconList;
     }

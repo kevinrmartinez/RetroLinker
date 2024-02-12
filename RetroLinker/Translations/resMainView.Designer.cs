@@ -348,6 +348,33 @@ namespace RetroLinker.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error importing the icon list..
+        /// </summary>
+        public static string popIconsError_Mess {
+            get {
+                return ResourceManager.GetString("popIconsError_Mess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Details:.
+        /// </summary>
+        public static string popIconsError_Mess2 {
+            get {
+                return ResourceManager.GetString("popIconsError_Mess2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error importing icons.
+        /// </summary>
+        public static string popIconsError_Tittle {
+            get {
+                return ResourceManager.GetString("popIconsError_Tittle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Link creation has failed.
         /// </summary>
         public static string popLinkFailure {

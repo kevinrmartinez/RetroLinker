@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -26,6 +27,7 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using RetroLinker.Models;
 using RetroLinker.Models.Icons;
@@ -126,17 +128,35 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    async void comboICONDir_Loaded(Task<List<string>> iconsTask)
+    async void comboICONDir_Loaded(Task<object[]> iconsTask)
     {
-        var iconsList = await iconsTask;
-        comboICONDir.Items.Add(resMainView.comboDefItem);
-        System.Diagnostics.Trace.WriteLine("Icons list imported", App.InfoTrace);
-        foreach (var iconFile in iconsList)
+        var iconsObject = await iconsTask;
+        var iconsList = (List<string>)iconsObject[0];
+        var hasError = (bool)iconsObject[1];
+        var exception = (string)iconsObject[2];
+
+        if (!hasError)
         {
-            comboICONDir.Items.Add(iconFile);
+            comboICONDir.Items.Add(resMainView.comboDefItem);
+            Trace.WriteLine("Icons list imported", App.InfoTrace);
+            foreach (var iconFile in iconsList)
+            {
+                comboICONDir.Items.Add(iconFile);
+            }
+            comboICONDir.SelectedIndex++;
+            rdoIconDef.IsChecked = true;
         }
-        comboICONDir.SelectedIndex++;
-        rdoIconDef.IsChecked = true;
+        else
+        {
+            var popParams = new MessageBoxStandardParams()
+            {
+                ContentTitle = resMainView.popIconsError_Tittle,
+                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{exception}'",
+                Icon = Icon.Error,
+                ButtonDefinitions = ButtonEnum.Ok
+            };
+            MessageBoxPopUp(popParams);
+        }
     }
     #endregion
 

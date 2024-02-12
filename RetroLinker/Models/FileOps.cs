@@ -146,29 +146,30 @@ namespace RetroLinker.Models
         
         public static async Task<string[]> LoadCores(string file)
         {
-            // TODO: Create a back up cores.txt that compiles with the app
-            // string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
-            if (file.Length > 0)
+            try
             {
                 System.Diagnostics.Trace.WriteLine($"Starting reading of {file}.", App.InfoTrace);
                 var cores = await File.ReadAllLinesAsync(file);
                 System.Diagnostics.Trace.WriteLine($"Completed reading of {file}.", App.InfoTrace);
                 return cores;
             }
-            else
+            catch
             {
                 System.Diagnostics.Trace.WriteLine($"The file {file} could not be found!", App.InfoTrace);
                 return Array.Empty<string>();
             }
         }
 
-        public static async Task<List<string>> LoadIcons(bool OS)
+        public static async Task<object[]> LoadIcons(bool OS)
         {
-            // TODO: Be able to return errors
             IconProc.IconItemsList = new();
+            var files = new List<string>();
+            var isError = false;
+            var iconException = $"Empty Exception {App.DebgTrace}";
+            
             try
             {
-                List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
+                files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
                 System.Diagnostics.Trace.WriteLine(
                     $"Starting Icons reading at {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
                 for (int i = 0; i < files.Count; i++)
@@ -196,14 +197,10 @@ namespace RetroLinker.Models
                     }
                 }
 
-                if (files.Count == 0)
-                {
-                    System.Diagnostics.Trace.WriteLine(
-                        $"No icons found at {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
-                    return new List<string>();
-                }
-                else
-                { System.Diagnostics.Trace.WriteLine($"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace); }
+                System.Diagnostics.Trace.WriteLine(
+                    files.Count == 0
+                        ? $"No icons found at {LoadedSettings.UserAssetsPath}."
+                        : $"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace);
 
                 files.Clear();
                 int newindex = 1;
@@ -213,24 +210,32 @@ namespace RetroLinker.Models
                     file.comboIconIndex = newindex;
                     newindex++;
                 }
-
-                return files;
             }
 
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException e)
             {
                 // Possibly redundant
                 System.Diagnostics.Trace.WriteLine(
                     $"The directory '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}' could not be found.", App.WarnTrace);
-                return new List<string>();
+                iconException = e.Message;
+                isError = true;
             }
             catch (Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"An error has occurred while loading icons.", App.ErroTrace);
                 System.Diagnostics.Debug.WriteLine(
                     $"In FileOps, he element {e.Source} has returned the error:\n{e.Message}", App.ErroTrace);
-                return new List<string>();
+                iconException = e.Message;
+                isError = true;
             }
+            
+            var objArray = new object[]
+            {
+                files,
+                isError,
+                iconException
+            };
+            return objArray;
         }
         #endregion
 
