@@ -242,6 +242,8 @@ namespace RetroLinker.Models
         #region FUNCTIONS
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
+        
+        public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
 
         public static bool CheckUsrSetDir(string path)
         {
@@ -293,6 +295,7 @@ namespace RetroLinker.Models
             return linkCopies;
         }
 
+        // TODO: this could be moved to LinFunc Namespaces
         public static bool WriteDesktopEntry(string outputFile, byte[] fileBytes)
         {
             try
@@ -416,7 +419,7 @@ namespace RetroLinker.Models
         public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
         {
             string iconPath = GetDirFromPath(linkObj.ICONfile);
-            string linkName = Path.GetFileNameWithoutExtension(linkObj.LNKdir) + ".ico";
+            string linkName = Path.GetFileNameWithoutExtension(linkObj.OutputPath) + ".ico";
             string newIconPath = Path.Combine(iconPath, linkName);
             
             File.Copy(linkObj.ICONfile, newIconPath, true);

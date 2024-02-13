@@ -17,7 +17,6 @@
 */
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -138,7 +137,7 @@ public partial class MainView : UserControl
         if (!hasError)
         {
             comboICONDir.Items.Add(resMainView.comboDefItem);
-            Trace.WriteLine("Icons list imported", App.InfoTrace);
+            System.Diagnostics.Trace.WriteLine("Icons list imported", App.InfoTrace);
             foreach (var iconFile in iconsList)
             {
                 comboICONDir.Items.Add(iconFile);
@@ -438,15 +437,14 @@ public partial class MainView : UserControl
         if (!string.IsNullOrEmpty(file))
         {
             OutputLink.ROMdir = file;
-            OutputLink.ROMfile = file;
+            // OutputLink.ROMname = file;
             txtROMDir.Text = file;
         }
     }
-
-    // TODO
+    
     void btnPatches_Click(object sender, RoutedEventArgs e)
     {
-        
+        // TODO
     }
     #endregion
 
@@ -524,8 +522,8 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.SaveFileAsync(template:opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
-            OutputLink.LNKdir = file;
-            txtLINKDir.Text = OutputLink.LNKdir;
+            OutputLink.OutputPath = file;
+            txtLINKDir.Text = OutputLink.OutputPath;
         }
 #if DEBUG
         else
@@ -559,7 +557,7 @@ public partial class MainView : UserControl
         OutputLink.AccessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validating contentless or not
-        OutputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : OutputLink.ROMfile;
+        OutputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : OutputLink.ROMname;
 
         // Validate theres an executable (Linux)
         ValidateLINBin();
@@ -569,9 +567,9 @@ public partial class MainView : UserControl
 
         // Link handling in case of 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        { OutputLink.LNKdir = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS); }
+        { OutputLink.OutputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS); }
         else
-        { OutputLink.LNKdir = txtLINKDir.Text; }
+        { OutputLink.OutputPath = txtLINKDir.Text; }
 
         // Validate theres a description
         OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
@@ -606,7 +604,7 @@ public partial class MainView : UserControl
         if ((!string.IsNullOrEmpty(OutputLink.RAdir)) 
          && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
          && (!string.IsNullOrEmpty(OutputLink.ROMcore))
-         && (!string.IsNullOrEmpty(OutputLink.LNKdir))
+         && (!string.IsNullOrEmpty(OutputLink.OutputPath))
          )
         { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
         else
@@ -630,7 +628,7 @@ public partial class MainView : UserControl
 
         // Link Copies handling
         if (settings.MakeLinkCopy)
-        { OutputLink.LNKcpy = FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.LNKdir); }
+        { OutputLink.LNKcpy = FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPath); }
 
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
         // Single Shortcut

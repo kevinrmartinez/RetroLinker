@@ -56,7 +56,7 @@ public static class LinShortcutter
 
         shortcut.Add(LinkType);
 
-        string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.LNKdir : _shortcut.LNKcpy[makeCopyIndex];
+        string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.OutputPath : _shortcut.LNKcpy[makeCopyIndex];
 
         for (int i = 0; i < shortcut.Count; i++)
         {

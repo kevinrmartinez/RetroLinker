@@ -23,16 +23,16 @@ namespace RetroLinker.Models
             lnk.RAdir = "retroarch";
             lnk.ROMdir = Commander.contentless;
             lnk.ROMcore = "2048";
-            lnk.LNKdir = "2048.desktop";
+            lnk.OutputPath = "2048.desktop";
             lnk.Desc = "Juega 2048 en Retroarch";
             lnk.VerboseB = true;
             if (OS) { OS = false; }
             Shortcutter.BuildShortcut(lnk, OS);
 
             lnk.Command = $"-L mgba \"{System.IO.Path.Combine(FileOps.UserProfile, "Fire Emblem - The Binding Blade.gba")}\"";
-            lnk.LNKdir = System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop");
-            string[] NameFix = FileOps.DesktopEntryName(lnk.LNKdir, lnk.ROMcore);
-            lnk.LNKdir = NameFix[0];
+            lnk.OutputPath = System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop");
+            string[] NameFix = FileOps.DesktopEntryName(lnk.OutputPath, lnk.ROMcore);
+            lnk.OutputPath = NameFix[0];
             LinFunc.LinShortcutter.CreateShortcut(lnk, NameFix[1], byte.MaxValue);
         }
     }
