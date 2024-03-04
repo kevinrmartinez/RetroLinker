@@ -31,7 +31,7 @@ public static class LinShortcutter
     private const string LinkType = "Type=Application";
 
     // Overload con un objeto Shortcut <- En Uso
-    public static void CreateShortcut(Shortcutter _shortcut, string name, byte makeCopyIndex)
+    public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
     {
         List<string> shortcut = new()
         {
@@ -48,7 +48,7 @@ public static class LinShortcutter
         string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? FileOps.DotDesktopRAIcon : _shortcut.ICONfile;
         shortcut.Add($"Icon={_iconFile}");
 
-        shortcut.Add("Name=" + name);
+        shortcut.Add("Name=" + _output.FriendlyName);
         // shortcut.Add(notify);
 
         string _terminal = (_shortcut.VerboseB) ? "true" : "false";
@@ -56,11 +56,12 @@ public static class LinShortcutter
 
         shortcut.Add(LinkType);
 
-        string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.OutputPath : _shortcut.LNKcpy[makeCopyIndex];
+        string outputFile = _output.FullPath;
 
         for (int i = 0; i < shortcut.Count; i++)
         {
-            shortcut[i] = string.Concat(shortcut[i], "\n");
+            // shortcut[i] = string.Concat(shortcut[i], "\n");
+            shortcut[i] += "\n";
         }
 
         string fullOutputString = string.Concat(shortcut);

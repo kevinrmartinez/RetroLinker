@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using DynamicData;
 
 namespace RetroLinker.Models
 {
@@ -23,17 +24,16 @@ namespace RetroLinker.Models
             lnk.RAdir = "retroarch";
             lnk.ROMdir = Commander.contentless;
             lnk.ROMcore = "2048";
-            lnk.OutputPath = "2048.desktop";
+            lnk.OutputPath.Add(new ShortcutterOutput("2048.desktop", lnk.ROMcore));
             lnk.Desc = "Juega 2048 en Retroarch";
             lnk.VerboseB = true;
             if (OS) { OS = false; }
             Shortcutter.BuildShortcut(lnk, OS);
 
             lnk.Command = $"-L mgba \"{System.IO.Path.Combine(FileOps.UserProfile, "Fire Emblem - The Binding Blade.gba")}\"";
-            lnk.OutputPath = System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop");
-            string[] NameFix = FileOps.DesktopEntryName(lnk.OutputPath, lnk.ROMcore);
-            lnk.OutputPath = NameFix[0];
-            LinFunc.LinShortcutter.CreateShortcut(lnk, NameFix[1], byte.MaxValue);
+            lnk.OutputPath.Add(new ShortcutterOutput(System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop"), lnk.ROMcore));
+            
+            LinFunc.LinShortcutter.CreateShortcut(lnk, lnk.OutputPath[0]);
         }
     }
 }

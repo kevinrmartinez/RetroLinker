@@ -63,6 +63,7 @@ public partial class MainView : UserControl
     private byte CurrentTheme = 250;
     // TODO: Make one Shortcutter that handles user input, and another for link process and output
     private Shortcutter OutputLink = new();
+    private string OutputLinkPath;
     private Settings settings;
     private Bitmap ICONimage;
     private IconsItems IconItemSET;
@@ -324,6 +325,10 @@ public partial class MainView : UserControl
         if (OutputLink.RAdir == txtRADir.Text) return;
         OutputLink.RAdir = string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
     }
+
+    ShortcutterOutput getShortcutterOutput(string filePath, string core) => (DesktopOS)
+        ? new ShortcutterOutput(filePath)
+        : new ShortcutterOutput(filePath, core);
     #endregion
 
 
@@ -519,11 +524,11 @@ public partial class MainView : UserControl
         
         PickerOpt.SaveOpts opt;
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
-        string file = await AvaloniaOps.SaveFileAsync(template:opt, ParentWindow);
+        string file = await AvaloniaOps.SaveFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
-            OutputLink.OutputPath = file;
-            txtLINKDir.Text = OutputLink.OutputPath;
+            OutputLinkPath = file;
+            txtLINKDir.Text = OutputLinkPath;
         }
 #if DEBUG
         else
@@ -538,8 +543,11 @@ public partial class MainView : UserControl
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (settings.AllwaysAskOutput) return;
-        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS) 
-                                                                             : FileOps.UserDesktop;
+        string coreName = (!string.IsNullOrEmpty(comboCore.Text)) ? comboCore.Text : "'core'";
+        // TODO: Optomize
+        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" : FileOps.DesktopEntryName(txtLINKDir.Text, coreName)[2];
+        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
+                                                                             : settings.DEFLinkOutput;
     }
     #endregion
 
@@ -567,11 +575,16 @@ public partial class MainView : UserControl
 
         // Link handling in case of 'AllwaysAskOutput = false'
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        { OutputLink.OutputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput, DesktopOS); }
+        {
+            string linuxOutput = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput);
+            OutputLink.OutputPath.Add(DesktopOS
+                ? new ShortcutterOutput(linuxOutput)
+                : new ShortcutterOutput(linuxOutput, OutputLink.ROMcore));
+        }
         else
-        { OutputLink.OutputPath = txtLINKDir.Text; }
+        { OutputLink.OutputPath.Add(new ShortcutterOutput(txtLINKDir.Text)); }
 
-        // Validate theres a description
+        // Include a link description, if any
         OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
 
         // Icons handling
@@ -604,7 +617,7 @@ public partial class MainView : UserControl
         if ((!string.IsNullOrEmpty(OutputLink.RAdir)) 
          && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
          && (!string.IsNullOrEmpty(OutputLink.ROMcore))
-         && (!string.IsNullOrEmpty(OutputLink.OutputPath))
+         && (OutputLink.OutputPath[0].ValidOutput)
          )
         { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
         else
@@ -628,7 +641,7 @@ public partial class MainView : UserControl
 
         // Link Copies handling
         if (settings.MakeLinkCopy)
-        { OutputLink.LNKcpy = FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPath); }
+        { OutputLink.OutputPath.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPath[0]));}
 
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
         // Single Shortcut

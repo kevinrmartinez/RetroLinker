@@ -244,6 +244,8 @@ namespace RetroLinker.Models
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
         
         public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
+        
+        public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
 
         public static bool CheckUsrSetDir(string path)
         {
@@ -270,27 +272,20 @@ namespace RetroLinker.Models
             return new_dir;
         }
 
-        public static string GetDefinedLinkPath(string link_name, string LinkPath, bool OS)
+        public static string GetDefinedLinkPath(string link_name, string LinkPath)
         {
             string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            if (OS)
-            { new_dir += WinLinkExt; }
-            else
-            {
-                new_dir = new_dir.Replace(" ", "_");
-                new_dir = new_dir.Insert(0, $"{LinuxRABin}.'core'.");
-                new_dir += LinLinkExt;
-            }
             new_dir = Path.Combine(LinkPath, new_dir);
             return new_dir;
         }
 
-        public static string[] GetLinkCopyPaths(List<string> linkCopyList, string liknBaseOpuput)
+        public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput liknBaseOutput)
         {
-            var linkCopies = new string[linkCopyList.Count];
+            var linkCopies = new ShortcutterOutput[linkCopyList.Count];
             for (int i = 0; i < linkCopies.Length; i++)
             {
-                linkCopies[i] = Path.Combine(SettingsOps.LinkCopyPaths[i], Path.GetFileName(liknBaseOpuput));
+                var newDir = Path.Combine(SettingsOps.LinkCopyPaths[i], liknBaseOutput.FileName); 
+                linkCopies[i] = new ShortcutterOutput(newDir);
             }
             return linkCopies;
         }
@@ -419,7 +414,7 @@ namespace RetroLinker.Models
         public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
         {
             string iconPath = GetDirFromPath(linkObj.ICONfile);
-            string linkName = Path.GetFileNameWithoutExtension(linkObj.OutputPath) + ".ico";
+            string linkName = Path.ChangeExtension(linkObj.OutputPath[0].FileName, ".ico");
             string newIconPath = Path.Combine(iconPath, linkName);
             
             File.Copy(linkObj.ICONfile, newIconPath, true);
@@ -432,28 +427,36 @@ namespace RetroLinker.Models
 
         #region Linux Only Ops
 
+        private static string[] SeparateFileNameFromPath(string path)
+        {
+            return
+            [
+                // File Full Path
+                path,
+                
+                // File Name Without Extension
+                Path.GetFileNameWithoutExtension(path),
+                
+                // File Name
+                Path.GetFileName(path),
+                
+                // Extension
+                Path.GetExtension(path)
+            ];
+        }
+        
         public static string[] DesktopEntryName(string LinkDir, string core)
         {
             const string appendix = "retroarch.";
             const string whiteSpace = " ";
             const string whiteSpaceReplacer = "_";
-            string[] NameFix =
-            {
-                // File Path
-                Path.GetFileName(LinkDir),
-                
-                // .desktop Name field
-                Path.GetFileNameWithoutExtension(LinkDir),
-                
-                // File Name
-                //LinkDir
-            };
-            NameFix[0] = NameFix[0].Replace(whiteSpace, whiteSpaceReplacer);
-            NameFix[0] = NameFix[0].Insert(0, $"{core}.");
-            NameFix[0] = NameFix[0].Insert(0, appendix);
-            //NameFix[2] = NameFix[0];
-            NameFix[0] = Path.Combine(Path.GetDirectoryName(LinkDir), NameFix[0]);
-            return NameFix;
+            var EntryName = SeparateFileNameFromPath(LinkDir);
+            EntryName[2] = EntryName[2].Replace(whiteSpace, whiteSpaceReplacer);
+            EntryName[2] = EntryName[2].Insert(0, $"{core}.");
+            EntryName[2] = EntryName[2].Insert(0, appendix);
+            
+            EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0]), EntryName[2]);
+            return EntryName;
         }
         
         public static string GetRAIcons()

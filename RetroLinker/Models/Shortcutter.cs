@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Models
@@ -54,8 +55,8 @@ namespace RetroLinker.Models
         public string? ICONfile { get; set; }   // 6
         public string Command { get; set; }     // 7
         public string? Desc { get; set; }       // 8
-        public string OutputPath { get; set; }      // 9
-        public string[] LNKcpy { get; set; }    // 10
+        public List<ShortcutterOutput> OutputPath { get; set; }      // 9
+        // public string[] OutputName { get; set; }    // 10
         public bool VerboseB { get; set; }      // 11
         public bool FullscreenB { get; set; }   // 12
         public bool AccessibilityB { get; set; }// 13
@@ -65,6 +66,8 @@ namespace RetroLinker.Models
         private string rom_dir;
         private string rom_name;
         
+        
+        
         public Shortcutter()
         {
             RAdir = string.Empty;
@@ -72,8 +75,8 @@ namespace RetroLinker.Models
             ROMdir = string.Empty;
             ROMcore = string.Empty;
             Command = string.Empty;
-            OutputPath = string.Empty;
-            LNKcpy = System.Array.Empty<string>();
+            OutputPath = new List<ShortcutterOutput>();
+            // LNKcpy = System.Array.Empty<string>();
             VerboseB = false;
             FullscreenB = false;
             AccessibilityB = false;
@@ -131,30 +134,31 @@ namespace RetroLinker.Models
             };
 
             
-            var LinkResult = new ShortcutterResult(link.OutputPath);
-            ResultList.Add(LinkResult);
-            System.Diagnostics.Trace.WriteLine($"Creating '{link.OutputPath}'...", App.InfoTrace);
-            try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); 
-                LinkResult.Messeage = LinkResult.Success1; }
-            catch (System.Exception e)
+            ShortcutterResult LinkResult;
+            // ResultList.Add(LinkResult);
+            // System.Diagnostics.Trace.WriteLine($"Creating '{link.OutputPath}'...", App.InfoTrace);
+            // try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs); 
+            //     LinkResult.Messeage = LinkResult.Success1; }
+            // catch (System.Exception e)
+            // {
+            //     System.Diagnostics.Trace.WriteLine($"'{link.OutputPath}' could not be created!", App.ErroTrace);
+            //     LinkResult.Messeage = LinkResult.Failure1;
+            //     LinkResult.Error = true;
+            //     LinkResult.eMesseage = e.Message;
+            // }
+
+            foreach (var output in link.OutputPath)
             {
-                System.Diagnostics.Trace.WriteLine($"'{link.OutputPath}' could not be created!", App.ErroTrace);
-                LinkResult.Messeage = LinkResult.Failure1;
-                LinkResult.Error = true;
-                LinkResult.eMesseage = e.Message;
-            }
-            
-            for (int i = 0; i < link.LNKcpy.Length; i++)
-            {
-                LinkResult = new ShortcutterResult(link.LNKcpy[i]);
+                var outputFile = output.FullPath;
+                LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                CreateShortcutArgs[5] = link.LNKcpy[i];
-                System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKcpy[i]}'...", App.InfoTrace);
+                CreateShortcutArgs[5] = outputFile;
+                System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
                 try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"'{link.LNKcpy[i]}' could not be created!", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"'{outputFile}' could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -176,37 +180,35 @@ namespace RetroLinker.Models
             { link.ICONfile = FileOps.DotDesktopRAIcon; }
             
             // Applying 'Free Desktop' to link name
-            string[] NameFix = FileOps.DesktopEntryName(link.OutputPath, link.ROMcore);
-            link.OutputPath = NameFix[0];
+            // string[] NameFix = FileOps.DesktopEntryName(link.OutputPath, link.ROMcore);
+            // link.OutputPath = NameFix[0];
             
-            var LinkResult = new ShortcutterResult(link.OutputPath);
-            ResultList.Add(LinkResult);
-            System.Diagnostics.Trace.WriteLine($"Creating '{link.OutputPath}'...", App.InfoTrace);
-            // TODO: Refactor this into less lines. Maybe just a single loop
-            
-            try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], byte.MaxValue);
-                LinkResult.Messeage = LinkResult.Success1; }
-            catch (System.Exception e)
-            {
-                System.Diagnostics.Trace.WriteLine($"'{link.OutputPath}' could not be created!", App.ErroTrace);
-                LinkResult.Messeage = LinkResult.Failure1;
-                LinkResult.Error = true;
-                LinkResult.eMesseage = e.Message;
-            }
+            ShortcutterResult LinkResult;
+            // ResultList.Add(LinkResult);
+            // System.Diagnostics.Trace.WriteLine($"Creating '{link.OutputPath}'...", App.InfoTrace);
+            //
+            // try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], byte.MaxValue);
+            //     LinkResult.Messeage = LinkResult.Success1; }
+            // catch (System.Exception e)
+            // {
+            //     System.Diagnostics.Trace.WriteLine($"'{link.OutputPath}' could not be created!", App.ErroTrace);
+            //     LinkResult.Messeage = LinkResult.Failure1;
+            //     LinkResult.Error = true;
+            //     LinkResult.eMesseage = e.Message;
+            // }
 
-            for (int i = 0; i < link.LNKcpy.Length; i++)
+            foreach (var output in link.OutputPath)
             {
-                NameFix = FileOps.DesktopEntryName(link.LNKcpy[i], link.ROMcore);
-                link.LNKcpy[i] = NameFix[0];
-                LinkResult = new ShortcutterResult(link.LNKcpy[i]);
+                var outputFile = output.FullPath;
+                LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                System.Diagnostics.Trace.WriteLine($"Creating '{link.LNKcpy[i]}'...", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
                 
-                try { LinFunc.LinShortcutter.CreateShortcut(link, NameFix[1], makeCopyIndex:(byte)i);
+                try { LinFunc.LinShortcutter.CreateShortcut(link, output);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"'{link.LNKcpy[i]}' could not be created!", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"'{outputFile}' could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -218,6 +220,41 @@ namespace RetroLinker.Models
         #endregion
     }
 
+
+    public class ShortcutterOutput
+    {
+        public string FullPath { get; set; }
+        public string FriendlyName { get; set; }
+        public string FileName { get; set; }
+        public bool ValidOutput { get; private set; }
+
+        public ShortcutterOutput()
+        {
+            const string NA = "N/A";
+            FullPath = NA;
+            FriendlyName = NA;
+            FileName = NA;
+            ValidOutput = false;
+        }
+        
+        public ShortcutterOutput(string fullPath)
+        {
+            FullPath = fullPath;
+            FriendlyName = FileOps.GetFileNameNoExtFromPath(fullPath);
+            FileName = FileOps.GetFileNameFromPath(fullPath);
+            ValidOutput = true;
+        }
+        
+        public ShortcutterOutput(string fullPath, string romCore)
+        {
+            var outputNames = FileOps.DesktopEntryName(fullPath, romCore);
+            FullPath = outputNames[0];
+            FriendlyName = outputNames[1];
+            FileName = outputNames[2];
+            ValidOutput = true;
+        }
+    }
+    
     
     public class ShortcutterResult(string outputDir)
     {
