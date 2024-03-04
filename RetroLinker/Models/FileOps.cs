@@ -261,22 +261,12 @@ namespace RetroLinker.Models
                 return false;
             }
         }
-        
-        public static string GetDeskLinkPath(string link_name, bool OS)
-        {
-            // TODO: Possibly redundant
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
-            new_dir += (OS) ? WinLinkExt : LinLinkExt;
-            new_dir = Path.Combine(UserDesktop, new_dir);
-            return new_dir;
-        }
 
-        public static string GetDefinedLinkPath(string link_name, string LinkPath)
+        public static string GetDefinedLinkPath(string linkName, string linkPath)
         {
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = Path.Combine(LinkPath, new_dir);
-            return new_dir;
+            string newDir = Path.GetFileName(linkName);
+            newDir = Path.Combine(linkPath, newDir);
+            return newDir;
         }
 
         public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput liknBaseOutput)
@@ -314,11 +304,8 @@ namespace RetroLinker.Models
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
-            if (File.Exists(newPath))
-            {
-                return Path.GetFullPath(newPath);
-            }
-
+            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
+            
             File.Copy(ogPath, newPath);
             return Path.GetFullPath(newPath);
         }
@@ -328,10 +315,7 @@ namespace RetroLinker.Models
             destPath = Path.GetDirectoryName(destPath);
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(destPath, name);
-            if (File.Exists(newPath))
-            {
-                return Path.GetFullPath(newPath);
-            }
+            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
 
             File.Copy(ogPath, newPath);
             return Path.GetFullPath(newPath);
@@ -353,14 +337,14 @@ namespace RetroLinker.Models
             }
         }
 
-        public static bool IsVectorImage(string svg_file) => (Path.GetExtension(svg_file) is ".svg" or "svgz");
+        public static bool IsVectorImage(string file) => (Path.GetExtension(file) is ".svg" or ".svgz");
 
         #endregion
 
 
         #region Windows Only Ops
 
-        public static bool IsWinEXE(string exe_file) => (Path.GetExtension(exe_file) == ".exe");
+        public static bool IsWinEXE(string file) => (Path.GetExtension(file) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
@@ -377,24 +361,21 @@ namespace RetroLinker.Models
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string new_dir = Path.Combine(UserTemp, icoName);
             CheckUsrSetDir(UserTemp);
-            ImageMagick.MagickImage icon_image = new();
-            if (selectedIconItem.IconStream != null)
-            {
-                selectedIconItem.IconStream.Position = 0;
-            }
+            ImageMagick.MagickImage iconImage;
+            if (selectedIconItem.IconStream != null) selectedIconItem.IconStream.Position = 0;
 
             switch (icoExt)
             {
                 case ".svg" or ".svgz":
-                    icon_image = IconProc.ImageConvert(selectedIconItem.IconStream);
-                    icon_image.Write(new_dir);
+                    iconImage = IconProc.ImageConvert(selectedIconItem.IconStream);
+                    iconImage.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
                     if (LoadedSettings.ExtractIco)
                     {
-                        icon_image = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
-                        icon_image.Write(new_dir);
+                        iconImage = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
+                        iconImage.Write(new_dir);
                         //new_dir = CpyIconToUsrSet(new_dir);
                     }
                     else
@@ -402,8 +383,8 @@ namespace RetroLinker.Models
                     break;
 
                 default: // .jpg, .png, etc
-                    icon_image = IconProc.ImageConvert(selectedIconItem.FilePath);
-                    icon_image.Write(new_dir);
+                    iconImage = IconProc.ImageConvert(selectedIconItem.FilePath);
+                    iconImage.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
