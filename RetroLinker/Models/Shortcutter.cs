@@ -25,8 +25,7 @@ namespace RetroLinker.Models
     public class Shortcutter
     {
         #region Object
-
-        // TODO: Concider using DirectoryInfo and FileInfo instead of strings
+        
         public string RAdir
         {
             get => ra_dir;

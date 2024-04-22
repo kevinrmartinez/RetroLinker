@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
@@ -149,24 +150,27 @@ namespace RetroLinker.Views
             comboUseDefaultIcoSavPath.IsEnabled = false;
             comboUseDefaultIcoSavPath.SelectedIndex = 0;
             panelWindowsOnlyControls2.IsEnabled = true;
-            // TODO: Decidir si usar ruta absoluta o relativa
-            ParentWindow.settings.IcoSavPath = path;
+            var pathObj = new DirectoryInfo(path);
+            pathObj.Create();
+            ParentWindow.settings.IcoSavPath = pathObj.FullName;
         }
 
-        int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
+        int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) 
+            ? 0 
+            : lsboxLinkCopies.Items.Count - 2;
         
-        ListBoxItem AddLinkCopyItem(string Dir)
+        ListBoxItem AddLinkCopyItem(string dir)
         {
-            var NewItem = new ListBoxItem();
+            var newItem = new ListBoxItem();
             var gridControl = new Styles.LinkCopyItemGrid();
-            Grid _grid = gridControl.GetNewCopyGrid(Dir);
+            Grid _grid = gridControl.GetNewCopyGrid(dir);
             _ = _grid.Children;
 
             var trashButtom = _grid.Children[1] as Button;
             trashButtom.AddHandler(Button.ClickEvent, btnTrashCopyItem);
             
-            NewItem.Content = _grid;
-            return NewItem;
+            newItem.Content = _grid;
+            return newItem;
         }
         
         
@@ -181,11 +185,9 @@ namespace RetroLinker.Views
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
             string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
-            if (!string.IsNullOrWhiteSpace(folder))
-            {
-                txtDEFLinkOutput.Text = folder;
-                ParentWindow.settings.DEFLinkOutput = folder;
-            }
+            if (string.IsNullOrWhiteSpace(folder)) return;
+            txtDEFLinkOutput.Text = folder;
+            ParentWindow.settings.DEFLinkOutput = folder;
         }
         
         private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)

@@ -112,7 +112,7 @@ public partial class SettingsView2 : UserControl
             txtDefROMPath.Text = folder; 
             ParentWindow.settings.DEFROMPath = folder; 
         }
-    }   // TODO: Doesn´t seem to work on Linux
+    }
     
     void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
     {

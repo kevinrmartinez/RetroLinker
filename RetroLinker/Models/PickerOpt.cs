@@ -66,7 +66,6 @@ namespace RetroLinker.Models
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
                     if (AvaloniaOps.ROMPadreDir != null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
-                    // TODO: Doesn't work with most FilePickers of linux distros
                     /*
                      * From the XDG Portal Docs:
                      * 
