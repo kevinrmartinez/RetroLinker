@@ -23,14 +23,13 @@ namespace RetroLinker.Models.LinFunc;
 
 public static class LinShortcutter
 {
-    private const string CommentLine = "# Creado con RetroLinker";
+    private const string CommentLine = "# Created with RetroLinker";
     private const string BlankLine = "";
     private const string EntryHeader = "[Desktop Entry]";
     private const string Notify = "StartupNotify=false";
     private const string Categ = "Categories=Game";
     private const string LinkType = "Type=Application";
-
-    // Overload con un objeto Shortcut <- En Uso
+    
     public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
     {
         List<string> shortcut = new()
@@ -79,7 +78,7 @@ public static class LinShortcutter
         var processStartInfo = new System.Diagnostics.ProcessStartInfo()
         {
             FileName = permExec,
-            Arguments = $"{permComm} {dir}",
+            Arguments = $"{permComm} \"{dir}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
@@ -87,12 +86,12 @@ public static class LinShortcutter
         var process = new System.Diagnostics.Process()
             { StartInfo = processStartInfo };
 
-        System.Diagnostics.Trace.WriteLine($"Executing {permExec} {permComm}...", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"Executing {permExec} {permComm} \"{dir}\"...", App.InfoTrace);
         process.Start();
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
         System.Diagnostics.Debug.WriteLine(error, App.DebgTrace);
-        System.Diagnostics.Trace.WriteLine(output, App.ErroTrace);
+        System.Diagnostics.Trace.WriteLine(output, App.InfoTrace);
     }
 }

@@ -30,20 +30,22 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
+    
+    // Shared Objects
+    public Shortcutter BuildingLink { get; set; } = new Shortcutter();
 
     public enum Window1Views1
     {
-        mainView, SettingsView1, SettingsView2
+        mainView, PatchesView
     }
     
-    public enum Window1Views2
+    public void ChangeOut(Window1Views1 views)
     {
-        PatchesView
-    }
-    
-    private void ChangeContent(Window1Views1 views)
-    {
-        
+        MainCC1.Content = views switch
+        {
+            Window1Views1.PatchesView => new PatchesView(this),
+            _ => PermaView
+        };
     }
 
     public void LocaleReload(Settings locale)

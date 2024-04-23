@@ -61,7 +61,6 @@ public partial class MainView : UserControl
     private int PrevConfigsCount;
     private int DLLErrorCount = 0;
     private byte CurrentTheme = 250;
-    private Shortcutter BuildingLink = new();
     private string OutputLinkPath;
     private Settings settings;
     private Bitmap ICONimage;
@@ -186,7 +185,7 @@ public partial class MainView : UserControl
     {
         if (!string.IsNullOrEmpty(settings.DEFRADir))
         { txtRADir.Text = settings.DEFRADir; }
-        BuildingLink.RAdir = settings.DEFRADir;
+        ParentWindow.BuildingLink.RAdir = settings.DEFRADir;
         AvaloniaOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
@@ -383,7 +382,7 @@ public partial class MainView : UserControl
         if (selectedIndex > 0)
         {   // Fill the PictureBoxes with the icons provided by the user
             IconItemSET = IconProc.IconItemsList.Find(Item => Item.comboIconIndex == selectedIndex);
-            BuildingLink.ICONfile = IconItemSET.FilePath;
+            ParentWindow.BuildingLink.ICONfile = IconItemSET.FilePath;
             
             if (IconItemSET.IconStream != null)
             {
@@ -395,7 +394,7 @@ public partial class MainView : UserControl
             else
             {
                 try 
-                { FillIconBoxes(BuildingLink.ICONfile); }
+                { FillIconBoxes(ParentWindow.BuildingLink.ICONfile); }
                 catch 
                 {
                     Bitmap bitm = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
@@ -423,7 +422,7 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
-            BuildingLink.RAdir = file;
+            ParentWindow.BuildingLink.RAdir = file;
             txtRADir.Text = file;
         }
     }
@@ -441,7 +440,7 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
-            BuildingLink.ROMdir = file;
+            ParentWindow.BuildingLink.ROMdir = file;
             // OutputLink.ROMname = file;
             txtROMDir.Text = file;
         }
@@ -471,10 +470,10 @@ public partial class MainView : UserControl
                 //comboConfig.SelectedIndex = 0;
                 break;
             case 0:
-                BuildingLink.CONFfile = string.Empty;
+                ParentWindow.BuildingLink.CONFfile = string.Empty;
                 break;
             default:
-                BuildingLink.CONFfile = comboConfig.SelectedItem.ToString();
+                ParentWindow.BuildingLink.CONFfile = comboConfig.SelectedItem.ToString();
                 break;
         }
     }
@@ -555,8 +554,8 @@ public partial class MainView : UserControl
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
         // TODO: Implement a control lock to prevent fields changing during operations
-        var outputLink = BuildingLink;
-        bool ShortcutPosible;
+        var outputLink = ParentWindow.BuildingLink;
+        // bool ShortcutPosible;
         var msbox_params = new MessageBoxStandardParams();
 
         // CHECKS!
@@ -565,24 +564,23 @@ public partial class MainView : UserControl
         outputLink.AccessibilityB = (bool)chkAccessi.IsChecked;
 
         // Validating contentless or not
-        outputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : outputLink.ROMname;
+        outputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : outputLink.ROMdir;
 
         // Validate theres an executable (Linux)
         outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
 
-        // Validate theres a core
+        // Validate there is a core
         outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
-        // Link handling in case of 'AllwaysAskOutput = false'
+        // Link handling
+        string outputPath;
         if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        {
-            string outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput);
-            outputLink.OutputPath.Add(DesktopOS
-                ? new ShortcutterOutput(outputPath)
-                : new ShortcutterOutput(outputPath, outputLink.ROMcore));
-        }
+        { outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput); }
         else
-        { outputLink.OutputPath.Add(new ShortcutterOutput(txtLINKDir.Text)); }
+        { outputPath = txtLINKDir.Text; }
+        outputLink.OutputPath.Add(DesktopOS
+            ? new ShortcutterOutput(outputPath)
+            : new ShortcutterOutput(outputPath, outputLink.ROMcore));
 
         // Include a link description, if any
         outputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
@@ -594,7 +592,7 @@ public partial class MainView : UserControl
         // TODO: Concider moving this part after the required fields check
         else
         {
-            // If it's Windows OS, the images have to be converted to .ico
+            // If it's Windows OS, the images may have to be converted to .ico
             if (IconItemSET.ConvertionRequiered)
             {
                 outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
@@ -612,23 +610,22 @@ public partial class MainView : UserControl
             if (settings.CpyUserIcon) outputLink.ICONfile = FileOps.CpyIconToUsrSet(outputLink.ICONfile);
         }
 
-        // REQUIERED FIELDS VALIDATION!
+        // REQUIRED FIELDS VALIDATION!
         if ((!string.IsNullOrEmpty(outputLink.RAdir)) 
          && (!string.IsNullOrEmpty(outputLink.ROMdir)) 
          && (!string.IsNullOrEmpty(outputLink.ROMcore))
          && (outputLink.OutputPath[0].ValidOutput)
          )
-        { ShortcutPosible = true; System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
+        { System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
         else
         {
-            ShortcutPosible = false;
             msbox_params.ContentMessage = resMainView.popMissReq_Mess; 
             msbox_params.ContentTitle = resMainView.popMissReq_Title; 
             msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
             MessageBoxPopUp(msbox_params);
+            return;
         }
-
-        if (!ShortcutPosible) return;
+        
         // Double quotes for directories that are parameters ->
         // -> for the ROM file
         if (!(bool)chkContentless.IsChecked) 
@@ -682,8 +679,8 @@ public partial class MainView : UserControl
                 string content = string.Empty;
                 for (int i = 0; i < opResult.Count; i++)
                 {
-                    string outputPath = opResult[i].OutputDir + ": ";
-                    content = string.Concat(content, outputPath);
+                    string output = opResult[i].OutputPath + ": ";
+                    content = string.Concat(content, output);
                     content = string.Concat(content, opResult[i].Messeage);
                     content = string.Concat(content, "\n");
                     if (opResult[i].Error)
@@ -722,4 +719,8 @@ public partial class MainView : UserControl
         Testing.FilePickerTesting(ParentWindow);
     }
 #endif
+    private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
+    }
 }

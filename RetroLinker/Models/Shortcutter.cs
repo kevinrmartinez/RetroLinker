@@ -255,9 +255,9 @@ namespace RetroLinker.Models
     }
     
     
-    public class ShortcutterResult(string outputDir)
+    public class ShortcutterResult(string outputPath)
     {
-        public string OutputDir { get; set; } = outputDir;
+        public string OutputPath { get; set; } = outputPath;
         public string? Messeage { get; set; }
         public bool Error { get; set; }
         public string? eMesseage { get; set; }
