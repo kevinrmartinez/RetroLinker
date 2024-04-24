@@ -6,12 +6,12 @@
              xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.PatchesView"
-             Name="ViewP">
+             Name="ViewPatch">
     
     <Grid RowDefinitions="Auto, *, Auto">
         <!--Top-->
         <Grid Name="gridTOP" Grid.Row="0" Height="45" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
-            <Button Name="backBtn" Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="Button_OnClick"
+            <Button Name="btnBack" Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="Button_OnClick"
                     i:Attached.Icon="fa-arrow-left" FontSize="24"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <!-- <Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/> -->
@@ -19,13 +19,32 @@
             </StackPanel>
             <Rectangle Grid.Column="2" Width="40" Margin="0,0,5,0"/>
         </Grid>
-        
+    
         <!--Body-->
-        <Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
-            
+        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto, Auto, *">
+    
+            <!-- ROW0 - Spacing -->
+            <Rectangle Grid.Row="0" Height="8"/>
+    
+            <!-- ROW1 - Patch Controls -->
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="3, 0">
+                <Label Content="Patch Type"/>
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <RadioButton GroupName="PatchType" Content="No patch" IsChecked="True"/>
+                    <RadioButton GroupName="PatchType" Content="UPS"/>
+                    <RadioButton GroupName="PatchType" Content="BPS"/>
+                    <RadioButton GroupName="PatchType" Content="IPS"/>
+                    <RadioButton GroupName="PatchType" Content="xDelta"/>
+                </StackPanel>
+                <Grid ColumnDefinitions="*, Auto" Margin="3,10">
+                    <TextBox Name="txtPatchPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="super mario bros.ups"/>
+                    <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}"
+                            i:Attached.Icon="fa-folder-open" FontSize="18"/>
+                </Grid>
+            </StackPanel>
         </Grid>
-        
-        <!-- ~1~Bottom@1@ -->
+    
+        <!--Bottom-->
         <!-- <Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray"> -->
         <!--      -->
         <!-- </Grid> -->

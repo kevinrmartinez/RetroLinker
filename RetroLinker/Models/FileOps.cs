@@ -29,7 +29,7 @@ namespace RetroLinker.Models
         public const string AppName = "RetroLinker";
         public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
-        public const string DefUserAssetsDir = "UserAssets";
+        public const string DefUserAssets = "UserAssets";
         public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
@@ -37,15 +37,18 @@ namespace RetroLinker.Models
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
-        public const string DotDesktopRAIcon = "retroarch";
+        public const string DotDesktopRAIcon = LinuxRABin;
 
 
         public static List<string> ConfigDir { get; private set; }
 
-        public static readonly List<string> WinConvertibleIconsExt =
-            new() { "*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz" };
-
-        public static readonly List<string> LinIconsExt = new() { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" };
+        public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
+        private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
+        public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
+        
+        public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
+        public static readonly List<string> LinIconsExt = ["*.ico", "*.png", "*.xpm", "*.svg", "*.svgz"];
+        
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -60,7 +63,7 @@ namespace RetroLinker.Models
 
         #region Settings
 
-        public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
+        public static bool ExistSettingsBinFile() => File.Exists(PathToSettingFileBin);
 
         public static Settings LoadSettingsFO()
         {
@@ -77,7 +80,7 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
-        public static string[] ReadSettingsFile() => File.ReadAllLines(SettingFileBin);
+        public static string[] ReadSettingsFile() => File.ReadAllLines(PathToSettingFileBin);
 
         public static string ResolveUserAssets(string userAssetPath)
         {
@@ -94,12 +97,12 @@ namespace RetroLinker.Models
         {
             try
             {
-                await File.WriteAllTextAsync(SettingFileBin, settingString);
-                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} written successfully", App.InfoTrace);
+                await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
+                System.Diagnostics.Trace.WriteLine($"{PathToSettingFileBin} written successfully", App.InfoTrace);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"{PathToSettingFileBin} could not be written!", App.ErroTrace);
                 System.Diagnostics.Trace.WriteLine(e);
             }
         }
@@ -179,7 +182,7 @@ namespace RetroLinker.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (WinConvertibleIconsExt.Contains("*" + ext) || (ext is ".exe"))
+                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
                         {
                             IconProc.IconItemsList.Add(new IconsItems(filename, filepath, true));
                         }

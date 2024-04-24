@@ -35,6 +35,8 @@ public partial class App : Application
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static System.DateTime LaunchTime = System.DateTime.Now;
+    public static string[] Args;
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -46,6 +48,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            Args = desktop.Args;
             LanguageManager.FixLocale(new CultureInfo("en-US"));
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow

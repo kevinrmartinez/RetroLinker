@@ -12,7 +12,7 @@
         
         <TransitioningContentControl Name="MainCC1">
 	        <TransitioningContentControl.PageTransition>
-				<PageSlide Orientation="Horizontal" Duration="0:00:00.280" />
+				<CrossFade Duration="0:00:00.280"/>
 				<!-- <Rotate3DTransition Duration="0:00:00.300"/> -->
 	        </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

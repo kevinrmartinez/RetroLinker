@@ -29,7 +29,7 @@ namespace RetroLinker.Models
         static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = new string[] { "*.sh" } };
         static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = new string[] { "*.cfg" } };
         static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = new string[] { "*.ico" } };
-        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinConvertibleIconsExt };
+        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
         static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = new string[] { "*.lnk" } };
         static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = new string[] { "*.desktop" } };

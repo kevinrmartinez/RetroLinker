@@ -59,7 +59,8 @@ class Program
 
     private static System.Diagnostics.ConsoleTraceListener ConsoleTracer;
     private static System.Diagnostics.TextWriterTraceListener TextfileTracer;
-    private const string LogFile = "log.txt";
+    private const string LogTxt = "";
+    private static string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogTxt);
 
     private static void StartStopLogging(bool period)
     {

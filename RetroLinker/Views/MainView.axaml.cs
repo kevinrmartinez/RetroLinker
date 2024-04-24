@@ -98,6 +98,9 @@ public partial class MainView : UserControl
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
             comboICONDir_Loaded(AvaloniaOps.GetIconList());
+            
+            ApplyArgs();
+            
             // TODO: Tutorial event for new users
             
             System.DateTime now = System.DateTime.Now;
@@ -194,6 +197,11 @@ public partial class MainView : UserControl
         txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
         if (settings.AllwaysAskOutput) { LinkCustomPathSetting(); }
         else { LinkLoadedPathSetting(); }
+    }
+
+    void ApplyArgs()
+    {
+        System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
     }
 
     void LoadLocalization()
@@ -332,6 +340,11 @@ public partial class MainView : UserControl
 
 
     // TOP CONTROLS
+    private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
+    }
+    
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     {
         var settingWindow = new SettingsWindow(ParentWindow); 
@@ -578,9 +591,7 @@ public partial class MainView : UserControl
         { outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput); }
         else
         { outputPath = txtLINKDir.Text; }
-        outputLink.OutputPath.Add(DesktopOS
-            ? new ShortcutterOutput(outputPath)
-            : new ShortcutterOutput(outputPath, outputLink.ROMcore));
+        outputLink.OutputPath.Add(getShortcutterOutput(outputPath, outputLink.ROMcore));
 
         // Include a link description, if any
         outputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
@@ -719,8 +730,4 @@ public partial class MainView : UserControl
         Testing.FilePickerTesting(ParentWindow);
     }
 #endif
-    private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
-    }
 }
