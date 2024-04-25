@@ -24,18 +24,25 @@ namespace RetroLinker.Models
 {
     public static class PickerOpt
     {
-        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = new string[] { "*.exe" } };
-        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = new string[] { "*.AppImage" } };
-        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = new string[] { "*.sh" } };
-        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = new string[] { "*.cfg" } };
-        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = new string[] { "*.ico" } };
+        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe"] };
+        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
+        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
+        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
+        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
         static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = new string[] { "*.lnk" } };
-        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = new string[] { "*.desktop" } };
+        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
+        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
+        
+        // TODO: Localize patches names
+        static readonly FilePickerFileType ups_patch = new("UPS Patch File") { Patterns = ["*.ups"] };
+        static readonly FilePickerFileType bps_patch = new("BPS Patch File") { Patterns = ["*.bps" ] };
+        static readonly FilePickerFileType ips_patch = new("IPS Patch File") { Patterns = ["*.ips"] };
+        static readonly FilePickerFileType xd_patch = new("xDelta Patch File") { Patterns = ["*.xdelta"] };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
+        public enum PatchOpts { UPS, BPS, IPS, XD }
 
         static List<FilePickerFileType> RADirFileTypes_win = new() { win_exe, FilePickerFileTypes.All };
         static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, shellscripts, FilePickerFileTypes.All };
@@ -64,7 +71,7 @@ namespace RetroLinker.Models
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAexe;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (AvaloniaOps.ROMPadreDir != null)
+                    if (AvaloniaOps.ROMPadreDir is not null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
                     /*
                      * From the XDG Portal Docs:
@@ -73,7 +80,7 @@ namespace RetroLinker.Models
                      * The portal implementation is free to ignore this option."
                      *
                      * The DBus FilePicker added a way to force the start location and AvaloniaUI 11.0.6 implemented it,
-                     * but is very new and it doesn't solves GTK pickers...
+                     * but is very new, and it doesn't solve GTK pickers...
                      */
                     break;
 
@@ -141,6 +148,27 @@ namespace RetroLinker.Models
                     break;
             }
             return options;
+        }
+        
+        
+        public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
+        {
+            FilePickerFileType fileType = patchType switch
+            {
+                PatchOpts.UPS => ups_patch,
+                PatchOpts.BPS => bps_patch,
+                PatchOpts.IPS => ips_patch,
+                PatchOpts.XD => xd_patch,
+                _ => ups_patch
+            };
+            
+            return new FilePickerOpenOptions()
+            {
+                AllowMultiple = false,
+                // TODO: Localize
+                Title = "resAvaloniaOps.dlgFileIcon",
+                FileTypeFilter = new []{fileType, FilePickerFileTypes.All}
+            };
         }
     }
 }

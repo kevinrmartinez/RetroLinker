@@ -640,11 +640,11 @@ public partial class MainView : UserControl
         // Double quotes for directories that are parameters ->
         // -> for the ROM file
         if (!(bool)chkContentless.IsChecked) 
-        { outputLink.ROMdir = Utils.FixUnusualDirectories(outputLink.ROMdir); }
+        { outputLink.ROMdir = Utils.FixUnusualPaths(outputLink.ROMdir); }
 
         // -> for the config file
         if (!string.IsNullOrEmpty(outputLink.CONFfile)) 
-        { outputLink.CONFfile = Utils.FixUnusualDirectories(outputLink.CONFfile); }
+        { outputLink.CONFfile = Utils.FixUnusualPaths(outputLink.CONFfile); }
 
         // Link Copies handling
         if (settings.MakeLinkCopy)

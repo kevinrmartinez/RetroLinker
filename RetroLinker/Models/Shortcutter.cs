@@ -59,6 +59,7 @@ namespace RetroLinker.Models
         public bool VerboseB { get; set; }      // 11
         public bool FullscreenB { get; set; }   // 12
         public bool AccessibilityB { get; set; }// 13
+        public string PatchArg { get; set; }   // 14
 
         private string ra_dir;
         private string ra_path;
@@ -117,10 +118,10 @@ namespace RetroLinker.Models
 
             // Double quotes for directories that are parameters ->
             // -> for RetroArch's WorkingDirectory
-            link.RApath = Utils.FixUnusualDirectories(link.RApath);
+            link.RApath = Utils.FixUnusualPaths(link.RApath);
 
             // -> for RetroArch's executable
-            link.RAdir = Utils.FixUnusualDirectories(link.RAdir);
+            link.RAdir = Utils.FixUnusualPaths(link.RAdir);
 
             // Building the arguments
             link = Commander.CommandBuilder(link);

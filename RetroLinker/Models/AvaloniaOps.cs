@@ -117,6 +117,13 @@ public static class AvaloniaOps
         return dir;
     }
 
+    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel)
+    {
+        var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
+        string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
+        return dir;
+    }
+
     public static async Task<string> OpenFolderAsync(byte template, TopLevel topLevel)
     {
         FolderPickerOpenOptions opt = new()

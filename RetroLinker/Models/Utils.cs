@@ -25,17 +25,30 @@ namespace RetroLinker.Models
     public static class Utils
     {
         const string DoubleQuotes = "\"";
-        public static string FixUnusualDirectories(string dir)
+        public static string FixUnusualPaths(string path)
         {
-            string newdir = dir;
-            const int FirstElement = 0;
-            int LastElement = newdir.Length - 1;
+            if (!ContainsUnusualCharacters(path)) return path;
             
-            if (newdir.ElementAt(FirstElement) != DoubleQuotes.ElementAt(0))
-            { newdir = newdir.Insert(FirstElement, DoubleQuotes); }
-            if (newdir.ElementAt(LastElement) != DoubleQuotes.ElementAt(0))
-            { newdir += DoubleQuotes; }
-            return newdir;
+            const int firstElement = 0;
+            int lastElement = path.Length - 1;
+            if (path[firstElement] != DoubleQuotes[0])
+            { path = path.Insert(firstElement, DoubleQuotes); }
+            if (path[lastElement] != DoubleQuotes[0])
+            { path += DoubleQuotes; }
+            return path;
+        }
+        
+        private static bool ContainsUnusualCharacters(string path)
+        {
+            // Define a list of characters that are considered unusual
+            char[] unusualCharacters = [' ', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
+
+            // Check if the path contains any unusual characters
+            foreach (var c in path)
+            {
+                if (Array.IndexOf(unusualCharacters, c) != -1) return true;
+            }
+            return false;
         }
 
         public static List<string> ExtractClassProperties(Type type)

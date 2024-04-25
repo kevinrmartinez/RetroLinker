@@ -30,13 +30,17 @@ namespace RetroLinker.Models
             shortcut.Command = $"-L {shortcut.ROMcore}";
             if (!string.IsNullOrEmpty(shortcut.CONFfile)) 
             { shortcut.Command = shortcut.Command.Insert(0, $"-c {shortcut.CONFfile} "); }
-            if (shortcut.ROMdir != contentless) 
-            { shortcut.Command += $" {shortcut.ROMdir}"; }
+
+            if (shortcut.ROMdir != contentless)
+            {
+                shortcut.Command += $" {shortcut.ROMdir}";
+                shortcut.Command += $" {shortcut.PatchArg}";
+            }
             
             if (shortcut.AccessibilityB) { shortcut.Command = shortcut.Command.Insert(0, accessibility); }
             if (shortcut.FullscreenB) { shortcut.Command = shortcut.Command.Insert(0, fullscreen); }
             if (shortcut.VerboseB) { shortcut.Command = shortcut.Command.Insert(0, verbose); }
-
+            
             return shortcut;
         }
     }
