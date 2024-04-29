@@ -41,7 +41,7 @@ namespace RetroLinker.Models
         private static bool ContainsUnusualCharacters(string path)
         {
             // Define a list of characters that are considered unusual
-            char[] unusualCharacters = [' ', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
+            char[] unusualCharacters = [ ' ', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
 
             // Check if the path contains any unusual characters
             foreach (var c in path)

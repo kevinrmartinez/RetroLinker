@@ -47,19 +47,19 @@
 			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-arrow-rotate-left"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDefault}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnDefault}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 			<Button Name="btnDISSettings" Click="btnDISSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-x" Foreground="Crimson"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDiscard}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 			<Button Name="btnCONSettings" Click="btnSAVESettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-check" Foreground="Green"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnConfirm}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 		</StackPanel>

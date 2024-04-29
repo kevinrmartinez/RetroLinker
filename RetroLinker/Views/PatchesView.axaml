@@ -57,14 +57,14 @@
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <i:Icon FontSize="24" Value="fa-check" Foreground="Green"/>
                         <!-- TODO: Localize -->
-                        <TextBlock FontSize="24" Text="{x:Static locale:resSettingsWindow.btnConfirm}" VerticalAlignment="Center"/>
+                        <TextBlock FontSize="24" Text="{x:Static locale:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Name="btnDiscPatch" Grid.Column="1" Height="50" Click="BtnDiscPatch_OnClick" 
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <i:Icon FontSize="24" Value="fa-x" Foreground="Crimson"/>
-                        <TextBlock FontSize="24" Text="{x:Static locale:resSettingsWindow.btnDiscard}" VerticalAlignment="Center"/>
+                        <TextBlock FontSize="24" Text="{x:Static locale:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </Grid>

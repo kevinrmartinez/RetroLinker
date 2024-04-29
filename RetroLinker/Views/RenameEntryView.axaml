@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
+             x:Class="RetroLinker.Views.RenameEntryView"
+             Name="RenameEntry" Loaded="View_OnLoaded" Unloaded="View_OnUnloaded">
+    <Grid Margin="6,10" RowDefinitions="Auto, *, Auto">
+        <!-- TODO: Localize-->
+        <!-- ROW0 - Name Controls -->
+        <StackPanel Grid.Row="0">
+            <Grid ColumnDefinitions="0.25*, *">
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="Friendly Name: "/>
+                <TextBox Name="txtFriendlyName" Grid.Column="1" HorizontalAlignment="Stretch" TextChanged="TxtFriendlyName_OnTextChanged"/>
+            </Grid>
+        
+            <Grid ColumnDefinitions="0.25*, *" Margin="0,8,0,0">
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="File Name: "/>
+                <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
+                    <TextBox Name="txtFileName" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Text="---" TextChanged="TxtFileName_OnTextChanged"/>
+                    <Label Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content="---"/>
+                </Grid>
+            </Grid>
+        </StackPanel>
+        
+        <!-- ROW1 - Spacing -->
+        <Rectangle Grid.Row="1"/>
+        
+        <!-- ROW2 - Controls -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto">
+            <CheckBox Name="chkCustomFilename" Grid.Column="0" Margin="10,0" Content="Customize Filename" IsCheckedChanged="ChkCustomFilename_OnIsCheckedChanged"/>
+            <!-- ROW1 - Spacing -->
+            <Rectangle Grid.Column="1"/>
+            
+            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="Undo changes" Click="BtnClear_OnClick"
+                    i:Attached.Icon="fa-arrow-rotate-left" FontSize="20"/>
+            
+            <Button Name="btnNameApply" Grid.Column="3" Click="BtnNameApply_OnClick">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <i:Icon FontSize="20" Value="fa-check" Foreground="Green"/>
+                    <TextBlock FontSize="16" Text="{x:Static locale:resGeneric.btnApply}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+        
+    </Grid>
+</UserControl>

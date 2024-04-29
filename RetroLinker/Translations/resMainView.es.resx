@@ -41,9 +41,6 @@
     <data name="txtDesc_tip" xml:space="preserve">
         <value>Agrega una descripcion al shortcut que se creara</value>
     </data>
-    <data name="btnExecute" xml:space="preserve">
-        <value>Ejecutar</value>
-    </data>
     <data name="lblICON" xml:space="preserve">
         <value>Seleccion de Icono</value>
     </data>
@@ -61,12 +58,6 @@
     </data>
     <data name="tipAppendConfig" xml:space="preserve">
         <value>Adjuntar Config</value>
-    </data>
-    <data name="btnAbort" xml:space="preserve">
-        <value>Abortar</value>
-    </data>
-    <data name="btnRetry" xml:space="preserve">
-        <value>Reintentar</value>
     </data>
     <data name="genFatalError" xml:space="preserve">
         <value>Error Fatal</value>

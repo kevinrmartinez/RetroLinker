@@ -250,6 +250,8 @@ namespace RetroLinker.Models
         
         public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
 
+        public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
+
         public static bool CheckUsrSetDir(string path)
         {
             // TODO: Be able to return errors
@@ -272,13 +274,12 @@ namespace RetroLinker.Models
             return newDir;
         }
 
-        public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput liknBaseOutput)
+        public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)
         {
             var linkCopies = new ShortcutterOutput[linkCopyList.Count];
-            for (int i = 0; i < linkCopies.Length; i++)
+            for (int i = 1; i < linkCopies.Length; i++)
             {
-                var newDir = Path.Combine(SettingsOps.LinkCopyPaths[i], liknBaseOutput.FileName); 
-                linkCopies[i] = new ShortcutterOutput(newDir);
+                linkCopies[i] = new ShortcutterOutput(linkOutputBase, linkCopyList[i]);
             }
             return linkCopies;
         }
@@ -398,7 +399,7 @@ namespace RetroLinker.Models
         public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
         {
             string iconPath = GetDirFromPath(linkObj.ICONfile);
-            string linkName = Path.ChangeExtension(linkObj.OutputPath[0].FileName, ".ico");
+            string linkName = Path.ChangeExtension(linkObj.OutputPaths[0].FileName, ".ico");
             string newIconPath = Path.Combine(iconPath, linkName);
             
             File.Copy(linkObj.ICONfile, newIconPath, true);
@@ -419,25 +420,20 @@ namespace RetroLinker.Models
                 path,
                 
                 // File Name Without Extension
-                Path.GetFileNameWithoutExtension(path),
+                GetFileNameNoExtFromPath(path),
                 
                 // File Name
-                Path.GetFileName(path),
+                GetFileNameFromPath(path),
                 
                 // Extension
                 Path.GetExtension(path)
             ];
         }
         
-        public static string[] DesktopEntryName(string LinkDir, string core)
+        public static string[] DesktopEntryArray(string LinkDir, string core)
         {
-            const string appendix = "retroarch.";
-            const string whiteSpace = " ";
-            const string whiteSpaceReplacer = "_";
             var EntryName = SeparateFileNameFromPath(LinkDir);
-            EntryName[2] = EntryName[2].Replace(whiteSpace, whiteSpaceReplacer);
-            EntryName[2] = EntryName[2].Insert(0, $"{core}.");
-            EntryName[2] = EntryName[2].Insert(0, appendix);
+            EntryName[2] = LinFunc.LinDesktopEntry.DesktopEntryName(EntryName[2], core);
             
             EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0]), EntryName[2]);
             return EntryName;

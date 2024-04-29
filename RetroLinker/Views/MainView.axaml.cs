@@ -24,12 +24,13 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Styling;
+using DynamicData;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using RetroLinker.Models;
 using RetroLinker.Models.Icons;
+using RetroLinker.Models.LinFunc;
 using RetroLinker.Models.WinFuncImport;
 using RetroLinker.Translations;
 
@@ -57,7 +58,7 @@ public partial class MainView : UserControl
     private MainWindow ParentWindow;
     
     private bool FormFirstLoad = true;
-    private string DefLinRAIcon;
+    // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int DLLErrorCount = 0;
     private byte CurrentTheme = 250;
@@ -87,7 +88,7 @@ public partial class MainView : UserControl
                 if (string.IsNullOrEmpty(settings.DEFRADir)) 
                 { settings.DEFRADir = App.RetroBin; }
                 txtRADir.IsReadOnly = false;
-                DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
+                // DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
             }
             else
             {
@@ -153,8 +154,8 @@ public partial class MainView : UserControl
             {
                 ContentTitle = resMainView.popIconsError_Tittle,
                 ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{exception}'",
-                Icon = Icon.Error,
-                ButtonDefinitions = ButtonEnum.Ok
+                Icon = MsBox.Avalonia.Enums.Icon.Error,
+                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
             };
             MessageBoxPopUp(popParams);
         }
@@ -228,12 +229,12 @@ public partial class MainView : UserControl
 
     async Task WinFuncImportFail(System.Exception eMain)
     {
-        string retry_btn = resMainView.btnRetry;
-        string abort_btn = resMainView.btnAbort;
-        ButtonDefinition[] diag_btns;
+        string retry_btn = resGeneric.btnRetry;
+        string abort_btn = resGeneric.btnAbort;
+        ButtonDefinition[] diagBtns;
         if (DLLErrorCount < 6)
         {
-            diag_btns = new[]
+            diagBtns = new[]
             {
                 new ButtonDefinition {Name = retry_btn},
                 new ButtonDefinition {Name = abort_btn, IsCancel = true, IsDefault = true}
@@ -241,11 +242,11 @@ public partial class MainView : UserControl
         }
         else 
         { 
-            diag_btns = new[] 
+            diagBtns = new[] 
             { new ButtonDefinition { Name = abort_btn, IsCancel = true, IsDefault = true } };
         }
 
-        var msb_params = new MessageBoxCustomParams()
+        var msbParams = new MessageBoxCustomParams()
         {
             MaxWidth = 550,
             ShowInCenter = true,
@@ -253,15 +254,15 @@ public partial class MainView : UserControl
             ContentTitle = resMainView.genFatalError,
             ContentHeader = string.Format(resMainView.dllErrorHead, FuncLoader.WinOnlyLib),
             ContentMessage = $"{resMainView.dllErrorMess}\n{eMain.Message}\n\n{resMainView.dllErrorMess2}",
-            ButtonDefinitions = diag_btns
+            ButtonDefinitions = diagBtns
         };
 
-        var diag_result = await MessageBoxPopUp(msb_params);
-        if (diag_result == abort_btn)
+        var diagResult = await MessageBoxPopUp(msbParams);
+        if (diagResult == abort_btn)
         {
             ParentWindow.Close();
         }
-        else if (diag_result == retry_btn)
+        else if (diagResult == retry_btn)
         {
             DLLErrorCount++;
             WinFuncImport();
@@ -333,22 +334,18 @@ public partial class MainView : UserControl
         return newRADir;
     }
 
-    ShortcutterOutput getShortcutterOutput(string filePath, string core) => (DesktopOS)
-        ? new ShortcutterOutput(filePath)
-        : new ShortcutterOutput(filePath, core);
+    // ShortcutterOutput getShortcutterOutput(string filePath, string core) => (DesktopOS)
+    //     ? new ShortcutterOutput(filePath)
+    //     : new ShortcutterOutput(filePath, core);
     #endregion
 
 
     // TOP CONTROLS
-    private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
-    }
-    
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     {
         var settingWindow = new SettingsWindow(ParentWindow); 
-        await settingWindow.ShowDialog(ParentWindow); 
+        await settingWindow.ShowDialog(ParentWindow);
+        // TODO: Test a view-to-view function call
         LoadNewSettings();
     }
 
@@ -459,9 +456,9 @@ public partial class MainView : UserControl
         }
     }
     
-    void btnPatches_Click(object sender, RoutedEventArgs e)
+    private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
     {
-        // TODO
+        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
     }
     #endregion
 
@@ -532,6 +529,7 @@ public partial class MainView : UserControl
             };
             var boxResult = await MessageBoxPopUp(msbox_params);
             if (boxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel) { settings.LinDesktopPopUp = false; }
+            
         }
         
         PickerOpt.SaveOpts opt;
@@ -539,6 +537,13 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.SaveFileAsync(opt, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
+            if (!DesktopOS)
+            {
+                var popupWindow = new PopUpWindow(ParentWindow);
+                popupWindow.RenamePopUp(file, comboCore.Text);
+                await popupWindow.ShowDialog(ParentWindow);
+                file = ParentWindow.BuildingLink.OutputPaths[0].FullPath;
+            }
             OutputLinkPath = file;
             txtLINKDir.Text = OutputLinkPath;
         }
@@ -546,6 +551,7 @@ public partial class MainView : UserControl
         else
         {
             System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
+            
             // Testing.LinShortcutTest(DesktopOS);
             // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }
@@ -555,8 +561,7 @@ public partial class MainView : UserControl
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (settings.AllwaysAskOutput) return;
-        string coreName = (!string.IsNullOrEmpty(comboCore.Text)) ? comboCore.Text : "'core'";
-        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" : $"retroarch.{coreName}.{txtLINKDir}.desktop";
+        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" : $"{LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text)}.desktop";
         lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
                                                                              : settings.DEFLinkOutput;
     }
@@ -568,7 +573,7 @@ public partial class MainView : UserControl
     {
         // TODO: Implement a control lock to prevent fields changing during operations
         var outputLink = ParentWindow.BuildingLink;
-        // bool ShortcutPosible;
+        ParentWindow.BuildingLink.OutputPaths = new();
         var msbox_params = new MessageBoxStandardParams();
 
         // CHECKS!
@@ -586,12 +591,23 @@ public partial class MainView : UserControl
         outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
-        string outputPath;
-        if (!settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        { outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput); }
+        bool validNameEntered = !settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text);
+        if (!DesktopOS)
+        {
+            if (validNameEntered && (outputLink.OutputPaths.Count == 0))
+            {
+                string outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.LinLinkExt;
+                outputLink.OutputPaths.Add(new ShortcutterOutput(outputPath, outputLink.ROMcore));
+            }
+            outputLink.OutputPaths[0] = LinDesktopEntry.FixCoreNameForOutput(outputLink.OutputPaths[0], outputLink.ROMcore);
+        }
         else
-        { outputPath = txtLINKDir.Text; }
-        outputLink.OutputPath.Add(getShortcutterOutput(outputPath, outputLink.ROMcore));
+        {
+            string outputPath = validNameEntered ? 
+                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) : txtLINKDir.Text;
+            outputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
+        }
+        
 
         // Include a link description, if any
         outputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
@@ -625,7 +641,7 @@ public partial class MainView : UserControl
         if ((!string.IsNullOrEmpty(outputLink.RAdir)) 
          && (!string.IsNullOrEmpty(outputLink.ROMdir)) 
          && (!string.IsNullOrEmpty(outputLink.ROMcore))
-         && (outputLink.OutputPath[0].ValidOutput)
+         && (outputLink.OutputPaths[0].ValidOutput)
          )
         { System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
         else
@@ -648,7 +664,7 @@ public partial class MainView : UserControl
 
         // Link Copies handling
         if (settings.MakeLinkCopy)
-        { outputLink.OutputPath.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, outputLink.OutputPath[0]));}
+        { outputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, outputLink.OutputPaths[0]));}
 
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(outputLink, DesktopOS);
         // Single Shortcut

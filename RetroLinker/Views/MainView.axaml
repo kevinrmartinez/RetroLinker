@@ -115,7 +115,7 @@
 							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
 							Height="55" 
-							Content="{x:Static locale:resMainView.btnExecute}"
+							Content="{x:Static locale:resGeneric.btnExecute}"
 							Click="btnEXECUTE_Click"/>
 				</Panel>
 			</Grid>
@@ -131,8 +131,8 @@
 					<Border BorderThickness="1" BorderBrush="Gray">
 						<StackPanel>
 							<StackPanel Orientation="Horizontal" Spacing="14">
-								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconDef}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
-								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconCus}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:resGeneric.btnDefault}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:resGeneric.btnCustom}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 							</StackPanel>
 							<!--Icon Control-->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
