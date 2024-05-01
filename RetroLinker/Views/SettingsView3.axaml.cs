@@ -45,6 +45,7 @@ namespace RetroLinker.Views
         // PROPS/STATICS
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
+        private int candidatesCount;
 
         private string StrAddCustomCopyPath = resSettingsWindow.strAddCustomCopyPath;
         private List<string> candidateCopiesPath = new();
@@ -67,16 +68,20 @@ namespace RetroLinker.Views
                     panelWindowsOnlyControls.IsEnabled = false;
                 }
                 else candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates);
-                txtDEFLinkOutput.ItemsSource = candidateCopiesPath;
-                
+                candidatesCount = candidateCopiesPath.Count;
+
+                foreach (var candidate in candidateCopiesPath)
+                {
+                    comboDEFLinkOutput.Items.Add(candidate);
+                }
                 foreach (var path in SettingsOps.LinkCopyPaths)
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));
                 }
+                
                 candidateCopiesPath.Add(StrAddCustomCopyPath);
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
                 comboaddLinkCopy.SelectedIndex = 0;
-                txtDEFLinkOutput.Watermark = $"Ex: {FileOps.UserDesktop}";
                 comboUseDefaultIcoSavPath.ItemsSource = defIcoSavPathList;
                 
                 FirstTimeLoad = false;
@@ -92,7 +97,7 @@ namespace RetroLinker.Views
         {
             chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
             panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AllwaysAskOutput;
-            txtDEFLinkOutput.Text = ParentWindow.settings.DEFLinkOutput;
+            comboDEFLinkOutput.SelectedIndex = 0;
             chkMakeLinkCopy.IsChecked = ParentWindow.settings.MakeLinkCopy;
             lsboxLinkCopies.IsEnabled = ParentWindow.settings.MakeLinkCopy;
 
@@ -180,28 +185,32 @@ namespace RetroLinker.Views
             panelDEFLinkOutput.IsEnabled = !chk;
         }
         
+        private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
+            ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem;
+        
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
             string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtDEFLinkOutput.Text = folder;
-            ParentWindow.settings.DEFLinkOutput = folder;
+            // int customDirIndex = candidatesCount;
+            if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
+            else comboDEFLinkOutput.Items[candidatesCount] = folder;
+            comboDEFLinkOutput.SelectedIndex = candidatesCount;
         }
         
         private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
             ParentWindow.settings.DEFLinkOutput = ParentWindow.DEFsettings.DEFLinkOutput;
-            txtDEFLinkOutput.Text = ParentWindow.settings.DEFLinkOutput;
+            comboDEFLinkOutput.SelectedIndex = 0;
         }
         
         
         // LINK COPY
         void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e)
         {
-            var chk = sender as CheckBox;
-            ParentWindow.settings.MakeLinkCopy = (bool)chk.IsChecked;
-            lsboxLinkCopies.IsEnabled = (bool)chk.IsChecked;
-            //lsboxLinkCopies.IsVisible = (bool)chk.IsChecked;
+            var chk = (bool)chkMakeLinkCopy.IsChecked;
+            ParentWindow.settings.MakeLinkCopy = chk;
+            lsboxLinkCopies.IsEnabled = chk;
         }
 
         async void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e)

@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,7 +76,6 @@ public partial class MainView : UserControl
     
     // TODO: Implement an Event for theme handling
     #region LOAD EVENTS
-    // LOADS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
         if (FormFirstLoad)
@@ -287,6 +287,14 @@ public partial class MainView : UserControl
         lblLinkDeskDir.Content = settings.DEFLinkOutput;
     }
 
+    void UpdateLinkLabel()
+    {
+        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" 
+            : $"{LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text)}.desktop";
+        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
+            : settings.DEFLinkOutput;
+    }
+
     void FillIconBoxes(string path)
     {
         ICONimage = AvaloniaOps.GetBitmap(path);
@@ -463,6 +471,11 @@ public partial class MainView : UserControl
 
     #region RACore Controls
     
+    private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (!settings.AllwaysAskOutput && !DesktopOS) UpdateLinkLabel();
+    }
+    
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
         // TODO    
@@ -556,11 +569,7 @@ public partial class MainView : UserControl
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (settings.AllwaysAskOutput) return;
-        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" 
-                                      : $"{LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text)}.desktop";
-        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
-                                                                             : settings.DEFLinkOutput;
+        if (!settings.AllwaysAskOutput) UpdateLinkLabel();
     }
     
     private void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -749,4 +758,5 @@ public partial class MainView : UserControl
         Testing.FilePickerTesting(ParentWindow);
     }
 #endif
+   
 }

@@ -58,7 +58,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
 						<Label Content="Core*"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
+							                 TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="{x:Static locale:resMainView.tipSubSys}"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>

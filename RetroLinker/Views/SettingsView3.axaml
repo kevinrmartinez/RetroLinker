@@ -22,8 +22,8 @@
 				          Click="ChkAlwaysAskOutput_OnClick"/>
 				<Label Content="{x:Static locale:resSettingsWindow.lblDEFLinkOutput}"/>
 				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
-					<!-- TODO: Fix auto complete behavior -->
-					<AutoCompleteBox Name="txtDEFLinkOutput" Grid.Column="0" Classes="SettingCatg"/>
+					<ComboBox Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" 
+					          SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
 					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Click="BtnDefLinkOutput_OnClick"
 					        i:Attached.Icon="fa-folder-open"/>
 					<Button Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">
