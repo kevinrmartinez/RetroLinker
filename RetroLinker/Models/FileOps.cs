@@ -250,6 +250,8 @@ namespace RetroLinker.Models
         
         public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
 
+        public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
+
         public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
 
         public static bool CheckUsrSetDir(string path)
@@ -277,7 +279,7 @@ namespace RetroLinker.Models
         public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)
         {
             var linkCopies = new ShortcutterOutput[linkCopyList.Count];
-            for (int i = 1; i < linkCopies.Length; i++)
+            for (int i = 0; i < linkCopies.Length; i++)
             {
                 linkCopies[i] = new ShortcutterOutput(linkOutputBase, linkCopyList[i]);
             }

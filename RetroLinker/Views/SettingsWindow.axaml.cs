@@ -98,6 +98,7 @@ namespace RetroLinker.Views
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
             if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
+            if (!settings.AllwaysAskOutput) settings.AllwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             SettingsOps.WriteSettings(settings);
             CloseView();

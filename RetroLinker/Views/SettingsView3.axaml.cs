@@ -66,8 +66,7 @@ namespace RetroLinker.Views
                     candidateCopiesPath.AddRange(SettingsOps.LINLinkPathCandidates);
                     panelWindowsOnlyControls.IsEnabled = false;
                 }
-                else
-                { candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates); }
+                else candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates);
                 txtDEFLinkOutput.ItemsSource = candidateCopiesPath;
                 
                 foreach (var path in SettingsOps.LinkCopyPaths)
@@ -77,7 +76,7 @@ namespace RetroLinker.Views
                 candidateCopiesPath.Add(StrAddCustomCopyPath);
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
                 comboaddLinkCopy.SelectedIndex = 0;
-                txtDEFLinkOutput.Watermark = FileOps.UserDesktop;
+                txtDEFLinkOutput.Watermark = $"Ex: {FileOps.UserDesktop}";
                 comboUseDefaultIcoSavPath.ItemsSource = defIcoSavPathList;
                 
                 FirstTimeLoad = false;
@@ -92,6 +91,7 @@ namespace RetroLinker.Views
         void ApplySettingsToControls()
         {
             chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
+            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AllwaysAskOutput;
             txtDEFLinkOutput.Text = ParentWindow.settings.DEFLinkOutput;
             chkMakeLinkCopy.IsChecked = ParentWindow.settings.MakeLinkCopy;
             lsboxLinkCopies.IsEnabled = ParentWindow.settings.MakeLinkCopy;
@@ -155,9 +155,7 @@ namespace RetroLinker.Views
             ParentWindow.settings.IcoSavPath = pathObj.FullName;
         }
 
-        int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) 
-            ? 0 
-            : lsboxLinkCopies.Items.Count - 2;
+        int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
         
         ListBoxItem AddLinkCopyItem(string dir)
         {
@@ -175,11 +173,11 @@ namespace RetroLinker.Views
         
         
         // DEFAULT OUTPUT
-        void ChkAlwaysAskOutput_IsCheckedChanged(object? sender, RoutedEventArgs e)
+        private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e)
         {
-            var chk = sender as CheckBox;
-            ParentWindow.settings.AllwaysAskOutput = (bool)chk.IsChecked;
-            panelDEFLinkOutput.IsEnabled = !(bool)chk.IsChecked;
+            var chk = (bool)chkAlwaysAskOutput.IsChecked;
+            ParentWindow.settings.AllwaysAskOutput = chk;
+            panelDEFLinkOutput.IsEnabled = !chk;
         }
         
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
@@ -288,12 +286,6 @@ namespace RetroLinker.Views
         }
         #endregion
         
-        
-        //UNLOAD
-        private void SettingsView3_1_OnUnloaded(object? sender, RoutedEventArgs e)
-        {
-            _ = e.Source;
-        }
         
 #if DEBUG
         private List<string> ListTest = new()

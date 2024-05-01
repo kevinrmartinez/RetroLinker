@@ -21,8 +21,8 @@ namespace RetroLinker.Models.LinFunc;
 public static class LinDesktopEntry
 {
     private const string Ext = FileOps.LinLinkExt;
-    private const string NamePlaceHolder = "[ROM]";
-    private const string CorePlaceHolder = "[CORE]";
+    public const string NamePlaceHolder = "[ROM]";
+    public const string CorePlaceHolder = "[CORE]";
 
     public static string StdDesktopEntry(string friendlyName, string core)
     {

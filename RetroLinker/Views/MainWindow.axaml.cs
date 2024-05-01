@@ -23,7 +23,6 @@ namespace RetroLinker.Views;
 
 public partial class MainWindow : Window
 {
-    private MainView PermaView;
     public MainWindow()
     {
         InitializeComponent();
@@ -31,8 +30,11 @@ public partial class MainWindow : Window
         MainCC1.Content = PermaView;
     }
     
+    // Fields
+    private MainView PermaView;
+    
     // Shared Objects
-    public Shortcutter BuildingLink { get; set; } = new Shortcutter();
+    public Shortcutter BuildingLink { get; set; } = new();
 
     public enum Window1Views1
     {

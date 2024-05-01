@@ -16,12 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.IO;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
 using RetroLinker.Models.LinFunc;
 
@@ -44,6 +40,7 @@ public partial class RenameEntryView : UserControl
     private string CurrentCore;
     private bool CustomFilename;
     private ShortcutterOutput NewName;
+    private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
     
     // LOAD EVENTS
     private void View_OnLoaded(object? sender, RoutedEventArgs e)
@@ -101,9 +98,11 @@ public partial class RenameEntryView : UserControl
     private void BtnNameApply_OnClick(object? sender, RoutedEventArgs e)
     {
         var friendlyName = txtFriendlyName.Text;
-        var fileName = txtFileName.Text + FileOps.LinLinkExt;
+        var fileName = (CustomFilename) ? txtFileName.Text : LinDesktopEntry.StdDesktopEntry(friendlyName, string.Empty);
+        fileName += FileOps.LinLinkExt;
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
+        NewName.CustomEntryName = CustomFilename;
         ResolveOutput();
         _popUpWindow.Close();
     }
@@ -112,6 +111,7 @@ public partial class RenameEntryView : UserControl
     private void View_OnUnloaded(object? sender, RoutedEventArgs e)
     {
         if (NewName is not null) return;
+        if (GivenName == NamePlaceHolder) return;
         NewName = new ShortcutterOutput(GivenPath, CurrentCore);
         ResolveOutput();
     }

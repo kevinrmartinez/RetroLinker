@@ -24,6 +24,7 @@ namespace RetroLinkerWin
 {
     public class WinShortcutter
     {
+        // IN USE
         public static void CreateShortcut(string Exec, string path, string command, string Iconfile, string Desc, string Link)
         {
             var shell = new WshShell();

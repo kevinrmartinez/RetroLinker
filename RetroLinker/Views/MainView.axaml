@@ -94,9 +94,12 @@
 					</Grid>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkDir}"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkName}"/>
-					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk" TextChanged="txtLINKDir_TextChanged"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="1" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
+					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged"
+						         IsReadOnly="True" Watermark="Super Mario Bros.lnk" />
+						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
+						        i:Attached.Icon="fa-pen" FontSize="18"/>
+						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:resMainView.lblLinkDeskDir}" FontSize="11"/>
 					</Grid>

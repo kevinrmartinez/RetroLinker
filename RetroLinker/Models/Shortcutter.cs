@@ -81,6 +81,20 @@ namespace RetroLinker.Models
             PatchArg = string.Empty;
         }
 
+        public Shortcutter(Shortcutter ObjToClone)
+        {
+            RAdir = ObjToClone.RAdir;
+            RApath = ObjToClone.RApath;
+            ROMdir = ObjToClone.ROMdir;
+            ROMcore = ObjToClone.ROMdir;
+            Command = ObjToClone.Command;
+            OutputPaths = ObjToClone.OutputPaths;
+            VerboseB = ObjToClone.VerboseB;
+            FullscreenB = ObjToClone.FullscreenB;
+            AccessibilityB = ObjToClone.AccessibilityB;
+            PatchArg = ObjToClone.PatchArg;
+        }
+
         private void SetRAdir(string value)
         {
             ra_dir = value;
@@ -126,20 +140,20 @@ namespace RetroLinker.Models
             link = Commander.CommandBuilder(link);
 
             // Grouping the .lnk parameters
-            var CreateShortcutArgs = new object[]
+            var createShortcutArgs = new object[]
             {
                 link.RAdir, link.RApath, link.Command,
-                link.ICONfile, link.Desc, link.OutputPaths
+                link.ICONfile, link.Desc, string.Empty
             };
             
-            foreach (var output in link.OutputPaths)
+            foreach (ShortcutterOutput output in link.OutputPaths)
             {
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                CreateShortcutArgs[5] = outputFile;
+                createShortcutArgs[5] = outputFile;
                 System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
-                try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, CreateShortcutArgs);
+                try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, createShortcutArgs);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
@@ -193,6 +207,7 @@ namespace RetroLinker.Models
         public string FullPath { get; set; }
         public string FriendlyName { get; set; }
         public string FileName { get; set; }
+        public bool CustomEntryName { get; set; }
         public bool ValidOutput { get; private set; }
 
         public ShortcutterOutput()
@@ -201,6 +216,7 @@ namespace RetroLinker.Models
             FullPath = NA;
             FriendlyName = NA;
             FileName = NA;
+            CustomEntryName = false;
             ValidOutput = false;
         }
         
@@ -209,6 +225,7 @@ namespace RetroLinker.Models
             FullPath = fullPath;
             FriendlyName = FileOps.GetFileNameNoExtFromPath(fullPath);
             FileName = FileOps.GetFileNameFromPath(fullPath);
+            CustomEntryName = false;
             ValidOutput = true;
         }
         
@@ -218,6 +235,7 @@ namespace RetroLinker.Models
             FullPath = outputNames[0];
             FriendlyName = outputNames[1];
             FileName = outputNames[2];
+            CustomEntryName = false;
             ValidOutput = true;
         }
 
@@ -231,9 +249,9 @@ namespace RetroLinker.Models
 
         public ShortcutterOutput(ShortcutterOutput primeOutput, string copyOutput)
         {
-            FullPath = FileOps.GetDirAndCombine(copyOutput, primeOutput.FileName);
             FriendlyName = primeOutput.FriendlyName;
             FileName = primeOutput.FileName;
+            FullPath = FileOps.CombineDirAndFile(copyOutput, primeOutput.FileName);
             ValidOutput = true;
         }
     }
