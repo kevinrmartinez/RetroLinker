@@ -17,7 +17,6 @@
 */
 
 using System.Collections.Generic;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
@@ -155,9 +154,7 @@ namespace RetroLinker.Views
             comboUseDefaultIcoSavPath.IsEnabled = false;
             comboUseDefaultIcoSavPath.SelectedIndex = 0;
             panelWindowsOnlyControls2.IsEnabled = true;
-            var pathObj = new DirectoryInfo(path);
-            pathObj.Create();
-            ParentWindow.settings.IcoSavPath = pathObj.FullName;
+            ParentWindow.settings.IcoSavPath = path;
         }
 
         int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
@@ -190,7 +187,8 @@ namespace RetroLinker.Views
         
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
-            string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
+            string currentFolder = (string)comboDEFLinkOutput.SelectedItem;
+            string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // int customDirIndex = candidatesCount;
             if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
@@ -220,7 +218,7 @@ namespace RetroLinker.Views
 
             if (currentItem == StrAddCustomCopyPath)
             {
-                string folder = await AvaloniaOps.OpenFolderAsync(template:3, ParentWindow);
+                string folder = await AvaloniaOps.OpenFolderAsync(template:3, string.Empty, ParentWindow);
                 if (!string.IsNullOrWhiteSpace(folder))
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
@@ -252,7 +250,8 @@ namespace RetroLinker.Views
         #region WINDOWS OS ONLY
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
-            string folder = await AvaloniaOps.OpenFolderAsync(template:2, ParentWindow);
+            string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
+            string folder = await AvaloniaOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
             if (!string.IsNullOrWhiteSpace(folder))
             {
                 txtIcoSavPath.Text = folder; 
@@ -263,14 +262,14 @@ namespace RetroLinker.Views
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
             ParentWindow.settings.IcoSavPath = ParentWindow.DEFsettings.IcoSavPath;
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
+            txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
         }
 
         void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
         {
             panelWindowsOnlyControls2.IsEnabled = !(bool)chkMakeLinkCopy.IsChecked;
             ParentWindow.settings.IcoSavPath = ParentWindow.settings.UserAssetsPath;
-            txtIcoSavPath.Text = System.IO.Path.GetFullPath(ParentWindow.settings.IcoSavPath);
+            txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
         }
         
         private void IcoSavChecks_IsCheckedChanged(object? sender, RoutedEventArgs e)
@@ -281,11 +280,8 @@ namespace RetroLinker.Views
         
         private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e)
         {
-            var chk = sender as CheckBox;
-            if (!(bool)chk.IsChecked)
-            { SetCustomSavIcoPath(string.Empty); }
-            else
-            { SetDefaultSavIcoPath(0); }
+            if (!(bool)chkUseDefaultIcoSavPath.IsChecked) SetCustomSavIcoPath(string.Empty);
+            else SetDefaultSavIcoPath(0);
         }
         
         private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e)

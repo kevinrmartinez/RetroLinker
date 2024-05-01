@@ -86,8 +86,12 @@ namespace RetroLinker.Models
             RAdir = ObjToClone.RAdir;
             RApath = ObjToClone.RApath;
             ROMdir = ObjToClone.ROMdir;
-            ROMcore = ObjToClone.ROMdir;
+            ROMname = ObjToClone.ROMname;
+            ROMcore = ObjToClone.ROMcore;
+            CONFfile = ObjToClone.CONFfile;
+            ICONfile = ObjToClone.ICONfile;
             Command = ObjToClone.Command;
+            Desc = ObjToClone.Desc;
             OutputPaths = ObjToClone.OutputPaths;
             VerboseB = ObjToClone.VerboseB;
             FullscreenB = ObjToClone.FullscreenB;

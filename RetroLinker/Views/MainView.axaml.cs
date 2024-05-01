@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,6 +62,7 @@ public partial class MainView : UserControl
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int DLLErrorCount = 0;
+    private int PreloadedIconsCount;
     private byte CurrentTheme = 250;
     private string OutputLinkPath;
     private Settings settings;
@@ -151,6 +151,8 @@ public partial class MainView : UserControl
             {
                 comboICONDir.Items.Add(iconFile);
             }
+
+            PreloadedIconsCount = comboICONDir.ItemCount;
             comboICONDir.SelectedIndex++;
             rdoIconDef.IsChecked = true;
         }
@@ -374,8 +376,11 @@ public partial class MainView : UserControl
         PickerOpt.OpenOpts opt;
         if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }
         else { opt = PickerOpt.OpenOpts.LINico; }
-        
-        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
+
+        string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
+            ? (string)comboICONDir.SelectedItem
+            : string.Empty;
+        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             int newIndex = comboICONDir.ItemCount;
@@ -434,14 +439,17 @@ public partial class MainView : UserControl
     async void btnRADir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        if (DesktopOS) { opt = PickerOpt.OpenOpts.RAexe; }
-        else { opt = PickerOpt.OpenOpts.RAbin; }
-        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow);
-        if (!string.IsNullOrEmpty(file))
+        string currentFile = string.Empty;
+        if (DesktopOS)
         {
-            BuildingLink.RAdir = file;
-            txtRADir.Text = file;
+            opt = PickerOpt.OpenOpts.RAexe;
+            currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
         }
+        else { opt = PickerOpt.OpenOpts.RAbin; }
+        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        if (string.IsNullOrEmpty(file)) return;
+        BuildingLink.RAdir = file;
+        txtRADir.Text = file;
     }
     #endregion
 
@@ -454,7 +462,8 @@ public partial class MainView : UserControl
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
-        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow);
+        string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
+        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             BuildingLink.ROMdir = file;
@@ -502,7 +511,8 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow);
+        string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem : string.Empty;
+        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             if (!comboConfig.Items.Contains(file))
@@ -531,7 +541,8 @@ public partial class MainView : UserControl
     {
         PickerOpt.SaveOpts opt;
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
-        string file = await AvaloniaOps.SaveFileAsync(opt, ParentWindow);
+        string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
+        string file = await AvaloniaOps.SaveFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
             if (!DesktopOS)

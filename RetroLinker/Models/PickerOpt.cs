@@ -44,13 +44,13 @@ namespace RetroLinker.Models
         public enum SaveOpts { WINlnk, LINdesktop }
         public enum PatchOpts { UPS, BPS, IPS, XD }
 
-        static List<FilePickerFileType> RADirFileTypes_win = new() { win_exe, FilePickerFileTypes.All };
-        static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, shellscripts, FilePickerFileTypes.All };
-        static List<FilePickerFileType> CONFIGDirFileTypes = new() { config_file, FilePickerFileTypes.TextPlain };
-        static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, win_exe, conv_icon };
-        static List<FilePickerFileType> ICONfileTypes2 = new() { lin_icon_files };
-        static List<FilePickerFileType> WinShorTypes = new() { win_lnk };
-        static List<FilePickerFileType> LinShorTypes = new() { lin_lnk };
+        static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
+        static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, shellscripts, FilePickerFileTypes.All];
+        static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
+        static readonly List<FilePickerFileType> ICONfileTypes = [win_icon_files, win_exe, conv_icon];
+        static readonly List<FilePickerFileType> ICONfileTypes2 = [lin_icon_files];
+        static readonly List<FilePickerFileType> WinShorTypes = [win_lnk];
+        static readonly List<FilePickerFileType> LinShorTypes = [lin_lnk];
         
         
         public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
@@ -69,7 +69,7 @@ namespace RetroLinker.Models
                 // ROM files (all files)
                 case OpenOpts.RAroms:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
+                    options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
                     if (AvaloniaOps.ROMPadreDir is not null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }

@@ -99,6 +99,9 @@ public static class AvaloniaOps
 
     public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
 
+    private static async Task<IStorageFolder> GetStorageFolder(string dir, TopLevel topLevel) =>  
+        await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
+
     public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
     {
         if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
@@ -109,11 +112,16 @@ public static class AvaloniaOps
     #endregion
     
     #region FileDialogs
-    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel)
+    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, string currentFile, TopLevel topLevel)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
+        if (!string.IsNullOrEmpty(currentFile))
+        {
+            currentFile = FileOps.GetDirFromPath(currentFile);
+            opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
+        }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-        string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
+        string dir = (file.Count > 0) ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
@@ -124,7 +132,7 @@ public static class AvaloniaOps
         return dir;
     }
 
-    public static async Task<string> OpenFolderAsync(byte template, TopLevel topLevel)
+    public static async Task<string> OpenFolderAsync(byte template, string currentFolder, TopLevel topLevel)
     {
         FolderPickerOpenOptions opt = new()
         {
@@ -137,19 +145,22 @@ public static class AvaloniaOps
                 3 => resAvaloniaOps.dlgFolderLinkCopy,
                 // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
-            }
+            },
         };
-
+        if (!string.IsNullOrEmpty(currentFolder))
+            opt.SuggestedStartLocation = await GetStorageFolder(currentFolder, topLevel);
+        
         var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
         string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
-    public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, TopLevel topLevel)
+    public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, string currentFile, TopLevel topLevel)
     {
         var opt = PickerOpt.SavePickerOpt(template);
-        var file_task = topLevel.StorageProvider.SaveFilePickerAsync(opt);
-        var file = await file_task;
+        currentFile = FileOps.GetDirFromPath(currentFile);
+        opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
         string dir = (file != null) ? file.Path.LocalPath : string.Empty;
         return dir;
     }
