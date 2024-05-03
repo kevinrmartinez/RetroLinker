@@ -59,9 +59,6 @@
     <data name="tipAppendConfig" xml:space="preserve">
         <value>Adjuntar Config</value>
     </data>
-    <data name="genFatalError" xml:space="preserve">
-        <value>Error Fatal</value>
-    </data>
     <data name="tipIconNoImage" xml:space="preserve">
         <value>El programa no puede visualizar el icono seleccionado. Sin embargo, el archivo será usado al crear el shortcut.</value>
     </data>
@@ -89,9 +86,6 @@
     <data name="popSingleOutput1_Mess" xml:space="preserve">
         <value>El archivo de link fue creado con éxtio</value>
     </data>
-    <data name="genSucces" xml:space="preserve">
-        <value>Éxito</value>
-    </data>
     <data name="popSingleOutput0_Head" xml:space="preserve">
         <value>Ha ocurrido un error al crear el link</value>
     </data>
@@ -100,9 +94,6 @@
     </data>
     <data name="popMultiOutput1_Mess" xml:space="preserve">
         <value>Todos los links fueron creados con éxtio</value>
-    </data>
-    <data name="genWarning" xml:space="preserve">
-        <value>Advertencia</value>
     </data>
     <data name="popMultiOutput0_Head" xml:space="preserve">
         <value>Ha ocurrido un error al crear algunos links:</value>

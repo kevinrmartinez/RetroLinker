@@ -76,6 +76,13 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resGeneric.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resGeneric.es.resx">
+      <DependentUpon>resGeneric.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainExtras.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resMainExtras.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -98,6 +105,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resGeneric.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resMainExtras.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resMainExtras.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

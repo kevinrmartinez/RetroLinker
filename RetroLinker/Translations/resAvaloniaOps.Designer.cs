@@ -170,5 +170,35 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("dlgFileInFallback", resourceCulture);
             }
         }
+        
+        public static string pckFileTypeUPS {
+            get {
+                return ResourceManager.GetString("pckFileTypeUPS", resourceCulture);
+            }
+        }
+        
+        public static string pckFileTypeIPS {
+            get {
+                return ResourceManager.GetString("pckFileTypeIPS", resourceCulture);
+            }
+        }
+        
+        public static string pckFileTypeBPS {
+            get {
+                return ResourceManager.GetString("pckFileTypeBPS", resourceCulture);
+            }
+        }
+        
+        public static string pckFileTypeXD {
+            get {
+                return ResourceManager.GetString("pckFileTypeXD", resourceCulture);
+            }
+        }
+        
+        public static string dlgFilePatch {
+            get {
+                return ResourceManager.GetString("dlgFilePatch", resourceCulture);
+            }
+        }
     }
 }

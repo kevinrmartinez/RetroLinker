@@ -258,7 +258,7 @@ public partial class MainView : UserControl
             MaxWidth = 550,
             ShowInCenter = true,
             Icon = MsBox.Avalonia.Enums.Icon.Error,
-            ContentTitle = resMainView.genFatalError,
+            ContentTitle = resGeneric.genFatalError,
             ContentHeader = string.Format(resMainView.dllErrorHead, FuncLoader.WinOnlyLib),
             ContentMessage = $"{resMainView.dllErrorMess}\n{eMain.Message}\n\n{resMainView.dllErrorMess2}",
             ButtonDefinitions = diagBtns
@@ -696,14 +696,14 @@ public partial class MainView : UserControl
             if (!opResult[0].Error)
             {
                 msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
-                msbox_params.ContentTitle = resMainView.genSucces;
+                msbox_params.ContentTitle = resGeneric.genSucces;
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);
             }
             else
             {
                 msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
-                msbox_params.ContentTitle = resMainView.genError;
+                msbox_params.ContentTitle = resGeneric.genError;
                 msbox_params.ContentMessage = string.Format(resMainView.popSingleOutput0_Head, opResult[0].eMesseage);
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 MessageBoxPopUp(msbox_params);
@@ -717,7 +717,7 @@ public partial class MainView : UserControl
             if (!hasErrors)
             {
                 msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
-                msbox_params.ContentTitle = resMainView.genSucces;
+                msbox_params.ContentTitle = resGeneric.genSucces;
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);
             }
@@ -741,7 +741,7 @@ public partial class MainView : UserControl
                     }
                     else { successCount++; }
                 }
-                msbox_params.ContentTitle = resMainView.genWarning;
+                msbox_params.ContentTitle = resGeneric.genWarning;
                 msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
                 msbox_params.ContentMessage = content;
                 MessageBoxPopUp(msbox_params);

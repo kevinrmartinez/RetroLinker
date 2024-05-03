@@ -34,11 +34,10 @@ namespace RetroLinker.Models
         static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
         static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
         
-        // TODO: Localize patches names
-        static readonly FilePickerFileType ups_patch = new("UPS Patch File") { Patterns = ["*.ups"] };
-        static readonly FilePickerFileType bps_patch = new("BPS Patch File") { Patterns = ["*.bps" ] };
-        static readonly FilePickerFileType ips_patch = new("IPS Patch File") { Patterns = ["*.ips"] };
-        static readonly FilePickerFileType xd_patch = new("xDelta Patch File") { Patterns = ["*.xdelta"] };
+        static readonly FilePickerFileType ups_patch = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
+        static readonly FilePickerFileType bps_patch = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps" ] };
+        static readonly FilePickerFileType ips_patch = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
+        static readonly FilePickerFileType xd_patch = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
@@ -165,8 +164,7 @@ namespace RetroLinker.Models
             return new FilePickerOpenOptions()
             {
                 AllowMultiple = false,
-                // TODO: Localize
-                Title = "resAvaloniaOps.dlgFileIcon",
+                Title = resAvaloniaOps.dlgFilePatch,
                 FileTypeFilter = new []{fileType, FilePickerFileTypes.All}
             };
         }

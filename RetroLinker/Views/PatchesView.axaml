@@ -15,8 +15,7 @@
             <!--         i:Attached.Icon="fa-arrow-left" FontSize="24"/> -->
             
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <!-- <Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/> -->
-                <Label Content="Soft Patching" FontWeight="Bold"/>
+                <Label Content="{x:Static locale:resMainExtras.tittleSoftPatching}" FontWeight="Bold"/>
             </StackPanel>
             <!-- <Rectangle Grid.Column="2" Width="40" Margin="0,0,5,0"/> -->
         </Grid>
@@ -29,10 +28,10 @@
     
             <!-- ROW1 - Patch Controls -->
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="3, 0">
-                <!-- TODO: Localize -->
                 <Label Content="Patch Type"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" Content="No patch" IsCheckedChanged="ToggleButton_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="ToggleButton_OnIsCheckedChanged"
+                                 Content="{x:Static locale:resMainExtras.rdoNoPatch}"/>
                     <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="ToggleButton_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="ToggleButton_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="ToggleButton_OnIsCheckedChanged"/>
@@ -44,7 +43,7 @@
                     <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="BtnPatchPath_OnClick"
                             i:Attached.Icon="fa-folder-open" FontSize="18"/>
                 </Grid>
-                <CheckBox Name="chkNoPatch" Content="Explicit No Patch" ToolTip.Tip="Prevents loading a patch of the same name as the ROM"/>
+                <CheckBox Name="chkNoPatch" Content="{x:Static locale:resMainExtras.chkNoPatch}"/>
             </StackPanel>
             
             <!-- ROW2 - Spacing -->
@@ -56,7 +55,6 @@
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <i:Icon FontSize="24" Value="fa-check" Foreground="Green"/>
-                        <!-- TODO: Localize -->
                         <TextBlock FontSize="24" Text="{x:Static locale:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>

@@ -189,12 +189,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string genFatalError {
-            get {
-                return ResourceManager.GetString("genFatalError", resourceCulture);
-            }
-        }
-        
         public static string tipIconNoImage {
             get {
                 return ResourceManager.GetString("tipIconNoImage", resourceCulture);
@@ -255,12 +249,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string genSucces {
-            get {
-                return ResourceManager.GetString("genSucces", resourceCulture);
-            }
-        }
-        
         public static string popSingleOutput0_Mess {
             get {
                 return ResourceManager.GetString("popSingleOutput0_Mess", resourceCulture);
@@ -273,12 +261,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string genError {
-            get {
-                return ResourceManager.GetString("genError", resourceCulture);
-            }
-        }
-        
         public static string popMultiOutput1_Mess {
             get {
                 return ResourceManager.GetString("popMultiOutput1_Mess", resourceCulture);
@@ -288,12 +270,6 @@ namespace RetroLinker.Translations {
         public static string popMultiOutput0_Head {
             get {
                 return ResourceManager.GetString("popMultiOutput0_Head", resourceCulture);
-            }
-        }
-        
-        public static string genWarning {
-            get {
-                return ResourceManager.GetString("genWarning", resourceCulture);
             }
         }
         

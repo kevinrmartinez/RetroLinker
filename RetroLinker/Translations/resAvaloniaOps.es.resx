@@ -65,4 +65,19 @@
     <data name="dlgFileInFallback" xml:space="preserve">
         <value>Eliga un archivo</value>
     </data>
+    <data name="pckFileTypeXD" xml:space="preserve">
+        <value>Archivos xDelta</value>
+    </data>
+    <data name="pckFileTypeUPS" xml:space="preserve">
+        <value>Archivos UPS</value>
+    </data>
+    <data name="pckFileTypeIPS" xml:space="preserve">
+        <value>Archivos IPS</value>
+    </data>
+    <data name="pckFileTypeBPS" xml:space="preserve">
+        <value>Archivos BPS</value>
+    </data>
+    <data name="dlgFilePatch" xml:space="preserve">
+        <value>Eliga el archivo de parche</value>
+    </data>
 </root>

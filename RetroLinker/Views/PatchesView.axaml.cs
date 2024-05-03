@@ -35,6 +35,8 @@ public partial class PatchesView : UserControl
     private void PatchView_OnLoaded(object? sender, RoutedEventArgs e)
     {
         rdoNoPatch.IsChecked = true;
+        string tip = Translations.resMainExtras.chkNoPatch_Tip1 + "\n" + Translations.resMainExtras.chkNoPatch_Tip2;
+        ToolTip.SetTip(chkNoPatch, tip);
     }
 
     // TOP CONTROLS
@@ -89,8 +91,8 @@ public partial class PatchesView : UserControl
                 WindowIcon = ParentWindow.Icon,
                 MaxWidth = 550,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ContentTitle = "No Patch Selected",
-                ContentMessage = "No patch file selected. Using implicit No Patch",
+                ContentTitle = Translations.resMainExtras.popNonSelected_Tittle,
+                ContentMessage = Translations.resMainExtras.popNonSelected_Msg,
                 Icon = MsBox.Avalonia.Enums.Icon.Info
             };
             var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);

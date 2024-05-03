@@ -90,9 +90,6 @@
     <data name="tipAppendConfig" xml:space="preserve">
         <value>Append Config</value>
     </data>
-    <data name="genFatalError" xml:space="preserve">
-        <value>Fatal Error</value>
-    </data>
     <data name="tipIconNoImage" xml:space="preserve">
         <value>The program can not display the selected icon. However, the selected file will be used to create the shortcut.</value>
     </data>
@@ -123,26 +120,17 @@
     <data name="popSingleOutput1_Mess" xml:space="preserve">
         <value>The link file has been created successfully</value>
     </data>
-    <data name="genSucces" xml:space="preserve">
-        <value>Success</value>
-    </data>
     <data name="popSingleOutput0_Mess" xml:space="preserve">
         <value>The operation failed with the following error:</value>
     </data>
     <data name="popSingleOutput0_Head" xml:space="preserve">
         <value>An error has occurred while creating the link</value>
     </data>
-    <data name="genError" xml:space="preserve">
-        <value>Error</value>
-    </data>
     <data name="popMultiOutput1_Mess" xml:space="preserve">
         <value>All links were created successfully</value>
     </data>
     <data name="popMultiOutput0_Head" xml:space="preserve">
         <value>An error has occurred while creating some links:</value>
-    </data>
-    <data name="genWarning" xml:space="preserve">
-        <value>Warning</value>
     </data>
     <data name="popLinkSucces" xml:space="preserve">
         <value>Link creation was successful</value>

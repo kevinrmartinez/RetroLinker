@@ -33,6 +33,9 @@ public partial class PopUpWindow : Window
     // FIELDS
     public MainWindow ParentWindow;
 
-    public void RenamePopUp(string givenPath, string givenCore) =>
+    public void RenamePopUp(string givenPath, string givenCore)
+    {
+        this.Title = RetroLinker.Translations.resMainExtras.tittleEntryName;
         PopCC1.Content = new RenameEntryView(this, givenPath, givenCore);
+    }
 }

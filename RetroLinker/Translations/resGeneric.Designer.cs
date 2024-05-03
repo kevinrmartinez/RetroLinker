@@ -92,5 +92,29 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("btnCustom", resourceCulture);
             }
         }
+        
+        public static string genError {
+            get {
+                return ResourceManager.GetString("genError", resourceCulture);
+            }
+        }
+        
+        public static string genFatalError {
+            get {
+                return ResourceManager.GetString("genFatalError", resourceCulture);
+            }
+        }
+        
+        public static string genWarning {
+            get {
+                return ResourceManager.GetString("genWarning", resourceCulture);
+            }
+        }
+        
+        public static string genSucces {
+            get {
+                return ResourceManager.GetString("genSucces", resourceCulture);
+            }
+        }
     }
 }

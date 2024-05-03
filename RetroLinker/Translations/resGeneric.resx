@@ -42,4 +42,16 @@
     <data name="btnCustom" xml:space="preserve">
         <value>Custom</value>
     </data>
+    <data name="genError" xml:space="preserve">
+        <value>Error</value>
+    </data>
+    <data name="genFatalError" xml:space="preserve">
+        <value>Fatal Error</value>
+    </data>
+    <data name="genWarning" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+    <data name="genSucces" xml:space="preserve">
+        <value>Success</value>
+    </data>
 </root>
