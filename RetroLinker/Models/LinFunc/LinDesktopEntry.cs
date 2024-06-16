@@ -33,13 +33,21 @@ public static class LinDesktopEntry
     
     public static string DesktopEntryName(string fileName, string core)
     {
-        const string appendix = "retroarch.";
+        const string prefix = "retroarch.";
         const string whiteSpace = " ";
         const string whiteSpaceReplacer = "_";
+        bool dotAtTheEnd = true;
             
         fileName = fileName.Replace(whiteSpace, whiteSpaceReplacer);
+        do
+        {
+            int lastChar = fileName.Length - 1;
+            if (fileName[lastChar] == '.') fileName = fileName.Remove(lastChar);
+            else dotAtTheEnd = false;
+        } while (dotAtTheEnd);
+        
         fileName = fileName.Insert(0, $"{core}.");
-        fileName = fileName.Insert(0, appendix);
+        fileName = fileName.Insert(0, prefix);
         return fileName;
     }
 

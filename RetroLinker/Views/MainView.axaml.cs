@@ -297,6 +297,27 @@ public partial class MainView : UserControl
             : settings.DEFLinkOutput;
     }
 
+    string UpdateLinkLabelCore(string fullPath)
+    {
+        var fileDir = FileOps.GetDirFromPath(fullPath);
+        var fileName = FileOps.GetFileNameFromPath(fullPath);
+        var nameSplited = fileName.Split('.');
+        nameSplited[1] = (string.IsNullOrWhiteSpace(comboCore.Text)) ? "[CORE]" : comboCore.Text;
+        var newName = string.Empty;
+        for (int i = 0; i < nameSplited.Length; i++)
+        {
+            newName += nameSplited[i];
+            if (i != nameSplited.Length - 1) newName += '.';
+        }
+
+        return FileOps.CombineDirAndFile(fileDir, newName);
+    }
+
+    void ResetAfterExecute()
+    {
+        ParentWindow.LinkCustomName = false;
+    }
+
     void FillIconBoxes(string path)
     {
         ICONimage = AvaloniaOps.GetBitmap(path);
@@ -482,7 +503,11 @@ public partial class MainView : UserControl
     
     private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (!settings.AllwaysAskOutput && !DesktopOS) UpdateLinkLabel();
+        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text) && !DesktopOS && !ParentWindow.LinkCustomName)
+        {
+            if (!settings.AllwaysAskOutput) lblLinkDeskDir.Content = UpdateLinkLabelCore(lblLinkDeskDir.Content as string);
+            else txtLINKDir.Text = UpdateLinkLabelCore(txtLINKDir.Text);
+        }
     }
     
     void btnSubSys_Click(object sender, RoutedEventArgs e)
@@ -553,7 +578,7 @@ public partial class MainView : UserControl
                 file = BuildingLink.OutputPaths[0].FullPath;
             }
             OutputLinkPath = file;
-            txtLINKDir.Text = OutputLinkPath;
+            txtLINKDir.Text = (!string.IsNullOrWhiteSpace(comboCore.Text)) ? UpdateLinkLabelCore(OutputLinkPath) : OutputLinkPath;
         }
 #if DEBUG
         else
@@ -569,13 +594,19 @@ public partial class MainView : UserControl
     private async void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e)
     {
         const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
-        var fullPath = 
-            FileOps.CombineDirAndFile(settings.DEFLinkOutput, (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? NamePlaceHolder : txtLINKDir.Text));
+        var fullPath = FileOps.CombineDirAndFile(
+            settings.DEFLinkOutput, 
+            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? NamePlaceHolder : txtLINKDir.Text)
+        );
         var renamePopUp = new PopUpWindow(ParentWindow);
         renamePopUp.RenamePopUp(fullPath, comboCore.Text);
         await renamePopUp.ShowDialog(ParentWindow);
         var outputList = BuildingLink.OutputPaths;
-        if (outputList.Count > 0) txtLINKDir.Text = outputList[0].FriendlyName;
+        if (outputList.Count > 0)
+        {
+            txtLINKDir.Text = outputList[0].FriendlyName;
+            lblLinkDeskDir.Content = outputList[0].FullPath;
+        }
     }
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
@@ -747,6 +778,7 @@ public partial class MainView : UserControl
                 MessageBoxPopUp(msbox_params);
             }
         }
+        ResetAfterExecute();
     }
 
     // CLOSING

@@ -63,6 +63,7 @@ public partial class RenameEntryView : UserControl
         if (_popUpWindow.ParentWindow.BuildingLink.OutputPaths.Count > 0)
             _popUpWindow.ParentWindow.BuildingLink.OutputPaths[0] = NewName;
         else _popUpWindow.ParentWindow.BuildingLink.OutputPaths.Add(NewName);
+        _popUpWindow.ParentWindow.LinkCustomName = CustomFilename;
     }
 
     private bool AreBoxesEmpty() => string.IsNullOrWhiteSpace(txtFriendlyName.Text) || string.IsNullOrWhiteSpace(txtFileName.Text);

@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     
     // Shared Objects
     public Shortcutter BuildingLink { get; set; } = new();
+    public bool LinkCustomName { get; set; }
 
     public enum Window1Views1
     {

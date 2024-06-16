@@ -49,8 +49,7 @@ class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
-        IconProvider.Current
-            .Register<FontAwesomeIconProvider>();
+        IconProvider.Current.Register<FontAwesomeIconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
@@ -59,8 +58,8 @@ class Program
 
     private static System.Diagnostics.ConsoleTraceListener ConsoleTracer;
     private static System.Diagnostics.TextWriterTraceListener TextfileTracer;
-    private const string LogTxt = "";
-    private static string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogTxt);
+    private const string LogTxt = "trace.log";
+    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogTxt);
 
     private static void StartStopLogging(bool period)
     {
