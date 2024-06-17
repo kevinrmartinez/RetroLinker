@@ -23,7 +23,7 @@
 		
 		<!-- BODIES TAB CONTROL -->
 		<TabControl Grid.Row="1">
-			<!--TODO: Create or implement a Data Template for the tabs header-->
+			<!--TODO: Create or implement a Style for the tabs header-->
 			<TabItem Header="{x:Static locale:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>

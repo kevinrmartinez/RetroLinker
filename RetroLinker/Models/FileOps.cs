@@ -33,7 +33,7 @@ namespace RetroLinker.Models
         public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
-        public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
+        public const byte MAX_PATH = 255; // TODO: Apply Everywhere?
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
@@ -82,11 +82,9 @@ namespace RetroLinker.Models
 
         public static string[] ReadSettingsFile() => File.ReadAllLines(PathToSettingFileBin);
 
-        public static string ResolveUserAssets(string userAssetPath)
+        public static string ResolveSettingUA(string userAssetPath)
         {
             string fullPath = Path.GetFullPath(userAssetPath);
-            // var test1 = Directory.Exists(fullPath);
-            // var test2 = File.Exists(fullPath);
             if (Directory.Exists(fullPath) && !File.Exists(fullPath))
             { return userAssetPath; }
             else
@@ -98,11 +96,11 @@ namespace RetroLinker.Models
             try
             {
                 await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
-                System.Diagnostics.Trace.WriteLine($"{PathToSettingFileBin} written successfully", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} written successfully", App.InfoTrace);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"{PathToSettingFileBin} could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} could not be written!", App.ErroTrace);
                 System.Diagnostics.Trace.WriteLine(e);
             }
         }
@@ -254,9 +252,8 @@ namespace RetroLinker.Models
 
         public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
 
-        public static bool CheckUsrSetDir(string path)
+        private static bool CheckUsrSetDir(string path)
         {
-            // TODO: Be able to return errors
             try
             {
                 Directory.CreateDirectory(path);
@@ -285,19 +282,18 @@ namespace RetroLinker.Models
             }
             return linkCopies;
         }
-
-        // TODO: this could be moved to LinFunc Namespaces
+        
         public static bool WriteDesktopEntry(string outputFile, byte[] fileBytes)
         {
             try
             {
                 File.WriteAllBytes(outputFile, fileBytes);
-                System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
                 return true;
             }
             catch
             {
-                System.Diagnostics.Trace.WriteLine($"{outputFile} could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
                 return false;
             }
         }
@@ -441,7 +437,7 @@ namespace RetroLinker.Models
             return EntryName;
         }
         
-        public static string GetRAIcons()
+        public static string GetSystemRAIcons()
         {
             // TODO: Find a way to use xdg-desktop-icon and/or xdg-icon-resource to access linux desktop icon files
             return string.Empty;

@@ -209,6 +209,7 @@ public partial class MainView : UserControl
 
     void ApplyArgs()
     {
+        // TODO: Add argument loading support. 2 Cases: Opening existing links; Starting from a ROM. 
         System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
     }
 
@@ -291,8 +292,8 @@ public partial class MainView : UserControl
 
     void UpdateLinkLabel()
     {
-        string fileName = (DesktopOS) ? $"{txtLINKDir.Text}.lnk" 
-            : $"{LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text)}.desktop";
+        string fileName = (DesktopOS) ? txtLINKDir.Text + ".lnk" 
+            : LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text) + ".desktop";
         lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
             : settings.DEFLinkOutput;
     }
@@ -313,9 +314,12 @@ public partial class MainView : UserControl
         return FileOps.CombineDirAndFile(fileDir, newName);
     }
 
+    void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
+
     void ResetAfterExecute()
     {
         ParentWindow.LinkCustomName = false;
+        LockForExecute(false);
     }
 
     void FillIconBoxes(string path)
@@ -624,11 +628,13 @@ public partial class MainView : UserControl
     // EXECUTE
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
-        // TODO: Implement a control lock to prevent fields changing during operations
         OutputLink = new Shortcutter(BuildingLink);
         BuildingLink.OutputPaths = new();
         var msbox_params = new MessageBoxStandardParams();
 
+        // Controls Lock
+        LockForExecute(true);
+        
         // Checkboxes!
         OutputLink.VerboseB = (bool)chkVerb.IsChecked;
         OutputLink.FullscreenB = (bool)chkFull.IsChecked;
@@ -670,7 +676,7 @@ public partial class MainView : UserControl
         // RA binary icon (Default)
         if (comboICONDir.SelectedIndex == 0)
         { OutputLink.ICONfile = string.Empty; }
-        // TODO: Concider moving this part after the required fields check
+        // TODO: Consider moving this part after the required fields check
         else
         {
             // If it's Windows OS, the images may have to be converted to .ico
@@ -730,7 +736,7 @@ public partial class MainView : UserControl
                 msbox_params.ContentTitle = resGeneric.genSucces;
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
                 MessageBoxPopUp(msbox_params);
-            }
+            }   
             else
             {
                 msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 

@@ -52,7 +52,8 @@ public partial class App : Application
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
-                Name = "MasterWindow"
+                //Name = "MasterWindow"
+                DataContext = null
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)

@@ -61,7 +61,7 @@ public static class AvaloniaOps
 
     public static void MainViewLoad(bool DesktopOS)
     {
-        DefLinRAIcon = FileOps.GetRAIcons();
+        DefLinRAIcon = FileOps.GetSystemRAIcons();
 
         string coreFile;
         if (!FileOps.GetCoreFile(out coreFile))
