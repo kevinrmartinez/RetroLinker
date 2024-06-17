@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using DynamicData;
 
 namespace RetroLinker.Models
 {

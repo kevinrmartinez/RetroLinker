@@ -21,7 +21,6 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
-using RetroLinker.ViewModels;
 using RetroLinker.Views;
 
 namespace RetroLinker;
@@ -35,7 +34,7 @@ public partial class App : Application
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static System.DateTime LaunchTime = System.DateTime.Now;
-    public static string[] Args;
+    public static string[]? Args;
     
     public override void Initialize()
     {
@@ -53,7 +52,7 @@ public partial class App : Application
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                Name = "MasterWindow"
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
@@ -62,7 +61,8 @@ public partial class App : Application
             // {
             //     DataContext = new MainViewModel()
             // };
-            System.Diagnostics.Debug.WriteLine("How do I get here...?", DebgTrace);
+            System.Diagnostics.Debug.WriteLine("How do I got here...?", DebgTrace);
+            System.Diagnostics.Debug.WriteLine(singleViewPlatform.ToString());
         }
 
         base.OnFrameworkInitializationCompleted();
