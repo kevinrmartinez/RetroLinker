@@ -16,9 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using RetroLinker.Models;
 
 namespace RetroLinker.Views;
 
@@ -33,9 +35,9 @@ public partial class PopUpWindow : Window
     // FIELDS
     public MainWindow ParentWindow;
 
-    public void RenamePopUp(string givenPath, string givenCore)
+    public void RenamePopUp(string givenPath, string givenCore, List<ShortcutterOutput>outputs)
     {
         this.Title = RetroLinker.Translations.resMainExtras.tittleEntryName;
-        PopCC1.Content = new RenameEntryView(this, givenPath, givenCore);
+        PopCC1.Content = new RenameEntryView(this, givenPath, givenCore, outputs);
     }
 }

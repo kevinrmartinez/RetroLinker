@@ -8,10 +8,11 @@ namespace RetroLinker.Views;
 
 public partial class PatchesView : UserControl
 {
-    public PatchesView(MainWindow mainWindow)
+    public PatchesView(MainWindow mainWindow, string patchString)
     {
         InitializeComponent();
         ParentWindow = mainWindow;
+        PatchString = patchString;
     }
     
     // Window Object
@@ -30,9 +31,22 @@ public partial class PatchesView : UserControl
     // LOAD EVENTS
     private void PatchView_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        rdoNoPatch.IsChecked = true;
         string tip = Translations.resMainExtras.chkNoPatch_Tip1 + "\n" + Translations.resMainExtras.chkNoPatch_Tip2;
         ToolTip.SetTip(chkNoPatch, tip);
+        if (string.IsNullOrEmpty(PatchString)) rdoNoPatch.IsChecked = true;
+        else
+        {
+            // TODO: Load selected patch file
+            if (PatchString == NoPatch) rdoNoPatch.IsChecked = true;
+            else
+            {
+                var patchParts = PatchString.Split('=');
+                switch (patchParts[0] + '=')
+                {
+                    
+                }
+            }
+        }
     }
 
     // TOP CONTROLS
@@ -99,10 +113,10 @@ public partial class PatchesView : UserControl
         else switch ((bool)rdoNoPatch.IsChecked)
         {
             case true when !(bool)chkNoPatch.IsChecked:
-                patchComm = NoPatch;
+                patchComm = string.Empty;
                 break;
             case true when (bool)chkNoPatch.IsChecked:
-                patchComm = string.Empty;
+                patchComm = NoPatch;
                 break;
             default:
                 PatchString = PatchOpts switch
@@ -117,8 +131,8 @@ public partial class PatchesView : UserControl
                 break;
         }
 
-        ParentWindow.BuildingLink.PatchArg = patchComm;
-        ParentWindow.ReturnToMainView(this);
+        // ParentWindow.BuildingLink.PatchArg = patchComm;
+        ParentWindow.ReturnToMainView(this, patchComm);
     }
 
     private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView(this);

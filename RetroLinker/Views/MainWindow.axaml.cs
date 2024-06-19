@@ -29,6 +29,8 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
+
+    public MainWindow(object IsDesigner) => InitializeComponent();
     
     // Fields
     private MainView PermaView;
@@ -38,15 +40,13 @@ public partial class MainWindow : Window
     public bool LinkCustomName { get; set; }
 
     public enum Window1Views1
-    {
-        mainView, PatchesView
-    }
+    { mainView, PatchesView }
     
-    public void ChangeOut(Window1Views1 views)
+    public void ChangeOut(Window1Views1 views, string currentValue)
     {
         MainCC1.Content = views switch
         {
-            Window1Views1.PatchesView => new PatchesView(this),
+            Window1Views1.PatchesView => new PatchesView(this, currentValue),
             _ => PermaView
         };
     }
@@ -58,10 +58,20 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
+    
+    public enum ViewType
+    { patch, subsystem, append}
 
     public void ReturnToMainView(UserControl view)
     {
         MainCC1.Content = PermaView;
         view = null;
+    }
+
+    public void ReturnToMainView(PatchesView pView, string pString)
+    {
+        PermaView.UpdateLinkFromOutside(ViewType.patch, [pString]);
+        MainCC1.Content = PermaView;
+        pView = null;
     }
 }

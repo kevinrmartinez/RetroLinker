@@ -40,11 +40,12 @@ namespace RetroLinker.Views;
 public partial class MainView : UserControl
 {
     System.TimeSpan timeSpan;
-    // public MainView()
-    // { 
-    //     settings = AvaloniaOps.MainViewPreConstruct();
-    //     InitializeComponent();
-    // }
+    public MainView()
+    { 
+        settings = AvaloniaOps.DesignerMainViewPreConstruct();
+        InitializeComponent();
+        ParentWindow = new MainWindow();
+    }
     
     public MainView(MainWindow mainWindow)
     { 
@@ -81,9 +82,20 @@ public partial class MainView : UserControl
         if (FormFirstLoad)
         {
             AvaloniaOps.MainViewLoad(DesktopOS);
-            
-            // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
+
+#if DEBUG
+            try
+            {
+                ParentWindow.RequestedThemeVariant = LoadThemeVariant();
+            }
+            catch (System.Exception theme_e) 
+            {
+                System.Diagnostics.Debug.WriteLine(theme_e);
+                TopLevel.GetTopLevel(this).RequestedThemeVariant = ThemeVariant.Dark;
+            }
+#else
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
+#endif
         
             // Based on current OS
             if (!DesktopOS)
@@ -99,7 +111,8 @@ public partial class MainView : UserControl
                 IconItemSET = new();
             }
 
-            BuildingLink = ParentWindow.BuildingLink;
+            // BuildingLink = ParentWindow.BuildingLink;
+            BuildingLink = new Shortcutter();
             txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
             ApplySettingsToControls();
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
@@ -174,7 +187,7 @@ public partial class MainView : UserControl
     
     void LoadNewSettings()
     {
-        settings = FileOps.LoadCachedSettingsFO();
+        // settings = FileOps.LoadCachedSettingsFO();
         ApplySettingsToControls();
         LoadLocalization();
     }
@@ -379,8 +392,14 @@ public partial class MainView : UserControl
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     {
         var settingWindow = new SettingsWindow(ParentWindow); 
-        await settingWindow.ShowDialog(ParentWindow);
-        // TODO: Test a view-to-view function call
+        var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
+        if (settingReturn is not null)
+        {
+            // TODO: It's possible that the 'correct' way is to clone the object
+            settings = settingReturn;
+            FileOps.SetNewSettings(settings);
+        }
+        else settings = FileOps.LoadCachedSettingsFO();
         LoadNewSettings();
     }
 
@@ -499,7 +518,26 @@ public partial class MainView : UserControl
     
     private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
     {
-        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView);
+        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView, BuildingLink.PatchArg);
+    }
+
+    public void UpdateLinkFromOutside(MainWindow.ViewType viewType, string[] argStrings)
+    {
+        for (int i = 0; i < argStrings.Length; i++)
+        {
+            System.Diagnostics.Debug.WriteLine(argStrings[i], App.DebgTrace);
+        }
+
+        switch (viewType)
+        {
+            case MainWindow.ViewType.patch:
+                BuildingLink.PatchArg = argStrings[0];
+                break;
+            case MainWindow.ViewType.subsystem:
+                break;
+            case MainWindow.ViewType.append:
+                break;
+        }
     }
     #endregion
 
@@ -577,8 +615,9 @@ public partial class MainView : UserControl
             if (!DesktopOS)
             {
                 var popupWindow = new PopUpWindow(ParentWindow);
-                popupWindow.RenamePopUp(file, comboCore.Text);
-                await popupWindow.ShowDialog(ParentWindow);
+                popupWindow.RenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
+                var result = await popupWindow.ShowDialog<object[]>(ParentWindow);
+                // TODO
                 file = BuildingLink.OutputPaths[0].FullPath;
             }
             OutputLinkPath = file;
@@ -603,8 +642,9 @@ public partial class MainView : UserControl
             (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? NamePlaceHolder : txtLINKDir.Text)
         );
         var renamePopUp = new PopUpWindow(ParentWindow);
-        renamePopUp.RenamePopUp(fullPath, comboCore.Text);
-        await renamePopUp.ShowDialog(ParentWindow);
+        renamePopUp.RenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
+        var result = await renamePopUp.ShowDialog<object[]>(ParentWindow);
+        // TODO
         var outputList = BuildingLink.OutputPaths;
         if (outputList.Count > 0)
         {

@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
@@ -25,12 +26,13 @@ namespace RetroLinker.Views;
 
 public partial class RenameEntryView : UserControl
 {
-    public RenameEntryView(PopUpWindow parentWindow, string givenPath, string givenCore)
+    public RenameEntryView(PopUpWindow parentWindow, string givenPath, string givenCore, List<ShortcutterOutput> outputs)
     {
         InitializeComponent();
         _popUpWindow = parentWindow;
         GivenPath = givenPath;
         CurrentCore = givenCore;
+        Outputs = outputs;
     }
     
     // FIELDS
@@ -40,6 +42,7 @@ public partial class RenameEntryView : UserControl
     private string CurrentCore;
     private bool CustomFilename;
     private ShortcutterOutput NewName;
+    private List<ShortcutterOutput> Outputs;
     private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
     
     // LOAD EVENTS
@@ -58,12 +61,16 @@ public partial class RenameEntryView : UserControl
         txtFileName.Text = LinDesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
     }
 
-    private void ResolveOutput()
+    private object[] ResolveOutput()
     { 
-        if (_popUpWindow.ParentWindow.BuildingLink.OutputPaths.Count > 0)
-            _popUpWindow.ParentWindow.BuildingLink.OutputPaths[0] = NewName;
-        else _popUpWindow.ParentWindow.BuildingLink.OutputPaths.Add(NewName);
-        _popUpWindow.ParentWindow.LinkCustomName = CustomFilename;
+        // if (_popUpWindow.ParentWindow.BuildingLink.OutputPaths.Count > 0)
+        //     _popUpWindow.ParentWindow.BuildingLink.OutputPaths[0] = NewName;
+        // else _popUpWindow.ParentWindow.BuildingLink.OutputPaths.Add(NewName);
+        // _popUpWindow.ParentWindow.LinkCustomName = CustomFilename;
+
+        if (Outputs.Count > 0) Outputs[0] = NewName;
+        else Outputs.Add(NewName);
+        return [Outputs, CustomFilename];
     }
 
     private bool AreBoxesEmpty() => string.IsNullOrWhiteSpace(txtFriendlyName.Text) || string.IsNullOrWhiteSpace(txtFileName.Text);
@@ -104,8 +111,8 @@ public partial class RenameEntryView : UserControl
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
         NewName.CustomEntryName = CustomFilename;
-        ResolveOutput();
-        _popUpWindow.Close();
+        // ResolveOutput();
+        _popUpWindow.Close(ResolveOutput());
     }
     
     // CLOSING EVENTS
@@ -114,6 +121,7 @@ public partial class RenameEntryView : UserControl
         if (NewName is not null) return;
         if (GivenName == NamePlaceHolder) return;
         NewName = new ShortcutterOutput(GivenPath, CurrentCore);
-        ResolveOutput();
+        // ResolveOutput();
+        _popUpWindow.Close(ResolveOutput());
     }
 }

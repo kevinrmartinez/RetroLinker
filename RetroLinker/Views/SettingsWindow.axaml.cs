@@ -27,23 +27,26 @@ namespace RetroLinker.Views
 {
     public partial class SettingsWindow : Window
     {
-        // public SettingsWindow()
-        // { InitializeComponent(); }
+        public SettingsWindow()
+        {
+            InitializeComponent();
+            mainWindow = new MainWindow(1);
+        }
         
         public SettingsWindow(MainWindow parentWindow)
         {
             InitializeComponent();
-            ParentWindow = parentWindow;
+            mainWindow = parentWindow;
         }
         
         // Window Obj
-        private MainWindow ParentWindow;
+        private MainWindow mainWindow;
 
         // PROPS/STATICS
         private bool DesktopOS = System.OperatingSystem.IsWindows();
-        private SettingsView SettingsView1;
-        private SettingsView2 SettingsView21;
-        private SettingsView3 SettingsView31;
+        private SettingsView SettingsPage1;
+        private SettingsView2 SettingsPage2;
+        private SettingsView3 SettingsPage3;
         public Settings settings;
         public Settings DEFsettings = new();
         public List<string> SetLinkCopyPaths;
@@ -52,12 +55,12 @@ namespace RetroLinker.Views
         private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
         {
             LoadFromSettings();
-            SettingsView1 = new SettingsView(ParentWindow, this, DesktopOS);
-            SettingsView21 = new SettingsView2(ParentWindow, this, DesktopOS);
-            SettingsView31 = new SettingsView3(ParentWindow, this, DesktopOS);
-            CCTab1.Content = SettingsView1;
-            CCTab2.Content = SettingsView21;
-            CCTab3.Content = SettingsView31;
+            SettingsPage1 = new SettingsView(mainWindow, this, DesktopOS);
+            SettingsPage2 = new SettingsView2(mainWindow, this, DesktopOS);
+            SettingsPage3 = new SettingsView3(mainWindow, this, DesktopOS);
+            CCTab1.Content = SettingsPage1;
+            CCTab2.Content = SettingsPage2;
+            CCTab3.Content = SettingsPage3;
         }
         
         void LoadFromSettings()
@@ -69,7 +72,7 @@ namespace RetroLinker.Views
         
         
         #region Window/Dialog Controls
-        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseView();
+        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseView(null);
 
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -90,7 +93,7 @@ namespace RetroLinker.Views
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettings(DEFsettings);
-                CloseView();
+                CloseView(DEFsettings);
             }
                 
         }
@@ -101,12 +104,12 @@ namespace RetroLinker.Views
             if (!settings.AllwaysAskOutput) settings.AllwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             SettingsOps.WriteSettings(settings);
-            CloseView();
+            CloseView(settings);
         }
 
-        void CloseView()
+        void CloseView(Settings? retSettings)
         {
-            Close();
+            Close(retSettings);
             //ParentWindow.ReturnToMainView(this);
         }
         #endregion

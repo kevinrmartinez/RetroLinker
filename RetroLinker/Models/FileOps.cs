@@ -80,6 +80,15 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
+        public static void SetNewSettings(Settings settings) => LoadedSettings = settings;
+
+        public static Settings LoadDesignerSettingsFO()
+        {
+            LoadedSettings = new Settings();
+            BuildConfigDir();
+            return LoadedSettings;
+        }
+
         public static string[] ReadSettingsFile() => File.ReadAllLines(PathToSettingFileBin);
 
         public static string ResolveSettingUA(string userAssetPath)
