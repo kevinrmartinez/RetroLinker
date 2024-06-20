@@ -36,17 +36,17 @@ public partial class MainWindow : Window
     private MainView PermaView;
     
     // Shared Objects
-    public Shortcutter BuildingLink { get; set; } = new();
-    public bool LinkCustomName { get; set; }
+    // public Shortcutter BuildingLink { get; set; } = new();
+    // public bool LinkCustomName { get; set; }
 
-    public enum Window1Views1
-    { mainView, PatchesView }
+    public enum ViewsTypes
+    { MainView, PatchesView, SubsysView, AppendView }
     
-    public void ChangeOut(Window1Views1 views, string currentValue)
+    public void ChangeOut(ViewsTypes views, object[] currentValues)
     {
         MainCC1.Content = views switch
         {
-            Window1Views1.PatchesView => new PatchesView(this, currentValue),
+            ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
             _ => PermaView
         };
     }
@@ -58,9 +58,6 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
-    
-    public enum ViewType
-    { patch, subsystem, append}
 
     public void ReturnToMainView(UserControl view)
     {
@@ -70,7 +67,7 @@ public partial class MainWindow : Window
 
     public void ReturnToMainView(PatchesView pView, string pString)
     {
-        PermaView.UpdateLinkFromOutside(ViewType.patch, [pString]);
+        PermaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
         MainCC1.Content = PermaView;
         pView = null;
     }

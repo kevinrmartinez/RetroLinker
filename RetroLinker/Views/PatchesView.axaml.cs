@@ -33,18 +33,34 @@ public partial class PatchesView : UserControl
     {
         string tip = Translations.resMainExtras.chkNoPatch_Tip1 + "\n" + Translations.resMainExtras.chkNoPatch_Tip2;
         ToolTip.SetTip(chkNoPatch, tip);
-        if (string.IsNullOrEmpty(PatchString)) rdoNoPatch.IsChecked = true;
-        else
+        rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
+        if (!string.IsNullOrEmpty(PatchString))
         {
-            // TODO: Load selected patch file
-            if (PatchString == NoPatch) rdoNoPatch.IsChecked = true;
+            if (PatchString == NoPatch) chkNoPatch.IsChecked = true;
             else
             {
+                // rdoNoPatch.IsChecked = false;
                 var patchParts = PatchString.Split('=');
                 switch (patchParts[0] + '=')
                 {
-                    
+                    case UPatch:
+                        rdoUPSPatch.IsChecked = true;
+                        break;
+                    case BPatch:
+                        rdoBPSPatch.IsChecked = true;
+                        break;
+                    case IPatch:
+                        rdoIPSPatch.IsChecked = true;
+                        break;
+                    case XPatch:
+                        rdoXDPatch.IsChecked = true;
+                        break;
+                    default:
+                        rdoUPSPatch.IsChecked = true;
+                        break;
                 }
+                
+                txtPatchPath.Text = Utils.ReverseFixUnusualPaths(patchParts[1]);
             }
         }
     }
@@ -83,10 +99,7 @@ public partial class PatchesView : UserControl
     {
         var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
         string file = await AvaloniaOps.OpenFileAsync(openOptions, ParentWindow);
-        if (!string.IsNullOrEmpty(file))
-        {
-            txtPatchPath.Text = file;
-        }
+        if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
     }
 
     // BOTTOM CONTROLS

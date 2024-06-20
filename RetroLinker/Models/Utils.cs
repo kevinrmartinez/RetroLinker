@@ -24,17 +24,17 @@ namespace RetroLinker.Models
 {
     public static class Utils
     {
-        const string DoubleQuotes = "\"";
+        const char DQ = '\"';
         public static string FixUnusualPaths(string path)
         {
             if (!ContainsUnusualCharacters(path)) return path;
             
             const int firstElement = 0;
             int lastElement = path.Length - 1;
-            if (path[firstElement] != DoubleQuotes[0])
-            { path = path.Insert(firstElement, DoubleQuotes); }
-            if (path[lastElement] != DoubleQuotes[0])
-            { path += DoubleQuotes; }
+            if (path[firstElement] != DQ)
+            { path = path.Insert(firstElement, DQ.ToString()); }
+            if (path[lastElement] != DQ)
+            { path += DQ; }
             return path;
         }
         
@@ -49,6 +49,19 @@ namespace RetroLinker.Models
                 if (Array.IndexOf(unusualCharacters, c) != -1) return true;
             }
             return false;
+        }
+
+        public static string ReverseFixUnusualPaths(string path)
+        {
+            if (!HasDoubleQuotes(path)) return path;
+            var noDQ = path.Split(DQ);
+            return noDQ[1];
+        }
+
+        private static bool HasDoubleQuotes(string path)
+        {
+            int lastCharIndex = path.Length - 1;
+            return ((path[0] == DQ) && (path[lastCharIndex] == DQ));
         }
 
         public static List<string> ExtractClassProperties(Type type)

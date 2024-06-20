@@ -53,15 +53,16 @@ public partial class RenameEntryView : UserControl
         txtFriendlyName.Text = GivenName;
         lblExt.Content = FileOps.LinLinkExt;
     }
-    
-    // FUNCTIONS
+
+    #region Functions
+
     private void UpdateFilename()
     {
         if (CustomFilename) return;
         txtFileName.Text = LinDesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
     }
 
-    private object[] ResolveOutput()
+    private List<ShortcutterOutput> ResolveOutput()
     { 
         // if (_popUpWindow.ParentWindow.BuildingLink.OutputPaths.Count > 0)
         //     _popUpWindow.ParentWindow.BuildingLink.OutputPaths[0] = NewName;
@@ -70,14 +71,18 @@ public partial class RenameEntryView : UserControl
 
         if (Outputs.Count > 0) Outputs[0] = NewName;
         else Outputs.Add(NewName);
-        return [Outputs, CustomFilename];
+        return Outputs;
     }
 
     private bool AreBoxesEmpty() => string.IsNullOrWhiteSpace(txtFriendlyName.Text) || string.IsNullOrWhiteSpace(txtFileName.Text);
 
     private void LockButton(bool isLock) => btnNameApply.IsEnabled = !isLock;
-    
-    // CONTROLS
+
+    #endregion
+
+
+    #region Controls
+
     private void TxtFriendlyName_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
         LockButton(AreBoxesEmpty());
@@ -114,8 +119,13 @@ public partial class RenameEntryView : UserControl
         // ResolveOutput();
         _popUpWindow.Close(ResolveOutput());
     }
-    
-    // CLOSING EVENTS
+
+    #endregion
+
+
+    #region ViewEvents
+
+    // On Close
     private void View_OnUnloaded(object? sender, RoutedEventArgs e)
     {
         if (NewName is not null) return;
@@ -124,4 +134,6 @@ public partial class RenameEntryView : UserControl
         // ResolveOutput();
         _popUpWindow.Close(ResolveOutput());
     }
+
+    #endregion
 }

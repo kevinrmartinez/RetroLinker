@@ -70,6 +70,7 @@ public partial class MainView : UserControl
     private Bitmap ICONimage;
     private IconsItems IconItemSET;
     private Shortcutter BuildingLink;
+    private bool LinkCustomName;
     private static Shortcutter OutputLink;
 
     // true = Windows. false = Linux.
@@ -331,7 +332,7 @@ public partial class MainView : UserControl
 
     void ResetAfterExecute()
     {
-        ParentWindow.LinkCustomName = false;
+        LinkCustomName = false;
         LockForExecute(false);
     }
 
@@ -375,11 +376,36 @@ public partial class MainView : UserControl
         return result;
     }
 
-    string ValidateLINBin(string raDir)
+    async Task<bool> ResolveRenamePopUp(string givenPath, string givenCore, List<ShortcutterOutput> outputs)
     {
-        if (raDir == txtRADir.Text) return raDir;
-        string newRADir = string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
-        return newRADir;
+        var popupWindow = new PopUpWindow(ParentWindow);
+        popupWindow.RenamePopUp(givenPath, givenCore, outputs);
+        var result = await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
+        BuildingLink.OutputPaths = result;
+        LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
+        return true;
+    }
+
+    string ValidateLINBin(string RAPath)
+    {
+        if (RAPath == txtRADir.Text) return RAPath;
+        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
+    }
+    
+    public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string[] argStrings)
+    {
+        switch (viewType)
+        {
+            case MainWindow.ViewsTypes.PatchesView:
+                BuildingLink.PatchArg = argStrings[0];
+                break;
+            case MainWindow.ViewsTypes.SubsysView:
+                // Subsystem loading
+                break;
+            case MainWindow.ViewsTypes.AppendView:
+                // Append config
+                break;
+        }
     }
 
     // ShortcutterOutput getShortcutterOutput(string filePath, string core) => (DesktopOS)
@@ -518,26 +544,7 @@ public partial class MainView : UserControl
     
     private void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
     {
-        ParentWindow.ChangeOut(MainWindow.Window1Views1.PatchesView, BuildingLink.PatchArg);
-    }
-
-    public void UpdateLinkFromOutside(MainWindow.ViewType viewType, string[] argStrings)
-    {
-        for (int i = 0; i < argStrings.Length; i++)
-        {
-            System.Diagnostics.Debug.WriteLine(argStrings[i], App.DebgTrace);
-        }
-
-        switch (viewType)
-        {
-            case MainWindow.ViewType.patch:
-                BuildingLink.PatchArg = argStrings[0];
-                break;
-            case MainWindow.ViewType.subsystem:
-                break;
-            case MainWindow.ViewType.append:
-                break;
-        }
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, [BuildingLink.PatchArg]);
     }
     #endregion
 
@@ -545,7 +552,7 @@ public partial class MainView : UserControl
     
     private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text) && !DesktopOS && !ParentWindow.LinkCustomName)
+        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text) && !DesktopOS && !LinkCustomName)
         {
             if (!settings.AllwaysAskOutput) lblLinkDeskDir.Content = UpdateLinkLabelCore(lblLinkDeskDir.Content as string);
             else txtLINKDir.Text = UpdateLinkLabelCore(txtLINKDir.Text);
@@ -614,10 +621,7 @@ public partial class MainView : UserControl
         {
             if (!DesktopOS)
             {
-                var popupWindow = new PopUpWindow(ParentWindow);
-                popupWindow.RenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
-                var result = await popupWindow.ShowDialog<object[]>(ParentWindow);
-                // TODO
+                await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
                 file = BuildingLink.OutputPaths[0].FullPath;
             }
             OutputLinkPath = file;
@@ -641,16 +645,11 @@ public partial class MainView : UserControl
             settings.DEFLinkOutput, 
             (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? NamePlaceHolder : txtLINKDir.Text)
         );
-        var renamePopUp = new PopUpWindow(ParentWindow);
-        renamePopUp.RenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
-        var result = await renamePopUp.ShowDialog<object[]>(ParentWindow);
-        // TODO
-        var outputList = BuildingLink.OutputPaths;
-        if (outputList.Count > 0)
-        {
-            txtLINKDir.Text = outputList[0].FriendlyName;
-            lblLinkDeskDir.Content = outputList[0].FullPath;
-        }
+        await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
+        
+        if (BuildingLink.OutputPaths.Count == 0) return;
+        txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
+        lblLinkDeskDir.Content = BuildingLink.OutputPaths[0].FullPath;
     }
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
