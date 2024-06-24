@@ -17,7 +17,6 @@
 */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -75,7 +74,7 @@ public partial class MainView : UserControl
     private static Shortcutter OutputLink;
 
     // true = Windows. false = Linux.
-    private bool DesktopOS = System.OperatingSystem.IsWindows();
+    private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
     // TODO: Implement an Event for theme handling
     #region LOAD EVENTS
@@ -788,7 +787,12 @@ public partial class MainView : UserControl
         // Multiple Shortcut
         else
         {
-            bool hasErrors = opResult.Any(r => r.Error);
+            bool hasErrors = false;
+            foreach (var r in opResult)
+            {
+                if (r.Error) hasErrors = true;
+                break;
+            }
 
             if (!hasErrors)
             {
@@ -803,15 +807,15 @@ public partial class MainView : UserControl
                 int successCount = 0;
                 int errorCount = 0;
                 string content = string.Empty;
-                for (int i = 0; i < opResult.Count; i++)
+                foreach (var R in opResult)
                 {
-                    string output = opResult[i].OutputPath + ": ";
+                    string output = R.OutputPath + ": ";
                     content = string.Concat(content, output);
-                    content = string.Concat(content, opResult[i].Messeage);
+                    content = string.Concat(content, R.Messeage);
                     content = string.Concat(content, "\n");
-                    if (opResult[i].Error)
+                    if (R.Error)
                     {
-                        content = string.Concat(content, $"=> \"{opResult[i].eMesseage}\" <=");
+                        content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
                         content = string.Concat(content, "\n");
                         errorCount++;
                     }
