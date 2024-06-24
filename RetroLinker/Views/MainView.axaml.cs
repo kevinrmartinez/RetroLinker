@@ -213,6 +213,7 @@ public partial class MainView : UserControl
         { txtRADir.Text = settings.DEFRADir; }
         BuildingLink.RAdir = settings.DEFRADir;
         AvaloniaOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
+        AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
 

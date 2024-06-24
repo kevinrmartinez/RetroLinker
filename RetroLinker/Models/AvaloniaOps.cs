@@ -104,11 +104,18 @@ public static class AvaloniaOps
     private static async Task<IStorageFolder> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
 
+    public static async void SetDesktopStorageFolder(TopLevel topLevel)
+    {
+        DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
+        System.Diagnostics.Debug.WriteLine($"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}", App.DebgTrace);
+    }
+    
     public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
     {
         if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
         {
-            ROMPadreDir = await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir_ROMpadre);
+            ROMPadreDir = await GetStorageFolder(dir_ROMpadre, topLevel);
+            System.Diagnostics.Debug.WriteLine($"ROMPadreStorageFolder set to: {ROMPadreDir.Path.LocalPath}", App.DebgTrace);
         }
     }
     #endregion
@@ -160,8 +167,11 @@ public static class AvaloniaOps
     public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, string currentFile, TopLevel topLevel)
     {
         var opt = PickerOpt.SavePickerOpt(template);
-        currentFile = FileOps.GetDirFromPath(currentFile);
-        opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
+        if (!string.IsNullOrEmpty(currentFile))
+        {
+            currentFile = FileOps.GetDirFromPath(currentFile);
+            opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
+        }
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
         string dir = (file != null) ? file.Path.LocalPath : string.Empty;
         return dir;

@@ -126,6 +126,7 @@ namespace RetroLinker.Models
             var options = new FilePickerSaveOptions();
             options.ShowOverwritePrompt = true;
             options.Title = resAvaloniaOps.dlgFileLINKDir;
+            options.SuggestedStartLocation = AvaloniaOps.DesktopFolder;
             switch (template) 
             {
                 // Windows .lnk
