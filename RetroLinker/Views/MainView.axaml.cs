@@ -41,10 +41,11 @@ public partial class MainView : UserControl
 {
     System.TimeSpan timeSpan;
     public MainView()
-    { 
+    {
+        // Constructor for Designer
         settings = AvaloniaOps.DesignerMainViewPreConstruct();
         InitializeComponent();
-        ParentWindow = new MainWindow();
+        ParentWindow = new MainWindow(true);
     }
     
     public MainView(MainWindow mainWindow)
@@ -417,11 +418,10 @@ public partial class MainView : UserControl
     // TOP CONTROLS
     async void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-        var settingWindow = new SettingsWindow(ParentWindow); 
+        var settingWindow = new SettingsWindow(ParentWindow, settings); 
         var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
         if (settingReturn is not null)
         {
-            // TODO: It's possible that the 'correct' way is to clone the object
             settings = settingReturn;
             FileOps.SetNewSettings(settings);
         }

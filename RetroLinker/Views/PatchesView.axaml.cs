@@ -8,6 +8,15 @@ namespace RetroLinker.Views;
 
 public partial class PatchesView : UserControl
 {
+
+    public PatchesView()
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        ParentWindow = new MainWindow(true);
+        PatchString = string.Empty;
+    }
+    
     public PatchesView(MainWindow mainWindow, string patchString)
     {
         InitializeComponent();

@@ -24,8 +24,12 @@ namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
-    // public SettingsView2()
-    // { InitializeComponent(); }
+    public SettingsView2()
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        ParentWindow = new SettingsWindow();
+    }
     
     public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs)
     {
@@ -44,7 +48,7 @@ public partial class SettingsView2 : UserControl
     private bool DesktopOS;
     
     // LOAD
-    void SettingsView2_1_Loaded(object sender, RoutedEventArgs e)
+    void View_OnLoaded(object sender, RoutedEventArgs e)
     {
         // Settings
         ApplySettingsToControls();

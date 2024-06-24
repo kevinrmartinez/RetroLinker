@@ -6,7 +6,7 @@
              xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView2"
-             Name="SettingsView2_1" Loaded="SettingsView2_1_Loaded">
+             Name="SettingsView2_1" Loaded="View_OnLoaded">
 	
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>

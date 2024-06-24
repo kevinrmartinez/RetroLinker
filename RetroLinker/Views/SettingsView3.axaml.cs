@@ -26,8 +26,12 @@ namespace RetroLinker.Views
 {
     public partial class SettingsView3 : UserControl
     {
-        // public SettingsView3()
-        // { InitializeComponent(); }
+        public SettingsView3()
+        {
+            // Constructor for Designer
+            InitializeComponent();
+            ParentWindow = new SettingsWindow();
+        }
         
         public SettingsView3(MainWindow mainWindow, SettingsWindow settingsWindow, bool OS)
         {
@@ -56,7 +60,7 @@ namespace RetroLinker.Views
         };
         
         // LOAD
-        private void SettingsView3_1_OnLoaded(object? sender, RoutedEventArgs e)
+        private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
             lsboxDebug1.IsVisible = false;
             if (FirstTimeLoad)

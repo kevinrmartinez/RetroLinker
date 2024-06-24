@@ -30,6 +30,7 @@ public partial class MainWindow : Window
         MainCC1.Content = PermaView;
     }
 
+    // Constructor for Designer
     public MainWindow(object IsDesigner) => InitializeComponent();
     
     // Fields

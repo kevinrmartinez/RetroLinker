@@ -29,30 +29,34 @@ namespace RetroLinker.Views
     {
         public SettingsWindow()
         {
+            // Constructor for Designer
             InitializeComponent();
-            mainWindow = new MainWindow(1);
+            mainWindow = null;
+            settings = new Settings();
         }
         
-        public SettingsWindow(MainWindow parentWindow)
+        public SettingsWindow(MainWindow parentWindow, Settings _settings)
         {
             InitializeComponent();
             mainWindow = parentWindow;
+            settings = _settings;
         }
         
         // Window Obj
         private MainWindow mainWindow;
 
         // PROPS/STATICS
+        public Settings settings { get; set; }
+        public Settings DEFsettings { get; set; } = new();
+        
         private bool DesktopOS = System.OperatingSystem.IsWindows();
         private SettingsView SettingsPage1;
         private SettingsView2 SettingsPage2;
         private SettingsView3 SettingsPage3;
-        public Settings settings;
-        public Settings DEFsettings = new();
         public List<string> SetLinkCopyPaths;
 
         #region LoadContent
-        private void SettingsWindow1_OnLoaded(object? sender, RoutedEventArgs e)
+        private void Window_OnLoaded(object? sender, RoutedEventArgs e)
         {
             LoadFromSettings();
             SettingsPage1 = new SettingsView(mainWindow, this, DesktopOS);
@@ -65,8 +69,9 @@ namespace RetroLinker.Views
         
         void LoadFromSettings()
         {
-            settings = SettingsOps.GetCachedSettings();
+            // settings = SettingsOps.GetCachedSettings();
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+            // SetLinkCopyPaths = new List<string>();
         }
         #endregion
         

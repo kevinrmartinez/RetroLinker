@@ -26,6 +26,26 @@ namespace RetroLinker.Views;
 
 public partial class RenameEntryView : UserControl
 {
+    public RenameEntryView()
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        // _popUpWindow = new PopUpWindow();
+        GivenPath = "designer.txt";
+        CurrentCore = "mesen";
+        Outputs = new List<ShortcutterOutput>();
+    }
+    
+    public RenameEntryView(PopUpWindow parentWindow)
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        _popUpWindow = parentWindow;
+        GivenPath = "designer.txt";
+        CurrentCore = "mesen";
+        Outputs = new List<ShortcutterOutput>();
+    }
+    
     public RenameEntryView(PopUpWindow parentWindow, string givenPath, string givenCore, List<ShortcutterOutput> outputs)
     {
         InitializeComponent();

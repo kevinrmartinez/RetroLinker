@@ -26,6 +26,14 @@ namespace RetroLinker.Views;
 
 public partial class PopUpWindow : Window
 {
+    public PopUpWindow()
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        // ParentWindow = new MainWindow(true);
+        PopCC1.Content = new RenameEntryView(this);
+    }
+    
     public PopUpWindow(MainWindow mainWindow)
     {
         InitializeComponent();

@@ -11,7 +11,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroLinker Settings"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
-		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="SettingsWindow1_OnLoaded">
+		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="Window_OnLoaded">
 	
 	<Window.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
