@@ -30,6 +30,7 @@ As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready fo
 
 ![Application Window - 2048 Example](MainApp_Ex03.png)
 
+In the following capture, we can see that the example from before are now part of the Games category on the system apps menu.
 ![Examples added to System Applications](SystemMenu_Ex01.png)
 
 ## Planned RetroArch parameters
