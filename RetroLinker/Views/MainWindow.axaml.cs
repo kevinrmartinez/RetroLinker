@@ -23,7 +23,6 @@ namespace RetroLinker.Views;
 
 public partial class MainWindow : Window
 {
-    private MainView PermaView;
     public MainWindow()
     {
         InitializeComponent();
@@ -31,19 +30,26 @@ public partial class MainWindow : Window
         MainCC1.Content = PermaView;
     }
 
-    public enum Window1Views1
-    {
-        mainView, SettingsView1, SettingsView2
-    }
+    // Constructor for Designer
+    public MainWindow(object IsDesigner) => InitializeComponent();
     
-    public enum Window1Views2
-    {
-        PatchesView
-    }
+    // Fields
+    private MainView PermaView;
     
-    private void ChangeContent(Window1Views1 views)
+    // Shared Objects
+    // public Shortcutter BuildingLink { get; set; } = new();
+    // public bool LinkCustomName { get; set; }
+
+    public enum ViewsTypes
+    { MainView, PatchesView, SubsysView, AppendView }
+    
+    public void ChangeOut(ViewsTypes views, object[] currentValues)
     {
-        
+        MainCC1.Content = views switch
+        {
+            ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
+            _ => PermaView
+        };
     }
 
     public void LocaleReload(Settings locale)
@@ -58,5 +64,12 @@ public partial class MainWindow : Window
     {
         MainCC1.Content = PermaView;
         view = null;
+    }
+
+    public void ReturnToMainView(PatchesView pView, string pString)
+    {
+        PermaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
+        MainCC1.Content = PermaView;
+        pView = null;
     }
 }

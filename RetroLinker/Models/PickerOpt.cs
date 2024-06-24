@@ -24,26 +24,32 @@ namespace RetroLinker.Models
 {
     public static class PickerOpt
     {
-        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = new string[] { "*.exe" } };
-        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = new string[] { "*.AppImage" } };
-        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = new string[] { "*.sh" } };
-        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = new string[] { "*.cfg" } };
-        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = new string[] { "*.ico" } };
-        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinConvertibleIconsExt };
+        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe"] };
+        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
+        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
+        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
+        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
+        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = new string[] { "*.lnk" } };
-        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = new string[] { "*.desktop" } };
+        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
+        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
+        
+        static readonly FilePickerFileType ups_patch = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
+        static readonly FilePickerFileType bps_patch = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps" ] };
+        static readonly FilePickerFileType ips_patch = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
+        static readonly FilePickerFileType xd_patch = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
+        public enum PatchOpts { UPS, BPS, IPS, XD }
 
-        static List<FilePickerFileType> RADirFileTypes_win = new() { win_exe, FilePickerFileTypes.All };
-        static List<FilePickerFileType> RADirFileTypes_lin = new() { appimage, shellscripts, FilePickerFileTypes.All };
-        static List<FilePickerFileType> CONFIGDirFileTypes = new() { config_file, FilePickerFileTypes.TextPlain };
-        static List<FilePickerFileType> ICONfileTypes = new() { win_icon_files, win_exe, conv_icon };
-        static List<FilePickerFileType> ICONfileTypes2 = new() { lin_icon_files };
-        static List<FilePickerFileType> WinShorTypes = new() { win_lnk };
-        static List<FilePickerFileType> LinShorTypes = new() { lin_lnk };
+        static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
+        static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, shellscripts, FilePickerFileTypes.All];
+        static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
+        static readonly List<FilePickerFileType> ICONfileTypes = [win_icon_files, win_exe, conv_icon];
+        static readonly List<FilePickerFileType> ICONfileTypes2 = [lin_icon_files];
+        static readonly List<FilePickerFileType> WinShorTypes = [win_lnk];
+        static readonly List<FilePickerFileType> LinShorTypes = [lin_lnk];
         
         
         public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
@@ -59,17 +65,25 @@ namespace RetroLinker.Models
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
-                // All files for ROMs
+                // ROM files (all files)
                 case OpenOpts.RAroms:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
-                    //options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All }; 
-                    if (AvaloniaOps.ROMPadreDir != null)
+                    options.Title = resAvaloniaOps.dlgFileRAroms;
+                    options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
+                    if (AvaloniaOps.ROMPadreDir is not null)
                     { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
-                    // TODO: No funciona con los FilePicker de las distros de linux
+                    /*
+                     * From the XDG Portal Docs:
+                     * 
+                     * "Suggested folder from which the files should be opened.
+                     * The portal implementation is free to ignore this option."
+                     *
+                     * The DBus FilePicker added a way to force the start location and AvaloniaUI 11.0.6 implemented it,
+                     * but is very new, and it doesn't solve GTK pickers...
+                     */
                     break;
 
-                // Retroarch config
+                // RetroArch config
                 case OpenOpts.RAcfg:
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAcfg;
@@ -133,6 +147,26 @@ namespace RetroLinker.Models
                     break;
             }
             return options;
+        }
+        
+        
+        public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
+        {
+            FilePickerFileType fileType = patchType switch
+            {
+                PatchOpts.UPS => ups_patch,
+                PatchOpts.BPS => bps_patch,
+                PatchOpts.IPS => ips_patch,
+                PatchOpts.XD => xd_patch,
+                _ => ups_patch
+            };
+            
+            return new FilePickerOpenOptions()
+            {
+                AllowMultiple = false,
+                Title = resAvaloniaOps.dlgFilePatch,
+                FileTypeFilter = new []{fileType, FilePickerFileTypes.All}
+            };
         }
     }
 }

@@ -10,12 +10,12 @@
 	
 	<Grid RowDefinitions="Auto, *, Auto">
 		<!--Top-->
-		<Grid Name="gridTOP" Grid.Row="0" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
-			<Rectangle Grid.Column="0" Width="40"/>
+		<Grid Name="gridTOP" Grid.Row="0" Height="45" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
+			<Rectangle Grid.Column="0" Width="40" Margin="5,0,0,0"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/>
 			</StackPanel>
-			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Click="btnSettings_Click"
+			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_Click"
 			        i:Attached.Icon="fa-gear" FontSize="24"/>
 		</Grid>
 		
@@ -48,7 +48,7 @@
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}"/>
-							<Button Name="btnPatches" IsEnabled="False" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static locale:resMainView.tipPatches}"/>
+							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static locale:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -58,7 +58,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
 						<Label Content="Core*"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
+							                 TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="{x:Static locale:resMainView.tipSubSys}"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
@@ -94,9 +95,12 @@
 					</Grid>
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkDir}"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static locale:resMainView.lblLinkName}"/>
-					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" IsReadOnly="True" Watermark="Super Mario Bros.lnk" TextChanged="txtLINKDir_TextChanged"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="1" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
+					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
+						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged"
+						         IsReadOnly="True" Watermark="Super Mario Bros.lnk" />
+						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
+						        i:Attached.Icon="fa-pen" FontSize="18"/>
+						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:resMainView.lblLinkDeskDir}" FontSize="11"/>
 					</Grid>
@@ -109,13 +113,13 @@
 				<Rectangle Grid.Row="5"/>
 				
 				
-				<!-- ROW6 - Boton de Ejecucion-->
+				<!-- ROW6 - Execution Button-->
 				<Panel Name="panelEXECUTE" Grid.Row="6" Margin="3,5">
 					<Button Name="btnEXECUTE" 
 							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
 							Height="55" 
-							Content="{x:Static locale:resMainView.btnExecute}"
+							Content="{x:Static locale:resGeneric.btnExecute}"
 							Click="btnEXECUTE_Click"/>
 				</Panel>
 			</Grid>
@@ -131,8 +135,8 @@
 					<Border BorderThickness="1" BorderBrush="Gray">
 						<StackPanel>
 							<StackPanel Orientation="Horizontal" Spacing="14">
-								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconDef}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
-								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:resMainView.rdoIconCus}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static locale:resGeneric.btnDefault}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
+								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static locale:resGeneric.btnCustom}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 							</StackPanel>
 							<!--Icon Control-->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">

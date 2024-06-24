@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="tittleEntryName" xml:space="preserve">
+        <value>Name the Desktop Entry</value>
+    </data>
+    <data name="lblFriendlyName" xml:space="preserve">
+        <value>Friendly Name:</value>
+    </data>
+    <data name="lblFileName" xml:space="preserve">
+        <value>File Name:</value>
+    </data>
+    <data name="txtFriendlyName_Tip" xml:space="preserve">
+        <value>Name used on Apps list and the desktop.</value>
+    </data>
+    <data name="txtFileName_Tip" xml:space="preserve">
+        <value>Final name of the file.</value>
+    </data>
+    <data name="lblExt_Tip" xml:space="preserve">
+        <value>The .desktop extension is added automatically.</value>
+    </data>
+    <data name="chkCustomFilename" xml:space="preserve">
+        <value>Custom Filename</value>
+    </data>
+    <data name="btnClear_Tip" xml:space="preserve">
+        <value>Undo changes</value>
+    </data>
+    <data name="tittleSoftPatching" xml:space="preserve">
+        <value>Soft Patching</value>
+    </data>
+    <data name="rdoNoPatch" xml:space="preserve">
+        <value>No Patch</value>
+    </data>
+    <data name="rdoUPSPatch" xml:space="preserve">
+        <value />
+    </data>
+    <data name="rdoBPSPatch" xml:space="preserve">
+        <value />
+    </data>
+    <data name="rdoIPSPatch" xml:space="preserve">
+        <value />
+    </data>
+    <data name="rdoXDPatch" xml:space="preserve">
+        <value />
+    </data>
+    <data name="chkNoPatch_Tip2" xml:space="preserve">
+        <value>Disables all forms of content patching.</value>
+    </data>
+    <data name="chkNoPatch" xml:space="preserve">
+        <value>Explicit No Patch</value>
+    </data>
+    <data name="chkNoPatch_Tip1" xml:space="preserve">
+        <value>--no-patch</value>
+    </data>
+    <data name="popNonSelected_Tittle" xml:space="preserve">
+        <value>No Patch Selected</value>
+    </data>
+    <data name="popNonSelected_Msg" xml:space="preserve">
+        <value>No patch file selected. Using implicit No Patch.</value>
+    </data>
+</root>

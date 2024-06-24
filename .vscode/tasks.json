@@ -7,9 +7,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/RetroarchShortcutterV2.Desktop/RetroarchShortcutterV2.Desktop.csproj",
+                "${workspaceFolder}/RetroLinker.Desktop/RetroLinker.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -19,9 +19,9 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/RetroarchShortcutterV2.Desktop/RetroarchShortcutterV2.Desktop.csproj",
+                "${workspaceFolder}/RetroLinker.Desktop/RetroLinker.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/RetroarchShortcutterV2.Desktop/RetroarchShortcutterV2.Desktop.csproj"
+                "${workspaceFolder}/RetroLinker.Desktop/RetroLinker.Desktop.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

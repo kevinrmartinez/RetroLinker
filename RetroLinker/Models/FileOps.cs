@@ -29,22 +29,26 @@ namespace RetroLinker.Models
         public const string AppName = "RetroLinker";
         public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
-        public const string DefUserAssetsDir = "UserAssets";
+        public const string DefUserAssets = "UserAssets";
+        public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
         public const string tempIco = "temp.ico";
-        public const byte MAX_PATH = 255; // TODO: Aplicar en todas partes!
+        public const byte MAX_PATH = 255; // TODO: Apply Everywhere?
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
-        public const string DotDesktopRAIcon = "retroarch";
+        public const string DotDesktopRAIcon = LinuxRABin;
 
 
         public static List<string> ConfigDir { get; private set; }
 
-        public static readonly List<string> WinConvertibleIconsExt =
-            new() { "*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz" };
-
-        public static readonly List<string> LinIconsExt = new() { "*.ico", "*.png", "*.xpm", "*.svg", "*.svgz" };
+        public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
+        private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
+        public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
+        
+        public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
+        public static readonly List<string> LinIconsExt = ["*.ico", "*.png", "*.xpm", "*.svg", "*.svgz"];
+        
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -59,7 +63,7 @@ namespace RetroLinker.Models
 
         #region Settings
 
-        public static bool ExistSettingsBinFile() => File.Exists(SettingFileBin);
+        public static bool ExistSettingsBinFile() => File.Exists(PathToSettingFileBin);
 
         public static Settings LoadSettingsFO()
         {
@@ -76,13 +80,20 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
-        public static string[] ReadSettingsFile() => File.ReadAllLines(SettingFileBin);
+        public static void SetNewSettings(Settings settings) => LoadedSettings = settings;
 
-        public static string ResolveUserAssets(string userAssetPath)
+        public static Settings LoadDesignerSettingsFO()
+        {
+            LoadedSettings = new Settings();
+            BuildConfigDir();
+            return LoadedSettings;
+        }
+
+        public static string[] ReadSettingsFile() => File.ReadAllLines(PathToSettingFileBin);
+
+        public static string ResolveSettingUA(string userAssetPath)
         {
             string fullPath = Path.GetFullPath(userAssetPath);
-            // var test1 = Directory.Exists(fullPath);
-            // var test2 = File.Exists(fullPath);
             if (Directory.Exists(fullPath) && !File.Exists(fullPath))
             { return userAssetPath; }
             else
@@ -93,12 +104,12 @@ namespace RetroLinker.Models
         {
             try
             {
-                await File.WriteAllTextAsync(SettingFileBin, settingString);
-                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} written successfully", App.InfoTrace);
+                await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
+                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} written successfully", App.InfoTrace);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"{SettingFileBin} could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} could not be written!", App.ErroTrace);
                 System.Diagnostics.Trace.WriteLine(e);
             }
         }
@@ -115,31 +126,60 @@ namespace RetroLinker.Models
 
         #region Load
 
-        public static async Task<string[]> LoadCores()
+        public static bool GetCoreFile(out string file)
         {
-            // TODO: Create a back up cores.txt that compiles with the app
-            string file = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
-            if (File.Exists(file))
+            string externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
+            if (!File.Exists(externalCores))
+            {
+                file = string.Empty;
+                return false;
+            }
+            file = externalCores;
+            return true;
+        }
+
+        public static string DumpStreamToFile(Stream fileStream)
+        {
+            fileStream.Position = 0;
+            var temporalFile = Path.Combine(UserTemp, tempFile);
+            var streamReader = new StreamReader(fileStream);
+            var streamWriter = File.CreateText(temporalFile);
+            string line;
+            while ((line = streamReader.ReadLine()) != null)
+            {
+                streamWriter.WriteLine(line);
+            }
+
+            streamWriter.Close();
+            return temporalFile;
+        }
+        
+        public static async Task<string[]> LoadCores(string file)
+        {
+            try
             {
                 System.Diagnostics.Trace.WriteLine($"Starting reading of {file}.", App.InfoTrace);
                 var cores = await File.ReadAllLinesAsync(file);
                 System.Diagnostics.Trace.WriteLine($"Completed reading of {file}.", App.InfoTrace);
                 return cores;
             }
-            else
+            catch
             {
                 System.Diagnostics.Trace.WriteLine($"The file {file} could not be found!", App.InfoTrace);
                 return Array.Empty<string>();
             }
         }
 
-        public static async Task<List<string>> LoadIcons(bool OS)
+        public static async Task<object[]> LoadIcons(bool OS)
         {
-            // TODO: Be able to return errors
             IconProc.IconItemsList = new();
+            var files = new List<string>();
+            var isError = false;
+            var iconException = $"Empty Exception {App.DebgTrace}";
+            
             try
             {
-                List<string>? files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
+                files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
                 System.Diagnostics.Trace.WriteLine(
                     $"Starting Icons reading at {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
                 for (int i = 0; i < files.Count; i++)
@@ -149,7 +189,7 @@ namespace RetroLinker.Models
                     string filepath = Path.GetFullPath(Path.Combine(files[i]));
                     if (OS)
                     {
-                        if (WinConvertibleIconsExt.Contains("*" + ext) || (ext is ".exe"))
+                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
                         {
                             IconProc.IconItemsList.Add(new IconsItems(filename, filepath, true));
                         }
@@ -167,14 +207,10 @@ namespace RetroLinker.Models
                     }
                 }
 
-                if (files.Count == 0)
-                {
-                    System.Diagnostics.Trace.WriteLine(
-                        $"No icons found at {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
-                    return new List<string>();
-                }
-                else
-                { System.Diagnostics.Trace.WriteLine($"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace); }
+                System.Diagnostics.Trace.WriteLine(
+                    files.Count == 0
+                        ? $"No icons found at {LoadedSettings.UserAssetsPath}."
+                        : $"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace);
 
                 files.Clear();
                 int newindex = 1;
@@ -184,34 +220,49 @@ namespace RetroLinker.Models
                     file.comboIconIndex = newindex;
                     newindex++;
                 }
-
-                return files;
             }
 
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException e)
             {
                 // Possibly redundant
                 System.Diagnostics.Trace.WriteLine(
                     $"The directory '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}' could not be found.", App.WarnTrace);
-                return new List<string>();
+                iconException = e.Message;
+                isError = true;
             }
             catch (Exception e)
             {
                 System.Diagnostics.Trace.WriteLine($"An error has occurred while loading icons.", App.ErroTrace);
                 System.Diagnostics.Debug.WriteLine(
                     $"In FileOps, he element {e.Source} has returned the error:\n{e.Message}", App.ErroTrace);
-                return new List<string>();
+                iconException = e.Message;
+                isError = true;
             }
+            
+            var objArray = new object[]
+            {
+                files,
+                isError,
+                iconException
+            };
+            return objArray;
         }
         #endregion
 
         #region FUNCTIONS
 
         public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
+        
+        public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
+        
+        public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
 
-        public static bool CheckUsrSetDir(string path)
+        public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
+
+        public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
+
+        private static bool CheckUsrSetDir(string path)
         {
-            // TODO: Be able to return errors
             try
             {
                 Directory.CreateDirectory(path);
@@ -223,40 +274,37 @@ namespace RetroLinker.Models
                 return false;
             }
         }
+
+        public static string GetDefinedLinkPath(string linkName, string linkPath)
+        {
+            string newDir = Path.GetFileName(linkName);
+            newDir = Path.Combine(linkPath, newDir);
+            return newDir;
+        }
+
+        public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)
+        {
+            var linkCopies = new ShortcutterOutput[linkCopyList.Count];
+            for (int i = 0; i < linkCopies.Length; i++)
+            {
+                linkCopies[i] = new ShortcutterOutput(linkOutputBase, linkCopyList[i]);
+            }
+            return linkCopies;
+        }
         
-        public static string GetDeskLinkPath(string link_name, bool OS)
+        public static bool WriteDesktopEntry(string outputFile, byte[] fileBytes)
         {
-            // TODO: Possibly redundant
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            new_dir = (OS) ? new_dir : new_dir.Replace(" ", "-");
-            new_dir += (OS) ? WinLinkExt : LinLinkExt;
-            new_dir = Path.Combine(UserDesktop, new_dir);
-            return new_dir;
-        }
-
-        public static string GetDefinedLinkPath(string link_name, string LinkPath, bool OS)
-        {
-            string new_dir = Path.GetFileNameWithoutExtension(link_name);
-            if (OS)
-            { new_dir += WinLinkExt; }
-            else
+            try
             {
-                new_dir = new_dir.Replace(" ", "_");
-                new_dir = new_dir.Insert(0, $"{LinuxRABin}.'core'.");
-                new_dir += LinLinkExt;
+                File.WriteAllBytes(outputFile, fileBytes);
+                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
+                return true;
             }
-            new_dir = Path.Combine(LinkPath, new_dir);
-            return new_dir;
-        }
-
-        public static string[] GetLinkCopyPaths(List<string> linkCopyList, string liknBaseOpuput)
-        {
-            var LinkCopies = new string[linkCopyList.Count];
-            for (int i = 0; i < LinkCopies.Length; i++)
+            catch
             {
-                LinkCopies[i] = Path.Combine(SettingsOps.LinkCopyPaths[i], Path.GetFileName(liknBaseOpuput));
+                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
+                return false;
             }
-            return LinkCopies;
         }
         #endregion
 
@@ -267,11 +315,8 @@ namespace RetroLinker.Models
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
-            if (File.Exists(newPath))
-            {
-                return Path.GetFullPath(newPath);
-            }
-
+            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
+            
             File.Copy(ogPath, newPath);
             return Path.GetFullPath(newPath);
         }
@@ -281,10 +326,7 @@ namespace RetroLinker.Models
             destPath = Path.GetDirectoryName(destPath);
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(destPath, name);
-            if (File.Exists(newPath))
-            {
-                return Path.GetFullPath(newPath);
-            }
+            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
 
             File.Copy(ogPath, newPath);
             return Path.GetFullPath(newPath);
@@ -306,14 +348,14 @@ namespace RetroLinker.Models
             }
         }
 
-        public static bool IsVectorImage(string svg_file) => (Path.GetExtension(svg_file) is ".svg" or "svgz");
+        public static bool IsVectorImage(string file) => (Path.GetExtension(file) is ".svg" or ".svgz");
 
         #endregion
 
 
         #region Windows Only Ops
 
-        public static bool IsWinEXE(string exe_file) => (Path.GetExtension(exe_file) == ".exe");
+        public static bool IsWinEXE(string file) => (Path.GetExtension(file) == ".exe");
 
         public static IconsItems GetEXEWinIco(string icondir, int index)
         {
@@ -330,24 +372,21 @@ namespace RetroLinker.Models
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string new_dir = Path.Combine(UserTemp, icoName);
             CheckUsrSetDir(UserTemp);
-            ImageMagick.MagickImage icon_image = new();
-            if (selectedIconItem.IconStream != null)
-            {
-                selectedIconItem.IconStream.Position = 0;
-            }
+            ImageMagick.MagickImage iconImage;
+            if (selectedIconItem.IconStream != null) selectedIconItem.IconStream.Position = 0;
 
             switch (icoExt)
             {
                 case ".svg" or ".svgz":
-                    icon_image = IconProc.ImageConvert(selectedIconItem.IconStream);
-                    icon_image.Write(new_dir);
+                    iconImage = IconProc.ImageConvert(selectedIconItem.IconStream);
+                    iconImage.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
                 case ".exe":
                     if (LoadedSettings.ExtractIco)
                     {
-                        icon_image = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
-                        icon_image.Write(new_dir);
+                        iconImage = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
+                        iconImage.Write(new_dir);
                         //new_dir = CpyIconToUsrSet(new_dir);
                     }
                     else
@@ -355,8 +394,8 @@ namespace RetroLinker.Models
                     break;
 
                 default: // .jpg, .png, etc
-                    icon_image = IconProc.ImageConvert(selectedIconItem.FilePath);
-                    icon_image.Write(new_dir);
+                    iconImage = IconProc.ImageConvert(selectedIconItem.FilePath);
+                    iconImage.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
@@ -367,7 +406,7 @@ namespace RetroLinker.Models
         public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
         {
             string iconPath = GetDirFromPath(linkObj.ICONfile);
-            string linkName = Path.GetFileNameWithoutExtension(linkObj.LNKdir) + ".ico";
+            string linkName = Path.ChangeExtension(linkObj.OutputPaths[0].FileName, ".ico");
             string newIconPath = Path.Combine(iconPath, linkName);
             
             File.Copy(linkObj.ICONfile, newIconPath, true);
@@ -380,31 +419,34 @@ namespace RetroLinker.Models
 
         #region Linux Only Ops
 
-        public static string[] DesktopEntryName(string LinkDir, string core)
+        private static string[] SeparateFileNameFromPath(string path)
         {
-            const string appendix = "retroarch.";
-            const string whiteSpace = " ";
-            const string whiteSpaceReplacer = "_";
-            string[] NameFix =
-            {
-                // File Path
-                Path.GetFileName(LinkDir),
+            return
+            [
+                // File Full Path
+                path,
                 
-                // .desktop Name field
-                Path.GetFileNameWithoutExtension(LinkDir),
+                // File Name Without Extension
+                GetFileNameNoExtFromPath(path),
                 
                 // File Name
-                //LinkDir
-            };
-            NameFix[0] = NameFix[0].Replace(whiteSpace, whiteSpaceReplacer);
-            NameFix[0] = NameFix[0].Insert(0, $"{core}.");
-            NameFix[0] = NameFix[0].Insert(0, appendix);
-            //NameFix[2] = NameFix[0];
-            NameFix[0] = Path.Combine(Path.GetDirectoryName(LinkDir), NameFix[0]);
-            return NameFix;
+                GetFileNameFromPath(path),
+                
+                // Extension
+                Path.GetExtension(path)
+            ];
         }
         
-        public static string GetRAIcons()
+        public static string[] DesktopEntryArray(string LinkDir, string core)
+        {
+            var EntryName = SeparateFileNameFromPath(LinkDir);
+            EntryName[2] = LinFunc.LinDesktopEntry.DesktopEntryName(EntryName[2], core);
+            
+            EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0]), EntryName[2]);
+            return EntryName;
+        }
+        
+        public static string GetSystemRAIcons()
         {
             // TODO: Find a way to use xdg-desktop-icon and/or xdg-icon-resource to access linux desktop icon files
             return string.Empty;

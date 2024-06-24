@@ -20,19 +20,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.7" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.7" />
+    <PackageReference Include="Avalonia" Version="11.1.0-rc1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-rc1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-rc1" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.7" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0-rc1" />
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
-      <Version>11.0.7</Version>
+      <Version>11.1.0-rc1</Version>
     </PackageReference>
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.5.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.9.1" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.0.1" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.0.1" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +42,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="UserAssets\icon_light.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\cores.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -69,6 +71,17 @@
     <EmbeddedResource Update="Translations\resAvaloniaOps.es.resx">
       <DependentUpon>resAvaloniaOps.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resGeneric.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resGeneric.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resGeneric.es.resx">
+      <DependentUpon>resGeneric.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainExtras.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resMainExtras.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -86,6 +99,16 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resAvaloniaOps.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resGeneric.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resGeneric.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resMainExtras.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resMainExtras.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

@@ -24,8 +24,12 @@ namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
-    // public SettingsView2()
-    // { InitializeComponent(); }
+    public SettingsView2()
+    {
+        // Constructor for Designer
+        InitializeComponent();
+        ParentWindow = new SettingsWindow();
+    }
     
     public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs)
     {
@@ -44,7 +48,7 @@ public partial class SettingsView2 : UserControl
     private bool DesktopOS;
     
     // LOAD
-    void SettingsView2_1_Loaded(object sender, RoutedEventArgs e)
+    void View_OnLoaded(object sender, RoutedEventArgs e)
     {
         // Settings
         ApplySettingsToControls();
@@ -63,7 +67,8 @@ public partial class SettingsView2 : UserControl
     // USER ASSETS
     async void btnUserAssets_Click(object sender, RoutedEventArgs e)
     {
-        string folder = await AvaloniaOps.OpenFolderAsync(template:0, ParentWindow);
+        string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
+        string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
         if (!string.IsNullOrWhiteSpace(folder))
         { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
     }
@@ -86,33 +91,31 @@ public partial class SettingsView2 : UserControl
     async void btnDefRADir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe :
-                          PickerOpt.OpenOpts.RAbin;
-        string file = await AvaloniaOps.OpenFileAsync(template:opt, ParentWindow);
-        if (!string.IsNullOrWhiteSpace(file))
-        { 
-            txtDefRADir.Text = file; 
-            ParentWindow.settings.DEFRADir = file; 
-        }
+        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe : PickerOpt.OpenOpts.RAbin;
+        string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
+        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        if (string.IsNullOrWhiteSpace(file)) return;
+        txtDefRADir.Text = file; 
+        ParentWindow.settings.DEFRADir = file;
     }
     
     void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
     {
         ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
         txtDefRADir.Text = ParentWindow.settings.DEFRADir;
-        
     }
     
     // DEFAULT ROM PATH
     async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
     {
-        string folder = await AvaloniaOps.OpenFolderAsync(template:1, ParentWindow);
+        string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
+        string folder = await AvaloniaOps.OpenFolderAsync(template:1, currentFolder, ParentWindow);
         if (!string.IsNullOrWhiteSpace(folder))
         { 
             txtDefROMPath.Text = folder; 
             ParentWindow.settings.DEFROMPath = folder; 
         }
-    }   // TODO: Doesn´t seem to work on Linux
+    }
     
     void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
     {

@@ -27,34 +27,41 @@ namespace RetroLinker.Views
 {
     public partial class SettingsView : UserControl
     {
-        // public SettingsView()
-        // { InitializeComponent(); }
+        public SettingsView()
+        {
+            InitializeComponent();
+            ParentWindow = new SettingsWindow();
+        }
 
         public SettingsView(MainWindow _mainWindow, SettingsWindow parentWindow, bool desktopOs)
         {
             InitializeComponent();
-            mainWindow = _mainWindow;
+            MainAppWindow = _mainWindow;
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
+            // settings = ParentWindow.settings;
         }
         
         // Window Obj
-        private MainWindow mainWindow;
+        private MainWindow MainAppWindow;
         private SettingsWindow ParentWindow;
 
         // PROPS/STATICS
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
+        // Consider using independent Settings references
+        // private Settings settings; 
         static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
 
         #region Loads
         // LOADS
-        void SettingsView1_Loaded(object sender, RoutedEventArgs e)
+        void View_OnLoaded(object sender, RoutedEventArgs e)
         { 
             System.Diagnostics.Debug.WriteLine($"SettingView loaded for the fist time? {FirstTimeLoad}", App.DebgTrace);
             if (FirstTimeLoad) FillComboLocale();
+            
             // Settings
             ApplySettingsToControls();
         }

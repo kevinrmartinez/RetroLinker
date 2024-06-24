@@ -133,9 +133,10 @@ namespace RetroLinker.Models
                     if (GeneralInPlace(settingFile, headerIndex, generalCount))
                     {
                         int i = headerIndex + 1;
-                        settings.UserAssetsPath = FileOps.ResolveUserAssets(settingFile[++i]);
+                        settings.UserAssetsPath = FileOps.ResolveSettingUA(settingFile[++i]);
                         settings.DEFRADir = settingFile[++i];
                         settings.DEFROMPath = settingFile[++i];
+                        // TODO: Save all bools as a single 8bit number 
                         settings.PrevConfig = ResolveBool(settingFile[++i]);
                         settings.AllwaysAskOutput = ResolveBool(settingFile[++i]);
                         settings.DEFLinkOutput = settingFile[++i];

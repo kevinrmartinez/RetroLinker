@@ -7,7 +7,7 @@ As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready fo
 - Let the user create a custom link per game for desktop integration.
 - In Windows, the user can select .PNGs, .JPGs or .SVGs and convert them to .ICOs to use them on their links.
 - Has a list of recommended output directories for better desktop integration.
-- In Linux, it auto assigns executable permissions to the link for a seamless experience. 
+- In Linux, it auto assigns executable permissions to the link for a seamless experience.
 - For faster link creation, commonly used icons and Configs files can be stored via the app settings.
 - Ready to be translated in multiple languages.
 
@@ -15,14 +15,26 @@ As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready fo
 - core*
   - with content
   - contentless
+- rom soft-patching
 - custom Config file
 - fullscreen
 - verbose
 - accessibility
 
+## Captures
+![Main Application Window](MainApp.png)
+
+![Application Window - Mario World Example](MainApp_Ex01.png)
+
+![Application Window - Touhou Example](MainApp_Ex02.png)
+
+![Application Window - 2048 Example](MainApp_Ex03.png)
+
+In the following capture, we can see that the example from before are now part of the Games category on the system apps menu.
+![Examples added to System Applications](SystemMenu_Ex01.png)
+
 ## Planned RetroArch parameters
 - core subsystems
-- rom soft-patching
 - append config
 
 ## Restrictions

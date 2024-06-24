@@ -23,15 +23,14 @@ namespace RetroLinker.Models.LinFunc;
 
 public static class LinShortcutter
 {
-    private const string CommentLine = "# Creado con RetroLinker";
+    private const string CommentLine = "# Created with RetroLinker";
     private const string BlankLine = "";
     private const string EntryHeader = "[Desktop Entry]";
     private const string Notify = "StartupNotify=false";
     private const string Categ = "Categories=Game";
     private const string LinkType = "Type=Application";
-
-    // Overload con un objeto Shortcut <- En Uso
-    public static void CreateShortcut(Shortcutter _shortcut, string name, byte makeCopyIndex)
+    
+    public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
     {
         List<string> shortcut = new()
         {
@@ -48,7 +47,7 @@ public static class LinShortcutter
         string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? FileOps.DotDesktopRAIcon : _shortcut.ICONfile;
         shortcut.Add($"Icon={_iconFile}");
 
-        shortcut.Add("Name=" + name);
+        shortcut.Add("Name=" + _output.FriendlyName);
         // shortcut.Add(notify);
 
         string _terminal = (_shortcut.VerboseB) ? "true" : "false";
@@ -56,30 +55,30 @@ public static class LinShortcutter
 
         shortcut.Add(LinkType);
 
-        string outputFile = (makeCopyIndex == byte.MaxValue) ? _shortcut.LNKdir : _shortcut.LNKcpy[makeCopyIndex];
+        string outputFile = _output.FullPath;
 
         for (int i = 0; i < shortcut.Count; i++)
         {
-            shortcut[i] = string.Concat(shortcut[i], "\n");
+            // shortcut[i] = string.Concat(shortcut[i], "\n");
+            shortcut[i] += "\n";
         }
 
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
-        // TODO: Mover esta parte a FileOps.cs with a try-catch
-        File.WriteAllBytes(outputFile, outputBytes);
         
-        
-        System.Diagnostics.Trace.WriteLine($"{outputFile} created successfully", App.InfoTrace);
-        SetExecPermissions(outputFile);
+        // If file write is successful, set execution permissions
+        if (FileOps.WriteDesktopEntry(outputFile, outputBytes)) SetExecPermissions(outputFile);
     }
 
     private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
     {
+        const string permExec = "chmod";
+        const string permComm = "-c ug+x";
         System.Diagnostics.Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
         var processStartInfo = new System.Diagnostics.ProcessStartInfo()
         {
-            FileName = "chmod",
-            Arguments = $"-c a+x {dir}",
+            FileName = permExec,
+            Arguments = $"{permComm} \"{dir}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
@@ -87,12 +86,12 @@ public static class LinShortcutter
         var process = new System.Diagnostics.Process()
             { StartInfo = processStartInfo };
 
-        System.Diagnostics.Trace.WriteLine($"Executing chmod a+x {dir}...", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"Executing {permExec} {permComm} \"{dir}\"...", App.InfoTrace);
         process.Start();
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
         System.Diagnostics.Debug.WriteLine(error, App.DebgTrace);
-        System.Diagnostics.Trace.WriteLine(output, App.ErroTrace);
+        System.Diagnostics.Trace.WriteLine(output, App.InfoTrace);
     }
 }

@@ -11,7 +11,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="RetroLinker Settings"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
-		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="SettingsWindow1_OnLoaded">
+		WindowStartupLocation="CenterScreen" Name="SettingsWindow1" Loaded="Window_OnLoaded">
 	
 	<Window.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -23,7 +23,7 @@
 		
 		<!-- BODIES TAB CONTROL -->
 		<TabControl Grid.Row="1">
-			<!--TODO: Create or implement a Data Template for the tabs header-->
+			<!--TODO: Create or implement a Style for the tabs header-->
 			<TabItem Header="{x:Static locale:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
@@ -47,19 +47,19 @@
 			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-arrow-rotate-left"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDefault}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnDefault}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 			<Button Name="btnDISSettings" Click="btnDISSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-x" Foreground="Crimson"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnDiscard}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 			<Button Name="btnCONSettings" Click="btnSAVESettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa-check" Foreground="Green"/>
-					<TextBlock Text="{x:Static locale:resSettingsWindow.btnConfirm}" VerticalAlignment="Center"/>
+					<TextBlock Text="{x:Static locale:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
 		</StackPanel>

@@ -28,7 +28,7 @@ using RetroLinker.Models;
 
 namespace RetroLinker.Styles;
 
-// TODO: All this file requieres some documentation!!
+// TODO: All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
     // Link Copy ListItem

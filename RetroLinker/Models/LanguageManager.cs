@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Models;
 
@@ -11,7 +12,7 @@ public static class LanguageManager
     
     private const string ENIcon = "avares://RetroLinkerLib/Assets/Icons/EN.png";
     private const string ESIcon = "avares://RetroLinkerLib/Assets/Icons/ES.png";
-    
+
     public static List<LanguageItem> LanguageList = new()
     {
         new LanguageItem
@@ -80,20 +81,19 @@ public static class LanguageManager
     {
         // var sameLocale = true;
         var sameLocale = Translations.resMainView.Culture.Equals(cultureInfo);
-        if (!sameLocale)
-        {
-            Translations.resAvaloniaOps.Culture = cultureInfo;
-            Translations.resMainView.Culture = cultureInfo;
-            Translations.resSettingsWindow.Culture = cultureInfo;
-        }
+        if (!sameLocale) SetAllCultureInfo(cultureInfo);
         return sameLocale;
     }
 
-    public static void FixLocale(CultureInfo cultureInfo)
+    public static void FixLocale(CultureInfo cultureInfo) => SetAllCultureInfo(cultureInfo);
+
+    private static void SetAllCultureInfo(CultureInfo cultureInfo)
     {
-        Translations.resAvaloniaOps.Culture = cultureInfo;
-        Translations.resMainView.Culture = cultureInfo;
-        Translations.resSettingsWindow.Culture = cultureInfo;
+        resAvaloniaOps.Culture = cultureInfo;
+        resGeneric.Culture = cultureInfo;
+        resMainExtras.Culture = cultureInfo;
+        resMainView.Culture = cultureInfo;
+        resSettingsWindow.Culture = cultureInfo;
     }
 }
 

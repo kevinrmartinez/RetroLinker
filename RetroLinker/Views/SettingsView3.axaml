@@ -6,7 +6,7 @@
              xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
              x:Class="RetroLinker.Views.SettingsView3"
-			 Name="SettingsView3_1" Loaded="SettingsView3_1_OnLoaded" Unloaded="SettingsView3_1_OnUnloaded">
+			 Name="SettingsView3_1" Loaded="View_OnLoaded">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -18,10 +18,12 @@
 			<StackPanel>
 				<Label Content="{x:Static locale:resSettingsWindow.lblCat_DEFLinkOutput}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkAlwaysAskOutput}" IsCheckedChanged="ChkAlwaysAskOutput_IsCheckedChanged"/>
+				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="{x:Static locale:resSettingsWindow.chkAlwaysAskOutput}" 
+				          Click="ChkAlwaysAskOutput_OnClick"/>
 				<Label Content="{x:Static locale:resSettingsWindow.lblDEFLinkOutput}"/>
 				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
-					<TextBox Name="txtDEFLinkOutput" Grid.Column="0" IsReadOnly="True" Classes="SettingCatg"/>
+					<ComboBox Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" 
+					          SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
 					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Click="BtnDefLinkOutput_OnClick"
 					        i:Attached.Icon="fa-folder-open"/>
 					<Button Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">

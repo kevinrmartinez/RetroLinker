@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="btnAbort" xml:space="preserve">
+        <value>Abort</value>
+    </data>
+    <data name="btnExecute" xml:space="preserve">
+        <value>Execute</value>
+    </data>
+    <data name="btnRetry" xml:space="preserve">
+        <value>Retry</value>
+    </data>
+    <data name="btnConfirm" xml:space="preserve">
+        <value>Confirm</value>
+    </data>
+    <data name="btnDiscard" xml:space="preserve">
+        <value>Discard</value>
+    </data>
+    <data name="btnDefault" xml:space="preserve">
+        <value>Default</value>
+    </data>
+    <data name="btnApply" xml:space="preserve">
+        <value>Apply</value>
+    </data>
+    <data name="btnCustom" xml:space="preserve">
+        <value>Custom</value>
+    </data>
+    <data name="genError" xml:space="preserve">
+        <value>Error</value>
+    </data>
+    <data name="genFatalError" xml:space="preserve">
+        <value>Fatal Error</value>
+    </data>
+    <data name="genWarning" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+    <data name="genSucces" xml:space="preserve">
+        <value>Success</value>
+    </data>
+</root>

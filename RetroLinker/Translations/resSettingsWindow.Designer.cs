@@ -272,23 +272,5 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblLocale", resourceCulture);
             }
         }
-        
-        public static string btnDefault {
-            get {
-                return ResourceManager.GetString("btnDefault", resourceCulture);
-            }
-        }
-        
-        public static string btnConfirm {
-            get {
-                return ResourceManager.GetString("btnConfirm", resourceCulture);
-            }
-        }
-        
-        public static string btnDiscard {
-            get {
-                return ResourceManager.GetString("btnDiscard", resourceCulture);
-            }
-        }
     }
 }
