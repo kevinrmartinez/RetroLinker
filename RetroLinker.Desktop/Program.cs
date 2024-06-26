@@ -21,7 +21,6 @@ using System.IO;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
-//using Avalonia.ReactiveUI;
 
 namespace RetroLinker.Desktop;
 
@@ -36,8 +35,12 @@ class Program
         TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
 
         StartStopLogging(true);
+        var appAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName(); 
+        var appName = appAssembly.Name;
+        var appVersion = appAssembly.Version.ToString(3);
+        System.Diagnostics.Trace.WriteLine($"{appName} v{appVersion}", "[Info]");
         System.Diagnostics.Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
-
+        
         System.Diagnostics.Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);

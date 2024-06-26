@@ -31,7 +31,7 @@ namespace RetroLinker.Models.WinFuncImport
         {
             System.Diagnostics.Trace.WriteLine($"Importing {WinOnlyLib}...", App.InfoTrace);
             DLL = Assembly.LoadFrom(WinOnlyLib);
-            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} was loaded successfully.", App.InfoTrace);
+            System.Diagnostics.Trace.WriteLine($"{WinOnlyLib} v{DLL.GetName().Version.ToString(2)} was loaded successfully.", App.InfoTrace);
             System.Diagnostics.Debug.WriteLine($"{WinOnlyLib} loaded as '{DLL.FullName}'.", App.DebgTrace);
         }
 
