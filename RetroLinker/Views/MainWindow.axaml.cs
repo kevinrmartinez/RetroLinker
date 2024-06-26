@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        System.Diagnostics.Debug.WriteLine("Starting MainView...", App.DebgTrace);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }

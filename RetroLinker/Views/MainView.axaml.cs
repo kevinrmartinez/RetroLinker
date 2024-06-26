@@ -48,7 +48,7 @@ public partial class MainView : UserControl
     }
     
     public MainView(MainWindow mainWindow)
-    { 
+    {
         settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
@@ -76,7 +76,7 @@ public partial class MainView : UserControl
     // true = Windows. false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
-    // TODO: Implement an Event for theme handling
+    
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
@@ -85,6 +85,7 @@ public partial class MainView : UserControl
             AvaloniaOps.MainViewLoad(DesktopOS);
 
 #if DEBUG
+            // TODO: Implement an Event for theme handling
             try
             {
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -92,7 +93,7 @@ public partial class MainView : UserControl
             catch (System.Exception theme_e) 
             {
                 System.Diagnostics.Debug.WriteLine(theme_e);
-                TopLevel.GetTopLevel(this).RequestedThemeVariant = ThemeVariant.Dark;
+                TopLevel.GetTopLevel(this).RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();

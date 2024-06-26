@@ -33,14 +33,14 @@ public partial class App : Application
     public const string WarnTrace = "[Warn]";
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
-    public static System.DateTime LaunchTime = System.DateTime.Now;
+    public static readonly System.DateTime LaunchTime = System.DateTime.Now;
     public static string[]? Args;
     
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
         System.TimeSpan launchTime = System.TimeSpan.FromTicks(LaunchTime.Ticks);
-        System.Diagnostics.Trace.WriteLine($"AppLoadTime: {launchTime}", TimeTrace);
+        System.Diagnostics.Debug.WriteLine($"AppLoadTime: {launchTime}", TimeTrace);
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -58,12 +58,14 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
+            // This is left out because it shouldn't happen
             // singleViewPlatform.MainView = new MainView
             // {
             //     DataContext = new MainViewModel()
             // };
             System.Diagnostics.Debug.WriteLine("How do I got here...?", DebgTrace);
             System.Diagnostics.Debug.WriteLine(singleViewPlatform.ToString());
+            System.Diagnostics.Trace.WriteLine("Something unexpected happened, terminating...", ErroTrace);
         }
 
         base.OnFrameworkInitializationCompleted();

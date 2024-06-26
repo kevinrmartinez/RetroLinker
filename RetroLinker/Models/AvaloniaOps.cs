@@ -17,8 +17,8 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
@@ -49,7 +49,8 @@ public static class AvaloniaOps
     public static Settings MainViewPreConstruct()
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        System.Diagnostics.Trace.WriteLine($"Current OS: {Environment.OSVersion.VersionString}.", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
+        System.Diagnostics.Trace.WriteLine($"OS Version: {Environment.OSVersion.Version}", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
         System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);

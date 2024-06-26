@@ -36,7 +36,7 @@ class Program
         TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
 
         StartStopLogging(true);
-        System.Diagnostics.Trace.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
+        System.Diagnostics.Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
 
         System.Diagnostics.Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
