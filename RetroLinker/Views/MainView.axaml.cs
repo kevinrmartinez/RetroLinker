@@ -65,7 +65,6 @@ public partial class MainView : UserControl
     private int DLLErrorCount = 0;
     private int PreloadedIconsCount;
     private byte CurrentTheme = 250;
-    private string OutputLinkPath;
     private Settings settings;
     private Bitmap ICONimage;
     private IconsItems IconItemSET;
@@ -620,13 +619,11 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.SaveFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
-            if (!DesktopOS)
-            {
-                await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
-                file = BuildingLink.OutputPaths[0].FullPath;
-            }
-            OutputLinkPath = file;
-            txtLINKDir.Text = (!string.IsNullOrWhiteSpace(comboCore.Text)) ? UpdateLinkLabelCore(OutputLinkPath) : OutputLinkPath;
+            txtLINKDir.Text = file;
+            if (DesktopOS) return;
+            await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
+            file = BuildingLink.OutputPaths[0].FullPath;
+            txtLINKDir.Text = (!string.IsNullOrWhiteSpace(comboCore.Text)) ? UpdateLinkLabelCore(file) : file;
         }
 #if DEBUG
         else
@@ -708,7 +705,6 @@ public partial class MainView : UserControl
             OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
         }
         
-
         // Include a link description, if any
         OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
 
