@@ -40,7 +40,8 @@ namespace RetroLinker.Models
             if (shortcut.AccessibilityB) { shortcut.Command = shortcut.Command.Insert(0, accessibility); }
             if (shortcut.FullscreenB) { shortcut.Command = shortcut.Command.Insert(0, fullscreen); }
             if (shortcut.VerboseB) { shortcut.Command = shortcut.Command.Insert(0, verbose); }
-            
+
+            shortcut.Command = shortcut.Command.TrimEnd();
             return shortcut;
         }
     }

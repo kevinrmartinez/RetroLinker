@@ -58,6 +58,26 @@ namespace RetroLinker.Models
             return noDQ[1];
         }
 
+        public static string TwoDoubleQuotes(string text)
+        {
+            int y = 0;
+            bool notEnded = true;
+            while (notEnded)
+            {
+                for (int i = y; i < text.Length; i++)
+                {
+                    y = i;
+                    if (text[i] == DQ) break;
+                }
+                
+                text = text.Insert(y, DQ.ToString());
+                y += 2;
+                if (y >= text.Length) notEnded = false;
+            }
+            
+            return text;
+        }
+
         private static bool HasDoubleQuotes(string path)
         {
             int lastCharIndex = path.Length - 1;

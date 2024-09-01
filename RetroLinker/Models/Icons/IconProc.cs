@@ -57,7 +57,7 @@ namespace RetroLinker.Models.Icons
             
             // Transform the image into the geometry ICOGeo, if it's not square it will rescale into its original Aspect Ratio 
             ICO.Scale(ICOGeo);
-            // if it's not square, the image will be extended into MaxRes, it will be centered, and i'll in front of a transparent background  
+            // if it's not square, the image will be extended into MaxRes, it will be centered, and it will be in front of a transparent background  
             if (!IsSquare) { ICO.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent); }
             return ICO;
         }

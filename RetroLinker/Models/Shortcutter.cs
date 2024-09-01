@@ -122,6 +122,8 @@ namespace RetroLinker.Models
         // Link Creatinon - OS selection
         public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
         {
+            // Building the arguments
+            link = Commander.CommandBuilder(link);
             return (os) ? BuildWinShortcut(link) : BuildLinShorcut(link);
         }
         
@@ -129,34 +131,23 @@ namespace RetroLinker.Models
         private static List<ShortcutterResult> BuildWinShortcut(Shortcutter link)
         {
             var ResultList = new List<ShortcutterResult>();
-            WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
-
-            // Double quotes for directories that are parameters ->
-            // -> for RetroArch's executable
-            var _RAdir = Utils.FixUnusualPaths(link.RAdir);
+            //WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
             
-            // -> for RetroArch's WorkingDirectory
-            var _RApath = Utils.FixUnusualPaths(link.RApath);
-
-            // Building the arguments
-            link = Commander.CommandBuilder(link);
-
-            // Grouping the .lnk parameters
-            var createShortcutArgs = new object[]
-            {
-                _RAdir, _RApath, link.Command,
-                link.ICONfile, link.Desc, string.Empty
-            };
+            // Add 2 double quotes for vbs compatibility
+            link.Command = Utils.TwoDoubleQuotes(link.Command);
             
+            // Try to create every shortcut listed on OutputPaths
             foreach (ShortcutterOutput output in link.OutputPaths)
             {
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                createShortcutArgs[5] = outputFile;
                 System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
-                try { CreateShortcut.MInfo.Invoke(CreateShortcut.ObjInstance, createShortcutArgs);
-                    LinkResult.Messeage = LinkResult.Success1; }
+                try 
+                { 
+                    WinClasses.WinShortcutter.CreateShortcut(link, outputFile);
+                    LinkResult.Messeage = LinkResult.Success1; 
+                }
                 catch (System.Exception e)
                 {
                     System.Diagnostics.Trace.WriteLine($"'{outputFile}' could not be created!", App.ErroTrace);
@@ -174,9 +165,6 @@ namespace RetroLinker.Models
         {
             var ResultList = new List<ShortcutterResult>();
             
-            // Building the arguments
-            link = Commander.CommandBuilder(link);
-            //link.Command = link.Command.Replace("\"", "\'");
             if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
             { link.ICONfile = FileOps.DotDesktopRAIcon; }
             

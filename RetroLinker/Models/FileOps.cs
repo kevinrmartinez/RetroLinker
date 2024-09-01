@@ -408,6 +408,22 @@ namespace RetroLinker.Models
             
             return newIconPath;
         }
+        
+        public static bool WriteShortcutVBS(string[] fileLines, out string outputFile)
+        {
+            outputFile = Path.Combine(UserTemp, "shortcut.vbs");
+            try
+            {
+                File.WriteAllLines(outputFile, fileLines);
+                System.Diagnostics.Trace.WriteLine($"Script file {outputFile} created successfully", App.InfoTrace);
+                return true;
+            }
+            catch
+            {
+                System.Diagnostics.Trace.WriteLine($"Script file {outputFile} could not be written!", App.ErroTrace);
+                return false;
+            }
+        }
 
         #endregion
 
