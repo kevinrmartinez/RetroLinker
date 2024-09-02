@@ -82,10 +82,11 @@ namespace RetroLinker.Models
 
         public static void SetNewSettings(Settings settings) => LoadedSettings = settings;
 
-        public static Settings LoadDesignerSettingsFO()
+        public static Settings LoadDesignerSettingsFO(bool fixedOutput)
         {
             LoadedSettings = new Settings();
             BuildConfigDir();
+            if (fixedOutput) LoadedSettings.AllwaysAskOutput = false;
             return LoadedSettings;
         }
 

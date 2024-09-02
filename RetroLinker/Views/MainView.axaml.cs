@@ -299,7 +299,7 @@ public partial class MainView : UserControl
         txtLINKDir.AcceptsReturn = false;
         
         btnLINKDir.IsEnabled = ask;
-        btnLINKRename.IsVisible = !ask;
+        btnLINKRename.IsVisible = (!DesktopOS && !ask);
         lblLinkName.IsVisible = !ask;
         lblLinkDeskDir.IsVisible = !ask;
         lblLinkDeskDir.Content = settings.DEFLinkOutput;

@@ -109,8 +109,8 @@ public class LocaleComboItem
         var grid = new Grid();
         grid.ColumnDefinitions = new ColumnDefinitions()
         {
-            new ColumnDefinition(1, GridUnitType.Auto),
-            new ColumnDefinition(1, GridUnitType.Star)
+            new(1, GridUnitType.Auto),
+            new(1, GridUnitType.Star)
         };
 
         var icon = new Image()

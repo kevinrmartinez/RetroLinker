@@ -60,7 +60,7 @@ public static class AvaloniaOps
         return settings;
     }
 
-    public static Settings DesignerMainViewPreConstruct() => FileOps.LoadDesignerSettingsFO();
+    public static Settings DesignerMainViewPreConstruct() => FileOps.LoadDesignerSettingsFO(false);
 
     public static void MainViewLoad(bool DesktopOS)
     {

@@ -17,6 +17,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
@@ -38,10 +39,10 @@ class Program
         var appAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName(); 
         var appName = appAssembly.Name;
         var appVersion = appAssembly.Version.ToString(3);
-        System.Diagnostics.Trace.WriteLine($"{appName} v{appVersion}", "[Info]");
-        System.Diagnostics.Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
+        Trace.WriteLine($"{appName} v{appVersion}", "[Info]");
+        Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
         
-        System.Diagnostics.Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
+        Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
         
@@ -59,32 +60,31 @@ class Program
             .LogToTrace();
     }
 
-    private static System.Diagnostics.ConsoleTraceListener ConsoleTracer;
-    private static System.Diagnostics.TextWriterTraceListener TextfileTracer;
-    private const string LogTxt = "trace.log";
-    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogTxt);
+    private static ConsoleTraceListener ConsoleTracer;
+    private static TextWriterTraceListener TextfileTracer;
+    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "trace.log");
 
-    private static void StartStopLogging(bool period)
+    private static void StartStopLogging(bool mode)
     {
-        if (period)
+        if (mode)
         {
             try
             {   File.Delete(LogFile);   }
             catch
-            {   System.Diagnostics.Trace.WriteLine($"{LogFile} could not be deleted", "[Erro]"); }
+            {   Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]"); }
             
             ConsoleTracer = new()
-            { Name = "mainConsoleTracer", TraceOutputOptions = System.Diagnostics.TraceOptions.Timestamp };
+            { Name = "mainConsoleTracer", TraceOutputOptions = TraceOptions.Timestamp };
             TextfileTracer = new(LogFile, "mainTextTracer")
-            { TraceOutputOptions = System.Diagnostics.TraceOptions.DateTime };
+            { TraceOutputOptions = TraceOptions.DateTime };
             
-            System.Diagnostics.Trace.Listeners.AddRange(new System.Diagnostics.TraceListener[] { ConsoleTracer, TextfileTracer });
+            Trace.Listeners.AddRange(new TraceListener[] { ConsoleTracer, TextfileTracer });
         }
         else
         {
-            System.Diagnostics.Trace.Listeners.Remove(ConsoleTracer);
+            Trace.Listeners.Remove(ConsoleTracer);
+            Trace.Listeners.Remove(TextfileTracer);
             ConsoleTracer.Close();
-            System.Diagnostics.Trace.Listeners.Remove(TextfileTracer);
             TextfileTracer.Close();
         }
     }
