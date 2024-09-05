@@ -131,14 +131,12 @@ namespace RetroLinker.Models
             var ResultList = new List<ShortcutterResult>();
             WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
 
-            link.RApath = FileOps.GetDirFromPath(link.RAdir);
-
             // Double quotes for directories that are parameters ->
-            // -> for RetroArch's WorkingDirectory
-            link.RApath = Utils.FixUnusualPaths(link.RApath);
-
             // -> for RetroArch's executable
-            link.RAdir = Utils.FixUnusualPaths(link.RAdir);
+            var _RAdir = Utils.FixUnusualPaths(link.RAdir);
+            
+            // -> for RetroArch's WorkingDirectory
+            var _RApath = Utils.FixUnusualPaths(link.RApath);
 
             // Building the arguments
             link = Commander.CommandBuilder(link);
@@ -146,7 +144,7 @@ namespace RetroLinker.Models
             // Grouping the .lnk parameters
             var createShortcutArgs = new object[]
             {
-                link.RAdir, link.RApath, link.Command,
+                _RAdir, _RApath, link.Command,
                 link.ICONfile, link.Desc, string.Empty
             };
             

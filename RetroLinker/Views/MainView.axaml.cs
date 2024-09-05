@@ -700,9 +700,8 @@ public partial class MainView : UserControl
         }
         else
         {
-            var outputPath = validNameEntered ? 
-                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
-                txtLINKDir.Text + FileOps.WinLinkExt;
+            var outputPath = !validNameEntered ? txtLINKDir.Text:
+                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt;
             OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
         }
         
@@ -763,6 +762,7 @@ public partial class MainView : UserControl
         if (settings.MakeLinkCopy)
         { OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));}
 
+        // Create Shortcuts
         List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
         // Single Shortcut
         if (opResult.Count == 1)
@@ -837,17 +837,4 @@ public partial class MainView : UserControl
         if ( ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) || settingsChanged) 
         { SettingsOps.WriteSettings(settings); }  
     }
-
-#if DEBUG
-    void View2_Loaded(object sender, RoutedEventArgs e)
-    {
-        _ = sender.ToString();
-    }
-
-    async void testing1(object sender, RoutedEventArgs e)
-    {
-        Testing.FilePickerTesting(ParentWindow);
-    }
-#endif
-   
 }

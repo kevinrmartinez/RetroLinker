@@ -5,4 +5,4 @@ using System.Reflection;
 // [assembly: AssemblyCompany("companyname")]
 // [assembly: AssemblyCopyright("Copyright © me 2009")]
 // [assembly: AssemblyProduct("RetroLinker")]
-[assembly: AssemblyVersion("0.6.1")]
+[assembly: AssemblyVersion("0.6.2")]

@@ -62,7 +62,9 @@ namespace RetroLinker.Views
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
+            // TODO: Build a different designer-only ListBoxtItem, getting rid of current lsboxDebug1
             lsboxDebug1.IsVisible = false;
+            lsboxDebug1.IsEnabled = false;
             if (FirstTimeLoad)
             {
                 if (!DesktopOS)
