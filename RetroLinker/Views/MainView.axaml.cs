@@ -212,7 +212,7 @@ public partial class MainView : UserControl
         if (!string.IsNullOrEmpty(settings.DEFRADir))
         { txtRADir.Text = settings.DEFRADir; }
         BuildingLink.RAdir = settings.DEFRADir;
-        AvaloniaOps.SetROMPadre(settings.DEFROMPath, ParentWindow);
+        AvaloniaOps.SetROMTop(settings.DEFROMPath, ParentWindow);
         AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
@@ -700,8 +700,9 @@ public partial class MainView : UserControl
         }
         else
         {
-            string outputPath = validNameEntered ? 
-                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) : txtLINKDir.Text;
+            var outputPath = validNameEntered ? 
+                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
+                txtLINKDir.Text + FileOps.WinLinkExt;
             OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
         }
         
@@ -775,9 +776,9 @@ public partial class MainView : UserControl
             }   
             else
             {
-                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
                 msbox_params.ContentTitle = resGeneric.genError;
-                msbox_params.ContentMessage = string.Format(resMainView.popSingleOutput0_Head, opResult[0].eMesseage);
+                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head;
+                msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} {opResult[0].eMesseage}";
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 MessageBoxPopUp(msbox_params);
             }

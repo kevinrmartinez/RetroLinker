@@ -70,8 +70,8 @@ namespace RetroLinker.Models
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (AvaloniaOps.ROMPadreDir is not null)
-                    { options.SuggestedStartLocation = AvaloniaOps.ROMPadreDir; }
+                    if (AvaloniaOps.ROMTopDir is not null)
+                    { options.SuggestedStartLocation = AvaloniaOps.ROMTopDir; }
                     /*
                      * From the XDG Portal Docs:
                      * 

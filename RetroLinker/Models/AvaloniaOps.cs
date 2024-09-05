@@ -42,7 +42,7 @@ public static class AvaloniaOps
     public static string DefLinRAIcon { get; private set; }
     
     public static IStorageFolder? DesktopFolder { get; private set; }
-    public static IStorageFolder? ROMPadreDir { get; private set; }
+    public static IStorageFolder? ROMTopDir { get; private set; }
 
     
     #region FUNCTIONS
@@ -50,7 +50,7 @@ public static class AvaloniaOps
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
         System.Diagnostics.Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
-        System.Diagnostics.Trace.WriteLine($"OS Version: {Environment.OSVersion.Version}", App.InfoTrace);
+        //System.Diagnostics.Trace.WriteLine($"OS Version: {Environment.OSVersion.Version}", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
         System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
@@ -111,12 +111,12 @@ public static class AvaloniaOps
         System.Diagnostics.Debug.WriteLine($"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}", App.DebgTrace);
     }
     
-    public static async void SetROMPadre(string? dir_ROMpadre, TopLevel topLevel)
+    public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
     {
-        if (!string.IsNullOrWhiteSpace(dir_ROMpadre))
+        if (!string.IsNullOrWhiteSpace(dir_ROMTop))
         {
-            ROMPadreDir = await GetStorageFolder(dir_ROMpadre, topLevel);
-            System.Diagnostics.Debug.WriteLine($"ROMPadreStorageFolder set to: {ROMPadreDir.Path.LocalPath}", App.DebgTrace);
+            ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
+            System.Diagnostics.Debug.WriteLine($"ROMPadreStorageFolder set to: {ROMTopDir.Path.LocalPath}", App.DebgTrace);
         }
     }
     #endregion
