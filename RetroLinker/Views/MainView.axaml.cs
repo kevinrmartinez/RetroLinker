@@ -302,7 +302,7 @@ public partial class MainView : UserControl
         btnLINKRename.IsVisible = (!DesktopOS && !ask);
         lblLinkName.IsVisible = !ask;
         lblLinkDefinedDir.IsVisible = !ask;
-        lblLinkDefinedDir.Content = settings.DEFLinkOutput;
+        lblLinkDefinedDir.Text = settings.DEFLinkOutput;
     }
 
     string UpdateLinkLabel(string fileNameNoExt, string core)
@@ -566,7 +566,7 @@ public partial class MainView : UserControl
         {
             newFile = LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.LinLinkExt, comboCore.Text);
             outputDir = settings.DEFLinkOutput;
-            lblLinkDefinedDir.Content = FileOps.CombineDirAndFile(outputDir, newFile);
+            lblLinkDefinedDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
     }
     
@@ -659,15 +659,17 @@ public partial class MainView : UserControl
         
         if (BuildingLink.OutputPaths.Count == 0) return;
         txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
-        lblLinkDefinedDir.Content = BuildingLink.OutputPaths[0].FullPath;
+        lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
     }
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (!settings.AllwaysAskOutput)
-            lblLinkDefinedDir.Content = (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
-                ? UpdateLinkLabel(txtLINKDir.Text, comboCore.Text)
-                : settings.DEFLinkOutput;
+        if (settings.AllwaysAskOutput) return;
+        if (BuildingLink.OutputPaths.Count > 0)
+            if (BuildingLink.OutputPaths[0].CustomEntryName) return;
+        lblLinkDefinedDir.Text = (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
+            ? UpdateLinkLabel(txtLINKDir.Text, comboCore.Text)
+            : settings.DEFLinkOutput;
     }
     
     private void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -794,8 +796,7 @@ public partial class MainView : UserControl
             {
                 msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
                 msbox_params.ContentTitle = resGeneric.genError;
-                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head;
-                msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} {opResult[0].eMesseage}";
+                msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
                 msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
                 MessageBoxPopUp(msbox_params);
             }

@@ -293,20 +293,11 @@ namespace RetroLinker.Models
             return linkCopies;
         }
         
-        public static bool WriteDesktopEntry(string outputFile, byte[] fileBytes)
-        {
-            try
-            {
-                File.WriteAllBytes(outputFile, fileBytes);
-                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
-                return true;
-            }
-            catch
-            {
-                System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
-                return false;
-            }
-        }
+        public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
+        /*
+         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
+         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
+         */
         #endregion
 
         #region ICONS

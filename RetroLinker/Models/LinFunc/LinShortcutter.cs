@@ -67,7 +67,8 @@ public static class LinShortcutter
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
         
         // If file write is successful, set execution permissions
-        if (FileOps.WriteDesktopEntry(outputFile, outputBytes)) SetExecPermissions(outputFile);
+        FileOps.WriteDesktopEntry(outputFile, outputBytes);
+        SetExecPermissions(outputFile);
     }
 
     private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
@@ -91,7 +92,7 @@ public static class LinShortcutter
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
-        System.Diagnostics.Debug.WriteLine(error, App.DebgTrace);
-        System.Diagnostics.Trace.WriteLine(output, App.InfoTrace);
+        System.Diagnostics.Debug.WriteLine(error, $"{App.DebgTrace}[{permExec}]");
+        System.Diagnostics.Trace.WriteLine(output, $"{App.InfoTrace}[{permExec}]");
     }
 }
