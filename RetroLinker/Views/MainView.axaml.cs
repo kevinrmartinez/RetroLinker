@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -301,19 +302,19 @@ public partial class MainView : UserControl
         btnLINKDir.IsEnabled = ask;
         btnLINKRename.IsVisible = (!DesktopOS && !ask);
         lblLinkName.IsVisible = !ask;
-        lblLinkDeskDir.IsVisible = !ask;
-        lblLinkDeskDir.Content = settings.DEFLinkOutput;
+        lblLinkDefinedDir.IsVisible = !ask;
+        lblLinkDefinedDir.Content = settings.DEFLinkOutput;
     }
 
-    void UpdateLinkLabel()
-    {
-        string fileName = (DesktopOS) ? txtLINKDir.Text + ".lnk" 
-            : LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text, comboCore.Text) + ".desktop";
-        lblLinkDeskDir.Content = !string.IsNullOrWhiteSpace(txtLINKDir.Text) ? FileOps.GetDefinedLinkPath(fileName, settings.DEFLinkOutput) 
-            : settings.DEFLinkOutput;
+    string UpdateLinkLabel(string fileNameNoExt, string core)
+    { 
+        return (DesktopOS)
+            ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.WinLinkExt, settings.DEFLinkOutput) 
+            : FileOps.GetDefinedLinkPath(LinDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.LinLinkExt, settings.DEFLinkOutput);
+        
     }
 
-    string UpdateLinkLabelCore(string fullPath)
+    string UpdateLinkLabelWithCore(string fullPath)
     {
         var fileDir = FileOps.GetDirFromPath(fullPath);
         var fileName = FileOps.GetFileNameFromPath(fullPath);
@@ -552,10 +553,21 @@ public partial class MainView : UserControl
     
     private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text) && !DesktopOS && !LinkCustomName)
+        if (string.IsNullOrWhiteSpace(txtLINKDir.Text) || DesktopOS || LinkCustomName) return;
+        
+        string newFile;
+        string outputDir;
+        if (settings.AllwaysAskOutput)
         {
-            if (!settings.AllwaysAskOutput) lblLinkDeskDir.Content = UpdateLinkLabelCore(lblLinkDeskDir.Content as string);
-            else txtLINKDir.Text = UpdateLinkLabelCore(txtLINKDir.Text);
+            newFile = LinDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.LinLinkExt, comboCore.Text);
+            outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
+            txtLINKDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
+        }
+        else
+        {
+            newFile = LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.LinLinkExt, comboCore.Text);
+            outputDir = settings.DEFLinkOutput;
+            lblLinkDefinedDir.Content = FileOps.CombineDirAndFile(outputDir, newFile);
         }
     }
     
@@ -619,11 +631,12 @@ public partial class MainView : UserControl
         string file = await AvaloniaOps.SaveFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file))
         {
+            if (!DesktopOS)
+            {
+                await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
+                file = BuildingLink.OutputPaths[0].FullPath;
+            }
             txtLINKDir.Text = file;
-            if (DesktopOS) return;
-            await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
-            file = BuildingLink.OutputPaths[0].FullPath;
-            txtLINKDir.Text = (!string.IsNullOrWhiteSpace(comboCore.Text)) ? UpdateLinkLabelCore(file) : file;
         }
 #if DEBUG
         else
@@ -647,12 +660,15 @@ public partial class MainView : UserControl
         
         if (BuildingLink.OutputPaths.Count == 0) return;
         txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
-        lblLinkDeskDir.Content = BuildingLink.OutputPaths[0].FullPath;
+        lblLinkDefinedDir.Content = BuildingLink.OutputPaths[0].FullPath;
     }
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (!settings.AllwaysAskOutput) UpdateLinkLabel();
+        if (!settings.AllwaysAskOutput)
+            lblLinkDefinedDir.Content = (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
+                ? UpdateLinkLabel(txtLINKDir.Text, comboCore.Text)
+                : settings.DEFLinkOutput;
     }
     
     private void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

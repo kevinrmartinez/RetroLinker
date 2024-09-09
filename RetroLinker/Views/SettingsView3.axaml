@@ -42,16 +42,6 @@
 				<Border Classes="SettingCatg">
 					<StackPanel>
 						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
-							<!-- DEGUB -->
-							<ListBoxItem Name="lsboxDebug1" CornerRadius="9" Background="Aqua">
-								<Grid ColumnDefinitions="*, Auto">
-									<Label Grid.Column="0" VerticalAlignment="Center" Content="C:\Windows\Temp"/>
-									<Button Grid.Column="1" Height="30" Classes="SettingCatg">
-										<i:Icon Value="fa-trash" Foreground="Crimson"/>
-									</Button>
-								</Grid>
-							</ListBoxItem>
-							<!-- DEGUB -->
 							<ListBoxItem Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
 								<Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
 									<ComboBox Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>

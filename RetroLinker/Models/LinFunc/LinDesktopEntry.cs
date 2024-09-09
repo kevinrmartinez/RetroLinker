@@ -26,8 +26,8 @@ public static class LinDesktopEntry
 
     public static string StdDesktopEntry(string friendlyName, string core)
     {
-        core = (!string.IsNullOrEmpty(core)) ? core : CorePlaceHolder;
-        friendlyName = (!string.IsNullOrEmpty(friendlyName)) ? friendlyName : NamePlaceHolder;
+        core = (!string.IsNullOrWhiteSpace(core)) ? core : CorePlaceHolder;
+        friendlyName = (!string.IsNullOrWhiteSpace(friendlyName)) ? friendlyName : NamePlaceHolder;
         return DesktopEntryName(friendlyName, core);
     }
     

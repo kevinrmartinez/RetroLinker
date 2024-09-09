@@ -102,7 +102,7 @@
 						        i:Attached.Icon="fa-pen" FontSize="18"/>
 						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnLINKDir_Click"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
-						<Label Name="lblLinkDeskDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:resMainView.lblLinkDeskDir}" FontSize="11"/>
+						<Label Name="lblLinkDefinedDir" Grid.Row="1" Grid.Column="0" Content="{x:Static locale:resMainView.lblLinkDeskDir}" FontSize="11"/>
 					</Grid>
 					<Label Margin="3,0" Content="{x:Static locale:resMainView.lblDesc}" ToolTip.Tip="{x:Static locale:resMainView.txtDesc_tip}"/>
 					<TextBox Name="txtDesc" Margin="3,0" Watermark="{x:Static locale:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static locale:resMainView.txtDesc_tip}"/>

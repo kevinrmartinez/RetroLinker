@@ -36,13 +36,13 @@ namespace RetroLinker.Views
         public SettingsView3(MainWindow mainWindow, SettingsWindow settingsWindow, bool OS)
         {
             InitializeComponent();
-            AppMainWindow = mainWindow;
+            appMainWindow = mainWindow;
             ParentWindow = settingsWindow;
             DesktopOS = OS;
         }
         
         // Window Obj
-        private MainWindow AppMainWindow;
+        private MainWindow appMainWindow;
         private SettingsWindow ParentWindow;
 
         // PROPS/STATICS
@@ -62,9 +62,7 @@ namespace RetroLinker.Views
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
-            // TODO: Build a different designer-only ListBoxtItem, getting rid of current lsboxDebug1
-            lsboxDebug1.IsVisible = false;
-            lsboxDebug1.IsEnabled = false;
+            if (appMainWindow is null) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop));
             if (FirstTimeLoad)
             {
                 if (!DesktopOS)
@@ -102,7 +100,15 @@ namespace RetroLinker.Views
         {
             chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
             panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AllwaysAskOutput;
-            comboDEFLinkOutput.SelectedIndex = 0;
+            if (panelDEFLinkOutput.IsEnabled)
+            {
+                var DefPath = ParentWindow.settings.DEFLinkOutput;
+                if (!comboDEFLinkOutput.Items.Contains(DefPath))
+                    comboDEFLinkOutput.Items.Add(DefPath);
+                comboDEFLinkOutput.SelectedItem = DefPath;
+            }
+            else comboDEFLinkOutput.SelectedIndex = 0;
+            
             chkMakeLinkCopy.IsChecked = ParentWindow.settings.MakeLinkCopy;
             lsboxLinkCopies.IsEnabled = ParentWindow.settings.MakeLinkCopy;
 
