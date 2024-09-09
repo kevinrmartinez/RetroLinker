@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -716,8 +715,9 @@ public partial class MainView : UserControl
         }
         else
         {
-            var outputPath = !validNameEntered ? txtLINKDir.Text:
-                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt;
+            var outputPath = validNameEntered ? 
+                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
+                txtLINKDir.Text + FileOps.WinLinkExt;
             OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
         }
         
@@ -792,6 +792,7 @@ public partial class MainView : UserControl
             }   
             else
             {
+                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
                 msbox_params.ContentTitle = resGeneric.genError;
                 msbox_params.ContentHeader = resMainView.popSingleOutput0_Head;
                 msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} {opResult[0].eMesseage}";
