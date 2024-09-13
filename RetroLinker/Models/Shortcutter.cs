@@ -212,6 +212,7 @@ namespace RetroLinker.Models
         public bool CustomEntryName { get; set; }
         public bool ValidOutput { get; private set; }
 
+        // Constructors
         public ShortcutterOutput()
         {
             const string NA = "N/A";
@@ -255,6 +256,14 @@ namespace RetroLinker.Models
             FileName = primeOutput.FileName;
             FullPath = FileOps.CombineDirAndFile(copyOutput, primeOutput.FileName);
             ValidOutput = true;
+        }
+        
+        // Methods
+        public void RebuildOutput(string newFullPath)
+        {
+            if (FullPath == newFullPath) return;
+            FullPath = newFullPath;
+            FileName = FileOps.GetFileNameFromPath(newFullPath);
         }
     }
     

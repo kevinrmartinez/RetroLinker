@@ -333,7 +333,11 @@ public partial class MainView : UserControl
 
     void ResetAfterExecute()
     {
-        LinkCustomName = false;
+        //LinkCustomName = false;
+        BuildingLink.OutputPaths.Add(
+            new ShortcutterOutput(FileOps.CombineDirAndFile(
+                FileOps.GetDirFromPath(OutputLink.OutputPaths[0].FullPath),
+                OutputLink.OutputPaths[0].FriendlyName + FileOps.LinLinkExt)));
         LockForExecute(false);
     }
 
@@ -624,6 +628,7 @@ public partial class MainView : UserControl
     
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
+        LinkCustomName = false;
         PickerOpt.SaveOpts opt;
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
         string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
@@ -650,6 +655,7 @@ public partial class MainView : UserControl
     
     private async void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e)
     {
+        LinkCustomName = false;
         const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
         var fullPath = FileOps.CombineDirAndFile(
             settings.DEFLinkOutput, 
@@ -704,23 +710,28 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
-        bool validNameEntered = !settings.AllwaysAskOutput && !string.IsNullOrWhiteSpace(txtLINKDir.Text);
-        if (!DesktopOS)
+        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
-            if (validNameEntered && (OutputLink.OutputPaths.Count == 0))
+            if (!DesktopOS)
             {
-                string outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.LinLinkExt;
-                OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath, OutputLink.ROMcore));
+                if (!settings.AllwaysAskOutput)
+                {
+                    string outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) +
+                                        FileOps.LinLinkExt;
+                    if (OutputLink.OutputPaths.Count == 0)
+                        OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath, OutputLink.ROMcore));
+                    else
+                        OutputLink.OutputPaths[0] = new ShortcutterOutput(outputPath, OutputLink.ROMcore);
+                }
+                else OutputLink.OutputPaths[0].RebuildOutput(txtLINKDir.Text);
             }
-            if (!OutputLink.OutputPaths[0].CustomEntryName)
-                OutputLink.OutputPaths[0] = LinDesktopEntry.FixCoreNameForOutput(OutputLink.OutputPaths[0], OutputLink.ROMcore);
-        }
-        else
-        {
-            var outputPath = validNameEntered ? 
-                FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
-                txtLINKDir.Text + FileOps.WinLinkExt;
-            OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
+            else
+            {
+                var outputPath = !settings.AllwaysAskOutput ? 
+                    FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
+                    txtLINKDir.Text + FileOps.WinLinkExt;
+                OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
+            }
         }
         
         // Include a link description, if any
@@ -752,97 +763,97 @@ public partial class MainView : UserControl
         }
 
         // REQUIRED FIELDS VALIDATION!
-        if ((!string.IsNullOrEmpty(OutputLink.RAdir)) 
-         && (!string.IsNullOrEmpty(OutputLink.ROMdir)) 
-         && (!string.IsNullOrEmpty(OutputLink.ROMcore))
-         && (OutputLink.OutputPaths[0].ValidOutput)
-         )
-        { System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace); }
+        if ((!string.IsNullOrEmpty(OutputLink.RAdir))
+            && (!string.IsNullOrEmpty(OutputLink.ROMdir))
+            && (!string.IsNullOrEmpty(OutputLink.ROMcore))
+            && (OutputLink.OutputPaths[0].ValidOutput))
+        {
+            System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace);
+            
+            // Double quotes for directories that are parameters ->
+            // -> for the ROM file
+            if (!(bool)chkContentless.IsChecked) 
+            { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
+
+            // -> for the config file
+            if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
+            { OutputLink.CONFfile = Utils.FixUnusualPaths(OutputLink.CONFfile); }
+
+            // Link Copies handling
+            if (settings.MakeLinkCopy)
+            { OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));}
+
+            // Create Shortcuts
+            List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
+            // Single Shortcut
+            if (opResult.Count == 1)
+            {
+                if (!opResult[0].Error)
+                {
+                    msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
+                    msbox_params.ContentTitle = resGeneric.genSucces;
+                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
+                    MessageBoxPopUp(msbox_params);
+                }   
+                else
+                {
+                    msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
+                    msbox_params.ContentTitle = resGeneric.genError;
+                    msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
+                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
+                    MessageBoxPopUp(msbox_params);
+                }
+            }
+            // Multiple Shortcut
+            else
+            {
+                bool hasErrors = false;
+                foreach (var r in opResult)
+                {
+                    if (r.Error) hasErrors = true;
+                    break;
+                }
+
+                if (!hasErrors)
+                {
+                    msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
+                    msbox_params.ContentTitle = resGeneric.genSucces;
+                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
+                    MessageBoxPopUp(msbox_params);
+                }
+                else
+                {
+                    msbox_params.ContentHeader = resMainView.popMultiOutput0_Head;
+                    int successCount = 0;
+                    int errorCount = 0;
+                    string content = string.Empty;
+                    foreach (var R in opResult)
+                    {
+                        string output = R.OutputPath + ": ";
+                        content = string.Concat(content, output);
+                        content = string.Concat(content, R.Messeage);
+                        content = string.Concat(content, "\n");
+                        if (R.Error)
+                        {
+                            content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
+                            content = string.Concat(content, "\n");
+                            errorCount++;
+                        }
+                        else { successCount++; }
+                    }
+                    msbox_params.ContentTitle = resGeneric.genWarning;
+                    msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
+                    msbox_params.ContentMessage = content;
+                    MessageBoxPopUp(msbox_params);
+                }
+            }
+        }
         else
         {
             msbox_params.ContentMessage = resMainView.popMissReq_Mess; 
             msbox_params.ContentTitle = resMainView.popMissReq_Title; 
             msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
             MessageBoxPopUp(msbox_params);
-            return;
-        }
-        
-        // Double quotes for directories that are parameters ->
-        // -> for the ROM file
-        if (!(bool)chkContentless.IsChecked) 
-        { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
-
-        // -> for the config file
-        if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
-        { OutputLink.CONFfile = Utils.FixUnusualPaths(OutputLink.CONFfile); }
-
-        // Link Copies handling
-        if (settings.MakeLinkCopy)
-        { OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));}
-
-        // Create Shortcuts
-        List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
-        // Single Shortcut
-        if (opResult.Count == 1)
-        {
-            if (!opResult[0].Error)
-            {
-                msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
-                msbox_params.ContentTitle = resGeneric.genSucces;
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
-                MessageBoxPopUp(msbox_params);
-            }   
-            else
-            {
-                msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
-                msbox_params.ContentTitle = resGeneric.genError;
-                msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
-                MessageBoxPopUp(msbox_params);
-            }
-        }
-        // Multiple Shortcut
-        else
-        {
-            bool hasErrors = false;
-            foreach (var r in opResult)
-            {
-                if (r.Error) hasErrors = true;
-                break;
-            }
-
-            if (!hasErrors)
-            {
-                msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
-                msbox_params.ContentTitle = resGeneric.genSucces;
-                msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
-                MessageBoxPopUp(msbox_params);
-            }
-            else
-            {
-                msbox_params.ContentHeader = resMainView.popMultiOutput0_Head;
-                int successCount = 0;
-                int errorCount = 0;
-                string content = string.Empty;
-                foreach (var R in opResult)
-                {
-                    string output = R.OutputPath + ": ";
-                    content = string.Concat(content, output);
-                    content = string.Concat(content, R.Messeage);
-                    content = string.Concat(content, "\n");
-                    if (R.Error)
-                    {
-                        content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
-                        content = string.Concat(content, "\n");
-                        errorCount++;
-                    }
-                    else { successCount++; }
-                }
-                msbox_params.ContentTitle = resGeneric.genWarning;
-                msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
-                msbox_params.ContentMessage = content;
-                MessageBoxPopUp(msbox_params);
-            }
         }
         ResetAfterExecute();
     }

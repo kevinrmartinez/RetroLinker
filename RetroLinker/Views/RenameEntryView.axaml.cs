@@ -42,7 +42,7 @@ public partial class RenameEntryView : UserControl
         InitializeComponent();
         _popUpWindow = parentWindow;
         GivenPath = "designer.txt";
-        CurrentCore = "mesen";
+        CurrentCore = "nestopia";
         Outputs = new List<ShortcutterOutput>();
     }
     
@@ -83,12 +83,7 @@ public partial class RenameEntryView : UserControl
     }
 
     private List<ShortcutterOutput> ResolveOutput()
-    { 
-        // if (_popUpWindow.ParentWindow.BuildingLink.OutputPaths.Count > 0)
-        //     _popUpWindow.ParentWindow.BuildingLink.OutputPaths[0] = NewName;
-        // else _popUpWindow.ParentWindow.BuildingLink.OutputPaths.Add(NewName);
-        // _popUpWindow.ParentWindow.LinkCustomName = CustomFilename;
-
+    {
         if (Outputs.Count > 0) Outputs[0] = NewName;
         else Outputs.Add(NewName);
         return Outputs;
@@ -131,12 +126,11 @@ public partial class RenameEntryView : UserControl
     private void BtnNameApply_OnClick(object? sender, RoutedEventArgs e)
     {
         var friendlyName = txtFriendlyName.Text;
-        var fileName = (CustomFilename) ? txtFileName.Text : LinDesktopEntry.StdDesktopEntry(friendlyName, string.Empty);
+        var fileName = (CustomFilename) ? txtFileName.Text : LinDesktopEntry.StdDesktopEntry(friendlyName, CurrentCore);
         fileName += FileOps.LinLinkExt;
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
         NewName.CustomEntryName = CustomFilename;
-        // ResolveOutput();
         _popUpWindow.Close(ResolveOutput());
     }
 
@@ -151,7 +145,6 @@ public partial class RenameEntryView : UserControl
         if (NewName is not null) return;
         if (GivenName == NamePlaceHolder) return;
         NewName = new ShortcutterOutput(GivenPath, CurrentCore);
-        // ResolveOutput();
         _popUpWindow.Close(ResolveOutput());
     }
 
