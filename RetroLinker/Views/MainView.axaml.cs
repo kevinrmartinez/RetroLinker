@@ -712,26 +712,24 @@ public partial class MainView : UserControl
         // Link handling
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
+            string outputPath = string.Empty;
             if (!DesktopOS)
             {
                 if (!settings.AllwaysAskOutput)
-                {
-                    string outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) +
-                                        FileOps.LinLinkExt;
-                    if (OutputLink.OutputPaths.Count == 0)
-                        OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath, OutputLink.ROMcore));
-                    else
-                        OutputLink.OutputPaths[0] = new ShortcutterOutput(outputPath, OutputLink.ROMcore);
-                }
+                    outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.LinLinkExt;
                 else OutputLink.OutputPaths[0].RebuildOutput(txtLINKDir.Text);
             }
             else
             {
-                var outputPath = !settings.AllwaysAskOutput ? 
+                outputPath = !settings.AllwaysAskOutput ? 
                     FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
-                    txtLINKDir.Text + FileOps.WinLinkExt;
-                OutputLink.OutputPaths.Add(new ShortcutterOutput(outputPath));
+                    txtLINKDir.Text;
             }
+            
+            if (OutputLink.OutputPaths.Count == 0)
+                OutputLink.OutputPaths.Add(ShortcutterOutput.BuildForOS(DesktopOS, outputPath, OutputLink.ROMcore));
+            else
+                OutputLink.OutputPaths[0] = ShortcutterOutput.BuildForOS(DesktopOS, outputPath, OutputLink.ROMcore);
         }
         
         // Include a link description, if any

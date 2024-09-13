@@ -265,6 +265,11 @@ namespace RetroLinker.Models
             FullPath = newFullPath;
             FileName = FileOps.GetFileNameFromPath(newFullPath);
         }
+
+        public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore)
+        {
+            return DesktopOS ? new ShortcutterOutput(fullPath) : new ShortcutterOutput(fullPath, romCore);
+        }
     }
     
     
