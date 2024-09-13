@@ -7,6 +7,8 @@
     <Configurations>Debug;Release;Dbg-x86-partial</Configurations>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <AssemblyName>RetroLinkerWinLib</AssemblyName>
+    <VersionPrefix>1.0</VersionPrefix>
+    <VersionSuffix>beta</VersionSuffix>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
 
