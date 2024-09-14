@@ -262,6 +262,8 @@ namespace RetroLinker.Models
 
         public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
 
+        public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
+
         private static bool CheckUsrSetDir(string path)
         {
             try

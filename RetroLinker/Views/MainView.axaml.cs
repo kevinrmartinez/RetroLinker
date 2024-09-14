@@ -308,8 +308,8 @@ public partial class MainView : UserControl
     string UpdateLinkLabel(string fileNameNoExt, string core)
     { 
         return (DesktopOS)
-            ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.WinLinkExt, settings.DEFLinkOutput) 
-            : FileOps.GetDefinedLinkPath(LinDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.LinLinkExt, settings.DEFLinkOutput);
+            ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
+            : FileOps.GetDefinedLinkPath(LinDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
         
     }
 
@@ -335,9 +335,8 @@ public partial class MainView : UserControl
     {
         //LinkCustomName = false;
         BuildingLink.OutputPaths.Add(
-            new ShortcutterOutput(FileOps.CombineDirAndFile(
-                FileOps.GetDirFromPath(OutputLink.OutputPaths[0].FullPath),
-                OutputLink.OutputPaths[0].FriendlyName + FileOps.LinLinkExt)));
+                ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, string.Empty)
+        );
         LockForExecute(false);
     }
 
@@ -712,24 +711,37 @@ public partial class MainView : UserControl
         // Link handling
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
-            string outputPath = string.Empty;
-            if (!DesktopOS)
+            ShortcutterOutput outputPath;
+            if (DesktopOS)
             {
-                if (!settings.AllwaysAskOutput)
-                    outputPath = FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.LinLinkExt;
-                else OutputLink.OutputPaths[0].RebuildOutput(txtLINKDir.Text);
+                var outputPathStr = !settings.AllwaysAskOutput 
+                    ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
+                    : (txtLINKDir.Text);
+                outputPath = new ShortcutterOutput(outputPathStr);
             }
             else
             {
-                outputPath = !settings.AllwaysAskOutput ? 
-                    FileOps.GetDefinedLinkPath(txtLINKDir.Text, settings.DEFLinkOutput) + FileOps.WinLinkExt : 
-                    txtLINKDir.Text;
+                if (OutputLink.OutputPaths[0] is not null && OutputLink.OutputPaths[0].CustomEntryName)
+                    outputPath = OutputLink.OutputPaths[0];
+                else
+                {
+                    if (!settings.AllwaysAskOutput)
+                    {
+                        var outputPathStr = FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS),
+                            settings.DEFLinkOutput);
+                        outputPath = new ShortcutterOutput(outputPathStr, OutputLink.ROMcore);
+                    }
+                    else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, OutputLink.ROMcore);
+                }
             }
-            
+
             if (OutputLink.OutputPaths.Count == 0)
-                OutputLink.OutputPaths.Add(ShortcutterOutput.BuildForOS(DesktopOS, outputPath, OutputLink.ROMcore));
+                OutputLink.OutputPaths.Add(outputPath);
             else
-                OutputLink.OutputPaths[0] = ShortcutterOutput.BuildForOS(DesktopOS, outputPath, OutputLink.ROMcore);
+            {
+                if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath)
+                    OutputLink.OutputPaths[0] = outputPath;
+            }
         }
         
         // Include a link description, if any

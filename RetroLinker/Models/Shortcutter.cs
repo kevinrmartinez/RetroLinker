@@ -259,16 +259,27 @@ namespace RetroLinker.Models
         }
         
         // Methods
-        public void RebuildOutput(string newFullPath)
+        void RebuildOutput(string newFullPath)
         {
             if (FullPath == newFullPath) return;
             FullPath = newFullPath;
             FileName = FileOps.GetFileNameFromPath(newFullPath);
         }
 
-        public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore)
+        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
         {
-            return DesktopOS ? new ShortcutterOutput(fullPath) : new ShortcutterOutput(fullPath, romCore);
+            var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath);
+            var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
+            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName))
+                    : new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName), romCore);
+        }
+
+        public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore, ShortcutterOutput? baseOutput)
+        {
+            var newOutput = (DesktopOS) ? new ShortcutterOutput(fullPath) : new ShortcutterOutput(fullPath, romCore);
+            
+            if (baseOutput is null) return newOutput;
+            return (!DesktopOS && baseOutput.CustomEntryName) ? baseOutput : newOutput;
         }
     }
     
