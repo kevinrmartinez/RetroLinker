@@ -645,7 +645,9 @@ public partial class MainView : UserControl
         else
         {
             System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
-            
+
+            // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut("C:\\Users\\Public\\Desktop\\2048v3.lnk");
+            // System.Diagnostics.Debug.WriteLine(readLink[0], App.DebgTrace);
             // Testing.LinShortcutTest(DesktopOS);
             // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }
