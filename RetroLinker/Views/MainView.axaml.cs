@@ -225,7 +225,12 @@ public partial class MainView : UserControl
     void ApplyArgs()
     {
         // TODO: Add argument loading support. 2 Cases: Opening existing links; Starting from a ROM. 
-        System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
+        if (App.Args.Length == 0) System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
+        else
+        {
+            for (int i = 0; i < App.Args.Length; i++)
+                System.Diagnostics.Debug.WriteLine(App.Args[i], App.DebgTrace);
+        }
     }
 
     void LoadLocalization()
@@ -657,10 +662,9 @@ public partial class MainView : UserControl
     private async void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e)
     {
         LinkCustomName = false;
-        const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
         var fullPath = FileOps.CombineDirAndFile(
             settings.DEFLinkOutput, 
-            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? NamePlaceHolder : txtLINKDir.Text)
+            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? LinDesktopEntry.NamePlaceHolder : txtLINKDir.Text)
         );
         await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
         

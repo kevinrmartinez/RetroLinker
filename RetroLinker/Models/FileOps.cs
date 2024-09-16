@@ -411,14 +411,14 @@ namespace RetroLinker.Models
         
         public static void CreateLinkWriteScript(string[] fileLines, out string outputFile)
         {
-            outputFile = Path.Combine(UserTemp, "WriteLink.vbs");
+            outputFile = Path.Combine(UserTemp, "WriteLink.ps1");
             File.WriteAllLines(outputFile, fileLines);
             System.Diagnostics.Trace.WriteLine($"Script file {outputFile} created successfully.", App.InfoTrace);
         }
 
         public static void CreateLinkReadScript(string[] fileLines, out string outputFile)
         {
-            outputFile = Path.Combine(UserTemp, "ReadLink.vbs");
+            outputFile = Path.Combine(UserTemp, "ReadLink.ps1");
             File.WriteAllLines(outputFile, fileLines);
             System.Diagnostics.Trace.WriteLine($"Script file {outputFile} created successfully.", App.InfoTrace);
         }

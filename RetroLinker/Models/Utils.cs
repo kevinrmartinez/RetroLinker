@@ -64,15 +64,20 @@ namespace RetroLinker.Models
             bool notEnded = true;
             while (notEnded)
             {
+                if (y >= (text.Length - 1)) 
+                    notEnded = false;
                 for (int i = y; i < text.Length; i++)
                 {
                     y = i;
-                    if (text[i] == DQ) break;
+                    if (text[i] != DQ)
+                    {
+                        y++; 
+                        continue;
+                    }
+                    text = text.Insert(y, DQ.ToString());
+                    y += 2;
+                    break;
                 }
-                
-                text = text.Insert(y, DQ.ToString());
-                y += 2;
-                if (y >= text.Length) notEnded = false;
             }
             
             return text;
