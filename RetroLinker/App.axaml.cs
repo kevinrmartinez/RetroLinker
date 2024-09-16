@@ -34,7 +34,9 @@ public partial class App : Application
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static readonly System.DateTime LaunchTime = System.DateTime.Now;
-    public static string[]? Args;
+    public static string AppName;
+    public static string AppVersion;
+    public static string[] Args;
     
     public override void Initialize()
     {
@@ -47,7 +49,14 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Args = desktop.Args;
+            AppName = desktop.Args[0];
+            AppVersion = desktop.Args[1];
+            
+            Args = new string[desktop.Args.Length - 2];
+            if (Args.Length > 0)
+                for (int i = 0; i < Args.Length; i++)
+                    Args[i] = desktop.Args[i + 2];
+            
             LanguageManager.FixLocale(new CultureInfo("en-US"));
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow

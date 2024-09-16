@@ -17,6 +17,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Avalonia;
@@ -36,15 +37,17 @@ class Program
         TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
 
         StartStopLogging(true);
-        var appAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName(); 
-        var appName = appAssembly.Name;
-        var appVersion = appAssembly.Version.ToString(3);
-        Trace.WriteLine($"{appName} v{appVersion}", "[Info]");
+        var newArgs = new List<string>
+        {
+            AppName, AppVersion
+        };
+        newArgs.AddRange(args);
+        Trace.WriteLine($"{AppName} v{AppVersion}", "[Info]");
         Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
         
         Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+            .StartWithClassicDesktopLifetime(newArgs.ToArray());
         
         // App Closing
         StartStopLogging(false);
@@ -60,6 +63,12 @@ class Program
             .LogToTrace();
     }
 
+    // Parameters
+    private static readonly System.Reflection.AssemblyName AppAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+    private static readonly string AppName = AppAssembly.Name;
+    private static readonly string AppVersion = AppAssembly.Version.ToString(3);
+    
+    // Logging
     private static ConsoleTraceListener ConsoleTracer;
     private static TextWriterTraceListener TextfileTracer;
     private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "trace.log");
