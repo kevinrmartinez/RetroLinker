@@ -1,111 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.ClearScript.Windows.Core;
 
 namespace RetroLinker.Models.WinClasses;
 
 public static class WinShortcutter
 {
-    private const string objShell = "$shell";
-    private const string objLink = "$link";
-    private const string objFSO = "fso";
-    private const string objStdOut = "stdout";
-    private static readonly string ps1Title = $"$host.UI.RawUI.WindowTitle = \"{App.AppName} Script Runner\"";
+    private const string objShell = "shell";
+    private const string objLink = "link";
+    private const string objArray = "valueArray";
+    private static readonly string scriptTitle = $"{App.AppName} Script Runner";
     
     public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
     {
+        var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
+        var scriptStrings = $"""
+                          ' {App.AppName} v{App.AppVersion}
+                          Function CreateLink()
+                            Set {objShell} = CreateObject("WScript.Shell")
+                            Set {objLink} = {objShell}.CreateShortcut("{_outputPath}")
+                            {objLink}.TargetPath = "{_shortcut.RAdir}"
+                            {objLink}.WorkingDirectory = "{_shortcut.RApath}"
+                            {objLink}.Arguments = "{_shortcut.Command}"
+                            {objLink}.Description = "{_shortcut.Desc}"
+                            {objLink}.IconLocation = "{iconPath}"
+                            {objLink}.Save
+                          	CreateLink = 0
+                          End Function
+                          """;
         
-        var fileStrings = new List<string>
-        {
-            ps1Title,
-            $"{objShell} = New-Object -ComObject WScript.Shell",
-            $"{objLink} = {objShell}.CreateShortcut(\"{_outputPath}\")",
-            $"{objLink}.TargetPath = \"{_shortcut.RAdir}\"",
-            $"{objLink}.Arguments = \"{_shortcut.Command}\"",
-            $"{objLink}.Description = \"{_shortcut.Desc}\"",
-            $"{objLink}.WorkingDirectory = \"{_shortcut.RApath}\"",
-        };
-        if (!string.IsNullOrEmpty(_shortcut.ICONfile)) fileStrings.Add($"{objLink}.IconLocation = \"{_shortcut.ICONfile}\"");
-        fileStrings.Add($"{objLink}.Save()");
-        
-        FileOps.CreateLinkWriteScript(fileStrings.ToArray(), out var scriptFile);
-        RunLinkWriteScript(scriptFile);
+        RunLinkWriteScript(scriptStrings);
         Trace.WriteLine($"'{_outputPath}' file created successfully.", App.InfoTrace);
     }
 
     public static string[] ReadShortcut(string linkPath)
     {
-        var fileStrings = new List<string>
-        {
-            ps1Title,
-            $"{objShell} = New-Object -ComObject WScript.Shell",
-            $"{objLink} = {objShell}.CreateShortcut(\"{linkPath}\")",
-            $"Write-Output {objLink}.TargetPath",
-            $"Write-Output {objLink}.Arguments",
-            $"Write-Output {objLink}.Description",
-            $"Write-Output {objLink}.WorkingDirectory",
-            $"Write-Output {objLink}.IconLocation"
-        };
+        // Why does creating a Array(4) is VBS results in a 5 positions array?
+        var scriptStrings = $"""
+                            ' {App.AppName} v{App.AppVersion}
+                            Function ReadLink()
+                                Dim {objArray}(4)
+                                Set {objShell} = CreateObject("WScript.Shell")
+                                Set {objLink} = {objShell}.CreateShortcut("{linkPath}")
+                                {objArray}(0) = {objLink}.TargetPath
+                                {objArray}(1) = {objLink}.WorkingDirectory
+                                {objArray}(2) = {objLink}.Arguments
+                                {objArray}(3) = {objLink}.Description
+                                {objArray}(4) = {objLink}.IconLocation
+                                ReadLink = {objArray}
+                            End Function
+                            """;
         
-        FileOps.CreateLinkReadScript(fileStrings.ToArray(), out string scriptFile);
-        RunLinkReadScript(scriptFile, out string[] linkContent);
+        var linkContent = RunLinkReadScript(scriptStrings);
         Trace.WriteLine($"'{linkPath}' file read successfully.", App.InfoTrace);
         return linkContent;
     }
-
-    private static Process cscriptProcess(string file, out string stdout, out string stderr)
-    {
-        var cscript = new ProcessStartInfo()
-        {
-            FileName = "cscript",
-            Arguments = $"/b /t:5 /NoLogo \"{file}\"",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        using var cscript_pro = Process.Start(cscript);
-        cscript_pro.WaitForExit();
-        stdout = cscript_pro.StandardOutput.ReadToEnd();
-        stderr = cscript_pro.StandardError.ReadToEnd();
-        return cscript_pro;
-    }
     
-    private static Process PowershellProcess(string file, out string stdout, out string stderr)
+    private static VBScriptEngine RunScriptEngine(string script)
     {
-        var powershell = new ProcessStartInfo()
-        {
-            FileName = "powershell",
-            Arguments = $"-NoProfile -WindowStyle Hidden \"{file}\"",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        using var powershell_pro = Process.Start(powershell);
-        powershell_pro.WaitForExit();
-        stdout = powershell_pro.StandardOutput.ReadToEnd();
-        stderr = powershell_pro.StandardError.ReadToEnd();
-        return powershell_pro;
+        var engine = new VBScriptEngine($"{scriptTitle}", NullSyncInvoker.Instance);
+        engine.Execute(script);
+        return engine;
     }
 
-    private static void RunLinkWriteScript(string file)
+    private static void RunLinkWriteScript(string script)
     {
-        // using var cscript_pro= cscriptProcess(file, out string stdout, out string stderr);
-        _ = PowershellProcess(file, out _, out string stderr);
+        var engine = RunScriptEngine(script);
+        int result = engine.Script.CreateLink();
         
-        if (string.IsNullOrEmpty(stderr)) return;
-        Trace.WriteLine(stderr, App.ErroTrace);
-        var err = $"PowerShell process exited with an error:\n{stderr}";
+        if (result == 0) return;
+        var err = "The LinkWrite script was not executed properly!";
+        Trace.WriteLine(err, App.ErroTrace);
         throw new ApplicationException(err);
     }
 
-    private static void RunLinkReadScript(string file, out string[] stdoutArray)
+    private static string[] RunLinkReadScript(string script)
     {
-        _ = PowershellProcess(file, out string stdout, out string stderr);
-        stdoutArray = stdout.Split("\r\n");
-        if (string.IsNullOrEmpty(stderr)) return;
+        var engine = RunScriptEngine(script);
+        object[] values = engine.Script.ReadLink();
         
-        Trace.WriteLine(stderr, App.ErroTrace);
-        var err = $"PowerShell process exited with an error:\n{stderr}";
-        throw new ApplicationException(err);
+        var linkContent = new List<string>();
+        foreach (var o in values)
+            linkContent.Add((string)o);
+        return linkContent.ToArray();
     }
 }

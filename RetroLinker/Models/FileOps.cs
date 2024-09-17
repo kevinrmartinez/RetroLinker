@@ -90,7 +90,7 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
-        public static string[] ReadSettingsFile() => File.ReadAllLines(PathToSettingFileBin);
+        public static string[] ReadSettingsFile() => ReadFileLinesToEnd(PathToSettingFileBin);
 
         public static string ResolveSettingUA(string userAssetPath)
         {
@@ -155,24 +155,25 @@ namespace RetroLinker.Models
             return temporalFile;
         }
         
-        public static async Task<string[]> LoadCores(string file)
+        public static async Task<string[]> LoadCores(string filePath)
         {
             try
             {
-                System.Diagnostics.Trace.WriteLine($"Starting reading of {file}.", App.InfoTrace);
-                var cores = await File.ReadAllLinesAsync(file);
-                System.Diagnostics.Trace.WriteLine($"Completed reading of {file}.", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Starting reading of {filePath}.", App.InfoTrace);
+                var cores = ReadFileLinesToEnd(filePath);
+                System.Diagnostics.Trace.WriteLine($"Completed reading of {filePath}.", App.InfoTrace);
                 return cores;
             }
             catch
             {
-                System.Diagnostics.Trace.WriteLine($"The file {file} could not be found!", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"The file {filePath} could not be found!", App.InfoTrace);
                 return Array.Empty<string>();
             }
         }
 
         public static async Task<object[]> LoadIcons(bool OS)
         {
+            // TODO: Refactor all of this
             IconProc.IconItemsList = new();
             var files = new List<string>();
             var isError = false;
@@ -240,13 +241,7 @@ namespace RetroLinker.Models
                 isError = true;
             }
             
-            var objArray = new object[]
-            {
-                files,
-                isError,
-                iconException
-            };
-            return objArray;
+            return [ files, isError, iconException ];
         }
         #endregion
 
@@ -261,6 +256,10 @@ namespace RetroLinker.Models
         public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
 
         public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
+
+        public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
+        
+        public static string ReadFileToEnd(string filePath) => File.ReadAllText(filePath);
 
         public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 

@@ -18,13 +18,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RetroLinker.Models
 {
     public static class Utils
     {
-        const char DQ = '\"';
+        private const char DQ = '\"';
+        private const char LinIllegaChar = '/';
+        private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
+        
         public static string FixUnusualPaths(string path)
         {
             if (!ContainsUnusualCharacters(path)) return path;
@@ -91,19 +93,16 @@ namespace RetroLinker.Models
 
         public static List<string> ExtractClassProperties(Type type)
         {
-            //var _type = _class.GetType();
             var props = type.GetProperties();
             var members = new List<string>();
 
             foreach (var member in props)
-            {
                 members.Add(member.Name);
-            }
             
             return members;
         }
 
-        public static string GetStringFromList(List<string> list)
+        public static string GetStringFromList(IEnumerable<string> list)
         {
             string result = "";
             foreach (var item in list)
