@@ -116,6 +116,7 @@ public partial class MainView : UserControl
             BuildingLink = new Shortcutter();
             txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
             ApplySettingsToControls();
+            // TODO: Maybe there's a way to async these 3
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
             comboICONDir_Loaded(AvaloniaOps.GetIconList());
@@ -129,8 +130,7 @@ public partial class MainView : UserControl
             System.Diagnostics.Debug.WriteLine($"Execution time after View1_Loaded(): {timeSpan}", App.TimeTrace);
             FormFirstLoad = false;
         }
-        else
-        { LoadNewSettings(); }
+        else LoadNewSettings();
     }
 
     async void comboCore_Loaded(Task<string[]> coresTask)
@@ -651,8 +651,8 @@ public partial class MainView : UserControl
         {
             System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
 
-            // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut("C:\\Users\\Public\\Desktop\\2048v3.lnk");
-            // System.Diagnostics.Debug.WriteLine(readLink[0], App.DebgTrace);
+            var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
+            System.Diagnostics.Debug.WriteLine(readLink[0], App.DebgTrace);
             // Testing.LinShortcutTest(DesktopOS);
             // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }
@@ -720,6 +720,7 @@ public partial class MainView : UserControl
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
+                // TODO: Sanitize user input
                 var outputPathStr = !settings.AllwaysAskOutput 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : (txtLINKDir.Text);
