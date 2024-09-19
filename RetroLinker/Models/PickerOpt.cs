@@ -24,32 +24,32 @@ namespace RetroLinker.Models
 {
     public static class PickerOpt
     {
-        static readonly FilePickerFileType win_exe = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe"] };
-        static readonly FilePickerFileType appimage = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
-        static readonly FilePickerFileType shellscripts = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
-        static readonly FilePickerFileType config_file = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
+        static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe"] };
+        static readonly FilePickerFileType appimage       = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
+        static readonly FilePickerFileType sh_cripts      = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
+        static readonly FilePickerFileType config_file    = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
         static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
-        static readonly FilePickerFileType conv_icon = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
+        static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
-        static readonly FilePickerFileType lin_lnk = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
+        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
+        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
         
-        static readonly FilePickerFileType ups_patch = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
-        static readonly FilePickerFileType bps_patch = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps" ] };
-        static readonly FilePickerFileType ips_patch = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
-        static readonly FilePickerFileType xd_patch = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
+        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
+        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps"] };
+        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
+        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
 
         public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
         public enum SaveOpts { WINlnk, LINdesktop }
         public enum PatchOpts { UPS, BPS, IPS, XD }
 
         static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
-        static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, shellscripts, FilePickerFileTypes.All];
+        static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
         static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
-        static readonly List<FilePickerFileType> ICONfileTypes = [win_icon_files, win_exe, conv_icon];
-        static readonly List<FilePickerFileType> ICONfileTypes2 = [lin_icon_files];
-        static readonly List<FilePickerFileType> WinShorTypes = [win_lnk];
-        static readonly List<FilePickerFileType> LinShorTypes = [lin_lnk];
+        static readonly List<FilePickerFileType> ICONfileTypes      = [win_icon_files, win_exe, conv_icon];
+        static readonly List<FilePickerFileType> ICONfileTypes2     = [lin_icon_files];
+        static readonly List<FilePickerFileType> WinShorTypes       = [win_lnk];
+        static readonly List<FilePickerFileType> LinShorTypes       = [lin_lnk];
         
         
         public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)

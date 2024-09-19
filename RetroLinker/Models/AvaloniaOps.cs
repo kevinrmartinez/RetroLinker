@@ -39,8 +39,6 @@ public static class AvaloniaOps
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
     
-    public static string DefLinRAIcon { get; private set; }
-    
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 
@@ -50,7 +48,6 @@ public static class AvaloniaOps
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
         System.Diagnostics.Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
-        //System.Diagnostics.Trace.WriteLine($"OS Version: {Environment.OSVersion.Version}", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
         System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
         System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
@@ -64,8 +61,6 @@ public static class AvaloniaOps
 
     public static void MainViewLoad(bool DesktopOS)
     {
-        DefLinRAIcon = FileOps.GetSystemRAIcons();
-
         string coreFile;
         if (!FileOps.GetCoreFile(out coreFile))
         {
@@ -73,7 +68,6 @@ public static class AvaloniaOps
             coreFile = FileOps.DumpStreamToFile(assetStream);
         }
         coresTask = FileOps.LoadCores(coreFile);
-        
         iconTask = FileOps.LoadIcons(DesktopOS);
 
         FirstLoad = false;
@@ -100,9 +94,9 @@ public static class AvaloniaOps
     
     public static Bitmap GetBitmap(string path) => new Bitmap(path);
 
-    public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
+    public static Bitmap GetBitmap(Stream imgStream) => new Bitmap(imgStream);
 
-    private static async Task<IStorageFolder> GetStorageFolder(string dir, TopLevel topLevel) =>  
+    private static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
 
     public static async void SetDesktopStorageFolder(TopLevel topLevel)

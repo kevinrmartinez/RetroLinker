@@ -6,7 +6,8 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyName>RetroLinkerLib</AssemblyName>
-    <VersionPrefix>0.6.2</VersionPrefix>
+    <VersionPrefix>0.7.0</VersionPrefix>
+    <VersionSuffix>dev</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -34,6 +35,7 @@
     <PackageReference Include="Microsoft.ClearScript.Windows" Version="7.4.5" />
     <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.4.0" />
     <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.4.0" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +82,9 @@
     <EmbeddedResource Update="Translations\resMainExtras.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resMainExtras.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainExtras.es.resx">
+      <DependentUpon>resMainExtras.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   

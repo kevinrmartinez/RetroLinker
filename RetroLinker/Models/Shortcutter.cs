@@ -17,7 +17,7 @@
 */
 
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using RetroLinker.Models.LinuxClasses;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Models
@@ -175,7 +175,7 @@ namespace RetroLinker.Models
                 ResultList.Add(LinkResult);
                 System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
                 
-                try { LinFunc.LinShortcutter.CreateShortcut(link, output);
+                try { LinShortcutter.CreateShortcut(link, output);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
