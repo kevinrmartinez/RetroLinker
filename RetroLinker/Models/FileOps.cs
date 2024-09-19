@@ -20,7 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using RetroLinker.Models.Icons;
+using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.WinClasses;
 
 namespace RetroLinker.Models
 {
@@ -310,6 +311,7 @@ namespace RetroLinker.Models
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
             if (File.Exists(newPath)) return Path.GetFullPath(newPath);
             
+            // TODO: Update IconItem
             File.Copy(ogPath, newPath);
             return Path.GetFullPath(newPath);
         }
@@ -325,22 +327,6 @@ namespace RetroLinker.Models
             return Path.GetFullPath(newPath);
         }
 
-        public static string CpyIconToUsrAss(string og_path)
-        {
-            // TODO: Possibly redundant
-            string name = Path.GetFileName(og_path);
-            string new_path = Path.Combine(LoadedSettings.UserAssetsPath, name);
-            if (File.Exists(new_path))
-            {
-                return Path.GetFullPath(new_path);
-            }
-            else
-            {
-                File.Copy(og_path, new_path);
-                return Path.GetFullPath(new_path);
-            }
-        }
-
         public static bool IsVectorImage(string file) => (Path.GetExtension(file) is ".svg" or ".svgz");
 
         #endregion
@@ -348,22 +334,16 @@ namespace RetroLinker.Models
 
         #region Windows Only Ops
 
-        public static bool IsWinEXE(string file) => (Path.GetExtension(file) == ".exe");
-
-        public static IconsItems GetEXEWinIco(string icondir, int index)
-        {
-            // TODO: Possibly redundant
-            var iconstream = IconProc.IcoExtraction(icondir);
-            var objicon = new IconsItems(null, icondir, iconstream, index, true);
-            IconProc.IconItemsList.Add(objicon);
-            return objicon;
-        }
+        public static bool IsExtWinPE(string ext) => ext is ".exe" or ".dll";
+        
+        public static bool IsFileWinPE(string file) => IsExtWinPE(Path.GetExtension(file));
 
         public static string SaveWinIco(IconsItems selectedIconItem)
         {
             string icoExt = Path.GetExtension(selectedIconItem.FileName);
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string new_dir = Path.Combine(UserTemp, icoName);
+            // TODO: handle access denied
             CheckUsrSetDir(UserTemp);
             ImageMagick.MagickImage iconImage;
             if (selectedIconItem.IconStream != null) selectedIconItem.IconStream.Position = 0;
@@ -375,15 +355,17 @@ namespace RetroLinker.Models
                     iconImage.Write(new_dir);
                     //new_dir = CpyIconToUsrSet(new_dir);
                     break;
-                case ".exe":
+                case ".exe" or ".dll":
                     if (LoadedSettings.ExtractIco)
                     {
-                        iconImage = IconProc.SaveIcoToMagick(selectedIconItem.IconStream);
+                        iconImage = IconProc.ImageConvert(selectedIconItem.IconStream);
                         iconImage.Write(new_dir);
-                        //new_dir = CpyIconToUsrSet(new_dir);
                     }
                     else
-                    { new_dir = selectedIconItem.FilePath; }
+                    {
+                        new_dir = selectedIconItem.FilePath;
+                        
+                    }
                     break;
 
                 default: // .jpg, .png, etc
@@ -407,19 +389,14 @@ namespace RetroLinker.Models
             
             return newIconPath;
         }
-        
-        public static void CreateLinkWriteScript(string[] fileLines, out string outputFile)
-        {
-            outputFile = Path.Combine(UserTemp, "WriteLink.ps1");
-            File.WriteAllLines(outputFile, fileLines);
-            System.Diagnostics.Trace.WriteLine($"Script file {outputFile} created successfully.", App.InfoTrace);
-        }
 
-        public static void CreateLinkReadScript(string[] fileLines, out string outputFile)
+        public static string WriteIcoToFile(MemoryStream IcoStream, string outputPath)
         {
-            outputFile = Path.Combine(UserTemp, "ReadLink.ps1");
-            File.WriteAllLines(outputFile, fileLines);
-            System.Diagnostics.Trace.WriteLine($"Script file {outputFile} created successfully.", App.InfoTrace);
+            var fileInfo = new FileInfo(outputPath);
+            var fileStream = fileInfo.Create();
+            fileStream.Write(IcoStream.ToArray());
+            fileStream.Close();
+            return fileInfo.FullName;
         }
 
         #endregion
@@ -447,7 +424,7 @@ namespace RetroLinker.Models
         public static string[] DesktopEntryArray(string LinkDir, string core)
         {
             var EntryName = SeparateFileNameFromPath(LinkDir);
-            EntryName[2] = LinFunc.LinDesktopEntry.DesktopEntryName(EntryName[2], core);
+            EntryName[2] = LinDesktopEntry.DesktopEntryName(EntryName[2], core);
             
             EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0]), EntryName[2]);
             return EntryName;

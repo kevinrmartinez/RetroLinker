@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
+using RetroLinker.Models.LinuxClasses;
 
 namespace RetroLinker.Models
 {
@@ -32,7 +33,7 @@ namespace RetroLinker.Models
             lnk.Command = $"-L mgba \"{System.IO.Path.Combine(FileOps.UserProfile, "Fire Emblem - The Binding Blade.gba")}\"";
             lnk.OutputPaths.Add(new ShortcutterOutput(System.IO.Path.Combine(FileOps.UserProfile,"Fire Emblem 6.desktop"), lnk.ROMcore));
             
-            LinFunc.LinShortcutter.CreateShortcut(lnk, lnk.OutputPaths[0]);
+            LinShortcutter.CreateShortcut(lnk, lnk.OutputPaths[0]);
         }
     }
 }

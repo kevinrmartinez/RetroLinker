@@ -27,11 +27,8 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Models;
 using RetroLinker.Models;
-using RetroLinker.Models.Icons;
-using RetroLinker.Models.LinFunc;
-using RetroLinker.Models.WinFuncImport;
+using RetroLinker.Models.LinuxClasses;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
@@ -62,7 +59,6 @@ public partial class MainView : UserControl
     private bool FormFirstLoad = true;
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
-    private int DLLErrorCount = 0;
     private int PreloadedIconsCount;
     private byte CurrentTheme = 250;
     private Settings settings;
@@ -106,11 +102,7 @@ public partial class MainView : UserControl
                 txtRADir.IsReadOnly = false;
                 // DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
             }
-            else
-            {
-                WinFuncImport();
-                IconItemSET = new();
-            }
+            else IconItemSET = new();
 
             // BuildingLink = ParentWindow.BuildingLink;
             BuildingLink = new Shortcutter();
@@ -239,64 +231,6 @@ public partial class MainView : UserControl
         ParentWindow.LocaleReload(settings);
     }
 
-    void WinFuncImport()
-    {
-        try
-        {
-            FuncLoader.ImportWinFunc(); 
-            IconProc.StartImport();
-        }
-        catch (System.Exception eMain)
-        {
-            System.Diagnostics.Trace.WriteLine($"The importing of {FuncLoader.WinOnlyLib} has failed!", App.ErroTrace);
-            System.Diagnostics.Debug.WriteLine($"In MainView, the element {eMain.Source} had returned the error:\n {eMain.Message}", App.ErroTrace);
-            lock (this)
-            { WinFuncImportFail(eMain); }
-        }
-    }
-
-    async Task WinFuncImportFail(System.Exception eMain)
-    {
-        string retry_btn = resGeneric.btnRetry;
-        string abort_btn = resGeneric.btnAbort;
-        ButtonDefinition[] diagBtns;
-        if (DLLErrorCount < 6)
-        {
-            diagBtns = new[]
-            {
-                new ButtonDefinition {Name = retry_btn},
-                new ButtonDefinition {Name = abort_btn, IsCancel = true, IsDefault = true}
-            };
-        }
-        else 
-        { 
-            diagBtns = new[] 
-            { new ButtonDefinition { Name = abort_btn, IsCancel = true, IsDefault = true } };
-        }
-
-        var msbParams = new MessageBoxCustomParams()
-        {
-            MaxWidth = 550,
-            ShowInCenter = true,
-            Icon = MsBox.Avalonia.Enums.Icon.Error,
-            ContentTitle = resGeneric.genFatalError,
-            ContentHeader = string.Format(resMainView.dllErrorHead, FuncLoader.WinOnlyLib),
-            ContentMessage = $"{resMainView.dllErrorMess}\n{eMain.Message}\n\n{resMainView.dllErrorMess2}",
-            ButtonDefinitions = diagBtns
-        };
-
-        var diagResult = await MessageBoxPopUp(msbParams);
-        if (diagResult == abort_btn)
-        {
-            ParentWindow.Close();
-        }
-        else if (diagResult == retry_btn)
-        {
-            DLLErrorCount++;
-            WinFuncImport();
-        }
-    }
-
     void AllwaysAskOutputLink(bool ask)
     {
         lblLinkDir.IsVisible = ask;
@@ -315,23 +249,6 @@ public partial class MainView : UserControl
         return (DesktopOS)
             ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
             : FileOps.GetDefinedLinkPath(LinDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
-        
-    }
-
-    string UpdateLinkLabelWithCore(string fullPath)
-    {
-        var fileDir = FileOps.GetDirFromPath(fullPath);
-        var fileName = FileOps.GetFileNameFromPath(fullPath);
-        var nameSplited = fileName.Split('.');
-        nameSplited[1] = (string.IsNullOrWhiteSpace(comboCore.Text)) ? "[CORE]" : comboCore.Text;
-        var newName = string.Empty;
-        for (int i = 0; i < nameSplited.Length; i++)
-        {
-            newName += nameSplited[i];
-            if (i != nameSplited.Length - 1) newName += '.';
-        }
-
-        return FileOps.CombineDirAndFile(fileDir, newName);
     }
 
     void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
@@ -452,27 +369,24 @@ public partial class MainView : UserControl
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
     {
         PickerOpt.OpenOpts opt;
-        if (DesktopOS) { opt = PickerOpt.OpenOpts.WINico; }
-        else { opt = PickerOpt.OpenOpts.LINico; }
+        opt = DesktopOS ? PickerOpt.OpenOpts.WINico : PickerOpt.OpenOpts.LINico;
 
         string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
             ? (string)comboICONDir.SelectedItem
             : string.Empty;
         string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
-        if (!string.IsNullOrEmpty(file))
+        if (string.IsNullOrEmpty(file)) return;
+        int newIndex = comboICONDir.ItemCount;
+        const int indexNotFound = -1;
+        int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == file));
+        if (existingItem == indexNotFound)
         {
-            int newIndex = comboICONDir.ItemCount;
-            const int indexNotFound = -1;
-            int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == file));
-            if (existingItem == indexNotFound)
-            {
-                comboICONDir.Items.Add(file);
-                IconProc.BuildIconItem(file, newIndex, DesktopOS);
-            }
-            else { newIndex = (int)IconProc.IconItemsList[existingItem].comboIconIndex; }
-
-            comboICONDir.SelectedIndex = newIndex;
+            comboICONDir.Items.Add(file);
+            IconProc.BuildIconItem(file, newIndex, DesktopOS);
         }
+        else { newIndex = (int)IconProc.IconItemsList[existingItem].comboIconIndex; }
+
+        comboICONDir.SelectedIndex = newIndex;
     }
 
     // Solution of SelectionChangedEventArgs thanks to snurre @ stackoverflow.com
@@ -715,6 +629,7 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
+        // TODO: Confirm overwrite on AllwaysAskOutput = false
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
             ShortcutterOutput outputPath;
@@ -765,14 +680,18 @@ public partial class MainView : UserControl
             if (IconItemSET.ConvertionRequiered)
             {
                 OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir; 
-                OutputLink.ICONfile = settings.IcoSavPath switch
+                if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
                 {
-                    SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
-                    SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
-                    _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
-                };
-                if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
+                    var ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
+                    ROMIcoSavAUX = (ROMIcoSavAUX != Commander.contentless) ? ROMIcoSavAUX : OutputLink.ROMcore;
+                    if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
+                    OutputLink.ICONfile = settings.IcoSavPath switch
+                    {
+                        SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
+                        SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
+                        _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
+                    };
+                }
             }
 
             // In case of 'CpyUserIcon = true'

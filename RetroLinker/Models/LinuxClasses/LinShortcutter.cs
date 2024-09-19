@@ -17,9 +17,8 @@
 */
 
 using System.Collections.Generic;
-using System.IO;
 
-namespace RetroLinker.Models.LinFunc;
+namespace RetroLinker.Models.LinuxClasses;
 
 public static class LinShortcutter
 {
