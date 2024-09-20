@@ -17,6 +17,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -47,10 +48,10 @@ public static class AvaloniaOps
     public static Settings MainViewPreConstruct()
     {
         if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        System.Diagnostics.Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
+        Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
         var settings = FileOps.LoadSettingsFO();
-        System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
-        System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
+        Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
+        Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
         
         LanguageManager.SetLocale(settings.LanguageCulture);
         
@@ -102,16 +103,20 @@ public static class AvaloniaOps
     public static async void SetDesktopStorageFolder(TopLevel topLevel)
     {
         DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
-        System.Diagnostics.Debug.WriteLine($"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}", App.DebgTrace);
+        var dbgOut = (DesktopFolder is null) 
+            ? $"DesktopStorageFolder remained null. Attempted dir:{FileOps.UserDesktop}" 
+            : $"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}";
+        Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
     {
-        if (!string.IsNullOrWhiteSpace(dir_ROMTop))
-        {
-            ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
-            System.Diagnostics.Debug.WriteLine($"ROMPadreStorageFolder set to: {ROMTopDir.Path.LocalPath}", App.DebgTrace);
-        }
+        if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
+        ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
+        var dbgOut = (ROMTopDir is null)
+            ? $"ROMPadreStorageFolder remained null. Attempted dir:{dir_ROMTop}"
+            : $"ROMPadreStorageFolder set to: {ROMTopDir.Path.LocalPath}";
+        Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     #endregion
     
