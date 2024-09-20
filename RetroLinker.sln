@@ -10,10 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroLinker", "RetroLinker\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroLinker.Desktop", "RetroLinker.Desktop\RetroLinker.Desktop.csproj", "{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroLinkerWin", "RetroLinkerWin\RetroLinkerWin.csproj", "{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleAppForTesting", "ConsoleForTesting\ConsoleAppForTesting.csproj", "{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7F8D5228-C10E-4399-8B05-EB9D323F2598}"
 	ProjectSection(SolutionItems) = preProject
 		docs\README.MD = docs\README.MD
@@ -43,22 +39,6 @@ Global
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Release|x64.ActiveCfg = Release|x64
 		{220BD4AF-3DF1-44EA-8226-8CE5DFAFB74D}.Release|x64.Build.0 = Release|x64
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|x64.ActiveCfg = Debug|x64
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Debug|x64.Build.0 = Debug|x64
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|x64.ActiveCfg = Release|x64
-		{761FA82D-DACA-4DDA-B4A9-1A0270108B3B}.Release|x64.Build.0 = Release|x64
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Debug|x64.ActiveCfg = Debug|x64
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Debug|x64.Build.0 = Debug|x64
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Release|x64.ActiveCfg = Release|x64
-		{6DD498CE-BE4B-4552-B5A4-C9E60228C63C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
