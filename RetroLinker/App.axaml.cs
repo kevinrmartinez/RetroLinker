@@ -33,7 +33,7 @@ public partial class App : Application
     public const string WarnTrace = "[Warn]";
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
-    public static readonly System.DateTime LaunchTime = System.DateTime.Now;
+    public static readonly System.Diagnostics.Stopwatch StopWatch = new();
     public static string AppName;
     public static string AppVersion;
     public static string[] Args;
@@ -41,8 +41,8 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        System.TimeSpan launchTime = System.TimeSpan.FromTicks(LaunchTime.Ticks);
-        System.Diagnostics.Debug.WriteLine($"AppLoadTime: {launchTime}", TimeTrace);
+        StopWatch.Start();
+        System.Diagnostics.Debug.WriteLine($"App Launched at: {System.DateTime.Now.ToString("T")}", TimeTrace);
     }
 
     public override void OnFrameworkInitializationCompleted()

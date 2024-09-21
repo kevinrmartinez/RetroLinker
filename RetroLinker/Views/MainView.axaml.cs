@@ -35,7 +35,6 @@ namespace RetroLinker.Views;
 
 public partial class MainView : UserControl
 {
-    System.TimeSpan timeSpan;
     public MainView()
     {
         // Constructor for Designer
@@ -49,10 +48,13 @@ public partial class MainView : UserControl
         settings = AvaloniaOps.MainViewPreConstruct();
         InitializeComponent();
         ParentWindow = mainWindow;
-        timeSpan = System.DateTime.Now - App.LaunchTime;
-        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {timeSpan.ToString()}", App.TimeTrace);
+        stopwatch = App.StopWatch;
+        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {stopwatch.ElapsedMilliseconds} ms", App.TimeTrace);
     }
-
+    
+    // Debug
+    private System.Diagnostics.Stopwatch stopwatch;
+    
     // Window Object
     private MainWindow ParentWindow;
     
@@ -68,7 +70,7 @@ public partial class MainView : UserControl
     private bool LinkCustomName;
     private static Shortcutter OutputLink;
 
-    // true = Windows. false = Linux.
+    // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
     
@@ -77,7 +79,7 @@ public partial class MainView : UserControl
     {
         if (FormFirstLoad)
         {
-            AvaloniaOps.MainViewLoad(DesktopOS);
+            AvaloniaOps.MainViewLoad();
 
 #if DEBUG
             // TODO: Implement an Event for theme handling
@@ -85,9 +87,9 @@ public partial class MainView : UserControl
             {
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
             }
-            catch (System.Exception theme_e) 
+            catch (System.Exception e_theme) 
             {
-                System.Diagnostics.Debug.WriteLine(theme_e);
+                System.Diagnostics.Debug.WriteLine(e_theme);
                 TopLevel.GetTopLevel(this).RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
@@ -108,26 +110,26 @@ public partial class MainView : UserControl
             BuildingLink = new Shortcutter();
             txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
             ApplySettingsToControls();
-            // TODO: Maybe there's a way to async these 3
+            
             comboCore_Loaded(AvaloniaOps.GetCoresArray());
             comboConfig_Loaded();
-            comboICONDir_Loaded(AvaloniaOps.GetIconList());
+            comboICONDir_Loaded(FileOps.LoadIcons(DesktopOS));
             
+            // Arguments should only load when above controls are ready
             ApplyArgs();
             
             // TODO: Tutorial event for new users
             
-            System.DateTime now = System.DateTime.Now;
-            timeSpan = now - App.LaunchTime;
-            System.Diagnostics.Debug.WriteLine($"Execution time after View1_Loaded(): {timeSpan}", App.TimeTrace);
+            stopwatch.Stop();
+            System.Diagnostics.Debug.WriteLine($"Execution time after View1_Loaded(): {stopwatch.ElapsedMilliseconds} ms", App.TimeTrace);
             FormFirstLoad = false;
         }
         else LoadNewSettings();
     }
 
-    async void comboCore_Loaded(Task<string[]> coresTask)
+    void comboCore_Loaded(string[] cores)
     {
-        var cores = await coresTask;
+        // var cores = await coresTask;
         System.Diagnostics.Trace.WriteLine("Cores list imported.", App.InfoTrace);
         if (cores.Length < 1) { lblNoCores.IsVisible = true; }
         else { comboCore.ItemsSource = cores; }
@@ -142,9 +144,9 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    async void comboICONDir_Loaded(Task<object[]> iconsTask)
+    void comboICONDir_Loaded(object[] iconsObject)
     {
-        var iconsObject = await iconsTask;
+        // var iconsObject = await iconsTask;
         var iconsList = (List<string>)iconsObject[0];
         var hasError = (bool)iconsObject[1];
         var exception = (string)iconsObject[2];
@@ -201,16 +203,15 @@ public partial class MainView : UserControl
 
     void ApplySettingsToControls()
     {
-        if (!string.IsNullOrEmpty(settings.DEFRADir))
-        { txtRADir.Text = settings.DEFRADir; }
+        if (!string.IsNullOrEmpty(settings.DEFRADir)) txtRADir.Text = settings.DEFRADir;
         BuildingLink.RAdir = settings.DEFRADir;
         AvaloniaOps.SetROMTop(settings.DEFROMPath, ParentWindow);
         AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
-
+        
         txtLINKDir.Watermark = "Super Mario Bros";
-        txtLINKDir.Watermark += (DesktopOS) ? FileOps.WinLinkExt : FileOps.LinLinkExt;
+        txtLINKDir.Watermark += FileOps.GetOutputExt(DesktopOS);
         AllwaysAskOutputLink(settings.AllwaysAskOutput);
     }
 
@@ -657,13 +658,8 @@ public partial class MainView : UserControl
                 }
             }
 
-            if (OutputLink.OutputPaths.Count == 0)
-                OutputLink.OutputPaths.Add(outputPath);
-            else
-            {
-                if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath)
-                    OutputLink.OutputPaths[0] = outputPath;
-            }
+            if (OutputLink.OutputPaths.Count == 0) OutputLink.OutputPaths.Add(outputPath);
+            else if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath) OutputLink.OutputPaths[0] = outputPath;
         }
         
         // Include a link description, if any
