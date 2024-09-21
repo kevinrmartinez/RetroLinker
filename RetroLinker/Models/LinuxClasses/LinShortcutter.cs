@@ -17,44 +17,44 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace RetroLinker.Models.LinuxClasses;
 
 public static class LinShortcutter
 {
-    private const string CommentLine = "# Created with RetroLinker";
+    private static readonly string CommentLine = $"# Created with {App.AppName} v{App.AppVersion}";
     private const string BlankLine = "";
     private const string EntryHeader = "[Desktop Entry]";
     private const string Notify = "StartupNotify=false";
-    private const string Categ = "Categories=Game";
+    private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
-    public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
+    public static void CreateShortcut(Shortcutter link, ShortcutterOutput linkOutput)
     {
         List<string> shortcut = new()
         {
-            // line1,
             CommentLine,
             EntryHeader,
-            Categ
+            Category
         };
 
-        shortcut.Add($"Comment={_shortcut.Desc}");
+        shortcut.Add($"Comment={link.Desc}");
 
-        shortcut.Add($"Exec={_shortcut.RAdir} {_shortcut.Command}");
+        shortcut.Add($"Exec={link.RAdir} {link.Command}");
 
-        string _iconFile = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? FileOps.DotDesktopRAIcon : _shortcut.ICONfile;
+        string _iconFile = (string.IsNullOrEmpty(link.ICONfile)) ? FileOps.DotDesktopRAIcon : link.ICONfile;
         shortcut.Add($"Icon={_iconFile}");
 
-        shortcut.Add("Name=" + _output.FriendlyName);
+        shortcut.Add("Name=" + linkOutput.FriendlyName);
         // shortcut.Add(notify);
 
-        string _terminal = (_shortcut.VerboseB) ? "true" : "false";
+        string _terminal = (link.VerboseB) ? "true" : "false";
         shortcut.Add($"Terminal={_terminal}");
 
         shortcut.Add(LinkType);
 
-        string outputFile = _output.FullPath;
+        string outputFile = linkOutput.FullPath;
 
         for (int i = 0; i < shortcut.Count; i++)
         {
@@ -67,15 +67,17 @@ public static class LinShortcutter
         
         // If file write is successful, set execution permissions
         FileOps.WriteDesktopEntry(outputFile, outputBytes);
-        SetExecPermissions(outputFile);
+        System.Threading.Tasks.Task.Run(() => SetExecPermissions(outputFile));
     }
 
-    private static async System.Threading.Tasks.Task SetExecPermissions(string dir)
+    private static void SetExecPermissions(string dir)
     {
+        Debug.WriteLine($"SetExecPermissions Thread ID: {System.Threading.Thread.CurrentThread.ManagedThreadId}", App.DebgTrace);
         const string permExec = "chmod";
         const string permComm = "-c ug+x";
-        System.Diagnostics.Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
-        var processStartInfo = new System.Diagnostics.ProcessStartInfo()
+        // TODO: Replace all instances of '{dir}' with "{dir}"
+        Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
+        var processStartInfo = new ProcessStartInfo()
         {
             FileName = permExec,
             Arguments = $"{permComm} \"{dir}\"",
@@ -83,15 +85,15 @@ public static class LinShortcutter
             RedirectStandardError = true
         };
 
-        var process = new System.Diagnostics.Process()
+        var process = new Process()
             { StartInfo = processStartInfo };
 
-        System.Diagnostics.Trace.WriteLine($"Executing {permExec} {permComm} \"{dir}\"...", App.InfoTrace);
+        Trace.WriteLine($"Executing {permExec} {permComm} \"{dir}\"...", App.InfoTrace);
         process.Start();
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
-        System.Diagnostics.Debug.WriteLine(error, $"{App.DebgTrace}[{permExec}]");
-        System.Diagnostics.Trace.WriteLine(output, $"{App.InfoTrace}[{permExec}]");
+        Debug.WriteLine(error, $"{App.DebgTrace}[{permExec}]");
+        Trace.WriteLine(output, $"{App.InfoTrace}[{permExec}]");
     }
 }

@@ -32,13 +32,10 @@ namespace RetroLinker.Models;
 public static class AvaloniaOps
 {
     private static bool FirstLoad = true;
-    private static Task<string[]> coresTask;
-    private static Task<object[]> iconTask;
-    private static string[] cores = Array.Empty<string>();
-    private static object[] iconList = Array.Empty<object>();
+    private static string[] Cores = [];
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
-    private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
+    private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
@@ -60,38 +57,27 @@ public static class AvaloniaOps
 
     public static Settings DesignerMainViewPreConstruct() => FileOps.LoadDesignerSettingsFO(false);
 
-    public static void MainViewLoad(bool DesktopOS)
-    {
-        string coreFile;
-        if (!FileOps.GetCoreFile(out coreFile))
-        {
-            var assetStream = AssetLoader.Open(GetDefaultCores());
-            coreFile = FileOps.DumpStreamToFile(assetStream);
-        }
-        coresTask = FileOps.LoadCores(coreFile);
-        iconTask = FileOps.LoadIcons(DesktopOS);
-
+    public static void MainViewLoad() {
         FirstLoad = false;
     }
 
-    public static async Task<string[]> GetCoresArray()
+    public static string[] GetCoresArray()
     {
-        if (cores.Length < 1) cores = await coresTask;
-        return cores;
-    }
-    
-    public static async Task<object[]> GetIconList()
-    {
-        if (iconList.Length != 0) return iconList;
-        iconList = await iconTask;
-        return iconList;
+        if (Cores.Length >= 1) return Cores;
+        if (!FileOps.GetCoreFile(out string coresFile))
+        {
+            var assetStream = AssetLoader.Open(GetDefaultCores());
+            coresFile = FileOps.DumpStreamToFile(assetStream);
+        }
+        Cores = FileOps.LoadCores(coresFile);
+        return Cores;
     }
 
-    public static Uri GetDefaultCores() => new Uri(CoreList);
+    private static Uri GetDefaultCores() => new Uri(CoreList);
     
     public static Uri GetDefaultIcon() => new Uri(DEFicon1);
 
-    public static Uri GetNAimage() => new Uri(NoAplica);
+    public static Uri GetNAimage() => new Uri(NaN);
     
     public static Bitmap GetBitmap(string path) => new Bitmap(path);
 

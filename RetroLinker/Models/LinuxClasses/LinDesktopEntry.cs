@@ -20,7 +20,7 @@ namespace RetroLinker.Models.LinuxClasses;
 
 public static class LinDesktopEntry
 {
-    private const string Ext = FileOps.LinLinkExt;
+    // private const string Ext = FileOps.LinLinkExt;
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";
 
@@ -49,16 +49,5 @@ public static class LinDesktopEntry
         fileName = fileName.Insert(0, $"{core}.");
         fileName = fileName.Insert(0, prefix);
         return fileName;
-    }
-
-    public static ShortcutterOutput FixCoreNameForOutput(ShortcutterOutput outputToFix, string romCore)
-    {
-        if (outputToFix.FileName.Contains($"retroarch.{CorePlaceHolder}"))
-        {
-            outputToFix.FileName = outputToFix.FileName.Replace(CorePlaceHolder, romCore);
-            var newPath = FileOps.GetDirAndCombine(outputToFix.FullPath, outputToFix.FileName);
-            outputToFix.FullPath = newPath;
-        }
-        return outputToFix;
     }
 }

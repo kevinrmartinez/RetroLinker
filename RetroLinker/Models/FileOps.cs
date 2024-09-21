@@ -19,21 +19,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using RetroLinker.Models.LinuxClasses;
-using RetroLinker.Models.WinClasses;
 
 namespace RetroLinker.Models
 {
     public static class FileOps
     {
-        public const string AppName = "RetroLinker";
-        public const string SettingFile = "RLsettings.cfg";
+        // public const string SettingFile = "RLsettings.cfg";
         public const string SettingFileBin = "RLsettings.dat";
         public const string DefUserAssets = "UserAssets";
         public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
-        public const string tempIco = "temp.ico";
+        // public const string tempIco = "temp.ico";
         public const byte MAX_PATH = 255; // TODO: Apply Everywhere?
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
@@ -53,7 +50,7 @@ namespace RetroLinker.Models
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), AppName);
+        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), App.AppName);
         // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
         
         public static readonly string WINPublicUser = "C:\\Users\\Public";
@@ -130,7 +127,7 @@ namespace RetroLinker.Models
 
         public static bool GetCoreFile(out string file)
         {
-            string externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
+            var externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
             if (!File.Exists(externalCores))
             {
                 file = string.Empty;
@@ -143,20 +140,14 @@ namespace RetroLinker.Models
         public static string DumpStreamToFile(Stream fileStream)
         {
             fileStream.Position = 0;
+            CheckUsrSetDir(UserTemp);
             var temporalFile = Path.Combine(UserTemp, tempFile);
             var streamReader = new StreamReader(fileStream);
-            var streamWriter = File.CreateText(temporalFile);
-            string line;
-            while ((line = streamReader.ReadLine()) != null)
-            {
-                streamWriter.WriteLine(line);
-            }
-
-            streamWriter.Close();
+            File.WriteAllText(temporalFile, streamReader.ReadToEnd());
             return temporalFile;
         }
         
-        public static async Task<string[]> LoadCores(string filePath)
+        public static string[] LoadCores(string filePath)
         {
             try
             {
@@ -172,13 +163,13 @@ namespace RetroLinker.Models
             }
         }
 
-        public static async Task<object[]> LoadIcons(bool OS)
+        public static object[] LoadIcons(bool OS)
         {
             // TODO: Refactor all of this
             IconProc.IconItemsList = new();
             var files = new List<string>();
             var isError = false;
-            var iconException = $"Empty Exception {App.DebgTrace}";
+            var iconException = string.Empty;
             
             try
             {
@@ -295,11 +286,6 @@ namespace RetroLinker.Models
             return linkCopies;
         }
         
-        public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
-        /*
-         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
-         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
-         */
         #endregion
 
         #region ICONS
@@ -435,12 +421,13 @@ namespace RetroLinker.Models
             // TODO: Find a way to use xdg-desktop-icon and/or xdg-icon-resource to access linux desktop icon files
             return string.Empty;
         }
+        
+        public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
+        /*
+         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
+         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
+         */
 
         #endregion
-
-
-#if DEBUG
-        public static string IconExtractTest() => "C:\\Windows\\system32\\notepad.exe";
-#endif
     }
 }
