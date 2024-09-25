@@ -166,10 +166,10 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"There was a error while loading {FileOps.SettingFileBin}", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"There was a error while loading \"{FileOps.SettingFileBin}\"", App.ErroTrace);
                     System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
                     settings = new();
-                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting {FileOps.SettingFileBin}...", App.InfoTrace);
+                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting \"{FileOps.SettingFileBin}\"...", App.InfoTrace);
                     WriteSettings(settings);
                 }  
             }
@@ -203,10 +203,6 @@ namespace RetroLinker.Models
             CachedSettings = savingSettings;
             FileOps.WriteSettingsFile(fileString);
         }
-        
-#if DEBUG
-        public static void TestfillPrevConfigs()  => PrevConfigs = new() { "esto", "es", "una", "prueba,", "cambio."};
-#endif
     }
 
 
@@ -254,6 +250,7 @@ namespace RetroLinker.Models
         
         private string GetString()
         {
+            // TODO: There should be a better way...
             // It may not be smart, but if it works...
             string objectString = 
                 $"{UserAssetsPath}\n" +

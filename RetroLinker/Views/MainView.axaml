@@ -32,7 +32,8 @@
 				<StackPanel Name="panelRADir" Grid.Row="1">
 					<Label Margin="0,5,0,0" Content="{x:Static locale:resMainView.lblRADir}"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="retroarch.exe"/>
+						<!-- TODO: Move non-style properties to code behind, during load -->
+						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" MaxLength="255" Watermark="retroarch.exe"/>
 						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>

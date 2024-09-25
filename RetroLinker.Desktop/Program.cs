@@ -34,8 +34,6 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
-
         StartStopLogging(true);
         var newArgs = new List<string>
         {
@@ -43,7 +41,7 @@ class Program
         };
         newArgs.AddRange(args);
         Trace.WriteLine($"{AppName} v{AppVersion}", "[Info]");
-        Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
+        Debug.WriteLine($"LaunchTime: {DateTime.Now:HH:mm:ss.fff}", "[Time]");
         
         Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
         BuildAvaloniaApp()
@@ -71,23 +69,31 @@ class Program
     // Logging
     private static ConsoleTraceListener ConsoleTracer;
     private static TextWriterTraceListener TextfileTracer;
-    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "trace.log");
+    private static readonly string LogFileName = $"{AppName}.log";
+    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
 
     private static void StartStopLogging(bool mode)
     {
+        // TODO: print to log even if an exception occured, it just makes sense...
         if (mode)
         {
-            try
-            {   File.Delete(LogFile);   }
-            catch
-            {   Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]"); }
+            try {
+                File.Delete(LogFile);
+            }
+            catch {
+                Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]");
+            }
             
-            ConsoleTracer = new()
-            { Name = "mainConsoleTracer", TraceOutputOptions = TraceOptions.Timestamp };
-            TextfileTracer = new(LogFile, "mainTextTracer")
-            { TraceOutputOptions = TraceOptions.DateTime };
-            
-            Trace.Listeners.AddRange(new TraceListener[] { ConsoleTracer, TextfileTracer });
+            ConsoleTracer = new() {
+                Name = "mainConsoleTracer", 
+                TraceOutputOptions = TraceOptions.Timestamp 
+            };
+            TextfileTracer = new(LogFile, "mainTextTracer") {
+                TraceOutputOptions = TraceOptions.DateTime,
+            };
+
+            Trace.Listeners.Add(ConsoleTracer);
+            Trace.Listeners.Add(TextfileTracer);
         }
         else
         {

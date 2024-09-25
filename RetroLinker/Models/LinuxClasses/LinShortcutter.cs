@@ -75,8 +75,7 @@ public static class LinShortcutter
         Debug.WriteLine($"SetExecPermissions Thread ID: {System.Threading.Thread.CurrentThread.ManagedThreadId}", App.DebgTrace);
         const string permExec = "chmod";
         const string permComm = "-c ug+x";
-        // TODO: Replace all instances of '{dir}' with "{dir}"
-        Trace.WriteLine($"Trying to set executable permissions to '{dir}'.", App.InfoTrace);
+        Trace.WriteLine($"Trying to set executable permissions to \"{dir}\".", App.InfoTrace);
         var processStartInfo = new ProcessStartInfo()
         {
             FileName = permExec,

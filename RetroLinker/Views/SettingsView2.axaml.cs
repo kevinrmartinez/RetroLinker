@@ -122,17 +122,4 @@ public partial class SettingsView2 : UserControl
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
-    
-    
-#if DEBUG
-    void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
-    {
-        _ = sender.ToString();
-    }
-    //UNLOAD
-    private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
-    {
-        _ = e.Source;
-    }
-#endif
 }
