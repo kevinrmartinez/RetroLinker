@@ -22,10 +22,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
+
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
 
 namespace RetroLinker.Models;
 
@@ -42,20 +43,23 @@ public static class AvaloniaOps
 
     
     #region FUNCTIONS
-    public static Settings MainViewPreConstruct()
+    public static void MainViewPreConstruct(out Settings settings)
     {
-        if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
-        var settings = FileOps.LoadSettingsFO();
-        Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
-        Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
+        if (FirstLoad)
+        {
+            Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
+            settings = FileOps.LoadSettingsFO();
+            Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
+            Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
         
-        LanguageManager.SetLocale(settings.LanguageCulture);
-        
-        return settings;
+            LanguageManager.SetLocale(settings.LanguageCulture);
+        }
+        else settings = FileOps.LoadCachedSettingsFO();
     }
 
-    public static Settings DesignerMainViewPreConstruct() => FileOps.LoadDesignerSettingsFO(false);
+    public static void DesignerMainViewPreConstruct(out Settings settings) {
+        settings = FileOps.LoadDesignerSettingsFO(false);
+    }
 
     public static void MainViewLoad() {
         FirstLoad = false;
@@ -73,15 +77,15 @@ public static class AvaloniaOps
         return Cores;
     }
 
-    private static Uri GetDefaultCores() => new Uri(CoreList);
+    private static Uri GetDefaultCores() => new(CoreList);
     
-    public static Uri GetDefaultIcon() => new Uri(DEFicon1);
+    public static Uri GetDefaultIcon() => new(DEFicon1);
 
-    public static Uri GetNAimage() => new Uri(NaN);
+    public static Uri GetNAimage() => new(NaN);
     
-    public static Bitmap GetBitmap(string path) => new Bitmap(path);
+    public static AvaloniaBitmap GetBitmap(string path) => new(path);
 
-    public static Bitmap GetBitmap(Stream imgStream) => new Bitmap(imgStream);
+    public static AvaloniaBitmap GetBitmap(Stream imgStream) => new(imgStream);
 
     private static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
@@ -100,8 +104,8 @@ public static class AvaloniaOps
         if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
         ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
         var dbgOut = (ROMTopDir is null)
-            ? $"ROMPadreStorageFolder remained null. Attempted dir:{dir_ROMTop}"
-            : $"ROMPadreStorageFolder set to: {ROMTopDir.Path.LocalPath}";
+            ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
+            : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
         Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     #endregion

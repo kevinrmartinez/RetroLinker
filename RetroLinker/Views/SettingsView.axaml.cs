@@ -153,17 +153,5 @@ namespace RetroLinker.Views
             ParentWindow.settings.PrevConfig = (bool)chkPrevCONFIG.IsChecked;
             ParentWindow.settings.CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
         }
-        
-#if DEBUG
-        void SettingsView1_Loaded2(object sender, RoutedEventArgs e)
-        {
-            _ = sender.ToString();
-        }
-        // UNLOAD
-        void SettingsView1_OnUnloaded(object? sender, RoutedEventArgs e)
-        {
-            _ = e.ToString();
-        }
-#endif
     }
 }

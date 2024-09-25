@@ -40,7 +40,7 @@ namespace RetroLinker.Models
 
         public static List<string> ConfigDir { get; private set; }
 
-        public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
+        private static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
         private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
         public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
         
@@ -104,12 +104,12 @@ namespace RetroLinker.Models
             try
             {
                 await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
-                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} written successfully", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Setting file \"{PathToSettingFileBin}\" written successfully", App.InfoTrace);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"Setting file {PathToSettingFileBin} could not be written!", App.ErroTrace);
-                System.Diagnostics.Trace.WriteLine(e);
+                System.Diagnostics.Trace.WriteLine($"Setting file \"{PathToSettingFileBin}\" could not be written!", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine(e, App.ErroTrace);
             }
         }
 
@@ -121,7 +121,6 @@ namespace RetroLinker.Models
         }
 
         #endregion
-
 
         #region Load
 
@@ -136,29 +135,19 @@ namespace RetroLinker.Models
             file = externalCores;
             return true;
         }
-
-        public static string DumpStreamToFile(Stream fileStream)
-        {
-            fileStream.Position = 0;
-            CheckUsrSetDir(UserTemp);
-            var temporalFile = Path.Combine(UserTemp, tempFile);
-            var streamReader = new StreamReader(fileStream);
-            File.WriteAllText(temporalFile, streamReader.ReadToEnd());
-            return temporalFile;
-        }
         
         public static string[] LoadCores(string filePath)
         {
             try
             {
-                System.Diagnostics.Trace.WriteLine($"Starting reading of {filePath}.", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Starting reading of \"{filePath}\".", App.InfoTrace);
                 var cores = ReadFileLinesToEnd(filePath);
-                System.Diagnostics.Trace.WriteLine($"Completed reading of {filePath}.", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Completed reading of \"{filePath}\".", App.InfoTrace);
                 return cores;
             }
             catch
             {
-                System.Diagnostics.Trace.WriteLine($"The file {filePath} could not be found!", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"The file \"{filePath}\" could not be found!", App.InfoTrace);
                 return Array.Empty<string>();
             }
         }
@@ -175,7 +164,7 @@ namespace RetroLinker.Models
             {
                 files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
                 System.Diagnostics.Trace.WriteLine(
-                    $"Starting Icons reading at {LoadedSettings.UserAssetsPath}.", App.InfoTrace);
+                    $"Starting Icons reading at \"{LoadedSettings.UserAssetsPath + Path.PathSeparator}\".", App.InfoTrace);
                 for (int i = 0; i < files.Count; i++)
                 {
                     string ext = Path.GetExtension(files[i]);
@@ -203,7 +192,7 @@ namespace RetroLinker.Models
 
                 System.Diagnostics.Trace.WriteLine(
                     files.Count == 0
-                        ? $"No icons found at {LoadedSettings.UserAssetsPath}."
+                        ? $"No icons found at \"{LoadedSettings.UserAssetsPath + Path.PathSeparator}\"."
                         : $"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace);
 
                 files.Clear();
@@ -220,7 +209,7 @@ namespace RetroLinker.Models
             {
                 // Possibly redundant
                 System.Diagnostics.Trace.WriteLine(
-                    $"The directory '{Path.GetFullPath(LoadedSettings.UserAssetsPath)}' could not be found.", App.WarnTrace);
+                    $"The directory \"{Path.GetFullPath(LoadedSettings.UserAssetsPath) + Path.PathSeparator}\" could not be found.", App.WarnTrace);
                 iconException = e.Message;
                 isError = true;
             }
@@ -239,7 +228,7 @@ namespace RetroLinker.Models
 
         #region FUNCTIONS
 
-        public static string GetDirFromPath(string path) => Path.GetDirectoryName(path);
+        public static string? GetDirFromPath(string path) => Path.GetDirectoryName(path);
         
         public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
         
@@ -251,7 +240,7 @@ namespace RetroLinker.Models
 
         public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
         
-        public static string ReadFileToEnd(string filePath) => File.ReadAllText(filePath);
+        public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
 
         public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 
@@ -264,7 +253,7 @@ namespace RetroLinker.Models
             }
             catch
             {
-                System.Diagnostics.Trace.WriteLine($"The folder {path} could not be created", App.ErroTrace);
+                System.Diagnostics.Trace.WriteLine($"The folder \"{path}\" could not be created", App.ErroTrace);
                 return false;
             }
         }
@@ -275,6 +264,16 @@ namespace RetroLinker.Models
             newDir = Path.Combine(linkPath, newDir);
             return newDir;
         }
+        
+        public static string DumpStreamToFile(Stream fileStream)
+        {
+            fileStream.Position = 0;
+            CheckUsrSetDir(UserTemp);
+            var temporalFile = Path.Combine(UserTemp, tempFile);
+            var streamReader = new StreamReader(fileStream);
+            File.WriteAllText(temporalFile, streamReader.ReadToEnd());
+            return temporalFile;
+        }
 
         public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)
         {
@@ -284,6 +283,12 @@ namespace RetroLinker.Models
                 linkCopies[i] = new ShortcutterOutput(linkOutputBase, linkCopyList[i]);
             }
             return linkCopies;
+        }
+
+        public static bool IsConfigFile(string filePath, out string fileExt)
+        {
+            fileExt = Path.GetExtension(filePath);
+            return (fileExt is ".txt" or ".cfg");
         }
         
         #endregion
@@ -314,6 +319,26 @@ namespace RetroLinker.Models
         }
 
         public static bool IsVectorImage(string file) => (Path.GetExtension(file) is ".svg" or ".svgz");
+
+        public static bool IsFileAnIcon(string filePath, bool OS, out string fileExt)
+        {
+            var extList = new List<string>();
+            if (OS)
+            {
+                foreach (var ext in WinExtraIconsExt)
+                {
+                    var fixedExt = ext.Remove(0, 1);
+                    extList.Add(fixedExt);
+                }
+                extList.Add(".exe");
+                extList.Add(".dll");
+                extList.Add(".ico");
+            }
+            else extList.AddRange(LinIconsExt);
+            fileExt = Path.GetExtension(filePath);
+            
+            return extList.Contains(fileExt);
+        }
 
         #endregion
 
@@ -423,10 +448,6 @@ namespace RetroLinker.Models
         }
         
         public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
-        /*
-         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} created successfully", App.InfoTrace);
-         * System.Diagnostics.Trace.WriteLine($"Desktop entry file {outputFile} could not be written!", App.ErroTrace);
-         */
 
         #endregion
     }

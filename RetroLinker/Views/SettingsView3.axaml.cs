@@ -62,7 +62,7 @@ namespace RetroLinker.Views
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
-            if (appMainWindow is null) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop));
+            if (appMainWindow is null) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
                 if (!DesktopOS)
@@ -302,40 +302,5 @@ namespace RetroLinker.Views
             SetDefaultSavIcoPath((byte)combo.SelectedIndex);
         }
         #endregion
-        
-        
-#if DEBUG
-        private List<string> ListTest = new()
-        {
-            "Primero",
-            "Segundo",
-            "Tercero"
-        };
-        
-        private void SettingsView3_1_OnLoaded2(object? sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < ListTest.Count; i++)
-            {
-                int newItemIndex = (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
-                lsboxLinkCopies.Items.Insert(newItemIndex, (AddLinkCopyItem(ListTest[i])));
-            }
-            refresh_comboaddLinkCopyDBG();
-            comboaddLinkCopy.SelectedIndex++;
-        }
-        
-        private void BtnaddLinkCopy_OnClick2(object? sender, RoutedEventArgs e)
-        {
-            int newItemIndex = (lsboxLinkCopies.Items.Count == 1) ? 0 : lsboxLinkCopies.Items.Count - 2;
-            lsboxLinkCopies.Items.Insert(newItemIndex, AddLinkCopyItem("Cuarto"));
-            // ListTest.Add("Cuarto");
-            refresh_comboaddLinkCopyDBG();
-        }
-        
-        void refresh_comboaddLinkCopyDBG()
-        {
-            comboaddLinkCopy.ItemsSource = null;
-            comboaddLinkCopy.ItemsSource = ListTest;
-        }
-#endif
     }
 }

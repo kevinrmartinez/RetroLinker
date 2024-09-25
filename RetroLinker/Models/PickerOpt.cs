@@ -24,7 +24,7 @@ namespace RetroLinker.Models
 {
     public static class PickerOpt
     {
-        static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe"] };
+        static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe", "*.dll" ] };
         static readonly FilePickerFileType appimage       = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
         static readonly FilePickerFileType sh_cripts      = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
         static readonly FilePickerFileType config_file    = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };

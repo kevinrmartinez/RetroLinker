@@ -55,6 +55,8 @@ public partial class MainWindow : Window
 
     public void LocaleReload(Settings locale)
     {
+        // TODO: Test with RefreshContainer
+        // https://docs.avaloniaui.net/docs/reference/controls/refreshcontainer
         if (LanguageManager.SetLocale(locale)) return;
         MainCC1.Content = null;
         PermaView = new MainView(this);

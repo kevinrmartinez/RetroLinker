@@ -31,7 +31,7 @@ public static class WinShortcutter
                           """;
         
         RunLinkWriteScript(scriptStrings);
-        Trace.WriteLine($"'{_outputPath}' file created successfully.", App.InfoTrace);
+        Trace.WriteLine($"\"{_outputPath}\" file created successfully.", App.InfoTrace);
     }
 
     public static string[] ReadShortcut(string linkPath)
@@ -53,7 +53,7 @@ public static class WinShortcutter
                             """;
         
         var linkContent = RunLinkReadScript(scriptStrings);
-        Trace.WriteLine($"'{linkPath}' file read successfully.", App.InfoTrace);
+        Trace.WriteLine($"\"{linkPath}\" file read successfully.", App.InfoTrace);
         return linkContent;
     }
     

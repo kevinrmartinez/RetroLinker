@@ -42,7 +42,7 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
         StopWatch.Start();
-        System.Diagnostics.Debug.WriteLine($"App Launched at: {System.DateTime.Now.ToString("T")}", TimeTrace);
+        System.Diagnostics.Debug.WriteLine($"App Launched at: {System.DateTime.Now:HH:mm:ss.fff}", TimeTrace);
     }
 
     public override void OnFrameworkInitializationCompleted()

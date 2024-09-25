@@ -142,7 +142,7 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Creating \"{outputFile}\"...", App.InfoTrace);
                 try 
                 { 
                     WinClasses.WinShortcutter.CreateShortcut(link, outputFile);
@@ -150,7 +150,7 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"'{outputFile}' could not be created!", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"\"{outputFile}\" could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -173,13 +173,13 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                System.Diagnostics.Trace.WriteLine($"Creating '{outputFile}'...", App.InfoTrace);
+                System.Diagnostics.Trace.WriteLine($"Creating \"{outputFile}\"...", App.InfoTrace);
                 
                 try { LinShortcutter.CreateShortcut(link, output);
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"'{outputFile}' could not be created!", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"\"{outputFile}\" could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
