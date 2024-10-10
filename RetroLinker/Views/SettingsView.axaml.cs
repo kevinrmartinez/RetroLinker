@@ -110,29 +110,28 @@ namespace RetroLinker.Views
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             // Avalonia's Designer gets borked on this part
-            if ((bool)swtThemeSwitch.IsChecked)
+            if (swtThemeSwitch.IsChecked.GetValueOrDefault())
             {
-                Application.Current.RequestedThemeVariant = dark_theme;
+                Application.Current!.RequestedThemeVariant = dark_theme;
                 ParentWindow.settings.PreferedTheme = 2;
             }
             else
             {
-                Application.Current.RequestedThemeVariant = light_theme;
+                Application.Current!.RequestedThemeVariant = light_theme;
                 ParentWindow.settings.PreferedTheme = 1;
             }
         }
 
         void ThemeDefault_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            if ((bool)chkThemeDefault.IsChecked)
+            if (chkThemeDefault.IsChecked.GetValueOrDefault())
             {
-                // Avalonia's Designer gets borked on this part
-                Application.Current.RequestedThemeVariant = system_theme;
+                // Avalonia's Designer breaks on this part
+                Application.Current!.RequestedThemeVariant = system_theme;
                 swtThemeSwitch.IsEnabled = false;
                 ParentWindow.settings.PreferedTheme = 0;
             }
-            else
-            { swtThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e); }
+            else swtThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e);
         }
         
         
@@ -143,15 +142,15 @@ namespace RetroLinker.Views
             try
             { ParentWindow.settings.SetLanguage(locale); }
             catch
-            { ParentWindow.settings.SetDefaultLaunguage(); }
+            { ParentWindow.settings.SetDefaultLanguage(); }
         }
 
         // OTHER PREFERENCES
         void View1ChecksHandle(object? sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox) == null) return;
-            ParentWindow.settings.PrevConfig = (bool)chkPrevCONFIG.IsChecked;
-            ParentWindow.settings.CpyUserIcon = (bool)chkCpyUserIcon.IsChecked;
+            ParentWindow.settings.PrevConfig = chkPrevCONFIG.IsChecked.GetValueOrDefault();
+            ParentWindow.settings.CpyUserIcon = chkCpyUserIcon.IsChecked.GetValueOrDefault();
         }
     }
 }

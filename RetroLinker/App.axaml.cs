@@ -34,9 +34,9 @@ public partial class App : Application
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static readonly System.Diagnostics.Stopwatch StopWatch = new();
-    public static string AppName;
-    public static string AppVersion;
-    public static string[] Args;
+    public static string AppName = string.Empty;
+    public static string AppVersion = string.Empty;
+    public static string[] Args = [];
     
     public override void Initialize()
     {
@@ -49,20 +49,23 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            AppName = desktop.Args[0];
+            AppName = desktop.Args![0];
             AppVersion = desktop.Args[1];
-            
-            Args = new string[desktop.Args.Length - 2];
+
+            const int argsOffset = 2;
+            int newLength = desktop.Args.Length - argsOffset;
+            Args = new string[newLength];
             if (Args.Length > 0)
                 for (int i = 0; i < Args.Length; i++)
-                    Args[i] = desktop.Args[i + 2];
+                    Args[i] = desktop.Args[i + argsOffset];
             
             LanguageManager.FixLocale(new CultureInfo("en-US"));
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
-                //Name = "MasterWindow"
-                DataContext = null
+                Title = $"{AppName} v{AppVersion}",
+                DataContext = null,
+                IsDesigner = false
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)

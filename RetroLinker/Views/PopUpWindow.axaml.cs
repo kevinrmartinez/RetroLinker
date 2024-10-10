@@ -30,9 +30,10 @@ public partial class PopUpWindow : Window
     {
         // Constructor for Designer
         InitializeComponent();
-        // ParentWindow = new MainWindow(true);
         PopCC1.Content = new RenameEntryView(this);
     }
+
+    public PopUpWindow(bool isDesigner) => InitializeComponent();
     
     public PopUpWindow(MainWindow mainWindow)
     {
@@ -43,9 +44,9 @@ public partial class PopUpWindow : Window
     // FIELDS
     public MainWindow ParentWindow;
 
-    public void RenamePopUp(string givenPath, string givenCore, List<ShortcutterOutput>outputs)
+    public void RenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput>outputs)
     {
-        this.Title = RetroLinker.Translations.resMainExtras.tittleEntryName;
+        this.Title = Translations.resMainExtras.tittleEntryName;
         PopCC1.Content = new RenameEntryView(this, givenPath, givenCore, outputs);
     }
 }

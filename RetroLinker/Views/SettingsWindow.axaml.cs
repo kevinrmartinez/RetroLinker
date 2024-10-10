@@ -31,7 +31,7 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
-            mainWindow = null;
+            // mainWindow = new MainWindow(true);
             settings = new Settings();
         }
         
@@ -106,7 +106,7 @@ namespace RetroLinker.Views
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
             if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
-            if (!settings.AllwaysAskOutput) settings.AllwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
+            if (!settings.AlwaysAskOutput) settings.AlwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             SettingsOps.WriteSettings(settings);
             CloseWindow(settings);

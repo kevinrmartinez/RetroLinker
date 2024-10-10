@@ -34,7 +34,7 @@
         <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto">
             <CheckBox Name="chkCustomFilename" Grid.Column="0" Margin="10,0" Content="{x:Static locale:resMainExtras.chkCustomFilename}" 
                       IsCheckedChanged="ChkCustomFilename_OnIsCheckedChanged"/>
-            <!-- ROW1 - Spacing -->
+            
             <Rectangle Grid.Column="1"/>
             
             <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static locale:resMainExtras.btnClear_Tip}" Click="BtnClear_OnClick"

@@ -53,7 +53,7 @@ namespace RetroLinker.Models.WinClasses
         ////////////////////////////////////////////////////////////////////////
         // Fields
 
-        private byte[][] iconData = null;   // Binary data of each icon.
+        private byte[][] iconData = [];   // Binary data of each icon.
 
         ////////////////////////////////////////////////////////////////////////
         // Public properties
@@ -81,6 +81,7 @@ namespace RetroLinker.Models.WinClasses
         /// <param name="fileName">The file to extract icons from.</param>
         public IconExtractor(string fileName)
         {
+            FileName = string.Empty;
             Initialize(fileName);
         }
 
@@ -117,7 +118,7 @@ namespace RetroLinker.Models.WinClasses
         private void Initialize(string fileName)
         {
             if (fileName == null)
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
 
             IntPtr hModule = IntPtr.Zero;
             try

@@ -25,7 +25,7 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
-
+using RetroLinker.Views;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
 
 namespace RetroLinker.Models;
@@ -43,8 +43,13 @@ public static class AvaloniaOps
 
     
     #region FUNCTIONS
-    public static void MainViewPreConstruct(out Settings settings)
+    public static void MainViewPreConstruct(MainWindow mainWindow, out Settings settings)
     {
+        if (mainWindow.IsDesigner)
+        {
+            settings = FileOps.LoadDesignerSettingsFO(false);
+            return;
+        }
         if (FirstLoad)
         {
             Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
@@ -94,8 +99,8 @@ public static class AvaloniaOps
     {
         DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
         var dbgOut = (DesktopFolder is null) 
-            ? $"DesktopStorageFolder remained null. Attempted dir:{FileOps.UserDesktop}" 
-            : $"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}";
+            ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
+            : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
         Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     
@@ -116,7 +121,7 @@ public static class AvaloniaOps
         var opt = PickerOpt.OpenPickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))
         {
-            currentFile = FileOps.GetDirFromPath(currentFile);
+            currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
@@ -159,7 +164,7 @@ public static class AvaloniaOps
         var opt = PickerOpt.SavePickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))
         {
-            currentFile = FileOps.GetDirFromPath(currentFile);
+            currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
         }
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);

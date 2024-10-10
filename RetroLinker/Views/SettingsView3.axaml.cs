@@ -30,6 +30,7 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
+            appMainWindow = new MainWindow(true);
             ParentWindow = new SettingsWindow();
         }
         
@@ -62,7 +63,7 @@ namespace RetroLinker.Views
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
-            if (appMainWindow is null) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
+            if (appMainWindow.IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
                 if (!DesktopOS)
@@ -98,8 +99,8 @@ namespace RetroLinker.Views
         // FUNCTIONS
         void ApplySettingsToControls()
         {
-            chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
-            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AllwaysAskOutput;
+            chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AlwaysAskOutput;
+            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AlwaysAskOutput;
             if (panelDEFLinkOutput.IsEnabled)
             {
                 var DefPath = ParentWindow.settings.DEFLinkOutput;
@@ -146,17 +147,21 @@ namespace RetroLinker.Views
             comboUseDefaultIcoSavPath.IsEnabled = true;
             comboUseDefaultIcoSavPath.SelectedIndex = index;
             panelWindowsOnlyControls2.IsEnabled = false;
+            
             txtIcoSavPath.Text = index switch
             {
                 0 => ParentWindow.settings.UserAssetsPath,
                 1 => resSettingsWindow.txtIcoSavPath1,
-                2 => resSettingsWindow.txtIcoSavPath2
+                2 => resSettingsWindow.txtIcoSavPath2,
+                _ => ParentWindow.settings.UserAssetsPath
             };
+            
             ParentWindow.settings.IcoSavPath = index switch
             {
                 0 => ParentWindow.settings.UserAssetsPath,
                 1 => SettingsOps.IcoSavROM,
-                2 => SettingsOps.IcoSavRA
+                2 => SettingsOps.IcoSavRA,
+                _ => ParentWindow.settings.UserAssetsPath
             };
         }
         
@@ -179,7 +184,7 @@ namespace RetroLinker.Views
             _ = _grid.Children;
 
             var trashButtom = _grid.Children[1] as Button;
-            trashButtom.AddHandler(Button.ClickEvent, btnTrashCopyItem);
+            trashButtom!.AddHandler(Button.ClickEvent, btnTrashCopyItem);
             
             newItem.Content = _grid;
             return newItem;
@@ -189,17 +194,17 @@ namespace RetroLinker.Views
         // DEFAULT OUTPUT
         private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e)
         {
-            var chk = (bool)chkAlwaysAskOutput.IsChecked;
-            ParentWindow.settings.AllwaysAskOutput = chk;
+            var chk = chkAlwaysAskOutput.IsChecked.GetValueOrDefault();
+            ParentWindow.settings.AlwaysAskOutput = chk;
             panelDEFLinkOutput.IsEnabled = !chk;
         }
         
         private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
-            ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem;
+            ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
         
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
-            string currentFolder = (string)comboDEFLinkOutput.SelectedItem;
+            string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
             string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // int customDirIndex = candidatesCount;
@@ -218,14 +223,14 @@ namespace RetroLinker.Views
         // LINK COPY
         void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e)
         {
-            var chk = (bool)chkMakeLinkCopy.IsChecked;
+            var chk = chkMakeLinkCopy.IsChecked.GetValueOrDefault();
             ParentWindow.settings.MakeLinkCopy = chk;
             lsboxLinkCopies.IsEnabled = chk;
         }
 
         async void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
         {
-            string currentItem = comboaddLinkCopy.SelectedItem.ToString();
+            string currentItem = (string)comboaddLinkCopy.SelectedItem!;
             if (string.IsNullOrWhiteSpace(currentItem)) return;
 
             if (currentItem == StrAddCustomCopyPath)
@@ -245,11 +250,13 @@ namespace RetroLinker.Views
             comboaddLinkCopy.SelectedIndex = 0;
         }
         
-        void btnTrashCopyItem(object sender, RoutedEventArgs e)
+        void btnTrashCopyItem(object? sender, RoutedEventArgs e)
         {
-            var parentGrid = (sender as Control).Parent as Grid;
+            if (sender is not Button button) return;
+            var parentGrid = button.Parent as Grid;
             
-            var path = (parentGrid.Children[0] as Label).Content.ToString();
+            if (parentGrid!.Children[0] is not Label label) return;
+            var path = (string)label.Content!;
             ParentWindow.SetLinkCopyPaths.Remove(path);
             
             var parentListBoxItem = parentGrid.Parent as ListBoxItem;
@@ -264,11 +271,9 @@ namespace RetroLinker.Views
         {
             string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
             string folder = await AvaloniaOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
-            if (!string.IsNullOrWhiteSpace(folder))
-            {
-                txtIcoSavPath.Text = folder; 
-                ParentWindow.settings.IcoSavPath = folder;
-            }
+            if (string.IsNullOrWhiteSpace(folder)) return;
+            txtIcoSavPath.Text = folder; 
+            ParentWindow.settings.IcoSavPath = folder;
         }
 
         void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
@@ -279,26 +284,26 @@ namespace RetroLinker.Views
 
         void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
         {
-            panelWindowsOnlyControls2.IsEnabled = !(bool)chkMakeLinkCopy.IsChecked;
+            panelWindowsOnlyControls2.IsEnabled = !chkMakeLinkCopy.IsChecked.GetValueOrDefault();
             ParentWindow.settings.IcoSavPath = ParentWindow.settings.UserAssetsPath;
             txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
         }
         
         private void IcoSavChecks_IsCheckedChanged(object? sender, RoutedEventArgs e)
         {
-            ParentWindow.settings.ExtractIco = (bool)chkExtractIco.IsChecked;
-            ParentWindow.settings.IcoLinkName = (bool)chkIcoLinkName.IsChecked;
+            ParentWindow.settings.ExtractIco = chkExtractIco.IsChecked.GetValueOrDefault();
+            ParentWindow.settings.IcoLinkName = chkIcoLinkName.IsChecked.GetValueOrDefault();
         }
         
         private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e)
         {
-            if (!(bool)chkUseDefaultIcoSavPath.IsChecked) SetCustomSavIcoPath(string.Empty);
+            if (!chkUseDefaultIcoSavPath.IsChecked.GetValueOrDefault()) SetCustomSavIcoPath(string.Empty);
             else SetDefaultSavIcoPath(0);
         }
         
         private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e)
         {
-            var combo = sender as ComboBox;
+            if (sender is not ComboBox combo) return;
             SetDefaultSavIcoPath((byte)combo.SelectedIndex);
         }
         #endregion

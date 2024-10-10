@@ -44,8 +44,23 @@ class Program
         Debug.WriteLine($"LaunchTime: {DateTime.Now:HH:mm:ss.fff}", "[Time]");
         
         Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
+        #if DEBUG
+        // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
+        // Invalidating the purpose of the debugger lol
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(newArgs.ToArray());
+        #else
+        // Try-Catch is used to print the Exception to log, and then close the log.
+        try {
+            // I think that every exception that happens while the app is running can be capture here, thrusting that 
+            // this file doesn't cause exceptions.
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(newArgs.ToArray());
+        }
+        catch (Exception e) {
+            Trace.WriteLine(e, "[Erro]");
+        }
+        #endif
         
         // App Closing
         StartStopLogging(false);
@@ -63,18 +78,17 @@ class Program
 
     // Parameters
     private static readonly System.Reflection.AssemblyName AppAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName();
-    private static readonly string AppName = AppAssembly.Name;
-    private static readonly string AppVersion = AppAssembly.Version.ToString(3);
+    private static readonly string AppName = AppAssembly.Name!;
+    private static readonly string AppVersion = AppAssembly.Version!.ToString(3);
     
     // Logging
-    private static ConsoleTraceListener ConsoleTracer;
-    private static TextWriterTraceListener TextfileTracer;
+    private static ConsoleTraceListener ConsoleTracer = new();
+    private static TextWriterTraceListener TextfileTracer = new();
     private static readonly string LogFileName = $"{AppName}.log";
     private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
 
     private static void StartStopLogging(bool mode)
     {
-        // TODO: print to log even if an exception occured, it just makes sense...
         if (mode)
         {
             try {

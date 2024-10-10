@@ -30,7 +30,7 @@ public partial class RenameEntryView : UserControl
     {
         // Constructor for Designer
         InitializeComponent();
-        // _popUpWindow = new PopUpWindow();
+        _popUpWindow = new PopUpWindow(true);
         GivenPath = "designer.txt";
         CurrentCore = "mesen";
         Outputs = new List<ShortcutterOutput>();
@@ -46,7 +46,7 @@ public partial class RenameEntryView : UserControl
         Outputs = new List<ShortcutterOutput>();
     }
     
-    public RenameEntryView(PopUpWindow parentWindow, string givenPath, string givenCore, List<ShortcutterOutput> outputs)
+    public RenameEntryView(PopUpWindow parentWindow, string givenPath, string? givenCore, List<ShortcutterOutput> outputs)
     {
         InitializeComponent();
         _popUpWindow = parentWindow;
@@ -56,13 +56,14 @@ public partial class RenameEntryView : UserControl
     }
     
     // FIELDS
-    private PopUpWindow _popUpWindow;
+    private readonly PopUpWindow _popUpWindow;
     private string GivenPath;
     private string GivenName;
-    private string CurrentCore;
+    private string? CurrentCore;
     private bool CustomFilename;
-    private ShortcutterOutput NewName;
+    private ShortcutterOutput NewName = new();
     private List<ShortcutterOutput> Outputs;
+    
     private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
     
     // LOAD EVENTS
@@ -71,7 +72,7 @@ public partial class RenameEntryView : UserControl
         CustomFilename = false;
         GivenName = FileOps.GetFileNameNoExtFromPath(GivenPath);
         txtFriendlyName.Text = GivenName;
-        lblExt.Content = FileOps.LinLinkExt;
+        lblExt.Content = FileOps.GetOutputExt(false);
     }
 
     #region Functions
@@ -111,9 +112,8 @@ public partial class RenameEntryView : UserControl
     
     private void ChkCustomFilename_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        if (chkCustomFilename is not null) CustomFilename = (bool)chkCustomFilename.IsChecked;
+        CustomFilename = chkCustomFilename.IsChecked.GetValueOrDefault();
         txtFileName.IsReadOnly = !CustomFilename;
-        lblExt.IsVisible = CustomFilename;
         UpdateFilename();
     }
     
@@ -125,15 +125,15 @@ public partial class RenameEntryView : UserControl
 
     private void BtnNameApply_OnClick(object? sender, RoutedEventArgs e)
     {
-        var friendlyName = txtFriendlyName.Text;
-        var fileName = (CustomFilename) ? txtFileName.Text : LinDesktopEntry.StdDesktopEntry(friendlyName, CurrentCore);
-        fileName += FileOps.LinLinkExt;
+        var friendlyName = txtFriendlyName.Text!;
+        var fileName = (CustomFilename) 
+            ? txtFileName.Text! 
+            : LinDesktopEntry.StdDesktopEntry(friendlyName + FileOps.GetOutputExt(false), CurrentCore);
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
         NewName.CustomEntryName = CustomFilename;
         _popUpWindow.Close(ResolveOutput());
     }
-
     #endregion
 
 
@@ -142,7 +142,7 @@ public partial class RenameEntryView : UserControl
     // On Close
     private void View_OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        if (NewName is not null) return;
+        if (NewName.ValidOutput) return;
         if (GivenName == NamePlaceHolder) return;
         NewName = new ShortcutterOutput(GivenPath, CurrentCore);
         _popUpWindow.Close(ResolveOutput());

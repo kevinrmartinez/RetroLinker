@@ -24,14 +24,14 @@ public static class LinDesktopEntry
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";
 
-    public static string StdDesktopEntry(string friendlyName, string core)
+    public static string StdDesktopEntry(string? friendlyName, string? core)
     {
         core = (!string.IsNullOrWhiteSpace(core)) ? core : CorePlaceHolder;
         friendlyName = (!string.IsNullOrWhiteSpace(friendlyName)) ? friendlyName : NamePlaceHolder;
         return DesktopEntryName(friendlyName, core);
     }
     
-    public static string DesktopEntryName(string fileName, string core)
+    private static string DesktopEntryName(string fileName, string core)
     {
         const string prefix = "retroarch.";
         const string whiteSpace = " ";

@@ -83,9 +83,10 @@ public partial class SettingsView2 : UserControl
     // RA EXECUTABLE
     private void BtnApplyUserAssets_Click(object? sender, RoutedEventArgs e)
     {
-        var _grid = (sender as Control).Parent as Grid;
-        var txtbox = _grid.Children[0] as TextBox;
-        if (!string.IsNullOrWhiteSpace(txtbox.Text)) ParentWindow.settings.DEFRADir = txtbox.Text;
+        if (sender is not Control control) return;
+        if (control.Parent is not Grid grid) return;
+        if (grid.Children[0] is not TextBox txtBox) return;
+        if (!string.IsNullOrWhiteSpace(txtBox.Text)) ParentWindow.settings.DEFRADir = txtBox.Text;
     }
     
     async void btnDefRADir_Click(object sender, RoutedEventArgs e)

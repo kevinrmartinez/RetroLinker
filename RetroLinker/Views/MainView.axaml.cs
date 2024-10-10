@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -25,7 +24,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
@@ -37,6 +35,7 @@ using RetroLinker.Translations;
 
 using MessageBoxBottomResult = MsBox.Avalonia.Enums.ButtonResult;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace RetroLinker.Views;
 
@@ -48,11 +47,14 @@ public partial class MainView : UserControl
         AvaloniaOps.DesignerMainViewPreConstruct(out settings);
         InitializeComponent();
         ParentWindow = new MainWindow(true);
+        IsDesingner = true;
+        stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
     }
     
     public MainView(MainWindow mainWindow)
     {
-        AvaloniaOps.MainViewPreConstruct(out settings);
+        AvaloniaOps.MainViewPreConstruct(mainWindow, out settings);
         InitializeComponent();
         ParentWindow = mainWindow;
         stopwatch = App.StopWatch;
@@ -61,6 +63,7 @@ public partial class MainView : UserControl
     
     // Debug
     private System.Diagnostics.Stopwatch stopwatch;
+    private bool IsDesingner = false;
     
     // Window Object
     private MainWindow ParentWindow;
@@ -71,11 +74,11 @@ public partial class MainView : UserControl
     private int PreloadedIconsCount;
     private byte CurrentTheme = 250;
     private Settings settings;
-    private Bitmap ICONimage;
-    private IconsItems IconItemSET;
-    private Shortcutter BuildingLink;
+    private AvaloniaBitmap ICONimage = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
+    private IconsItems? IconItemSET;
+    private Shortcutter BuildingLink = new();
     private bool LinkCustomName;
-    private static Shortcutter OutputLink;
+    private ShortcutterOutput PreviousOutput = new();
 
     // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
@@ -97,7 +100,7 @@ public partial class MainView : UserControl
             catch (System.Exception e_theme) 
             {
                 System.Diagnostics.Debug.WriteLine(e_theme, App.DebgTrace);
-                TopLevel.GetTopLevel(this).RequestedThemeVariant = ThemeVariant.Light;
+                TopLevel.GetTopLevel(this)!.RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -174,7 +177,7 @@ public partial class MainView : UserControl
                 Icon = MsBox.Avalonia.Enums.Icon.Error,
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
             };
-            MessageBoxPopUp(popParams);
+            _ = MessageBoxPopUp(popParams);
         }
     }
 
@@ -183,7 +186,7 @@ public partial class MainView : UserControl
         var BorderTransition = new BrushTransition()
         {
             Property = BorderBrushProperty,
-            Duration = TimeSpan.FromMilliseconds(250),
+            Duration = System.TimeSpan.FromMilliseconds(250),
         };
 
         AvaloniaTemplatedControl[] templatedControls = [comboICONDir, txtRADir, txtROMDir, comboConfig, txtLINKDir];
@@ -226,14 +229,17 @@ public partial class MainView : UserControl
     {
         if (!string.IsNullOrEmpty(settings.DEFRADir)) txtRADir.Text = settings.DEFRADir;
         BuildingLink.RAdir = settings.DEFRADir;
-        AvaloniaOps.SetROMTop(settings.DEFROMPath, ParentWindow);
-        AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
+        if (!IsDesingner && !ParentWindow.IsDesigner)
+        {
+            AvaloniaOps.SetROMTop(settings.DEFROMPath, ParentWindow);
+            AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
+        }
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
         
         txtLINKDir.Watermark = "Super Mario Bros";
         txtLINKDir.Watermark += FileOps.GetOutputExt(DesktopOS);
-        AllwaysAskOutputLink(settings.AllwaysAskOutput);
+        AllwaysAskOutputLink(settings.AlwaysAskOutput);
     }
 
     void ApplyArgs()
@@ -266,7 +272,7 @@ public partial class MainView : UserControl
         lblLinkDefinedDir.Text = settings.DEFLinkOutput;
     }
 
-    string UpdateLinkLabel(string fileNameNoExt, string core)
+    string UpdateLinkLabel(string fileNameNoExt, string? core)
     { 
         return (DesktopOS)
             ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
@@ -277,9 +283,9 @@ public partial class MainView : UserControl
 
     void ResetAfterExecute()
     {
-        if (BuildingLink.OutputPaths.Count > 0)
+        if (BuildingLink.OutputPaths.Count == 0)
             BuildingLink.OutputPaths.Add(
-                ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, string.Empty));
+                ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, DesktopOS, string.Empty));
         
         LockForExecute(false);
     }
@@ -290,7 +296,7 @@ public partial class MainView : UserControl
         FillIconSource(ICONimage);
     }
     
-    void FillIconBoxes(Bitmap bitmap)
+    void FillIconBoxes(AvaloniaBitmap bitmap)
     {
         ICONimage = bitmap;
         FillIconSource(ICONimage);
@@ -319,18 +325,15 @@ public partial class MainView : UserControl
         customParams.MaxWidth = 600;
         customParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var msBox = MessageBoxManager.GetMessageBoxCustom(customParams);
-        var result = await msBox.ShowWindowDialogAsync(ParentWindow);
-        return result;
+        return await msBox.ShowWindowDialogAsync(ParentWindow);
     }
 
-    async Task<bool> ResolveRenamePopUp(string givenPath, string givenCore, List<ShortcutterOutput> outputs)
+    async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs)
     {
         var popupWindow = new PopUpWindow(ParentWindow);
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
-        var result = await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
-        BuildingLink.OutputPaths = result;
-        LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
-        return true;
+        return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
+        // BuildingLink.OutputPaths = result;
     }
 
     string ValidateLINBin(string RAPath)
@@ -354,10 +357,6 @@ public partial class MainView : UserControl
                 break;
         }
     }
-
-    // ShortcutterOutput getShortcutterOutput(string filePath, string core) => (DesktopOS)
-    //     ? new ShortcutterOutput(filePath)
-    //     : new ShortcutterOutput(filePath, core);
     #endregion
 
 
@@ -366,11 +365,7 @@ public partial class MainView : UserControl
     {
         var settingWindow = new SettingsWindow(ParentWindow, settings); 
         var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
-        if (settingReturn is not null)
-        {
-            settings = settingReturn;
-            FileOps.SetNewSettings(settings);
-        }
+        if (settingReturn is not null) settings = FileOps.SetNewSettings(settingReturn);
         else settings = FileOps.LoadCachedSettingsFO();
         LoadNewSettings();
     }
@@ -381,25 +376,25 @@ public partial class MainView : UserControl
     {
         int newIndex = comboICONDir.ItemCount;
         const int indexNotFound = -1;
-        int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == filePath));
+        int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == filePath)!);
         if (existingItem == indexNotFound)
         {
             comboICONDir.Items.Add(filePath);
             IconProc.BuildIconItem(filePath, newIndex, DesktopOS);
         }
-        else { newIndex = (int)IconProc.IconItemsList[existingItem].comboIconIndex; }
+        else newIndex = IconProc.IconItemsList[existingItem].comboIconIndex.GetValueOrDefault();
 
         comboICONDir.SelectedIndex = newIndex;
     }
     
     void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
     {
-        if ((bool)rdoIconDef.IsChecked)
+        if (rdoIconDef.IsChecked.GetValueOrDefault())
         {
             comboICONDir.SelectedIndex = 0;
             gridIconControl.IsEnabled = false;
         }
-        else { gridIconControl.IsEnabled = true; }
+        else gridIconControl.IsEnabled = true;
     }
 
     async void btnICONDir_Click(object sender, RoutedEventArgs e)
@@ -408,7 +403,7 @@ public partial class MainView : UserControl
         opt = DesktopOS ? PickerOpt.OpenOpts.WINico : PickerOpt.OpenOpts.LINico;
 
         string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
-            ? (string)comboICONDir.SelectedItem
+            ? (string)comboICONDir.SelectedItem!
             : string.Empty;
         string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
         if (string.IsNullOrEmpty(file)) return;
@@ -422,37 +417,35 @@ public partial class MainView : UserControl
         panelIconNoImage.IsVisible = false;
         if (selectedIndex > 0)
         {   // Fill the PictureBoxes with the icons provided by the user
-            IconItemSET = IconProc.IconItemsList.Find(Item => Item.comboIconIndex == selectedIndex);
+            IconItemSET = IconProc.IconItemsList.Find(item => item.comboIconIndex == selectedIndex)!;
             BuildingLink.ICONfile = IconItemSET.FilePath;
             
             if (IconItemSET.IconStream != null)
             {
                 IconItemSET.IconStream.Position = 0;
-                var bitm = AvaloniaOps.GetBitmap(IconItemSET.IconStream);
-                FillIconBoxes(bitm);
+                var bitmap = AvaloniaOps.GetBitmap(IconItemSET.IconStream);
+                FillIconBoxes(bitmap);
             }
             else
             {
-                try 
-                { FillIconBoxes(BuildingLink.ICONfile); }
+                try
+                {
+                    FillIconBoxes(BuildingLink.ICONfile); 
+                    panelIconNoImage.IsVisible = false;
+                }
                 catch 
                 {
-                    Bitmap bitm = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
-                    FillIconBoxes(bitm);
+                    AvaloniaBitmap bitmap = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
+                    FillIconBoxes(bitmap);
                     panelIconNoImage.IsVisible = true;
                 } 
             }
         }
         else
         {   
-            Bitmap bitmap = new(AssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
+            AvaloniaBitmap bitmap = new(AssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
             FillIconBoxes(bitmap);
         }
-    }
-    
-    void ComboICONDir_Drop(object? sender, DragEventArgs e)
-    {
-        
     }
     #endregion
     
@@ -490,7 +483,7 @@ public partial class MainView : UserControl
     
     void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
     {
-        panelROMDirControl.IsEnabled = !(bool)chkContentless.IsChecked;
+        panelROMDirControl.IsEnabled = !chkContentless.IsChecked.GetValueOrDefault();
     }
 
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
@@ -514,16 +507,17 @@ public partial class MainView : UserControl
         if (string.IsNullOrWhiteSpace(txtLINKDir.Text) || DesktopOS || LinkCustomName) return;
         
         string newFile;
-        string outputDir;
-        if (settings.AllwaysAskOutput)
+        string? outputDir;
+        if (settings.AlwaysAskOutput)
         {
-            newFile = LinDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.LinLinkExt, comboCore.Text);
+            newFile = LinDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
+            if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
         else
         {
-            newFile = LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.LinLinkExt, comboCore.Text);
+            newFile = LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = settings.DEFLinkOutput;
             lblLinkDefinedDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
@@ -549,7 +543,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
-        string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem : string.Empty;
+        string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
         var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, currentFile, ParentWindow);
         if (string.IsNullOrEmpty(file)) return;
         comboConfig_Set(file);
@@ -561,7 +555,7 @@ public partial class MainView : UserControl
         {
             -1 => null,
             0 => string.Empty,
-            _ => comboConfig.SelectedItem.ToString()
+            _ => (string)comboConfig.SelectedItem!
         };
     }
     
@@ -578,7 +572,8 @@ public partial class MainView : UserControl
         LinkCustomName = false;
         if (!DesktopOS)
         {
-            await ResolveRenamePopUp(filePath, comboCore.Text, BuildingLink.OutputPaths);
+            BuildingLink.OutputPaths = await ResolveRenamePopUp(filePath, comboCore.Text, BuildingLink.OutputPaths);
+            LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
             filePath = BuildingLink.OutputPaths[0].FullPath;
         }
         txtLINKDir.Text = filePath;
@@ -595,15 +590,14 @@ public partial class MainView : UserControl
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
         string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
         string file = await AvaloniaOps.SaveFileAsync(opt, currentFile, ParentWindow);
-        if (!string.IsNullOrEmpty(file))
-        {
+        if (!string.IsNullOrEmpty(file)) {
             LINKDir_Set(file);
         }
 #if DEBUG
         else
         {
             System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
-            
+
             // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
             // System.Diagnostics.Debug.WriteLine(readLink[0], App.DebgTrace);
             // Testing.LinShortcutTest(DesktopOS);
@@ -619,16 +613,17 @@ public partial class MainView : UserControl
             settings.DEFLinkOutput, 
             (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? LinDesktopEntry.NamePlaceHolder : txtLINKDir.Text)
         );
-        await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
-        
+        BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
         if (BuildingLink.OutputPaths.Count == 0) return;
+        
+        LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
         txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
         lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
     }
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (settings.AllwaysAskOutput) return;
+        if (settings.AlwaysAskOutput) return;
         if (BuildingLink.OutputPaths.Count > 0)
             if (BuildingLink.OutputPaths[0].CustomEntryName) return;
         lblLinkDefinedDir.Text = (!string.IsNullOrWhiteSpace(txtLINKDir.Text)) 
@@ -636,8 +631,10 @@ public partial class MainView : UserControl
             : settings.DEFLinkOutput;
     }
     
-    void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e) {
-        if (e.Property.Name == "IsReadOnly") (sender as TextBox).Text = string.Empty;
+    void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e) 
+    {
+        if (sender is not TextBox textBox) return;
+        if (e.Property.Name == "IsReadOnly") textBox.Text = string.Empty;
     }
     #endregion
 
@@ -645,7 +642,7 @@ public partial class MainView : UserControl
     // EXECUTE
     void btnEXECUTE_Click(object sender, RoutedEventArgs e)
     {
-        OutputLink = new Shortcutter(BuildingLink);
+        var OutputLink = new Shortcutter(BuildingLink);
         BuildingLink.OutputPaths = new();
         var msbox_params = new MessageBoxStandardParams();
 
@@ -653,12 +650,12 @@ public partial class MainView : UserControl
         LockForExecute(true);
         
         // Checkboxes!
-        OutputLink.VerboseB = (bool)chkVerb.IsChecked;
-        OutputLink.FullscreenB = (bool)chkFull.IsChecked;
-        OutputLink.AccessibilityB = (bool)chkAccessi.IsChecked;
+        OutputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
+        OutputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
+        OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
 
         // Validating contentless or not
-        OutputLink.ROMdir = ((bool)chkContentless.IsChecked) ? Commander.contentless : OutputLink.ROMdir;
+        OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? Commander.contentless : OutputLink.ROMdir;
 
         // Validate theres an executable (Linux)
         OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
@@ -667,25 +664,25 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
-        // TODO: Confirm overwrite on AllwaysAskOutput = false
+        // TODO: Confirm overwrite on AlwaysAskOutput = false
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
                 // TODO: Sanitize user input
-                var outputPathStr = !settings.AllwaysAskOutput 
+                var outputPathStr = !settings.AlwaysAskOutput 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : (txtLINKDir.Text);
                 outputPath = new ShortcutterOutput(outputPathStr);
             }
             else
             {
-                if (OutputLink.OutputPaths[0] is not null && OutputLink.OutputPaths[0].CustomEntryName)
+                if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths[0].CustomEntryName)
                     outputPath = OutputLink.OutputPaths[0];
                 else
                 {
-                    if (!settings.AllwaysAskOutput)
+                    if (!settings.AlwaysAskOutput)
                     {
                         var outputPathStr = FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS),
                             settings.DEFLinkOutput);
@@ -704,13 +701,12 @@ public partial class MainView : UserControl
 
         // Icons handling
         // RA binary icon (Default)
-        if (comboICONDir.SelectedIndex == 0)
-        { OutputLink.ICONfile = string.Empty; }
-        // TODO: Consider moving this part after the required fields check
+        if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
+        // TODO: Move the conversion to after the required fields check
         else
         {
             // If it's Windows OS, the images may have to be converted to .ico
-            if (IconItemSET.ConvertionRequiered)
+            if (IconItemSET!.ConversionRequired)
             {
                 OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
                 if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
@@ -728,7 +724,7 @@ public partial class MainView : UserControl
             }
 
             // In case of 'CpyUserIcon = true'
-            if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile);
+            if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile!);
         }
 
         // REQUIRED FIELDS VALIDATION!
@@ -741,7 +737,7 @@ public partial class MainView : UserControl
             
             // Double quotes for directories that are parameters ->
             // -> for the ROM file
-            if (!(bool)chkContentless.IsChecked) 
+            if (!chkContentless.IsChecked.GetValueOrDefault()) 
             { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
 
             // -> for the config file
@@ -750,7 +746,8 @@ public partial class MainView : UserControl
 
             // Link Copies handling
             if (settings.MakeLinkCopy)
-            { OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));}
+                OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));
+            PreviousOutput = OutputLink.OutputPaths[0];
 
             // Create Shortcuts
             List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
@@ -762,15 +759,13 @@ public partial class MainView : UserControl
                     msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
                     msbox_params.ContentTitle = resGeneric.genSucces;
                     msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
-                    MessageBoxPopUp(msbox_params);
                 }   
                 else
                 {
                     msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
                     msbox_params.ContentTitle = resGeneric.genError;
                     msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
-                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error; 
-                    MessageBoxPopUp(msbox_params);
+                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error;
                 }
             }
             // Multiple Shortcut
@@ -788,13 +783,11 @@ public partial class MainView : UserControl
                     msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
                     msbox_params.ContentTitle = resGeneric.genSucces;
                     msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
-                    MessageBoxPopUp(msbox_params);
                 }
                 else
                 {
                     msbox_params.ContentHeader = resMainView.popMultiOutput0_Head;
                     int successCount = 0;
-                    int errorCount = 0;
                     string content = string.Empty;
                     foreach (var R in opResult)
                     {
@@ -806,14 +799,12 @@ public partial class MainView : UserControl
                         {
                             content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
                             content = string.Concat(content, "\n");
-                            errorCount++;
                         }
-                        else { successCount++; }
+                        else successCount++;
                     }
                     msbox_params.ContentTitle = resGeneric.genWarning;
                     msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
                     msbox_params.ContentMessage = content;
-                    MessageBoxPopUp(msbox_params);
                 }
             }
         }
@@ -822,8 +813,9 @@ public partial class MainView : UserControl
             msbox_params.ContentMessage = resMainView.popMissReq_Mess; 
             msbox_params.ContentTitle = resMainView.popMissReq_Title; 
             msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
-            MessageBoxPopUp(msbox_params);
         }
+        // The collection of IFs before fills 'msbox_params', then it's used to Pop Up a MessageBox
+        _ = MessageBoxPopUp(msbox_params);
         ResetAfterExecute();
     }
 
