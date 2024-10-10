@@ -32,10 +32,19 @@ public partial class MainWindow : Window
     }
 
     // Constructor for Designer
-    public MainWindow(object IsDesigner) => InitializeComponent();
+    public MainWindow(bool isDesigner)
+    {
+        InitializeComponent();
+        IsDesigner = isDesigner;
+        PermaView = new RenameEntryView();
+        if (isDesigner) return;
+        PermaView = new MainView(this);
+        MainCC1.Content = PermaView;
+    }
     
     // Fields
-    private MainView PermaView;
+    private UserControl PermaView;
+    public bool IsDesigner = true;
     
     // Shared Objects
     // public Shortcutter BuildingLink { get; set; } = new();
@@ -62,7 +71,8 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
-
+    
+    // TODO: Find a way to dispose of previous views
     public void ReturnToMainView(UserControl view)
     {
         MainCC1.Content = PermaView;
@@ -71,7 +81,8 @@ public partial class MainWindow : Window
 
     public void ReturnToMainView(PatchesView pView, string pString)
     {
-        PermaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
+        if (PermaView is not MainView permaView) return;
+        permaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
         MainCC1.Content = PermaView;
         pView = null;
     }

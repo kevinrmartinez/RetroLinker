@@ -73,12 +73,6 @@ public partial class PatchesView : UserControl
             }
         }
     }
-
-    // TOP CONTROLS
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ParentWindow.ReturnToMainView(this);
-    }
     
     // PATCHES CONTROLS
     private void ControlsEnabled(bool enable)
@@ -91,8 +85,9 @@ public partial class PatchesView : UserControl
     
     private void ToggleButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        if (rdoNoPatch is not null) ControlsEnabled(!(bool)rdoNoPatch.IsChecked);
-        var controlName = (e.Source as RadioButton).Name;
+        if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
+        if (e.Source is not RadioButton radioButton) return;
+        var controlName = radioButton.Name;
         PatchOpts = controlName switch
         {
             "rdoUPSPatch" => PickerOpt.PatchOpts.UPS,
@@ -116,7 +111,7 @@ public partial class PatchesView : UserControl
     {
         string patchComm;
         
-        if (string.IsNullOrEmpty(txtPatchPath.Text) && (bool)!rdoNoPatch.IsChecked)
+        if (string.IsNullOrEmpty(txtPatchPath.Text) && !rdoNoPatch.IsChecked.GetValueOrDefault())
         {
             var standardParams = new MessageBoxStandardParams()
             {
@@ -132,12 +127,12 @@ public partial class PatchesView : UserControl
             
             patchComm = string.Empty;
         }
-        else switch ((bool)rdoNoPatch.IsChecked)
+        else switch (rdoNoPatch.IsChecked.GetValueOrDefault())
         {
-            case true when !(bool)chkNoPatch.IsChecked:
+            case true when !chkNoPatch.IsChecked.GetValueOrDefault():
                 patchComm = string.Empty;
                 break;
-            case true when (bool)chkNoPatch.IsChecked:
+            case true when chkNoPatch.IsChecked.GetValueOrDefault():
                 patchComm = NoPatch;
                 break;
             default:

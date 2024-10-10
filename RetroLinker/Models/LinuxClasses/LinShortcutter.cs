@@ -24,9 +24,8 @@ namespace RetroLinker.Models.LinuxClasses;
 public static class LinShortcutter
 {
     private static readonly string CommentLine = $"# Created with {App.AppName} v{App.AppVersion}";
-    private const string BlankLine = "";
     private const string EntryHeader = "[Desktop Entry]";
-    private const string Notify = "StartupNotify=false";
+    // private const string Notify = "StartupNotify=false";
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
@@ -72,7 +71,7 @@ public static class LinShortcutter
 
     private static void SetExecPermissions(string dir)
     {
-        Debug.WriteLine($"SetExecPermissions Thread ID: {System.Threading.Thread.CurrentThread.ManagedThreadId}", App.DebgTrace);
+        Debug.WriteLine($"SetExecPermissions Thread ID: {System.Environment.CurrentManagedThreadId}", App.DebgTrace);
         const string permExec = "chmod";
         const string permComm = "-c ug+x";
         Trace.WriteLine($"Trying to set executable permissions to \"{dir}\".", App.InfoTrace);
@@ -92,7 +91,7 @@ public static class LinShortcutter
         string error = process.StandardError.ReadToEnd();
         string output = process.StandardOutput.ReadToEnd();
 
-        Debug.WriteLine(error, $"{App.DebgTrace}[{permExec}]");
-        Trace.WriteLine(output, $"{App.InfoTrace}[{permExec}]");
+        Debug.WriteLineIf(!string.IsNullOrEmpty(error), error, $"{App.DebgTrace}[{permExec}]");
+        Trace.WriteLineIf(!string.IsNullOrEmpty(output), output, $"{App.InfoTrace}[{permExec}]");
     }
 }

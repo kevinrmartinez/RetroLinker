@@ -131,13 +131,13 @@ namespace RetroLinker.Models
             {
                 // Windows .lnk
                 case SaveOpts.WINlnk:                 
-                    options.DefaultExtension = FileOps.WinLinkExt;
+                    options.DefaultExtension = FileOps.GetOutputExt(true);
                     options.FileTypeChoices = WinShorTypes;
                     break;
 
                 // Linux popular .desktop
                 case SaveOpts.LINdesktop:
-                    options.DefaultExtension = FileOps.LinLinkExt;
+                    options.DefaultExtension = FileOps.GetOutputExt(false);
                     options.FileTypeChoices = LinShorTypes;
                     break;
                 

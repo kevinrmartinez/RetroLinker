@@ -24,6 +24,7 @@ namespace RetroLinker.Models
 {
     public class Shortcutter
     {
+        // TODO: Revise the names and setter of the properties
         #region Object
         
         public string RAdir
@@ -220,7 +221,7 @@ namespace RetroLinker.Models
             ValidOutput = true;
         }
         
-        public ShortcutterOutput(string fullPath, string romCore)
+        public ShortcutterOutput(string fullPath, string? romCore)
         {
             var outputNames = FileOps.DesktopEntryArray(fullPath, romCore);
             FullPath = outputNames[0];
@@ -256,7 +257,7 @@ namespace RetroLinker.Models
 
         public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
         {
-            var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath);
+            var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
             var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
             return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName))
                     : new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName), romCore);

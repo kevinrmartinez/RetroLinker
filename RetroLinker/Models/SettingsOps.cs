@@ -138,7 +138,7 @@ namespace RetroLinker.Models
                         settings.DEFROMPath = settingFile[++i];
                         // TODO: Save all bools as a single 8bit number 
                         settings.PrevConfig = ResolveBool(settingFile[++i]);
-                        settings.AllwaysAskOutput = ResolveBool(settingFile[++i]);
+                        settings.AlwaysAskOutput = ResolveBool(settingFile[++i]);
                         settings.DEFLinkOutput = settingFile[++i];
                         settings.MakeLinkCopy = ResolveBool(settingFile[++i]);
                         settings.CpyUserIcon = ResolveBool(settingFile[++i]);
@@ -212,7 +212,7 @@ namespace RetroLinker.Models
         public string DEFRADir { get; set; } = string.Empty;
         public string DEFROMPath { get; set; } = string.Empty;
         public bool PrevConfig { get; set; } = false;
-        public bool AllwaysAskOutput { get; set; } = true;
+        public bool AlwaysAskOutput { get; set; } = true;
         public string DEFLinkOutput { get; set; } = string.Empty;
         public bool MakeLinkCopy { get; set; } = false;
         public bool CpyUserIcon { get; set; } = false;
@@ -234,7 +234,7 @@ namespace RetroLinker.Models
         public void SetLanguage(LanguageItem languageItem)
         { LanguageCulture = LanguageManager.ResolveLocale(languageItem); }
 
-        public void SetDefaultLaunguage()
+        public void SetDefaultLanguage()
         { LanguageCulture = DEFLanguage; }
         
         //public void Dispose() => this.Dispose();
@@ -257,7 +257,7 @@ namespace RetroLinker.Models
                 $"{DEFRADir}\n" +
                 $"{DEFROMPath}\n";
             objectString += (PrevConfig)       ? "1\n" : "0\n";
-            objectString += (AllwaysAskOutput) ? "1\n" : "0\n";
+            objectString += (AlwaysAskOutput) ? "1\n" : "0\n";
             objectString += $"{DEFLinkOutput}\n";
             objectString += (MakeLinkCopy)     ? "1\n" : "0\n"; 
             objectString += (CpyUserIcon)      ? "1\n" : "0\n";

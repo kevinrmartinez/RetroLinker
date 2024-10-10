@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using ImageMagick;
@@ -28,7 +27,7 @@ namespace RetroLinker.Models
     public static class IconProc
     {
         const int MaxRes = 256; // Magick can't work with bigger .ico files...
-        public static List<IconsItems> IconItemsList { get; set; }
+        public static List<IconsItems> IconItemsList { get; } = new();
 
         public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
 
@@ -74,7 +73,7 @@ namespace RetroLinker.Models
             {
                 if (FileOps.IsFileWinPE(filePath)) ico_item.IconStream = ExtractIco(filePath, 0);
                 if (FileOps.WinExtraIconsExt.Contains($"*{file_ext}") || (FileOps.IsExtWinPE(file_ext))) 
-                    ico_item.ConvertionRequiered = true;
+                    ico_item.ConversionRequired = true;
             }
             IconItemsList.Add(ico_item);
         }
@@ -101,32 +100,32 @@ namespace RetroLinker.Models
     }
     
     
-    public class IconsItems : IEquatable<IconsItems?>
+    public class IconsItems
     {
-        public string? FileName { get; set; }
+        public string FileName { get; set; }
         public string FilePath { get; set; }
         public MemoryStream? IconStream { get; set; }
         public int? comboIconIndex { get; set; }
-        public bool ConvertionRequiered { get; set; }
+        public bool ConversionRequired { get; set; }
 
-        public IconsItems() { }
+        public IconsItems()
+        {
+            FileName = string.Empty;
+            FilePath = string.Empty;
+            ConversionRequired = false;
+        }
 
-        public IconsItems(string fileName, string filePath, bool convertionRequiered = false) 
+        public IconsItems(string fileName, string filePath, bool conversionRequired = false) 
         {
             FileName = fileName;
             FilePath = filePath;
-            ConvertionRequiered = convertionRequiered;
+            ConversionRequired = conversionRequired;
         }
 
-        public IconsItems(string? fileName, string filePath, int? comboIconInd, bool convertionRequiered = false) : this(fileName, filePath, convertionRequiered)
-        { comboIconIndex = comboIconInd; }
-
-        public IconsItems(string fileName, string filePath, MemoryStream? iconStream, int? comboIconInd, bool convertionRequiered = false) : this(fileName, filePath, comboIconInd, convertionRequiered)
-        { IconStream = iconStream; }
-
-
-        public override bool Equals(object? obj) => Equals(obj as IconsItems);
-
-        public bool Equals(IconsItems? other) => (other != null) && (FilePath == other.FilePath);
+        public IconsItems(string fileName, string filePath, int? comboIconInd, bool conversionRequired = false) : this(fileName, filePath, conversionRequired) {
+            comboIconIndex = comboIconInd;
+        }
+        
+        public bool HasSameFile(IconsItems? other) => (other != null) && (FilePath == other.FilePath);
     }
 }

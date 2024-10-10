@@ -69,7 +69,7 @@ public static class LanguageManager
     public static int GetLocaleIndex(Settings settings)
     {
         var item = ResolveLocale(settings.LanguageCulture);
-        return (int)item.ItemIndex;
+        return item.ItemIndex.GetValueOrDefault();
     }
     
     public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
