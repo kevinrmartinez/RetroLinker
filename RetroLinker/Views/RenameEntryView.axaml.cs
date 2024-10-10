@@ -30,7 +30,7 @@ public partial class RenameEntryView : UserControl
     {
         // Constructor for Designer
         InitializeComponent();
-        // _popUpWindow = new PopUpWindow();
+        _popUpWindow = new PopUpWindow();
         GivenPath = "designer.txt";
         CurrentCore = "mesen";
         Outputs = new List<ShortcutterOutput>();
@@ -56,13 +56,14 @@ public partial class RenameEntryView : UserControl
     }
     
     // FIELDS
-    private PopUpWindow _popUpWindow;
+    private readonly PopUpWindow _popUpWindow;
     private string GivenPath;
     private string GivenName;
     private string CurrentCore;
     private bool CustomFilename;
-    private ShortcutterOutput NewName;
+    private ShortcutterOutput NewName = new();
     private List<ShortcutterOutput> Outputs;
+    
     private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
     
     // LOAD EVENTS
@@ -111,9 +112,8 @@ public partial class RenameEntryView : UserControl
     
     private void ChkCustomFilename_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
-        if (chkCustomFilename is not null) CustomFilename = (bool)chkCustomFilename.IsChecked;
+        CustomFilename = chkCustomFilename.IsChecked.GetValueOrDefault();
         txtFileName.IsReadOnly = !CustomFilename;
-        lblExt.IsVisible = CustomFilename;
         UpdateFilename();
     }
     
@@ -125,7 +125,7 @@ public partial class RenameEntryView : UserControl
 
     private void BtnNameApply_OnClick(object? sender, RoutedEventArgs e)
     {
-        var friendlyName = txtFriendlyName.Text;
+        var friendlyName = txtFriendlyName.Text!;
         var fileName = (CustomFilename) ? txtFileName.Text : LinDesktopEntry.StdDesktopEntry(friendlyName, CurrentCore);
         fileName += FileOps.LinLinkExt;
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
@@ -142,7 +142,7 @@ public partial class RenameEntryView : UserControl
     // On Close
     private void View_OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        if (NewName is not null) return;
+        if (NewName.ValidOutput) return;
         if (GivenName == NamePlaceHolder) return;
         NewName = new ShortcutterOutput(GivenPath, CurrentCore);
         _popUpWindow.Close(ResolveOutput());

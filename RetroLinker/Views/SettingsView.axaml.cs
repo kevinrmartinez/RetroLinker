@@ -143,7 +143,7 @@ namespace RetroLinker.Views
             try
             { ParentWindow.settings.SetLanguage(locale); }
             catch
-            { ParentWindow.settings.SetDefaultLaunguage(); }
+            { ParentWindow.settings.SetDefaultLanguage(); }
         }
 
         // OTHER PREFERENCES

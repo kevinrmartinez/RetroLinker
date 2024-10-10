@@ -24,7 +24,7 @@ public static class LinDesktopEntry
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";
 
-    public static string StdDesktopEntry(string friendlyName, string core)
+    public static string StdDesktopEntry(string? friendlyName, string? core)
     {
         core = (!string.IsNullOrWhiteSpace(core)) ? core : CorePlaceHolder;
         friendlyName = (!string.IsNullOrWhiteSpace(friendlyName)) ? friendlyName : NamePlaceHolder;

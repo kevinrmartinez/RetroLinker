@@ -98,8 +98,8 @@ namespace RetroLinker.Views
         // FUNCTIONS
         void ApplySettingsToControls()
         {
-            chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AllwaysAskOutput;
-            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AllwaysAskOutput;
+            chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AlwaysAskOutput;
+            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AlwaysAskOutput;
             if (panelDEFLinkOutput.IsEnabled)
             {
                 var DefPath = ParentWindow.settings.DEFLinkOutput;
@@ -190,7 +190,7 @@ namespace RetroLinker.Views
         private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e)
         {
             var chk = (bool)chkAlwaysAskOutput.IsChecked;
-            ParentWindow.settings.AllwaysAskOutput = chk;
+            ParentWindow.settings.AlwaysAskOutput = chk;
             panelDEFLinkOutput.IsEnabled = !chk;
         }
         

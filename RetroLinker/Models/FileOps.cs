@@ -38,9 +38,9 @@ namespace RetroLinker.Models
         public const string DotDesktopRAIcon = LinuxRABin;
 
 
-        public static List<string> ConfigDir { get; private set; }
+        public static List<string> ConfigDir { get; private set; } = new();
 
-        private static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
         private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
         public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
         
@@ -56,7 +56,7 @@ namespace RetroLinker.Models
         public static readonly string WINPublicUser = "C:\\Users\\Public";
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         
-        private static Settings LoadedSettings;
+        private static Settings LoadedSettings = new();
 
 
         #region Settings
@@ -67,14 +67,14 @@ namespace RetroLinker.Models
         {
             LoadedSettings = SettingsOps.LoadSettings();
             System.Diagnostics.Debug.WriteLine("Settings loaded for FileOps.", App.DebgTrace);
-            BuildConfigDir();
+            BuildConfigDir(LoadedSettings);
             return LoadedSettings;
         }
 
         public static Settings LoadCachedSettingsFO()
         {
             LoadedSettings = SettingsOps.GetCachedSettings();
-            BuildConfigDir();
+            BuildConfigDir(LoadedSettings);
             return LoadedSettings;
         }
 
@@ -83,8 +83,8 @@ namespace RetroLinker.Models
         public static Settings LoadDesignerSettingsFO(bool fixedOutput)
         {
             LoadedSettings = new Settings();
-            BuildConfigDir();
-            if (fixedOutput) LoadedSettings.AllwaysAskOutput = false;
+            BuildConfigDir(LoadedSettings);
+            if (fixedOutput) LoadedSettings.AlwaysAskOutput = false;
             return LoadedSettings;
         }
 
@@ -113,11 +113,11 @@ namespace RetroLinker.Models
             }
         }
 
-        private static void BuildConfigDir()
+        private static void BuildConfigDir(Settings loadedSettings)
         {
             const string NormalRAconfig = "Default";
             ConfigDir = new List<string>() { NormalRAconfig };
-            if (LoadedSettings.PrevConfig) ConfigDir.AddRange(SettingsOps.PrevConfigs);
+            if (loadedSettings.PrevConfig) ConfigDir.AddRange(SettingsOps.PrevConfigs);
         }
 
         #endregion
@@ -236,11 +236,16 @@ namespace RetroLinker.Models
 
         public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
 
-        public static string GetDirAndCombine(string fullPath, string newFileName) => Path.Combine(GetDirFromPath(fullPath), newFileName);
+        public static string GetDirAndCombine(string fullPath, string newFileName)
+        {
+            string? dir = GetDirFromPath(fullPath);
+            if (string.IsNullOrWhiteSpace(dir)) dir = BaseDir;
+            return Path.Combine(dir, newFileName);
+        }
 
         public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
         
-        public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
+        // public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
 
         public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 
@@ -309,7 +314,7 @@ namespace RetroLinker.Models
 
         public static string CpyIconToCustomSet(string ogPath, string destPath)
         {
-            destPath = Path.GetDirectoryName(destPath);
+            destPath = Path.GetDirectoryName(destPath)!;
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(destPath, name);
             if (File.Exists(newPath)) return Path.GetFullPath(newPath);
