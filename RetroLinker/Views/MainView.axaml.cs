@@ -24,7 +24,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using MsBox.Avalonia;
@@ -34,6 +33,7 @@ using RetroLinker.Models.LinuxClasses;
 using RetroLinker.Translations;
 
 using MessageBoxBottomResult = MsBox.Avalonia.Enums.ButtonResult;
+using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
@@ -74,12 +74,13 @@ public partial class MainView : UserControl
     private int PreloadedIconsCount;
     private byte CurrentTheme = 250;
     private Settings settings;
-    private AvaloniaBitmap ICONimage = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
+    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
     private IconsItems? IconItemSET;
     private Shortcutter BuildingLink = new();
     private bool LinkCustomName;
     private ShortcutterOutput PreviousOutput = new();
 
+    // TODO: This has to be a enum or something, as it needs to include MacOS. (>= 0.8)
     // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
@@ -369,6 +370,13 @@ public partial class MainView : UserControl
         else settings = FileOps.LoadCachedSettingsFO();
         LoadNewSettings();
     }
+    
+    private void ButtonAbout_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // TODO: Apply locale framework
+        var aboutWindow = new AboutWindow() { Title = "About" };
+        aboutWindow.ShowDialog(ParentWindow);
+    }
 
     #region Icon Controls
 
@@ -435,7 +443,7 @@ public partial class MainView : UserControl
                 }
                 catch 
                 {
-                    AvaloniaBitmap bitmap = new(AssetLoader.Open(AvaloniaOps.GetNAimage()));
+                    AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
                     FillIconBoxes(bitmap);
                     panelIconNoImage.IsVisible = true;
                 } 
@@ -443,7 +451,7 @@ public partial class MainView : UserControl
         }
         else
         {   
-            AvaloniaBitmap bitmap = new(AssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
+            AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
             FillIconBoxes(bitmap);
         }
     }
@@ -733,7 +741,7 @@ public partial class MainView : UserControl
             && (!string.IsNullOrEmpty(OutputLink.ROMcore))
             && (OutputLink.OutputPaths[0].ValidOutput))
         {
-            System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.InfoTrace);
+            System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.DebgTrace);
             
             // Double quotes for directories that are parameters ->
             // -> for the ROM file
@@ -841,15 +849,15 @@ public partial class MainView : UserControl
         if (filesEnum is not null)
         {
             var files = new List<IStorageItem>(filesEnum);
-            ControlBox_DropResult(ControlBox_HandleDrop(tc, files[0].Path.LocalPath), tc);
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandleDrop(tc, files[0].Path.LocalPath), tc));
             return;
         }
         else if (!string.IsNullOrWhiteSpace(text))
         {
-            ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc);
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc));
             return;
         }
-        ControlBox_DropResult(false, tc);
+        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(false, tc));
     }
     
     bool ControlBox_HandleDrop(AvaloniaTemplatedControl sender, string droppedPath)
@@ -891,7 +899,7 @@ public partial class MainView : UserControl
         return true;
     }
     
-    async void ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl tc)
+    async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl tc)
     {
         var resultBrush = accepted ? Brushes.LimeGreen : Brushes.Crimson; 
         tc.BorderBrush = resultBrush;

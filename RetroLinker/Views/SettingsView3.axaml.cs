@@ -179,14 +179,12 @@ namespace RetroLinker.Views
         ListBoxItem AddLinkCopyItem(string dir)
         {
             var newItem = new ListBoxItem();
-            var gridControl = new Styles.LinkCopyItemGrid();
-            Grid _grid = gridControl.GetNewCopyGrid(dir);
-            _ = _grid.Children;
+            var gridControl = new Styles.LinkCopyItemGrid(dir);
 
-            var trashButtom = _grid.Children[1] as Button;
-            trashButtom!.AddHandler(Button.ClickEvent, btnTrashCopyItem);
+            var trashButton = gridControl.NewItemTrash;
+            trashButton!.Click += btnTrashCopyItem;
             
-            newItem.Content = _grid;
+            newItem.Content = gridControl.NewItemGrid;
             return newItem;
         }
         

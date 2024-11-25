@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -32,38 +31,22 @@ namespace RetroLinker.Styles;
 public class LinkCopyItemGrid
 {
     // Link Copy ListItem
-    private Grid NewItemGrid { get; set; }
-    private Label NewItemText { get; set; }
-    private Button NewItemTrash { get; set; }
+    public Grid NewItemGrid { get; private set; }
+    public Label NewItemText { get;  private set; }
+    public Button NewItemTrash { get; private set; }
 
-    public LinkCopyItemGrid()
-    {
-        DefineNewLinkCopyItem(null);
-    }
-    
-    public LinkCopyItemGrid(string Dir)
-    {
-        DefineNewLinkCopyItem(Dir);
-        
-    }
+    public LinkCopyItemGrid(string Dir) => DefineNewLinkCopyItem(Dir);
     
     void DefineNewLinkCopyItem(string? path)
     {
         NewItemGrid = new Grid()
         {
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        NewItemGrid.ColumnDefinitions = new ColumnDefinitions()
-        {
-            new ColumnDefinition(1, GridUnitType.Star),
-            new ColumnDefinition(1, GridUnitType.Auto)
+            VerticalAlignment = VerticalAlignment.Center,
+            ColumnDefinitions = new ColumnDefinitions("*, Auto")
         };
             
         NewItemText = new Label();
-        if (!string.IsNullOrEmpty(path))
-        {
-            NewItemText.Content = path;
-        }
+        if (!string.IsNullOrEmpty(path)) NewItemText.Content = path;
             
         Icon trashcan = new()
         {
@@ -106,22 +89,12 @@ public class LocaleComboItem
 
     private static Grid DefineNewLocaleComboItem(LanguageItem locale)
     {
-        var grid = new Grid();
-        grid.ColumnDefinitions = new ColumnDefinitions()
-        {
-            new(1, GridUnitType.Auto),
-            new(1, GridUnitType.Star)
-        };
+        var grid = new Grid(){ ColumnDefinitions = new ColumnDefinitions("Auto, *") };
 
         var icon = new Image()
-        {
-            Source = new Bitmap(AssetLoader.Open(locale.LangIconPath))
-        };
+            { Source = new Bitmap(AssetLoader.Open(locale.LangIconPath)) };
         var pictureBox = new Viewbox()
-        {
-            Width = 35,
-            Child = icon
-        };
+            { Width = 35, Child = icon };
 
         var text = new Label()
         {

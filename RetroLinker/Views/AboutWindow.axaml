@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:Class="RetroLinker.Views.AboutWindow"
+        MinWidth="450" MinHeight="350" Width="500" Height="400" 
+        WindowStartupLocation="CenterScreen" Title="About" Icon="/Assets/avalonia-logo.ico">
+    <Grid RowDefinitions="*,Auto" Margin="5">
+        <!-- BODY -->
+        <!-- TODO: Apply locale framework -->
+        <Grid Grid.Row="0" RowDefinitions="0.7*,*">
+            <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
+                <!-- TODO: Change image with app logo -->
+                <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Icons/retroarch.ico"/>
+                
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
+                    <Label Name="LabelTitle" Content="APP TITTLE, APP VERSION"/>
+                    <Label Name="LabelBuild" Content="APP BUILD DATE; GIT COMMIT"/>
+                    <TextBlock Name="LabelDesc" TextWrapping="WrapWithOverflow" Text="Description"/>
+                    <!-- A GUI application to create desktop links of games running on RetroArch. For Windows and Linux. -->
+                    <Label Content="© 2023-2024  Kevin R. Martinez J."/>
+                </StackPanel>
+            </Grid>
+            <!-- TODO: Add different styles to labels  -->
+            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto">
+                <StackPanel Grid.Row="0">
+                    <Rectangle Height="6"/>
+                    <Label Content="Contributors"/>
+                </StackPanel>
+                <ListBox Name="ListBoxContributors" Grid.Row="1" SelectionMode="Single" 
+                         VerticalAlignment="Stretch" Margin="2"/>
+                <StackPanel Name="StackPanelCredits" Grid.Row="2">
+                    <Label Content="3rd Party Credits"/>
+                </StackPanel>
+                <Rectangle Grid.Row="3" Height="8"/>
+            </Grid>
+        </Grid>
+        
+        <!-- EXIT BUTTON -->
+        <Button Grid.Row="1" FontSize="14" Content="Ok" Click="Button_OnClick"
+                HorizontalAlignment="Center" HorizontalContentAlignment="Center" Width="60"/>
+    </Grid>
+</Window>

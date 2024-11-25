@@ -8,10 +8,11 @@
              x:Class="RetroLinker.Views.MainView"
 			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
 	
-	<Grid RowDefinitions="Auto, *, Auto">
+	<Grid RowDefinitions="Auto, *">
 		<!--Top-->
 		<Grid Name="gridTOP" Grid.Row="0" Height="45" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
-			<Rectangle Grid.Column="0" Width="40" Margin="5,0,0,0"/>
+			<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
+			        i:Attached.Icon="fa-circle-info" FontSize="22"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/>
 			</StackPanel>
@@ -23,7 +24,7 @@
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
 			
 			<!--Main Operations-->
-			<Grid Name="gridOPS" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto" ShowGridLines="False">
+			<Grid Name="gridOPS" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto">
 
 				<!-- ROW0 - Spacing -->
 				<Rectangle Grid.Row="0" Height="8"/>
@@ -186,15 +187,6 @@
 			</Grid>
 			<!--BODY END-->
 		</Grid>
-		
-		<!--Bottom-->
-		<!-- <Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray"> -->
-		<!-- 	~1~Supongo que aqui ira el About y Help@1@ -->
-		<!-- 	<Label Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">BOTTOM</Label> -->
-		<!-- </Grid> -->
-		
 	</Grid>
-	<!--<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
 	<!--https://stackify.com/cross-platform-net-core-apps/-->
-	<!--"https://www.flaticon.es/iconos-gratis/formas-y-simbolos" Formas y simbolos iconos creados por Freepik - Flaticon-->
 </UserControl>
