@@ -136,7 +136,7 @@ namespace RetroLinker.Models
                         settings.UserAssetsPath = FileOps.ResolveSettingUA(settingFile[++i]);
                         settings.DEFRADir = settingFile[++i];
                         settings.DEFROMPath = settingFile[++i];
-                        // TODO: Save all bools as a single 8bit number 
+                        // TODO: Save all bools as a single 8bit number (0.8)
                         settings.PrevConfig = ResolveBool(settingFile[++i]);
                         settings.AlwaysAskOutput = ResolveBool(settingFile[++i]);
                         settings.DEFLinkOutput = settingFile[++i];
@@ -250,8 +250,7 @@ namespace RetroLinker.Models
         
         private string GetString()
         {
-            // TODO: There should be a better way...
-            // It may not be smart, but if it works...
+            // TODO: There should be a better way... like JSON (0.8)
             string objectString = 
                 $"{UserAssetsPath}\n" +
                 $"{DEFRADir}\n" +

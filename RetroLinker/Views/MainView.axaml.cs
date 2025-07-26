@@ -245,7 +245,9 @@ public partial class MainView : UserControl
 
     void ApplyArgs()
     {
-        // TODO: Add argument loading support. 2 Cases: Opening existing links; Starting from a ROM. 
+        // TODO: Add argument loading support. 2 Cases:
+        // 1. Opening existing links
+        // 2. Starting from a ROM
         if (App.Args.Length == 0) System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
         else
         {
@@ -420,7 +422,8 @@ public partial class MainView : UserControl
 
     // Solution of SelectionChangedEventArgs thanks to snurre @ stackoverflow.com
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {   
+    {
+        if (!sender.Equals(comboICONDir)) return;
         int selectedIndex = comboICONDir.SelectedIndex;
         panelIconNoImage.IsVisible = false;
         if (selectedIndex > 0)
@@ -672,13 +675,13 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
-        // TODO: Confirm overwrite on AlwaysAskOutput = false
+        // TODO: Confirm overwrite on AlwaysAskOutput = false (0.7)
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
-                // TODO: Sanitize user input
+                // TODO: Sanitize user input (0.7)
                 var outputPathStr = !settings.AlwaysAskOutput 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : (txtLINKDir.Text);

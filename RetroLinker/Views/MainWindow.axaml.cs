@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         MainCC1.Content = PermaView;
     }
     
-    // TODO: Find a way to dispose of previous views
+    // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
     public void ReturnToMainView(UserControl view)
     {
         MainCC1.Content = PermaView;
