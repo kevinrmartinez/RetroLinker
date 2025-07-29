@@ -127,7 +127,7 @@ namespace RetroLinker.Models
         #endregion
 
         #region Load
-
+        
         public static bool GetCoreFile(out string file)
         {
             var externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
@@ -158,7 +158,7 @@ namespace RetroLinker.Models
 
         public static object[] LoadIcons(bool OS)
         {
-            // TODO: Refactor all of this
+            // TODO: Refactor all of this. Also, tuples are a thing in C# (0.8)
             var files = new List<string>();
             var isError = false;
             var iconException = string.Empty;
@@ -350,7 +350,7 @@ namespace RetroLinker.Models
 
         public static string SaveWinIco(IconsItems selectedIconItem)
         {
-            string icoExt = Path.GetExtension(selectedIconItem.FileName)!;
+            string icoExt = Path.GetExtension(selectedIconItem.FileName);
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : LoadedSettings.UserAssetsPath;
             string newPath = Path.Combine(newDir, icoName);
@@ -394,6 +394,7 @@ namespace RetroLinker.Models
             return newIconPath;
         }
 
+        // Obsolete?
         public static string WriteIcoToFile(MemoryStream icoStream, string outputPath)
         {
             var fileInfo = new FileInfo(outputPath);

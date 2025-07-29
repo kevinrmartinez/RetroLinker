@@ -28,37 +28,41 @@ namespace RetroLinker.Views;
 public partial class AboutWindow : Window
 {
     private readonly string[] Contributors;
-    private Dictionary<string, Uri> OutsideCredits = new();
+    private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
     
     public AboutWindow()
     {
         InitializeComponent();
+        LabelBuild.IsVisible = false;
         
         // About the App
         var title = (string.IsNullOrWhiteSpace(App.AppName)) ? nameof(App.AppName) : App.AppName;
         var version = (string.IsNullOrWhiteSpace(App.AppVersion)) ? nameof(App.AppVersion) : App.AppVersion;
         LabelTitle.Content = $"{title} v{version}";
 
-        var buildDate = "BuildDate";
-        // TODO: https://stackoverflow.com/questions/1600962/displaying-the-build-date
-        var gitCommitHash = "GitCommitHash";
-        // TODO: https://github.com/GitTools/GitVersion
-        LabelBuild.Content = $"{buildDate}; {gitCommitHash}";
+#if !RELEASE
         
-        // Contributors (In order of arrival) 
-        // TODO: Replace with HyperlinkButtons pointing to the github account
-        Contributors = ["kevinrmartinez"];
+        var buildDate = (App.AppBuildDate.HasValue) ? App.AppBuildDate.Value.ToString("s") : "BuildDate";
+        var gitCommitHash = (!string.IsNullOrEmpty(App.AppCommitHash)) ?  App.AppCommitHash : "GitCommitHash";
+        LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
+        LabelBuild.IsVisible = true;
+#endif
+        
+        // Contributors (In order of arrival)
+        // TODO: Replace with HyperlinkButtons pointing to the github account (>= 0.8)
+        Contributors = [ "" ];
         ListBoxContributors.ItemsSource = Contributors;
         
         // Attribution
-        OutsideCredits.Add("Unknown Icons", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos"));
-        OutsideCredits.Add("Flags", new Uri("http://www.iconbeast.com"));
-        foreach (var key in OutsideCredits.Keys)
+        // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
+        ThirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
+        ThirdPartyCredits.Add("Flag Icons", new Uri("http://www.iconbeast.com"));
+        foreach (var key in ThirdPartyCredits.Keys)
         {
             var hyperlink = new HyperlinkButton()
             {
-                NavigateUri = OutsideCredits[key],
-                Content = $"{key}: {OutsideCredits[key]}",
+                NavigateUri = ThirdPartyCredits[key],
+                Content = key,
                 Padding = new Thickness(0)
             };
             StackPanelCredits.Children.Add(hyperlink);

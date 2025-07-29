@@ -71,6 +71,7 @@ public static class LinShortcutter
 
     private static void SetExecPermissions(string dir)
     {
+        // TODO: This can be done by C# I think
         Debug.WriteLine($"SetExecPermissions Thread ID: {System.Environment.CurrentManagedThreadId}", App.DebgTrace);
         const string permExec = "chmod";
         const string permComm = "-c ug+x";

@@ -97,16 +97,13 @@ namespace RetroLinker.Models
 
         private static bool ResolveBool(string value)
         {
-            int.TryParse(value, out var valueInt);
-            switch (valueInt)
+            _ = int.TryParse(value, out var valueInt);
+            return valueInt switch
             {
-                case 0:
-                    return false;
-                case 1:
-                    return true;
-                default:
-                    throw new System.IO.InvalidDataException(InvalidDataMessage);
-            }
+                0 => false,
+                1 => true,
+                _ => throw new System.IO.InvalidDataException(InvalidDataMessage)
+            };
         }
 
         private static int ResolveNumber(string value)

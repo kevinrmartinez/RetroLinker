@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -25,8 +26,14 @@ using RetroLinker.Views;
 
 namespace RetroLinker;
 
-public partial class App : Application
+public class App : Application
 {
+    public string AppFullName { get; private set; } = string.Empty;
+    public static string AppName { get; private set; } = string.Empty;
+    public static string AppVersion { get; private set; } = string.Empty;
+    public static DateTime? AppBuildDate { get; private set; }
+    public static string? AppCommitHash { get; private set; }
+    
     public const string TimeTrace = "[Time]";
     public const string DebgTrace = "[Debg]";
     public const string InfoTrace = "[Info]";
@@ -34,32 +41,25 @@ public partial class App : Application
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
     public static readonly System.Diagnostics.Stopwatch StopWatch = new();
-    public static string AppName = string.Empty;
-    public static string AppVersion = string.Empty;
-    public static string[] Args = [];
+    
+    public static string[]? Args;
     
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
         StopWatch.Start();
-        System.Diagnostics.Debug.WriteLine($"App Launched at: {System.DateTime.Now:HH:mm:ss.fff}", TimeTrace);
+        System.Diagnostics.Debug.WriteLine($"App Launched at: {DateTime.Now:HH:mm:ss.fff}", TimeTrace);
+        
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
+        const string defaultLocale = "en-US";
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            AppName = desktop.Args![0];
-            AppVersion = desktop.Args[1];
-
-            const int argsOffset = 2;
-            int newLength = desktop.Args.Length - argsOffset;
-            Args = new string[newLength];
-            if (Args.Length > 0)
-                for (int i = 0; i < Args.Length; i++)
-                    Args[i] = desktop.Args[i + argsOffset];
-            
-            LanguageManager.FixLocale(new CultureInfo("en-US"));
+            Args = desktop.Args;
+            LanguageManager.FixLocale(new CultureInfo(defaultLocale));
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
@@ -81,5 +81,14 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    public void SetAppInfo(AppInfo appInfo)
+    {
+        AppFullName = appInfo.FullName;
+        AppName = appInfo.Name;
+        AppVersion = appInfo.Version;
+        AppBuildDate = appInfo.BuildDate;
+        AppCommitHash = appInfo.GitHash;
     }
 }
