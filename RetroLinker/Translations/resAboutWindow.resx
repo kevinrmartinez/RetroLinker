@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="wndTitle" xml:space="preserve">
+        <value>About</value>
+    </data>
+    <data name="lblDesc" xml:space="preserve">
+        <value>A GUI application to create desktop links of games running on RetroArch.</value>
+    </data>
+    <data name="lblCopyright" xml:space="preserve">
+        <value>© Kevin R. Martinez J. 2023-2025</value>
+    </data>
+    <data name="lblMaintainer" xml:space="preserve">
+        <value>Founder &amp; Maintainer</value>
+    </data>
+    <data name="lblContributors" xml:space="preserve">
+        <value>Contributors</value>
+    </data>
+    <data name="lblAttributions" xml:space="preserve">
+        <value>Attributions</value>
+    </data>
+    <data name="btnClose" xml:space="preserve">
+        <value>Ok</value>
+    </data>
+</root>

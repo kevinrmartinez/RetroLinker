@@ -86,6 +86,10 @@
     <EmbeddedResource Update="Translations\resMainExtras.es.resx">
       <DependentUpon>resMainExtras.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAboutWindow.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resAboutWindow.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -113,6 +117,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resMainExtras.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resAboutWindow.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resAboutWindow.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

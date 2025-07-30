@@ -33,7 +33,7 @@ public partial class AboutWindow : Window
     public AboutWindow()
     {
         InitializeComponent();
-        LabelBuild.IsVisible = false;
+        BorderDev.IsVisible = false;
         
         // About the App
         var title = (string.IsNullOrWhiteSpace(App.AppName)) ? nameof(App.AppName) : App.AppName;
@@ -45,18 +45,18 @@ public partial class AboutWindow : Window
         var buildDate = (App.AppBuildDate.HasValue) ? App.AppBuildDate.Value.ToString("s") : "BuildDate";
         var gitCommitHash = (!string.IsNullOrEmpty(App.AppCommitHash)) ?  App.AppCommitHash : "GitCommitHash";
         LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
-        LabelBuild.IsVisible = true;
+        BorderDev.IsVisible = true;
 #endif
         
         // Contributors (In order of arrival)
-        // TODO: Replace with HyperlinkButtons pointing to the github account (>= 0.8)
+        // TODO: Replace with HyperlinkButtons pointing to the github account. Maybe using Records (>= 0.8)
         Contributors = [ "" ];
         ListBoxContributors.ItemsSource = Contributors;
         
         // Attribution
         // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
         ThirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        ThirdPartyCredits.Add("Flag Icons", new Uri("http://www.iconbeast.com"));
+        ThirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("http://www.iconbeast.com"));
         foreach (var key in ThirdPartyCredits.Keys)
         {
             var hyperlink = new HyperlinkButton()

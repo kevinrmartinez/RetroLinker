@@ -87,6 +87,8 @@ public static class LanguageManager
 
     private static void SetAllCultureInfo(CultureInfo cultureInfo)
     {
+        // Is this the best I can do?
+        resAboutWindow.Culture = cultureInfo;
         resAvaloniaOps.Culture = cultureInfo;
         resGeneric.Culture = cultureInfo;
         resMainExtras.Culture = cultureInfo;
