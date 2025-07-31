@@ -564,7 +564,7 @@ public partial class MainView : UserControl
     
     void btnAppendConfig_Click(object sender, RoutedEventArgs e)
     {
-        // TODO
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, [BuildingLink.CONFappend]);
     }
     #endregion
 

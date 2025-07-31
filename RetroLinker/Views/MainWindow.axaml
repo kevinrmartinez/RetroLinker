@@ -7,10 +7,11 @@
         x:Class="RetroLinker.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
 		WindowStartupLocation="CenterScreen">
-        
-        <TransitioningContentControl Name="MainCC1">
-	        <TransitioningContentControl.PageTransition>
-				<CrossFade Duration="0:00:00.280"/>
-	        </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+	
+	<!-- TODO: One ContentControl in CrossFade, to refresh the view; another one (child of the first) in PageSilde to change views  -->
+	<TransitioningContentControl Name="MainCC1">
+		<TransitioningContentControl.PageTransition>
+			<CrossFade Duration="0:00:00.280"/>
+		</TransitioningContentControl.PageTransition>
+	</TransitioningContentControl>
 </Window>

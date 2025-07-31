@@ -42,6 +42,7 @@
 
 				<!-- ROW2 - ROM Directory -->
 				<StackPanel Name="panelROMDir" Grid.Row="2">
+					<!-- TODO: Add a little text to indicate the selected patch, if any -->
 					<StackPanel Orientation="Horizontal" Margin="5,5,0,0" Spacing="12">
 						<Label Margin="0,5,0,0" Content="{x:Static locale:resMainView.lblROMDir}"/>
 						<CheckBox Name="chkContentless" Content="{x:Static locale:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
@@ -77,7 +78,7 @@
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
 								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="btnCONFIGDir_Click" 
 										i:Attached.Icon="fa-folder-open" FontSize="18"/>
-								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static locale:resMainView.tipAppendConfig}" Click="btnAppendConfig_Click" IsEnabled="False"
+								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static locale:resMainView.tipAppendConfig}" Click="btnAppendConfig_Click"
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>

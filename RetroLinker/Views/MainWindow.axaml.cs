@@ -66,6 +66,7 @@ public partial class MainWindow : Window
         MainCC1.Content = views switch
         {
             ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
+            ViewsTypes.AppendView => new AppendView(this,  (string)currentValues[0]),
             _ => PermaView
         };
     }

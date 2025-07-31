@@ -16,8 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -72,7 +74,7 @@ public class LinkCopyItemGrid
     }
 }
 
-public class LocaleComboItem
+public static class LocaleComboItem
 {
 
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
@@ -108,5 +110,41 @@ public class LocaleComboItem
         grid.Children.Add(pictureBox);
         grid.Children.Add(text);
         return grid;
+    }
+}
+
+public class MainWindowHeader : Grid
+{
+    public string Title { get; set; }
+    protected override Type StyleKeyOverride { get; } = typeof(Grid);
+
+    public MainWindowHeader(string title)
+    {
+        Title = title;
+        SetDimmensions();
+        var child = PopulateChildren();
+        SetColumn(child,1);
+        Children.Add(child);
+    }
+
+    private void SetDimmensions()
+    {
+        Height = 45;
+        ColumnDefinitions =  new ColumnDefinitions("Auto,*,Auto");
+    }
+
+    private StackPanel PopulateChildren()
+    {
+        return new StackPanel()
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Children = { new Label()
+            {
+                DataContext = this,
+                [!ContentControl.ContentProperty] = new Binding(nameof(Title))
+            } }
+        };
     }
 }

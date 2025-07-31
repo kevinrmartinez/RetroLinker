@@ -33,6 +33,7 @@ public partial class PatchesView : UserControl
         InitializeComponent();
         ParentWindow = new MainWindow(true);
         PatchString = string.Empty;
+        BuildHeader();
     }
     
     public PatchesView(MainWindow mainWindow, string patchString)
@@ -40,6 +41,15 @@ public partial class PatchesView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         PatchString = patchString;
+        BuildHeader();
+    }
+    
+    private void BuildHeader()
+    {
+        var header = new Styles.MainWindowHeader($"{Translations.resMainExtras.tittleSoftPatching}");
+        header.Classes.Add("Header");
+        Grid.SetRow(header, 0);
+        gridContent.Children.Add(header);
     }
     
     // Window Object

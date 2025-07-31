@@ -59,7 +59,8 @@ namespace RetroLinker.Models
         public bool VerboseB { get; set; }      // 10
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
-        public string PatchArg { get; set; }   // 13
+        public string PatchArg { get; set; }    // 13
+        public string CONFappend { get; set; }  // 14
 
         private string ra_dir;
         private string ra_path;
@@ -80,6 +81,7 @@ namespace RetroLinker.Models
             FullscreenB = false;
             AccessibilityB = false;
             PatchArg = string.Empty;
+            CONFappend = string.Empty;
         }
 
         public Shortcutter(Shortcutter ObjToClone)
@@ -98,6 +100,7 @@ namespace RetroLinker.Models
             FullscreenB = ObjToClone.FullscreenB;
             AccessibilityB = ObjToClone.AccessibilityB;
             PatchArg = ObjToClone.PatchArg;
+            CONFappend = ObjToClone.CONFappend;
         }
 
         private void SetRAdir(string value)
