@@ -44,25 +44,20 @@ public partial class MainView : UserControl
     public MainView()
     {
         // Constructor for Designer
-        AvaloniaOps.DesignerMainViewPreConstruct(out settings);
         InitializeComponent();
         ParentWindow = new MainWindow(true);
         IsDesingner = true;
-        stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
+        settings =  new Settings();
     }
     
     public MainView(MainWindow mainWindow)
     {
-        AvaloniaOps.MainViewPreConstruct(mainWindow, out settings);
         InitializeComponent();
         ParentWindow = mainWindow;
-        stopwatch = App.StopWatch;
-        System.Diagnostics.Debug.WriteLine($"Execution time after MainView(): {stopwatch.ElapsedMilliseconds} ms", App.TimeTrace);
+        settings = mainWindow.Settings;
     }
     
     // Debug
-    private System.Diagnostics.Stopwatch stopwatch;
     private bool IsDesingner = false;
     
     // Window Object
@@ -88,10 +83,10 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Reimplement this. Lists should be loaded externally to prevent view from making list again and again (0.7)
+        // TODO: Reimplement this.
         if (FormFirstLoad)
         {
-            AvaloniaOps.MainViewLoad();
+            // AvaloniaOps.MainViewLoad();
 
 #if DEBUG
             // TODO: Implement an Event for theme handling
@@ -122,17 +117,15 @@ public partial class MainView : UserControl
             LoadDragDropEvents();
             ApplySettingsToControls();
             
-            comboCore_Loaded(AvaloniaOps.GetCoresArray());
+            comboCore_Loaded(ParentWindow.CoresList);
             comboConfig_Loaded();
-            comboICONDir_Loaded(FileOps.LoadIcons(DesktopOS));
+            comboICONDir_Loaded(ParentWindow.IconsList);
             
             // Arguments should only load when above controls are ready
             ApplyArgs();
             
             // TODO: Tutorial event for new users
             
-            stopwatch.Stop();
-            System.Diagnostics.Debug.WriteLine($"Execution time after View1_Loaded(): {stopwatch.ElapsedMilliseconds} ms", App.TimeTrace);
             FormFirstLoad = false;
         }
         else LoadNewSettings();
@@ -147,6 +140,7 @@ public partial class MainView : UserControl
 
     void comboConfig_Loaded()
     {
+        comboConfig.Items.Clear();
         foreach (var config in FileOps.ConfigDir)
             comboConfig.Items.Add(config);
         
@@ -159,6 +153,7 @@ public partial class MainView : UserControl
         var hasError = (bool)iconsObject[1];
         var exception = (string)iconsObject[2];
 
+        comboICONDir.Items.Clear();
         if (!hasError)
         {
             comboICONDir.Items.Add(resMainView.comboDefItem);
@@ -677,6 +672,7 @@ public partial class MainView : UserControl
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
+                // TODO: Ask for overwrite when AlwaysAskOutput = false
                 var outputPathStr = (!settings.AlwaysAskOutput) 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : txtLINKDir.Text;

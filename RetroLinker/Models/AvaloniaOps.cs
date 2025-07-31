@@ -43,33 +43,6 @@ public static class AvaloniaOps
 
     
     #region FUNCTIONS
-    public static void MainViewPreConstruct(MainWindow mainWindow, out Settings settings)
-    {
-        if (mainWindow.IsDesigner)
-        {
-            settings = FileOps.LoadDesignerSettingsFO(false);
-            return;
-        }
-        if (FirstLoad)
-        {
-            Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
-            settings = FileOps.LoadSettingsFO();
-            Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
-            Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
-        
-            LanguageManager.SetLocale(settings.LanguageCulture);
-        }
-        else settings = FileOps.LoadCachedSettingsFO();
-    }
-
-    public static void DesignerMainViewPreConstruct(out Settings settings) {
-        settings = FileOps.LoadDesignerSettingsFO(false);
-    }
-
-    public static void MainViewLoad() {
-        FirstLoad = false;
-    }
-
     public static string[] GetCoresArray()
     {
         if (Cores.Length >= 1) return Cores;

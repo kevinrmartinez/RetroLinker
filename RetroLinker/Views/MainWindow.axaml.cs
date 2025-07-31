@@ -23,10 +23,23 @@ namespace RetroLinker.Views;
 
 public partial class MainWindow : Window
 {
+    // Props
+    public Settings Settings { get; set; }
+    public string[] CoresList { get; set; }
+    public object[] IconsList { get; set; }
+    
+    // Fields
+    private UserControl PermaView;
+    public bool IsDesigner = true;
+    private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
+    
     public MainWindow()
     {
         InitializeComponent();
         System.Diagnostics.Debug.WriteLine("Starting MainView...", App.DebgTrace);
+        Settings = FileOps.LoadSettingsFO();
+        CoresList = AvaloniaOps.GetCoresArray();
+        IconsList = FileOps.LoadIcons(DesktopOS);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
@@ -36,19 +49,14 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         IsDesigner = isDesigner;
+        CoresList = AvaloniaOps.GetCoresArray();
+        IconsList = FileOps.LoadIcons(DesktopOS);
         PermaView = new RenameEntryView();
         if (isDesigner) return;
+        Settings = FileOps.LoadSettingsFO();
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
-    
-    // Fields
-    private UserControl PermaView;
-    public bool IsDesigner = true;
-    
-    // Shared Objects
-    // public Shortcutter BuildingLink { get; set; } = new();
-    // public bool LinkCustomName { get; set; }
 
     public enum ViewsTypes
     { MainView, PatchesView, SubsysView, AppendView }

@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-		Width="800" Height="550" MinWidth="790" MinHeight="530"
+        mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
+		Width="850" Height="550" MinWidth="790" MinHeight="530"
         x:Class="RetroLinker.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
 		WindowStartupLocation="CenterScreen">
