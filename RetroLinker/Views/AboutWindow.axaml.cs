@@ -1,6 +1,6 @@
 /*
     A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

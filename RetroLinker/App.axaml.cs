@@ -54,7 +54,7 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        const string defaultLocale = "en-US";
+        const string defaultLocale = "en_US";
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

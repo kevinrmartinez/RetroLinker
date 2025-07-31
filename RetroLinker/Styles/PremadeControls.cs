@@ -77,6 +77,7 @@ public class LocaleComboItem
 
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
+        // TODO: Reimplement using DataTemplates
         var item = new ComboBoxItem()
         {
             HorizontalContentAlignment = HorizontalAlignment.Left,

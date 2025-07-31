@@ -88,6 +88,7 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
+        // TODO: Reimplement this. Lists should be loaded externally to prevent view from making list again and again (0.7)
         if (FormFirstLoad)
         {
             AvaloniaOps.MainViewLoad();
