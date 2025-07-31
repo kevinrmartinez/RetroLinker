@@ -20,6 +20,9 @@ namespace RetroLinker.Models.LinuxClasses;
 
 public static class LinDesktopEntry
 {
+    // What a mess...
+    // TODO: Remake this. Better yet, don't do this sh*t...
+    
     // private const string Ext = FileOps.LinLinkExt;
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";

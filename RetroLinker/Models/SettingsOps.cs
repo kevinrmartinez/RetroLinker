@@ -133,7 +133,7 @@ namespace RetroLinker.Models
                         settings.UserAssetsPath = FileOps.ResolveSettingUA(settingFile[++i]);
                         settings.DEFRADir = settingFile[++i];
                         settings.DEFROMPath = settingFile[++i];
-                        // TODO: Save all bools as a single 8bit number (0.8)
+                        // TODO: Save all bools as a single 8-bit number (byte) (0.8)
                         settings.PrevConfig = ResolveBool(settingFile[++i]);
                         settings.AlwaysAskOutput = ResolveBool(settingFile[++i]);
                         settings.DEFLinkOutput = settingFile[++i];

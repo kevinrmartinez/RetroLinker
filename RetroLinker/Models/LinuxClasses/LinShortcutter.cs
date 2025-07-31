@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -64,35 +65,23 @@ public static class LinShortcutter
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
         
-        // If file write is successful, set execution permissions
         FileOps.WriteDesktopEntry(outputFile, outputBytes);
+        // If file write is successful (doesn't throw), set execution permissions
         System.Threading.Tasks.Task.Run(() => SetExecPermissions(outputFile));
     }
 
-    private static void SetExecPermissions(string dir)
+    private static void SetExecPermissions(string filePath)
     {
-        // TODO: This can be done by C# I think
-        Debug.WriteLine($"SetExecPermissions Thread ID: {System.Environment.CurrentManagedThreadId}", App.DebgTrace);
-        const string permExec = "chmod";
-        const string permComm = "-c ug+x";
-        Trace.WriteLine($"Trying to set executable permissions to \"{dir}\".", App.InfoTrace);
-        var processStartInfo = new ProcessStartInfo()
-        {
-            FileName = permExec,
-            Arguments = $"{permComm} \"{dir}\"",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
+        Debug.WriteLine($"SetExecPermissions Thread ID: {Environment.CurrentManagedThreadId}", App.DebgTrace);
+        Trace.WriteLine($"Trying to set executable permissions to \"{filePath}\".", App.InfoTrace);
 
-        var process = new Process()
-            { StartInfo = processStartInfo };
-
-        Trace.WriteLine($"Executing {permExec} {permComm} \"{dir}\"...", App.InfoTrace);
-        process.Start();
-        string error = process.StandardError.ReadToEnd();
-        string output = process.StandardOutput.ReadToEnd();
-
-        Debug.WriteLineIf(!string.IsNullOrEmpty(error), error, $"{App.DebgTrace}[{permExec}]");
-        Trace.WriteLineIf(!string.IsNullOrEmpty(output), output, $"{App.InfoTrace}[{permExec}]");
+        try {
+            FileOps.MakeFileExecutable(filePath);
+            Trace.WriteLine($"Executable permissions to \"{filePath}\" were set successfully.", App.InfoTrace);
+        }
+        catch (Exception e) {
+            Trace.WriteLine($"Failed to set executable permissions to \"{filePath}\".", App.ErroTrace);
+            Trace.WriteLine($"Error: {e.Message}",  App.ErroTrace);
+        }
     }
 }

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using RetroLinker.Models.LinuxClasses;
 
@@ -31,7 +32,7 @@ namespace RetroLinker.Models
         public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
         // public const string tempIco = "temp.ico";
-        public const byte MAX_PATH = 255; // TODO: Apply Everywhere?
+        public const byte MAX_PATH = 255; // Apply Everywhere?
         private const string WinLinkExt = ".lnk";
         private const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
@@ -393,10 +394,10 @@ namespace RetroLinker.Models
             
             return newIconPath;
         }
-
-        // Obsolete?
+        
         public static string WriteIcoToFile(MemoryStream icoStream, string outputPath)
         {
+            // Obsolete?
             var fileInfo = new FileInfo(outputPath);
             var fileStream = fileInfo.Create();
             fileStream.Write(icoStream.ToArray());
@@ -430,7 +431,7 @@ namespace RetroLinker.Models
         {
             var EntryName = SeparateFileNameFromPath(LinkDir);
             EntryName[2] = LinDesktopEntry.StdDesktopEntry(EntryName[1], core);
-            
+            EntryName[2] += EntryName[3];
             EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0])!, EntryName[2]);
             return EntryName;
         }
@@ -442,6 +443,18 @@ namespace RetroLinker.Models
         }
         
         public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
+
+        [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+        public static void MakeFileExecutable(string filePath)
+        {
+            
+            // Freaking bit magic: https://aaronbos.dev/posts/csharp-flags-enum
+            // |= Adds file mode to existing ones
+            // &= idk, it cleared all file modes and only left added one
+            // -= Removes file mode from existing ones
+            var fileInfo = new FileInfo(filePath);
+            fileInfo.UnixFileMode |= UnixFileMode.UserExecute | UnixFileMode.GroupExecute;
+        }
 
         #endregion
     }

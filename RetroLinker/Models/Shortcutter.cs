@@ -180,6 +180,7 @@ namespace RetroLinker.Models
                     LinkResult.Messeage = LinkResult.Success1; }
                 catch (System.Exception e)
                 {
+                    // TODO: Handle specific Exceptions 
                     System.Diagnostics.Trace.WriteLine($"\"{outputFile}\" could not be created!", App.ErroTrace);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;

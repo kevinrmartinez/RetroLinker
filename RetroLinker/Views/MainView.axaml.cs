@@ -248,11 +248,13 @@ public partial class MainView : UserControl
         // TODO: Add argument loading support. 2 Cases:
         // 1. Opening existing links
         // 2. Starting from a ROM
-        if (App.Args.Length == 0) System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
+        var args = App.Args;
+        if (args is null)  return;
+        if (args.Length == 0) System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
         else
         {
-            for (int i = 0; i < App.Args.Length; i++)
-                System.Diagnostics.Debug.WriteLine(App.Args[i], App.DebgTrace);
+            foreach (var arg in args)
+                System.Diagnostics.Debug.WriteLine(arg, App.DebgTrace);
         }
     }
 
@@ -315,7 +317,7 @@ public partial class MainView : UserControl
     
     async Task<MessageBoxBottomResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
     {
-        standardParams.WindowIcon = ParentWindow.Icon;
+        if (ParentWindow.Icon is { } icon) standardParams.WindowIcon = icon;
         standardParams.MaxWidth = 550;
         standardParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
@@ -324,7 +326,8 @@ public partial class MainView : UserControl
     
     async Task<string> MessageBoxPopUp(MessageBoxCustomParams customParams)
     {
-        customParams.WindowIcon = ParentWindow.Icon;
+        // Obsolete?
+        if (ParentWindow.Icon is { } icon) customParams.WindowIcon = icon;
         customParams.MaxWidth = 600;
         customParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var msBox = MessageBoxManager.GetMessageBoxCustom(customParams);
@@ -368,15 +371,13 @@ public partial class MainView : UserControl
     {
         var settingWindow = new SettingsWindow(ParentWindow, settings); 
         var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
-        if (settingReturn is not null) settings = FileOps.SetNewSettings(settingReturn);
-        else settings = FileOps.LoadCachedSettingsFO();
+        settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
         LoadNewSettings();
     }
     
     private void ButtonAbout_OnClick(object? sender, RoutedEventArgs e)
     {
-        // TODO: Apply locale framework
-        var aboutWindow = new AboutWindow() { Title = "About" };
+        var aboutWindow = new AboutWindow();
         aboutWindow.ShowDialog(ParentWindow);
     }
 
@@ -431,29 +432,24 @@ public partial class MainView : UserControl
             IconItemSET = IconProc.IconItemsList.Find(item => item.comboIconIndex == selectedIndex)!;
             BuildingLink.ICONfile = IconItemSET.FilePath;
             
-            if (IconItemSET.IconStream != null)
-            {
+            if (IconItemSET.IconStream != null) {
                 IconItemSET.IconStream.Position = 0;
                 var bitmap = AvaloniaOps.GetBitmap(IconItemSET.IconStream);
                 FillIconBoxes(bitmap);
             }
-            else
-            {
-                try
-                {
+            else {
+                try{
                     FillIconBoxes(BuildingLink.ICONfile); 
                     panelIconNoImage.IsVisible = false;
                 }
-                catch 
-                {
+                catch {
                     AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
                     FillIconBoxes(bitmap);
                     panelIconNoImage.IsVisible = true;
                 } 
             }
         }
-        else
-        {   
+        else {   
             AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
             FillIconBoxes(bitmap);
         }
@@ -675,16 +671,14 @@ public partial class MainView : UserControl
         OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
         // Link handling
-        // TODO: Confirm overwrite on AlwaysAskOutput = false (0.7)
         if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
         {
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
-                // TODO: Sanitize user input (0.7)
-                var outputPathStr = !settings.AlwaysAskOutput 
+                var outputPathStr = (!settings.AlwaysAskOutput) 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
-                    : (txtLINKDir.Text);
+                    : txtLINKDir.Text;
                 outputPath = new ShortcutterOutput(outputPathStr);
             }
             else

@@ -29,6 +29,8 @@ namespace RetroLinker.Models
         
         public static string FixUnusualPaths(string path)
         {
+            // TODO: This 'fix' only puts the path between double quotes
+            // This deserves a remake
             if (!ContainsUnusualCharacters(path)) return path;
             
             const int firstElement = 0;

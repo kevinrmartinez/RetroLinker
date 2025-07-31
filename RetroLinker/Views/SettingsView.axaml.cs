@@ -88,8 +88,8 @@ namespace RetroLinker.Views
         }
         #endregion
 
-        // APARIENCE
-        // TODO: Refactorize using an event, possibly based in the theme byte
+        // Appearance
+        // TODO: Refactorize using an event, possibly based in the 'ThemeCode' byte
         void LoadTheme(byte ThemeCode)
         {
             // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
@@ -131,7 +131,10 @@ namespace RetroLinker.Views
                 swtThemeSwitch.IsEnabled = false;
                 ParentWindow.settings.PreferedTheme = 0;
             }
-            else swtThemeSwitch.IsEnabled = true; ThemeSwitch_CheckedChanged(sender, e);
+            else {
+                swtThemeSwitch.IsEnabled = true; 
+                ThemeSwitch_CheckedChanged(sender, e);
+            }
         }
         
         
@@ -148,7 +151,7 @@ namespace RetroLinker.Views
         // OTHER PREFERENCES
         void View1ChecksHandle(object? sender, RoutedEventArgs e)
         {
-            if ((sender as CheckBox) == null) return;
+            if (sender is not CheckBox) return;
             ParentWindow.settings.PrevConfig = chkPrevCONFIG.IsChecked.GetValueOrDefault();
             ParentWindow.settings.CpyUserIcon = chkCpyUserIcon.IsChecked.GetValueOrDefault();
         }
