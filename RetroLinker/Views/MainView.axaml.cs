@@ -355,7 +355,7 @@ public partial class MainView : UserControl
                 // Subsystem loading
                 break;
             case MainWindow.ViewsTypes.AppendView:
-                // Append config
+                BuildingLink.CONFappend =  argStrings[0];
                 break;
         }
     }
@@ -484,8 +484,7 @@ public partial class MainView : UserControl
         txtROMDir.Text = filePath;
     }
     
-    void chkContentless_CheckedChanged(object sender, RoutedEventArgs e)
-    {
+    void chkContentless_CheckedChanged(object sender, RoutedEventArgs e) {
         panelROMDirControl.IsEnabled = !chkContentless.IsChecked.GetValueOrDefault();
     }
 
@@ -497,8 +496,7 @@ public partial class MainView : UserControl
         ROMDir_Set(file);
     }
     
-    void BtnPatches_OnClick(object? sender, RoutedEventArgs e)
-    {
+    void BtnPatches_OnClick(object? sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, [BuildingLink.PatchArg]);
     }
     #endregion
@@ -562,8 +560,7 @@ public partial class MainView : UserControl
         };
     }
     
-    void btnAppendConfig_Click(object sender, RoutedEventArgs e)
-    {
+    void btnAppendConfig_Click(object sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, [BuildingLink.CONFappend]);
     }
     #endregion

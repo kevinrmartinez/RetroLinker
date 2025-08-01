@@ -20,29 +20,45 @@ namespace RetroLinker.Models
     public static class Commander
     {
         public const string contentless = "Contentless";
-        const string verbose = "-v ";
-        const string fullscreen = "-f ";
-        const string accessibility = "--accessibility ";
+        private const string verbose = "-v ";
+        private const string fullscreen = "-f ";
+        private const string accessibility = "--accessibility ";
+        private const string appendConfig = "--appendconfig=";
 
 
         public static Shortcutter CommandBuilder(Shortcutter shortcut)
         {
-            shortcut.Command = $"-L {shortcut.ROMcore}";
-            if (!string.IsNullOrEmpty(shortcut.CONFfile)) 
-            { shortcut.Command = shortcut.Command.Insert(0, $"-c {shortcut.CONFfile} "); }
-
+            shortcut.Command = string.Empty;
+            
+            if (!string.IsNullOrEmpty(shortcut.CONFfile)) shortcut.Command += $"-c {shortcut.CONFfile} ";
+            if (!string.IsNullOrEmpty(shortcut.CONFappend)) shortcut.Command += $"{shortcut.CONFappend} ";
+            
+            shortcut.Command += $"-L {shortcut.ROMcore}";
             if (shortcut.ROMdir != contentless)
             {
                 shortcut.Command += $" {shortcut.ROMdir}";
                 shortcut.Command += $" {shortcut.PatchArg}";
             }
             
-            if (shortcut.AccessibilityB) { shortcut.Command = shortcut.Command.Insert(0, accessibility); }
-            if (shortcut.FullscreenB) { shortcut.Command = shortcut.Command.Insert(0, fullscreen); }
-            if (shortcut.VerboseB) { shortcut.Command = shortcut.Command.Insert(0, verbose); }
+            if (shortcut.AccessibilityB) shortcut.Command = shortcut.Command.Insert(0, accessibility);
+            if (shortcut.FullscreenB)    shortcut.Command = shortcut.Command.Insert(0, fullscreen);
+            if (shortcut.VerboseB)       shortcut.Command = shortcut.Command.Insert(0, verbose);
 
             shortcut.Command = shortcut.Command.TrimEnd();
             return shortcut;
+        }
+        
+        //AppendConfig
+        public static string ResolveAppendConfigArg(string arg)
+        {
+            if (!arg.StartsWith(appendConfig)) return string.Empty;
+            var path = arg.Substring(appendConfig.Length);
+            return Utils.ReverseFixUnusualPaths(path);
+        }
+
+        public static string GetAppendConfigArg(string configFile) {
+            configFile = Utils.FixUnusualPaths(configFile);
+            return appendConfig + configFile;
         }
     }
 }

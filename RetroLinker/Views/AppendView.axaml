@@ -22,9 +22,12 @@
             <!-- ROW1 - Append Controls -->
             <StackPanel Grid.Row="1" Orientation="Vertical">
                 <Label Content="Path of Config to Append"/>
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBox Grid.Column="0" Watermark="config_extra.cfg"/>
-                    <Button Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18"/>
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBox Name="txtConfigPath" Grid.Column="0" Watermark="config_extra.cfg"/>
+                    <Button Name="btnConfigPathBrowse" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="BtnConfigPathBrowse_OnClick"/>
+                    <Button Name="btnConfigPathClear" Grid.Column="2" i:Attached.Icon="fa-folder-open" FontSize="18" Click="BtnConfigPathClear_OnClick">
+                        <i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+                    </Button>
                 </Grid>
             </StackPanel>
             

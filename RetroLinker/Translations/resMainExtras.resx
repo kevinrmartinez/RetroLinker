@@ -75,4 +75,7 @@
     <data name="popNonSelected_Msg" xml:space="preserve">
         <value>No patch file selected. Using implicit No Patch.</value>
     </data>
+    <data name="tittleAppendConfig" xml:space="preserve">
+        <value>Append Config</value>
+    </data>
 </root>

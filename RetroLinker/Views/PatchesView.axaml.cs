@@ -21,6 +21,7 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
 
@@ -46,7 +47,7 @@ public partial class PatchesView : UserControl
     
     private void BuildHeader()
     {
-        var header = new Styles.MainWindowHeader($"{Translations.resMainExtras.tittleSoftPatching}");
+        var header = new Styles.MainWindowHeader($"{resMainExtras.tittleSoftPatching}");
         header.Classes.Add("Header");
         Grid.SetRow(header, 0);
         gridContent.Children.Add(header);
@@ -56,6 +57,7 @@ public partial class PatchesView : UserControl
     private MainWindow ParentWindow;
     
     // FIELDS
+    // TODO: Migrate argument parts to Commander class
     public const string NoPatch = "--no-patch"; 
     private const string UPatch = "--ups=";
     private const string BPatch = "--bps=";
@@ -68,7 +70,7 @@ public partial class PatchesView : UserControl
     // LOAD EVENTS
     private void PatchView_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        string tip = Translations.resMainExtras.chkNoPatch_Tip1 + "\n" + Translations.resMainExtras.chkNoPatch_Tip2;
+        string tip = resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
         ToolTip.SetTip(chkNoPatch, tip);
         rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
         if (!string.IsNullOrEmpty(PatchString))
@@ -116,6 +118,7 @@ public partial class PatchesView : UserControl
         if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
         if (e.Source is not RadioButton radioButton) return;
         var controlName = radioButton.Name;
+        // TODO: Use control 'Tag'
         PatchOpts = controlName switch
         {
             "rdoUPSPatch" => PickerOpt.PatchOpts.UPS,
@@ -146,8 +149,8 @@ public partial class PatchesView : UserControl
                 WindowIcon = ParentWindow.Icon,
                 MaxWidth = 550,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ContentTitle = Translations.resMainExtras.popNonSelected_Tittle,
-                ContentMessage = Translations.resMainExtras.popNonSelected_Msg,
+                ContentTitle = resMainExtras.popNonSelected_Tittle,
+                ContentMessage = resMainExtras.popNonSelected_Msg,
                 Icon = MsBox.Avalonia.Enums.Icon.Info
             };
             var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);

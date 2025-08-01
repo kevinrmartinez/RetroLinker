@@ -21,6 +21,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
+using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
 
@@ -45,7 +46,7 @@ public partial class AppendView : UserControl
 
     private void BuildHeader()
     {
-        var header = new Styles.MainWindowHeader("Append Config");
+        var header = new Styles.MainWindowHeader(resMainExtras.tittleAppendConfig);
         header.Classes.Add("Header");
         Grid.SetRow(header, 0);
         gridContent.Children.Add(header);
@@ -56,14 +57,29 @@ public partial class AppendView : UserControl
     
     // FIELDS
     private string AppendConfigFile;
-    private PickerOpt.OpenOpts PatchOpts = PickerOpt.OpenOpts.RAcfg;
+    private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
 
+    // Append Config controls
+    private async void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var loadedFile = await AvaloniaOps.OpenFileAsync(ConfigOpt, AppendConfigFile, ParentWindow);
+        if (string.IsNullOrWhiteSpace(loadedFile)) return;
+        txtConfigPath.Text = loadedFile;
+        AppendConfigFile  = loadedFile;
+    }
+
+    private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) {
+        txtConfigPath.Clear();
+        AppendConfigFile = string.Empty;
+    }
     
     // View Buttons
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        if (!string.IsNullOrWhiteSpace(AppendConfigFile)) AppendConfigFile = Commander.GetAppendConfigArg(AppendConfigFile);
+        ParentWindow.ReturnToMainView(this, AppendConfigFile);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView(this);
+    
 }

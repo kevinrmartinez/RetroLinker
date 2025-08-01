@@ -50,4 +50,7 @@
     <data name="chkNoPatch" xml:space="preserve">
         <value>Explicitamente Sin Parche</value>
     </data>
+    <data name="tittleAppendConfig" xml:space="preserve">
+        <value>Anexar Config</value>
+    </data>
 </root>

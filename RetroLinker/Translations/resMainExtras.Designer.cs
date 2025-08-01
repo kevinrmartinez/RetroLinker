@@ -158,5 +158,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("popNonSelected_Msg", resourceCulture);
             }
         }
+        
+        public static string tittleAppendConfig {
+            get {
+                return ResourceManager.GetString("tittleAppendConfig", resourceCulture);
+            }
+        }
     }
 }

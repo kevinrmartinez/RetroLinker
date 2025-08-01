@@ -91,6 +91,14 @@ public partial class MainWindow : Window
         if (PermaView is not MainView permaView) return;
         permaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
         MainCC1.Content = PermaView;
-        pView = null;
+        // pView = null;
+    }
+
+    public void ReturnToMainView(AppendView aView, string aString)
+    {
+        if (PermaView is not MainView permaView) return;
+        permaView.UpdateLinkFromOutside(ViewsTypes.AppendView, [aString]);
+        MainCC1.Content = PermaView;
+        // aView = null;
     }
 }
