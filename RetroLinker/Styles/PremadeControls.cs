@@ -17,15 +17,18 @@
 */
 
 using System;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Projektanker.Icons.Avalonia;
 using RetroLinker.Models;
+
+using ProjektankerIcon = Projektanker.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
@@ -50,7 +53,7 @@ public class LinkCopyItemGrid
         NewItemText = new Label();
         if (!string.IsNullOrEmpty(path)) NewItemText.Content = path;
             
-        Icon trashcan = new()
+        ProjektankerIcon trashcan = new()
         {
             Value = "fa-trash",
             Foreground = new SolidColorBrush(Colors.Crimson)
@@ -113,22 +116,39 @@ public static class LocaleComboItem
     }
 }
 
+
 public class MainWindowHeader : Grid
 {
-    public string Title { get; set; }
+    // Overrides
     protected override Type StyleKeyOverride { get; } = typeof(Grid);
 
-    public MainWindowHeader(string title)
+    // Avalonia Properties
+    public static readonly DirectProperty<MainWindowHeader, string> TitleProperty = 
+        AvaloniaProperty.RegisterDirect<MainWindowHeader, string>(
+            nameof(Title), 
+            h => h.Title, 
+            (h,  v) => h.Title = v);
+    
+    private string _title = string.Empty;
+    public string Title
     {
-        Title = title;
+        get => _title;
+        set => SetAndRaise(TitleProperty, ref _title, value);
+    }
+    
+    public MainWindowHeader()
+    {
         SetDimmensions();
         var child = PopulateChildren();
         SetColumn(child,1);
         Children.Add(child);
     }
+    
+    public MainWindowHeader(string title) : this() {
+        Title = title;
+    }
 
-    private void SetDimmensions()
-    {
+    private void SetDimmensions() {
         Height = 45;
         ColumnDefinitions =  new ColumnDefinitions("Auto,*,Auto");
     }
@@ -146,5 +166,102 @@ public class MainWindowHeader : Grid
                 [!ContentControl.ContentProperty] = new Binding(nameof(Title))
             } }
         };
+    }
+}
+
+
+public class ExtraMainControlButton : Button
+{
+    // Content Properties
+    const string blankText = "blank";
+    const string blankIcon = "fa-question";
+    
+    // Overrides
+    protected override Type StyleKeyOverride { get; } = typeof(Button);
+    
+    
+    // Avalonia Properties
+    public enum ButtonFunctions
+    { None, Save, Discard }
+
+    // - ButtonFunction Selection
+    public static readonly DirectProperty<ExtraMainControlButton, ButtonFunctions> ButtonFunctionProperty =
+        AvaloniaProperty.RegisterDirect<ExtraMainControlButton, ButtonFunctions>(
+            nameof(ButtonFunction),
+            b => b.ButtonFunction,
+            (b, v) => b.ButtonFunction = v);
+
+    private ButtonFunctions _buttonFunction = ButtonFunctions.None;
+    public ButtonFunctions ButtonFunction {
+        get => _buttonFunction;
+        set => SetButtonFunction(value);
+    }
+    
+    // Content Properties
+    private string ButtonText { get; set; } = blankText;
+    private string ButtonIconValue { get; set; } =  blankIcon;
+    private SolidColorBrush? ButtonIconColor { get; set; }
+
+    public ExtraMainControlButton() {
+        RefreshContent();
+    }
+
+    private StackPanel GetContent()
+    {
+        var icon = new ProjektankerIcon()
+        {
+            DataContext = this,
+            // [!ProjektankerIcon.ValueProperty] = new Binding(nameof(ButtonIconValue)),
+            // [!ProjektankerIcon.ForegroundProperty] =  new Binding(nameof(ButtonIconColor))
+            Value = ButtonIconValue,
+            Foreground = ButtonIconColor
+        };
+        var textBlock = new TextBlock()
+        {
+            DataContext = this,
+            // [!TextBlock.TextProperty] = new Binding(nameof(ButtonText))
+            Text = ButtonText
+        };
+        return new StackPanel() {
+            Children = { icon, textBlock }
+        };
+    }
+
+    private void RefreshContent() {
+        // I did not want to do this, but the method of binding the controls to the objects did not worked.
+        Content = GetContent();
+    }
+
+    private void SetButtonFunction(ButtonFunctions function)
+    {
+        var yesIcon = "fa-check";
+        var yesColor = new SolidColorBrush(Colors.Green);
+        var yesText = Translations.resGeneric.btnConfirm;
+        
+        var noIcon = "fa-x";
+        var noColor = new SolidColorBrush(Colors.Crimson);
+        var noText = Translations.resGeneric.btnDiscard;
+        
+        
+        switch (function)
+        {
+            case ButtonFunctions.Save:
+                ButtonText = yesText;
+                ButtonIconValue = yesIcon;
+                ButtonIconColor = yesColor;
+                break;
+            case ButtonFunctions.Discard:
+                ButtonText = noText;
+                ButtonIconValue = noIcon;
+                ButtonIconColor = noColor;
+                break;
+            default:
+                ButtonText = blankText;
+                ButtonIconValue = blankIcon;
+                ButtonIconColor = null;
+                break;
+        }
+        SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
+        RefreshContent();
     }
 }

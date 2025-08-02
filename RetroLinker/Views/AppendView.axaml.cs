@@ -33,7 +33,7 @@ public partial class AppendView : UserControl
         InitializeComponent();
         ParentWindow = new MainWindow(true);
         AppendConfigFile = "debug.txt";
-        BuildHeader();
+        // BuildHeader();
     }
 
     public AppendView(MainWindow mainWindow, string filePath)
@@ -41,7 +41,7 @@ public partial class AppendView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         AppendConfigFile = filePath;
-        BuildHeader();
+        // BuildHeader();
     }
 
     private void BuildHeader()
