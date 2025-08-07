@@ -78,4 +78,7 @@
     <data name="tittleAppendConfig" xml:space="preserve">
         <value>Append Config</value>
     </data>
+    <data name="lblAppendPath" xml:space="preserve">
+        <value>Path of Config to Append</value>
+    </data>
 </root>

@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 namespace RetroLinker.Models
 {
     public static class Commander
@@ -24,7 +25,18 @@ namespace RetroLinker.Models
         private const string fullscreen = "-f ";
         private const string accessibility = "--accessibility ";
         private const string appendConfig = "--appendconfig=";
-
+        private const string menuOnFail = "--load-menu-on-error";
+        
+        public enum PatchType {
+            UPS, BPS, IPS,
+            XDelta, NoPatch, ExNoPatch
+        }
+        public static SoftPatch UpsPatch = new("ups", "--ups=", PatchType.UPS);
+        public static SoftPatch BpsPatch = new("bps", "--bps=",  PatchType.BPS);
+        public static SoftPatch IpsPatch = new("ips", "--ips=",  PatchType.IPS);
+        public static SoftPatch XdPatch = new("xdelta", "--xdelta=",   PatchType.XDelta);
+        public static SoftPatch NoPatch = new("no", string.Empty,  PatchType.NoPatch);
+        public static SoftPatch ExNoPatch = new("explicit-no", "--no-patch", PatchType.ExNoPatch);
 
         public static Shortcutter CommandBuilder(Shortcutter shortcut)
         {
@@ -48,7 +60,43 @@ namespace RetroLinker.Models
             return shortcut;
         }
         
-        //AppendConfig
+        // SoftPatching
+        public static (string, SoftPatch) ResolveSoftPatchingArg(string arg)
+        {
+            var argException = new System.ArgumentException(@"Invalid patch argument",  nameof(arg));
+            var split = arg.Split('=');
+            if (split.Length != 2) throw argException;
+            
+            var argSplit = split[0] + '=';
+            var fileSplit = Utils.ReverseFixUnusualPaths(split[1]);
+            if (argSplit == NoPatch.Argument) return (NoPatch.Argument, NoPatch);
+            else if (argSplit == ExNoPatch.Argument) return (ExNoPatch.Argument, ExNoPatch);
+            else if (argSplit == UpsPatch.Argument) return (fileSplit, UpsPatch);
+            else if (argSplit == BpsPatch.Argument) return (fileSplit, BpsPatch);
+            else if (argSplit == IpsPatch.Argument) return (fileSplit, IpsPatch);
+            else if (argSplit == XdPatch.Argument) return (fileSplit, XdPatch);
+            else throw argException; 
+        }
+
+        public static string GetSoftPatchingArg(string patchFile, SoftPatch patchType)
+        {
+            switch (patchType.PatchType)
+            {
+                case PatchType.UPS:
+                case PatchType.BPS:
+                case PatchType.IPS:
+                case PatchType.XDelta:
+                    var file = Utils.FixUnusualPaths(patchFile);
+                    return patchType.Argument + file;
+                case PatchType.NoPatch:
+                case PatchType.ExNoPatch:
+                    return patchType.Argument;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+        }
+        
+        // AppendConfig
         public static string ResolveAppendConfigArg(string arg)
         {
             if (!arg.StartsWith(appendConfig)) return string.Empty;
@@ -61,4 +109,6 @@ namespace RetroLinker.Models
             return appendConfig + configFile;
         }
     }
+
+    public record SoftPatch(string ExtName, string Argument, Commander.PatchType PatchType);
 }

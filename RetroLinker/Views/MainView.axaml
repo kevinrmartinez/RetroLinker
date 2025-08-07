@@ -3,22 +3,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:pc="clr-namespace:RetroLinker.Styles"
 			 xmlns:locale="clr-namespace:RetroLinker.Translations"
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
 			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
 	
+	<UserControl.Styles>
+		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
+	</UserControl.Styles>
+	
 	<Grid RowDefinitions="Auto, *">
 		<!--Top-->
-		<Grid Name="gridTOP" Grid.Row="0" Height="45" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
-			<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
-			        i:Attached.Icon="fa-circle-info" FontSize="22"/>
-			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<Label Content="{x:Static locale:resMainView.lblTITLE}" FontWeight="Bold"/>
-			</StackPanel>
-			<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_Click"
-			        i:Attached.Icon="fa-gear" FontSize="24"/>
-		</Grid>
+		<pc:MainWindowHeader Grid.Row="0" Title="{x:Static locale:resMainView.lblTITLE}" Classes="Header">
+				<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
+				        i:Attached.Icon="fa-circle-info" FontSize="22"/>
+				<!-- Grid.Column="0" Already filled by MainWindowHeader -->
+				<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_Click"
+				        i:Attached.Icon="fa-gear" FontSize="24"/>
+		</pc:MainWindowHeader>
 		
 		<!--Body-->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">

@@ -90,6 +90,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resAboutWindow.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAboutWindow.es.resx">
+      <DependentUpon>resAboutWindow.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>

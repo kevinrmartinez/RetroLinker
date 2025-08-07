@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -32,9 +31,11 @@ using ProjektankerIcon = Projektanker.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
-// TODO: All this file requires some documentation!!
+// All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
+    // TODO: Reimplement using DataTemplates
+    
     // Link Copy ListItem
     public Grid NewItemGrid { get; private set; }
     public Label NewItemText { get;  private set; }
@@ -79,10 +80,9 @@ public class LinkCopyItemGrid
 
 public static class LocaleComboItem
 {
-
+    // TODO: Reimplement using DataTemplates
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
-        // TODO: Reimplement using DataTemplates
         var item = new ComboBoxItem()
         {
             HorizontalContentAlignment = HorizontalAlignment.Left,

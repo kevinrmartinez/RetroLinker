@@ -56,15 +56,16 @@
     
     <Grid RowDefinitions="*,Auto" Margin="5">
         <!-- BODY -->
+        <!-- TODO: Add External Libraries -->
         <Grid Grid.Row="0" RowDefinitions="0.7*,*">
             <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
-                <!-- TODO: Change image with app logo -->
-                <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Icons/retroarch.ico"/>
+                <!-- PENDING: Change image with app logo -->
+                <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Images/NaN.png"/>
                 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
                     <Label Name="LabelTitle" Content="APP TITTLE, APP VERSION"/>
                     <Border Name="BorderDev">
-                        <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT"/>
+                        <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT HASH"/>
                     </Border>
                     <TextBlock Name="LabelDesc" Text="{x:Static locale:resAboutWindow.lblDesc}"/>
                     <Label Name="LabelCopyright" Content="{x:Static locale:resAboutWindow.lblCopyright}"/>

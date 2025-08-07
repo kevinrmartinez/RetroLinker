@@ -24,7 +24,7 @@
             
             <!-- ROW1 - Append Controls -->
             <StackPanel Grid.Row="1" Orientation="Vertical">
-                <Label Content="Path of Config to Append"/>
+                <Label Content="{x:Static locale:resMainExtras.lblAppendPath}"/>
                 <Grid ColumnDefinitions="*,Auto,Auto">
                     <TextBox Name="txtConfigPath" Grid.Column="0" Watermark="config_extra.cfg"/>
                     <Button Name="btnConfigPathBrowse" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="BtnConfigPathBrowse_OnClick"/>

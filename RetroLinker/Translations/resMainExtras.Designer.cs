@@ -164,5 +164,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("tittleAppendConfig", resourceCulture);
             }
         }
+        
+        public static string lblAppendPath {
+            get {
+                return ResourceManager.GetString("lblAppendPath", resourceCulture);
+            }
+        }
     }
 }

@@ -29,12 +29,12 @@
                 <Label Content="Patch Type"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <!-- TODO: add Auto -->
-                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="ToggleButton_OnIsCheckedChanged"
+                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
                                  Content="{x:Static locale:resMainExtras.rdoNoPatch}"/>
-                    <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoXDPatch" GroupName="PatchType" Content="xDelta" Click="ToggleButton_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoXDPatch" GroupName="PatchType" Content="xDelta" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                 </StackPanel>
                 <Grid ColumnDefinitions="*, Auto" Margin="3,10">
                     <TextBox Name="txtPatchPath" Grid.Column="0" HorizontalAlignment="Stretch"
