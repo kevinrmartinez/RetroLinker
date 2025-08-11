@@ -99,7 +99,8 @@ namespace RetroLinker.Models
         // AppendConfig
         public static string ResolveAppendConfigArg(string arg)
         {
-            if (!arg.StartsWith(appendConfig)) return string.Empty;
+            if (!arg.StartsWith(appendConfig))
+                throw new System.ArgumentException(@"Invalid append config argument", nameof(arg));
             var path = arg.Substring(appendConfig.Length);
             return Utils.ReverseFixUnusualPaths(path);
         }

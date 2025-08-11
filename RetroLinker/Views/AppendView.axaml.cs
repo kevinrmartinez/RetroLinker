@@ -21,7 +21,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
-using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
 
@@ -33,23 +32,23 @@ public partial class AppendView : UserControl
         InitializeComponent();
         ParentWindow = new MainWindow(true);
         AppendConfigFile = "debug.txt";
-        // BuildHeader();
     }
-
-    public AppendView(MainWindow mainWindow, string filePath)
+    
+    // Active Constructor
+    public AppendView(MainWindow mainWindow, string appendArg)
     {
         InitializeComponent();
         ParentWindow = mainWindow;
-        AppendConfigFile = filePath;
-        // BuildHeader();
-    }
-
-    private void BuildHeader()
-    {
-        var header = new Styles.MainWindowHeader(resMainExtras.tittleAppendConfig);
-        header.Classes.Add("Header");
-        Grid.SetRow(header, 0);
-        gridContent.Children.Add(header);
+        var file = string.Empty;
+        try {
+            file = Commander.ResolveAppendConfigArg(appendArg);
+        }
+        catch (System.ArgumentException argumentException) {
+            System.Console.WriteLine(argumentException);
+            // TODO
+        }
+        AppendConfigFile = string.IsNullOrWhiteSpace(file) ? string.Empty : file;
+        txtConfigPath.Text = AppendConfigFile;
     }
     
     // Window Object
