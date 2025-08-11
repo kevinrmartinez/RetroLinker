@@ -24,8 +24,8 @@ namespace RetroLinker.Models
         private const string verbose = "-v ";
         private const string fullscreen = "-f ";
         private const string accessibility = "--accessibility ";
+        private const string menuOnError = "--load-menu-on-error ";
         private const string appendConfig = "--appendconfig=";
-        private const string menuOnFail = "--load-menu-on-error";
         
         public enum PatchType {
             UPS, BPS, IPS,
@@ -53,6 +53,7 @@ namespace RetroLinker.Models
             }
             
             if (shortcut.AccessibilityB) shortcut.Command = shortcut.Command.Insert(0, accessibility);
+            if (shortcut.MenuOnErrorB)   shortcut.Command = shortcut.Command.Insert(0, menuOnError);
             if (shortcut.FullscreenB)    shortcut.Command = shortcut.Command.Insert(0, fullscreen);
             if (shortcut.VerboseB)       shortcut.Command = shortcut.Command.Insert(0, verbose);
 

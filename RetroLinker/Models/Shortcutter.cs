@@ -59,8 +59,9 @@ namespace RetroLinker.Models
         public bool VerboseB { get; set; }      // 10
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
-        public string PatchArg { get; set; }    // 13
-        public string CONFappend { get; set; }  // 14
+        public bool MenuOnErrorB { get; set; }  // 13
+        public string PatchArg { get; set; }    // 14
+        public string CONFappend { get; set; }  // 15
 
         private string ra_dir;
         private string ra_path;
@@ -80,6 +81,7 @@ namespace RetroLinker.Models
             VerboseB = false;
             FullscreenB = false;
             AccessibilityB = false;
+            MenuOnErrorB = false;
             PatchArg = string.Empty;
             CONFappend = string.Empty;
         }
@@ -99,20 +101,19 @@ namespace RetroLinker.Models
             VerboseB = ObjToClone.VerboseB;
             FullscreenB = ObjToClone.FullscreenB;
             AccessibilityB = ObjToClone.AccessibilityB;
+            MenuOnErrorB = ObjToClone.MenuOnErrorB;
             PatchArg = ObjToClone.PatchArg;
             CONFappend = ObjToClone.CONFappend;
         }
 
-        private void SetRAdir(string value)
-        {
+        private void SetRAdir(string value) {
             ra_dir = value;
             RApath = value;
         }
 
         private void SetRApath(string value) => ra_path = FileOps.GetDirFromPath(value);
 
-        private void SetROMdir(string value)
-        {
+        private void SetROMdir(string value) {
             rom_dir = value;
             ROMname = value;
         }

@@ -652,6 +652,7 @@ public partial class MainView : UserControl
         // Checkboxes!
         OutputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
         OutputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
+        OutputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
         OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
 
         // Validating contentless or not

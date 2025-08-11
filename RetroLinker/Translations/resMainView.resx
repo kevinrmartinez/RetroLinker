@@ -156,4 +156,7 @@
     <data name="popIconsError_Mess2" xml:space="preserve">
         <value>Details:</value>
     </data>
+    <data name="chkMenuOnError" xml:space="preserve">
+        <value>Load Menu on Error</value>
+    </data>
 </root>
