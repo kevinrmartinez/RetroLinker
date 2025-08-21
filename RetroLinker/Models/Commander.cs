@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
+
 namespace RetroLinker.Models
 {
     public static class Commander
@@ -25,7 +27,8 @@ namespace RetroLinker.Models
         private const string fullscreen = "-f ";
         private const string accessibility = "--accessibility ";
         private const string menuOnError = "--load-menu-on-error ";
-        private const string appendConfig = "--appendconfig=";
+        private const string appendConfig = "--appendconfig ";
+        private const char appendConfigDeli = '|';
         
         public enum PatchType {
             UPS, BPS, IPS,
@@ -98,17 +101,26 @@ namespace RetroLinker.Models
         }
         
         // AppendConfig
-        public static string ResolveAppendConfigArg(string arg)
+        public static List<string> ResolveAppendConfigArg(string arg)
         {
             if (!arg.StartsWith(appendConfig))
                 throw new System.ArgumentException(@"Invalid append config argument", nameof(arg));
-            var path = arg.Substring(appendConfig.Length);
-            return Utils.ReverseFixUnusualPaths(path);
+            var pathsCombined = arg.Substring(appendConfig.Length);
+            pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
+            var paths = pathsCombined.Split(appendConfigDeli);
+            return new List<string>(paths);
         }
 
-        public static string GetAppendConfigArg(string configFile) {
-            configFile = Utils.FixUnusualPaths(configFile);
-            return appendConfig + configFile;
+        public static string GetAppendConfigArg(List<string> configFiles) {
+            string appendConfigArg;
+            if (configFiles.Count == 1)
+                appendConfigArg = Utils.FixUnusualPaths(configFiles[0]);
+            else
+            {
+                appendConfigArg = string.Join(appendConfigDeli, configFiles);
+                appendConfigArg = Utils.FixUnusualPaths(appendConfigArg);
+            }
+            return appendConfig + appendConfigArg;
         }
     }
 

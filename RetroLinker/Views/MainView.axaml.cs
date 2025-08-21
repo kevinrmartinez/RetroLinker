@@ -412,7 +412,7 @@ public partial class MainView : UserControl
         string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
             ? (string)comboICONDir.SelectedItem!
             : string.Empty;
-        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         ICONDir_Set(file);
     }
@@ -470,7 +470,7 @@ public partial class MainView : UserControl
             currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
         }
         else { opt = PickerOpt.OpenOpts.RAbin; }
-        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         RADirSet(file);
     }
@@ -491,7 +491,7 @@ public partial class MainView : UserControl
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
         string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
-        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, currentFile, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         ROMDir_Set(file);
     }
@@ -545,7 +545,7 @@ public partial class MainView : UserControl
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
         string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
-        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, currentFile, ParentWindow);
+        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         comboConfig_Set(file);
     }

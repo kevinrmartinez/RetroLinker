@@ -89,7 +89,7 @@ public static class AvaloniaOps
     #endregion
     
     #region FileDialogs
-    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, string currentFile, TopLevel topLevel)
+    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel, string? currentFile = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))

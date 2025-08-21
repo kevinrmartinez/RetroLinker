@@ -94,7 +94,7 @@ public partial class SettingsView2 : UserControl
         PickerOpt.OpenOpts opt;
         opt = DesktopOS ? PickerOpt.OpenOpts.RAexe : PickerOpt.OpenOpts.RAbin;
         string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
-        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrWhiteSpace(file)) return;
         txtDefRADir.Text = file; 
         ParentWindow.settings.DEFRADir = file;

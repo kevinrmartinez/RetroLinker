@@ -16,8 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
@@ -31,54 +34,75 @@ public partial class AppendView : UserControl
     {
         InitializeComponent();
         ParentWindow = new MainWindow(true);
-        AppendConfigFile = "debug.txt";
+        List<string> appendConfigFiles = FillListTest();
+        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
+        ItemsControlPaths.ItemsSource = AppendPaths;
+        
     }
     
     // Active Constructor
     public AppendView(MainWindow mainWindow, string appendArg)
     {
+        // FillListTest();
         InitializeComponent();
         ParentWindow = mainWindow;
-        var file = string.Empty;
+        List<string> appendConfigFiles;
         try {
-            file = Commander.ResolveAppendConfigArg(appendArg);
+            appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg);
         }
         catch (System.ArgumentException argumentException) {
             System.Console.WriteLine(argumentException);
+            appendConfigFiles = new();
             // TODO
         }
-        AppendConfigFile = string.IsNullOrWhiteSpace(file) ? string.Empty : file;
-        txtConfigPath.Text = AppendConfigFile;
+
+        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
+        ItemsControlPaths.ItemsSource = AppendPaths;
     }
     
     // Window Object
     private MainWindow ParentWindow;
     
+    // Props
+    public ObservableCollection<string> AppendPaths { get; private set; }
+    
     // FIELDS
-    private string AppendConfigFile;
     private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
 
     // Append Config controls
+    private void ButtonTrash_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        if (button.Parent!.Parent!.Parent is ContentPresenter { Content: string content })
+            AppendPaths.Remove(content);
+    }
+    
     private async void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e)
     {
-        var loadedFile = await AvaloniaOps.OpenFileAsync(ConfigOpt, AppendConfigFile, ParentWindow);
+        var loadedFile = await AvaloniaOps.OpenFileAsync(ConfigOpt, ParentWindow);
         if (string.IsNullOrWhiteSpace(loadedFile)) return;
-        txtConfigPath.Text = loadedFile;
-        AppendConfigFile  = loadedFile;
+        if (!AppendPaths.Contains(loadedFile))
+            AppendPaths.Add(loadedFile);
     }
 
-    private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) {
-        txtConfigPath.Clear();
-        AppendConfigFile = string.Empty;
-    }
+    private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) => AppendPaths.Clear();
+    
     
     // View Buttons
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (!string.IsNullOrWhiteSpace(AppendConfigFile)) AppendConfigFile = Commander.GetAppendConfigArg(AppendConfigFile);
-        ParentWindow.ReturnToMainView(this, AppendConfigFile);
+        var appendArg = (AppendPaths.Count == 0) ? string.Empty : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
+        ParentWindow.ReturnToMainView(this, appendArg);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView(this);
-    
+
+    private List<string> FillListTest()
+    {
+        var _appendPaths = new List<string>();
+        for (int i = 0; i < 16; i++) {
+            _appendPaths.Add($"/home/public/testing/retroarch{i}.cfg");
+        }
+        return _appendPaths;
+    }
 }

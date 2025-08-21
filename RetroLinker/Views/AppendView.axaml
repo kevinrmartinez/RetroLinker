@@ -3,10 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              xmlns:pc="clr-namespace:RetroLinker.Styles"
              xmlns:locale="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
-             x:Class="RetroLinker.Views.AppendView">
+             x:Class="RetroLinker.Views.AppendView"
+             x:DataType="vw:AppendView"
+             x:CompileBindings="True">
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
@@ -17,28 +20,46 @@
         <!-- Header -->
         
         <!-- Body -->
-        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
+        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="3">
             
             <!-- ROW0 - Spacing -->
             <Rectangle Grid.Row="0" Height="8"/>
             
             <!-- ROW1 - Append Controls -->
-            <StackPanel Grid.Row="1" Orientation="Vertical">
-                <Label Content="{x:Static locale:resMainExtras.lblAppendPath}"/>
-                <Grid ColumnDefinitions="*,Auto,Auto">
-                    <TextBox Name="txtConfigPath" Grid.Column="0" Watermark="config_extra.cfg"/>
-                    <Button Name="btnConfigPathBrowse" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="BtnConfigPathBrowse_OnClick"/>
-                    <Button Name="btnConfigPathClear" Grid.Column="2" i:Attached.Icon="fa-folder-open" FontSize="18" Click="BtnConfigPathClear_OnClick">
-                        <i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
-                    </Button>
-                </Grid>
-            </StackPanel>
+            <Label Grid.Row="1" Content="{x:Static locale:resMainExtras.lblAppendPath}"/>
             
             <!-- ROW2 - Spacing -->
-            <Rectangle Grid.Row="2"/>
+            <Border Grid.Row="2" Grid.RowSpan="2" BorderThickness="2" CornerRadius="8" BorderBrush="Gray" 
+                    Padding="0,0,0,45" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="4">
+                <ScrollViewer Margin="4">
+                    <ItemsControl Name="ItemsControlPaths" Margin="6,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,10,0,0"
+                                        CornerRadius="5"
+                                        BorderBrush="Gray" BorderThickness="1"
+                                        Padding="5">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="14" Text="{Binding}"/>
+                                        <Button Grid.Column="1" Foreground="Firebrick" i:Attached.Icon="fa-trash" Click="ButtonTrash_OnClick"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
             
             <!-- ROW3 - Return Controls -->
-            <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
+            <!-- This could go inside the Border... -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" Margin="10">
+                <Button CornerRadius="8" Foreground="DarkRed" FontSize="24" i:Attached.Icon="fa-eraser" Click="BtnConfigPathClear_OnClick"/>
+                <Button CornerRadius="8" Foreground="ForestGreen" FontSize="24" i:Attached.Icon="fa-plus" Click="BtnConfigPathBrowse_OnClick"/>
+            </StackPanel>
+            
+            
+            <!-- ROW4 - Return Controls -->
+            <Grid Grid.Row="4" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
                 <pc:ExtraMainControlButton Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
                 <pc:ExtraMainControlButton Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
             </Grid>

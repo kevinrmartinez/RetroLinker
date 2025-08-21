@@ -54,6 +54,6 @@
         <value>Anexar Config</value>
     </data>
     <data name="lblAppendPath" xml:space="preserve">
-        <value>Ruta de la Config a Anexar</value>
+        <value>Rutas de las Configs a Anexar</value>
     </data>
 </root>
