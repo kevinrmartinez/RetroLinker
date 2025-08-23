@@ -57,7 +57,7 @@ public class LinkCopyItemGrid
         ProjektankerIcon trashcan = new()
         {
             Value = "fa-trash",
-            Foreground = new SolidColorBrush(Colors.Crimson)
+            Foreground = new SolidColorBrush(Colors.Firebrick)
         };
         NewItemTrash = new Button()
         {

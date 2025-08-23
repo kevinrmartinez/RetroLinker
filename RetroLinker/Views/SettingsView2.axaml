@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView2"
              Name="SettingsView2_1" Loaded="View_OnLoaded">
@@ -18,10 +18,10 @@
             <!-- USER ASSETS -->
 			<Border Grid.Row="0" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="{x:Static locale:resSettingsWindow.lblCat_AserAssets}"/>
+					<Label Content="{x:Static lc:resSettingsWindow.lblCat_AserAssets}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
-					           Text="{x:Static locale:resSettingsWindow.blcUserAssets}"/>
+					           Text="{x:Static lc:resSettingsWindow.blcUserAssets}"/>
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -38,7 +38,7 @@
 			<!-- RA EXECUTABLE -->
 			<Border Grid.Row="1" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="{x:Static locale:resSettingsWindow.lblCat_DefRADir}"/>
+					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefRADir}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
@@ -59,7 +59,7 @@
 			<!-- DEFAULT ROM PATH -->
 			<Border Grid.Row="2" Classes="SettingCatg">
 				<StackPanel>
-					<Label Content="{x:Static locale:resSettingsWindow.lblCat_DefROMPath}"/>
+					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 						<TextBox Name="txtDefROMPath" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>

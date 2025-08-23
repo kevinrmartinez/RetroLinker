@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:pc="clr-namespace:RetroLinker.Styles"
-             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.PatchesView"
              Name="ViewPatch" Loaded="PatchView_OnLoaded">
@@ -15,7 +15,7 @@
     
     <Grid Name="gridContent" RowDefinitions="Auto, *, Auto">
         <!--Top-->
-        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static locale:resMainExtras.tittleSoftPatching}" Classes="Header"/>
+        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.tittleSoftPatching}" Classes="Header"/>
         <!-- Header -->
     
         <!--Body-->
@@ -30,7 +30,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <!-- TODO: add Auto -->
                     <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
-                                 Content="{x:Static locale:resMainExtras.rdoNoPatch}"/>
+                                 Content="{x:Static lc:resMainExtras.rdoNoPatch}"/>
                     <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
@@ -39,10 +39,10 @@
                 <Grid ColumnDefinitions="*, Auto" Margin="3,10">
                     <TextBox Name="txtPatchPath" Grid.Column="0" HorizontalAlignment="Stretch"
                              IsReadOnly="True" Watermark="super mario bros.ups"/>
-                    <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="BtnPatchPath_OnClick"
+                    <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="BtnPatchPath_OnClick"
                             i:Attached.Icon="fa-folder-open" FontSize="18"/>
                 </Grid>
-                <CheckBox Name="chkNoPatch" Content="{x:Static locale:resMainExtras.chkNoPatch}"/>
+                <CheckBox Name="chkNoPatch" Content="{x:Static lc:resMainExtras.chkNoPatch}"/>
             </StackPanel>
             
             <!-- ROW2 - Spacing -->

@@ -2,11 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:locale="clr-namespace:RetroLinker.Translations"
+        xmlns:lc="clr-namespace:RetroLinker.Translations"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
         x:Class="RetroLinker.Views.AboutWindow"
         MinWidth="450" MinHeight="350" Width="500" Height="400" 
-        WindowStartupLocation="CenterScreen" Title="{x:Static locale:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
+        WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
     <Window.Styles>
         <Style Selector="Label#LabelTitle">
             <Setter Property="FontSize" Value="22"/>
@@ -54,6 +54,7 @@
         </Style>
     </Window.Styles>
     
+    
     <Grid RowDefinitions="*,Auto" Margin="5">
         <!-- BODY -->
         <!-- TODO: Add External Libraries -->
@@ -67,8 +68,8 @@
                     <Border Name="BorderDev">
                         <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT HASH"/>
                     </Border>
-                    <TextBlock Name="LabelDesc" Text="{x:Static locale:resAboutWindow.lblDesc}"/>
-                    <Label Name="LabelCopyright" Content="{x:Static locale:resAboutWindow.lblCopyright}"/>
+                    <TextBlock Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
+                    <Label Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto">
@@ -76,17 +77,17 @@
                     <Rectangle Height="6"/>
                     <StackPanel Orientation="Horizontal">
                         <Label><StackPanel Orientation="Horizontal" Spacing="0">
-                                <Label Content="{x:Static locale:resAboutWindow.lblMaintainer}"/>
+                                <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
                                 <Label Content=": "/>
                             </StackPanel></Label>
                         <HyperlinkButton Content="kevinrmartinez" NavigateUri="https://github.com/kevinrmartinez" Padding="0"/>
                     </StackPanel>
                     <Rectangle Height="6"/>
-                    <Label Content="{x:Static locale:resAboutWindow.lblContributors}" IsVisible="False"/>
+                    <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
                 </StackPanel>
                 <ListBox Name="ListBoxContributors" Grid.Row="1" SelectionMode="Single" VerticalAlignment="Stretch" Margin="2" IsVisible="False"/>
                 <StackPanel Name="StackPanelCredits" Grid.Row="2">
-                    <TextBlock Text="{x:Static locale:resAboutWindow.lblAttributions}"/>
+                    <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
                     <!-- Filled by code behind -->
                 </StackPanel>
                 <Rectangle Grid.Row="3" Height="8"/>
@@ -94,6 +95,6 @@
         </Grid>
         
         <!-- EXIT BUTTON -->
-        <Button Grid.Row="1" Content="{x:Static locale:resAboutWindow.btnClose}" Click="Button_OnClick"/>
+        <Button Grid.Row="1" Content="{x:Static lc:resAboutWindow.btnClose}" Click="Button_OnClick"/>
     </Grid>
 </Window>
