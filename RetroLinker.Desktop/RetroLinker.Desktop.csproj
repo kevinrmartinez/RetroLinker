@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="git-hash" />
     <EmbeddedResource Include="git-hash" />
   </ItemGroup>
 </Project>
