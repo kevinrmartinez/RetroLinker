@@ -7,6 +7,12 @@
         </Border>
     </Design.PreviewWith>
 
+    <!-- TODO: Add Common Controls -->
+    <Style Selector="Button.trash">
+        <Setter Property="i:Attached.Icon" Value="fa-trash"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
     <!-- Header -->
     <Style Selector="Grid.Header">
         <Setter Property="Background" Value="Firebrick"/>
@@ -39,5 +45,58 @@
         </Style>
     </Style>
     
-    <!-- TODO: Add Common Controls -->
+    <!-- AppendView -->
+    <Style Selector="Border.AppendControls">
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="4"/>
+        
+        <Style Selector="^ > Grid">
+            <Style Selector="^ > ScrollViewer">
+                <Setter Property="Margin" Value="4"/>
+                
+                <Style Selector="^ > ItemsControl">
+                    <Setter Property="Margin" Value="6,0"/>
+                </Style>
+            </Style>
+            
+            <Style Selector="^ > Rectangle">
+                <Setter Property="Stroke" Value="Gray"/>
+                <Setter Property="StrokeThickness" Value="2"/>
+                <Setter Property="StrokeLineCap" Value="Round"/>
+                <Setter Property="Margin" Value="4,0"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+            
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Spacing" Value="4"/>
+                <Setter Property="Orientation" Value="Horizontal"/>
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="Margin" Value="5"/>
+                
+                <Style Selector="^ > Button">
+                    <Setter Property="FontSize" Value="24"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+            </Style>
+        </Style>
+        
+    </Style>
+    
+    <Style Selector="Border.AppendPathItem">
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        
+        <Style Selector="^ TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Style>
 </Styles>
