@@ -83,9 +83,10 @@ public partial class SettingsView2 : UserControl
     // RA EXECUTABLE
     private void BtnApplyUserAssets_Click(object? sender, RoutedEventArgs e)
     {
-        var _grid = (sender as Control).Parent as Grid;
-        var txtbox = _grid.Children[0] as TextBox;
-        if (!string.IsNullOrWhiteSpace(txtbox.Text)) ParentWindow.settings.DEFRADir = txtbox.Text;
+        if (sender is not Control control) return;
+        if (control.Parent is not Grid grid) return;
+        if (grid.Children[0] is not TextBox txtBox) return;
+        if (!string.IsNullOrWhiteSpace(txtBox.Text)) ParentWindow.settings.DEFRADir = txtBox.Text;
     }
     
     async void btnDefRADir_Click(object sender, RoutedEventArgs e)
@@ -93,7 +94,7 @@ public partial class SettingsView2 : UserControl
         PickerOpt.OpenOpts opt;
         opt = DesktopOS ? PickerOpt.OpenOpts.RAexe : PickerOpt.OpenOpts.RAbin;
         string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
-        string file = await AvaloniaOps.OpenFileAsync(opt, currentFile, ParentWindow);
+        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrWhiteSpace(file)) return;
         txtDefRADir.Text = file; 
         ParentWindow.settings.DEFRADir = file;
@@ -122,17 +123,4 @@ public partial class SettingsView2 : UserControl
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
-    
-    
-#if DEBUG
-    void SettingsView2_1_Loaded2(object sender, RoutedEventArgs e)
-    {
-        _ = sender.ToString();
-    }
-    //UNLOAD
-    private void SettingsView2_1_OnUnloaded(object? sender, RoutedEventArgs e)
-    {
-        _ = e.Source;
-    }
-#endif
 }

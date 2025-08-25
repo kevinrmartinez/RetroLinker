@@ -1,4 +1,22 @@
-﻿using System;
+﻿/*
+    A .NET GUI application to help create desktop links of games running on RetroArch.
+    Copyright (C) 2024  Kevin Rafael Martinez Johnston
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using RetroLinker.Translations;
@@ -7,8 +25,8 @@ namespace RetroLinker.Models;
 
 public static class LanguageManager
 {
-    public static readonly CultureInfo ENLocale = new CultureInfo("en_US");
-    public static readonly CultureInfo ESLocale = new CultureInfo("es_ES");
+    public static readonly CultureInfo ENLocale = new("en_US");
+    public static readonly CultureInfo ESLocale = new("es_ES");
     
     private const string ENIcon = "avares://RetroLinkerLib/Assets/Icons/EN.png";
     private const string ESIcon = "avares://RetroLinkerLib/Assets/Icons/ES.png";
@@ -33,9 +51,8 @@ public static class LanguageManager
     public static CultureInfo ResolveLocale(string cultureName)
     {
         foreach (var item in LanguageList)
-        {
-            if (item.Culture.Name == cultureName) return item.Culture;
-        }
+            if (item.Culture.Name == cultureName) 
+                return item.Culture;
         return ENLocale;
     }
     
@@ -70,7 +87,7 @@ public static class LanguageManager
     public static int GetLocaleIndex(Settings settings)
     {
         var item = ResolveLocale(settings.LanguageCulture);
-        return (int)item.ItemIndex;
+        return item.ItemIndex.GetValueOrDefault();
     }
     
     public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
@@ -79,8 +96,7 @@ public static class LanguageManager
 
     private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
     {
-        // var sameLocale = true;
-        var sameLocale = Translations.resMainView.Culture.Equals(cultureInfo);
+        var sameLocale = resMainView.Culture.Equals(cultureInfo);
         if (!sameLocale) SetAllCultureInfo(cultureInfo);
         return sameLocale;
     }
@@ -89,6 +105,8 @@ public static class LanguageManager
 
     private static void SetAllCultureInfo(CultureInfo cultureInfo)
     {
+        // Is this the best I can do?
+        resAboutWindow.Culture = cultureInfo;
         resAvaloniaOps.Culture = cultureInfo;
         resGeneric.Culture = cultureInfo;
         resMainExtras.Culture = cultureInfo;
@@ -110,13 +128,5 @@ public class LanguageItem
         Name = name;
         Culture = culture;
         LangIconPath = langIconPath;
-    }
-
-    public LanguageItem(string name, CultureInfo culture, Uri langIconPath, int itemIndex)
-    {
-        Name = name;
-        Culture = culture;
-        LangIconPath = langIconPath;
-        ItemIndex = itemIndex;
     }
 }

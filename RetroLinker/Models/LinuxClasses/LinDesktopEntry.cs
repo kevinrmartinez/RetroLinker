@@ -16,22 +16,25 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-namespace RetroLinker.Models.LinFunc;
+namespace RetroLinker.Models.LinuxClasses;
 
 public static class LinDesktopEntry
 {
-    private const string Ext = FileOps.LinLinkExt;
+    // What a mess...
+    // TODO: Remake this. Better yet, don't do this sh*t...
+    
+    // private const string Ext = FileOps.LinLinkExt;
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";
 
-    public static string StdDesktopEntry(string friendlyName, string core)
+    public static string StdDesktopEntry(string? friendlyName, string? core)
     {
         core = (!string.IsNullOrWhiteSpace(core)) ? core : CorePlaceHolder;
         friendlyName = (!string.IsNullOrWhiteSpace(friendlyName)) ? friendlyName : NamePlaceHolder;
         return DesktopEntryName(friendlyName, core);
     }
     
-    public static string DesktopEntryName(string fileName, string core)
+    private static string DesktopEntryName(string fileName, string core)
     {
         const string prefix = "retroarch.";
         const string whiteSpace = " ";
@@ -49,16 +52,5 @@ public static class LinDesktopEntry
         fileName = fileName.Insert(0, $"{core}.");
         fileName = fileName.Insert(0, prefix);
         return fileName;
-    }
-
-    public static ShortcutterOutput FixCoreNameForOutput(ShortcutterOutput outputToFix, string romCore)
-    {
-        if (outputToFix.FileName.Contains($"retroarch.{CorePlaceHolder}"))
-        {
-            outputToFix.FileName = outputToFix.FileName.Replace(CorePlaceHolder, romCore);
-            var newPath = FileOps.GetDirAndCombine(outputToFix.FullPath, outputToFix.FileName);
-            outputToFix.FullPath = newPath;
-        }
-        return outputToFix;
     }
 }

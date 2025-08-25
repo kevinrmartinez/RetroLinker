@@ -6,7 +6,7 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyName>RetroLinkerLib</AssemblyName>
-    <VersionPrefix>0.6.2</VersionPrefix>
+    <VersionPrefix>0.7.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -21,18 +21,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.0-beta1" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0-beta1" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.0-beta1" />
+    <PackageReference Include="Avalonia" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0-beta1" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.4" />
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
-      <Version>11.2.0-beta1</Version>
+      <Version>11.3.4</Version>
     </PackageReference>
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
-    <PackageReference Include="MessageBox.Avalonia" Version="3.1.6" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.4.0" />
-    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.4.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.8.0" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
+    <PackageReference Include="Microsoft.ClearScript.Windows" Version="7.5.0" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.6.2" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.2" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +82,16 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resMainExtras.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resMainExtras.es.resx">
+      <DependentUpon>resMainExtras.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAboutWindow.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>resAboutWindow.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Translations\resAboutWindow.es.resx">
+      <DependentUpon>resAboutWindow.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -107,6 +119,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>resMainExtras.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Translations\resAboutWindow.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>resAboutWindow.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

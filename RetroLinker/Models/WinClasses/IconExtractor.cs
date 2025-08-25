@@ -28,12 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace RetroLinkerWin
+namespace RetroLinker.Models.WinClasses
 {
     public class IconExtractor
     {
@@ -54,7 +53,7 @@ namespace RetroLinkerWin
         ////////////////////////////////////////////////////////////////////////
         // Fields
 
-        private byte[][] iconData = null;   // Binary data of each icon.
+        private byte[][] iconData = [];   // Binary data of each icon.
 
         ////////////////////////////////////////////////////////////////////////
         // Public properties
@@ -82,36 +81,34 @@ namespace RetroLinkerWin
         /// <param name="fileName">The file to extract icons from.</param>
         public IconExtractor(string fileName)
         {
+            FileName = string.Empty;
             Initialize(fileName);
         }
 
         /// <summary>
-        /// Extracts an icon from the file.
+        /// Extracts an icon from the file as a MemoryStream.
         /// </summary>
         /// <param name="index">Zero based index of the icon to be extracted.</param>
-        /// <returns>A System.Drawing.Icon object.</returns>
+        /// <returns>A System.IO.MemoryStream object.</returns>
         /// <remarks>Always returns new copy of the Icon. It should be disposed by the user.</remarks>
-        public Icon GetIcon(int index)
+        public MemoryStream GetIcon(int index)
         {
             if (index < 0 || Count <= index)
                 throw new ArgumentOutOfRangeException("index");
 
-            // Create an Icon based on a .ico file in memory.
-
-            using (var ms = new MemoryStream(iconData[index]))
-            {
-                return new Icon(ms);
-            }
+            // The output was changed to the MemoryStream itself. That way there's no need to import the Windows OS only System.Drawing library.
+            // Returns the .ico file in memory.
+            return new MemoryStream(iconData[index]);
         }
 
         /// <summary>
-        /// Extracts all the icons from the file.
+        /// Extracts all the icons from the file as MemoryStreams.
         /// </summary>
-        /// <returns>An array of System.Drawing.Icon objects.</returns>
+        /// <returns>An array of System.IO.MemoryStream objects.</returns>
         /// <remarks>Always returns new copies of the Icons. They should be disposed by the user.</remarks>
-        public Icon[] GetAllIcons()
+        public MemoryStream[] GetAllIcons()
         {
-            var icons = new List<Icon>();
+            var icons = new List<MemoryStream>();
             for (int i = 0; i < Count; ++i)
                 icons.Add(GetIcon(i));
 
@@ -121,7 +118,7 @@ namespace RetroLinkerWin
         private void Initialize(string fileName)
         {
             if (fileName == null)
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
 
             IntPtr hModule = IntPtr.Zero;
             try

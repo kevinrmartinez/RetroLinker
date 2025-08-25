@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -25,35 +26,46 @@ using RetroLinker.Views;
 
 namespace RetroLinker;
 
-public partial class App : Application
+public class App : Application
 {
+    public string AppFullName { get; private set; } = string.Empty;
+    public static string AppName { get; private set; } = string.Empty;
+    public static string AppVersion { get; private set; } = string.Empty;
+    public static DateTime? AppBuildDate { get; private set; }
+    public static string? AppCommitHash { get; private set; }
+    
     public const string TimeTrace = "[Time]";
     public const string DebgTrace = "[Debg]";
     public const string InfoTrace = "[Info]";
     public const string WarnTrace = "[Warn]";
     public const string ErroTrace = "[Erro]";
     public const string RetroBin = "retroarch";
-    public static readonly System.DateTime LaunchTime = System.DateTime.Now;
+    public static readonly System.Diagnostics.Stopwatch StopWatch = new();
+    
     public static string[]? Args;
     
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        System.TimeSpan launchTime = System.TimeSpan.FromTicks(LaunchTime.Ticks);
-        System.Diagnostics.Debug.WriteLine($"AppLoadTime: {launchTime}", TimeTrace);
+        StopWatch.Start();
+        System.Diagnostics.Debug.WriteLine($"App Launched at: {DateTime.Now:HH:mm:ss.fff}", TimeTrace);
+        
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
+        const string defaultLocale = "en_US";
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             Args = desktop.Args;
-            LanguageManager.FixLocale(new CultureInfo("en-US"));
+            LanguageManager.FixLocale(new CultureInfo(defaultLocale));
             System.Diagnostics.Debug.WriteLine("Starting MainWindow...", DebgTrace);
             desktop.MainWindow = new MainWindow
             {
-                //Name = "MasterWindow"
-                DataContext = null
+                Title = $"{AppName} v{AppVersion}",
+                DataContext = null,
+                IsDesigner = false
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
@@ -69,5 +81,14 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    public void SetAppInfo(AppInfo appInfo)
+    {
+        AppFullName = appInfo.FullName;
+        AppName = appInfo.Name;
+        AppVersion = appInfo.Version;
+        AppBuildDate = appInfo.BuildDate;
+        AppCommitHash = appInfo.GitHash;
     }
 }

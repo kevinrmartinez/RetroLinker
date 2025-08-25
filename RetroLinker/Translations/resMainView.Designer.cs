@@ -320,5 +320,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("popIconsError_Mess2", resourceCulture);
             }
         }
+        
+        public static string chkMenuOnError {
+            get {
+                return ResourceManager.GetString("chkMenuOnError", resourceCulture);
+            }
+        }
     }
 }

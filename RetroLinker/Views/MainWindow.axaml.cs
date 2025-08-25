@@ -23,23 +23,40 @@ namespace RetroLinker.Views;
 
 public partial class MainWindow : Window
 {
+    // Props
+    public Settings Settings { get; set; }
+    public string[] CoresList { get; set; }
+    public object[] IconsList { get; set; }
+    
+    // Fields
+    private UserControl PermaView;
+    public bool IsDesigner = true;
+    private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
+    
     public MainWindow()
     {
         InitializeComponent();
         System.Diagnostics.Debug.WriteLine("Starting MainView...", App.DebgTrace);
+        Settings = FileOps.LoadSettingsFO();
+        CoresList = AvaloniaOps.GetCoresArray();
+        IconsList = FileOps.LoadIcons(DesktopOS);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
 
     // Constructor for Designer
-    public MainWindow(object IsDesigner) => InitializeComponent();
-    
-    // Fields
-    private MainView PermaView;
-    
-    // Shared Objects
-    // public Shortcutter BuildingLink { get; set; } = new();
-    // public bool LinkCustomName { get; set; }
+    public MainWindow(bool isDesigner)
+    {
+        InitializeComponent();
+        IsDesigner = isDesigner;
+        CoresList = AvaloniaOps.GetCoresArray();
+        IconsList = FileOps.LoadIcons(DesktopOS);
+        PermaView = new RenameEntryView();
+        if (isDesigner) return;
+        Settings = FileOps.LoadSettingsFO();
+        PermaView = new MainView(this);
+        MainCC1.Content = PermaView;
+    }
 
     public enum ViewsTypes
     { MainView, PatchesView, SubsysView, AppendView }
@@ -49,6 +66,7 @@ public partial class MainWindow : Window
         MainCC1.Content = views switch
         {
             ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
+            ViewsTypes.AppendView => new AppendView(this,  (string)currentValues[0]),
             _ => PermaView
         };
     }
@@ -60,7 +78,8 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
-
+    
+    // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
     public void ReturnToMainView(UserControl view)
     {
         MainCC1.Content = PermaView;
@@ -69,8 +88,17 @@ public partial class MainWindow : Window
 
     public void ReturnToMainView(PatchesView pView, string pString)
     {
-        PermaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
+        if (PermaView is not MainView permaView) return;
+        permaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
         MainCC1.Content = PermaView;
-        pView = null;
+        // pView = null;
+    }
+
+    public void ReturnToMainView(AppendView aView, string aString)
+    {
+        if (PermaView is not MainView permaView) return;
+        permaView.UpdateLinkFromOutside(ViewsTypes.AppendView, [aString]);
+        MainCC1.Content = PermaView;
+        // aView = null;
     }
 }

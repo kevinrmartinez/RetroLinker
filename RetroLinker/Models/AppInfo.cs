@@ -1,6 +1,6 @@
-﻿/*
+/*
     A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,29 +17,23 @@
 */
 
 using System;
-using System.Reflection;
 
-namespace RetroLinker.Models.WinFuncImport
+namespace RetroLinker.Models;
+
+public readonly struct AppInfo
 {
-    public class WinFuncMethods : IEquatable<WinFuncMethods>
+    public string FullName { get; init; }
+    public string Name { get; init; }
+    public string Version { get; init; }
+    public DateTime? BuildDate { get; init; }
+    public string? GitHash { get; init; }
+
+    public AppInfo(string fullName, string name, string version, DateTime? buildDate = null, string? gitHash = null)
     {
-        public string MethodName { get; }
-        public object ObjInstance { get; }
-        public MethodInfo MInfo { get; }
-
-        public WinFuncMethods(string name, object instance, MethodInfo methodInfo) 
-        {
-            MethodName = name;
-            ObjInstance = instance;
-            MInfo = methodInfo;
-        }
-
-        public bool Equals(WinFuncMethods other)
-        {
-            return other.MInfo == this.MInfo;
-        }
-
-        public override bool Equals(object obj)
-        { return base.Equals(obj); }
+        FullName = fullName;
+        Name = name;
+        Version = version;
+        BuildDate = buildDate;
+        GitHash = gitHash;
     }
 }

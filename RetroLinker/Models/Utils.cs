@@ -18,15 +18,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RetroLinker.Models
 {
     public static class Utils
     {
-        const char DQ = '\"';
+        private const char DQ = '\"';
+        private const char LinIllegaChar = '/';
+        private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
+        
         public static string FixUnusualPaths(string path)
         {
+            // TODO: This 'fix' only puts the path between double quotes
+            // This deserves a remake
             if (!ContainsUnusualCharacters(path)) return path;
             
             const int firstElement = 0;
@@ -58,6 +62,31 @@ namespace RetroLinker.Models
             return noDQ[1];
         }
 
+        public static string TwoDoubleQuotes(string text)
+        {
+            int y = 0;
+            bool notEnded = true;
+            while (notEnded)
+            {
+                if (y >= (text.Length - 1)) 
+                    notEnded = false;
+                for (int i = y; i < text.Length; i++)
+                {
+                    y = i;
+                    if (text[i] != DQ)
+                    {
+                        y++; 
+                        continue;
+                    }
+                    text = text.Insert(y, DQ.ToString());
+                    y += 2;
+                    break;
+                }
+            }
+            
+            return text;
+        }
+
         private static bool HasDoubleQuotes(string path)
         {
             int lastCharIndex = path.Length - 1;
@@ -66,19 +95,16 @@ namespace RetroLinker.Models
 
         public static List<string> ExtractClassProperties(Type type)
         {
-            //var _type = _class.GetType();
             var props = type.GetProperties();
             var members = new List<string>();
 
             foreach (var member in props)
-            {
                 members.Add(member.Name);
-            }
             
             return members;
         }
 
-        public static string GetStringFromList(List<string> list)
+        public static string GetStringFromList(IEnumerable<string> list)
         {
             string result = "";
             foreach (var item in list)

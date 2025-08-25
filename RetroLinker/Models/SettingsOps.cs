@@ -97,16 +97,13 @@ namespace RetroLinker.Models
 
         private static bool ResolveBool(string value)
         {
-            int.TryParse(value, out var valueInt);
-            switch (valueInt)
+            _ = int.TryParse(value, out var valueInt);
+            return valueInt switch
             {
-                case 0:
-                    return false;
-                case 1:
-                    return true;
-                default:
-                    throw new System.IO.InvalidDataException(InvalidDataMessage);
-            }
+                0 => false,
+                1 => true,
+                _ => throw new System.IO.InvalidDataException(InvalidDataMessage)
+            };
         }
 
         private static int ResolveNumber(string value)
@@ -136,9 +133,9 @@ namespace RetroLinker.Models
                         settings.UserAssetsPath = FileOps.ResolveSettingUA(settingFile[++i]);
                         settings.DEFRADir = settingFile[++i];
                         settings.DEFROMPath = settingFile[++i];
-                        // TODO: Save all bools as a single 8bit number 
+                        // TODO: Save all bools as a single 8-bit number (byte) (0.8)
                         settings.PrevConfig = ResolveBool(settingFile[++i]);
-                        settings.AllwaysAskOutput = ResolveBool(settingFile[++i]);
+                        settings.AlwaysAskOutput = ResolveBool(settingFile[++i]);
                         settings.DEFLinkOutput = settingFile[++i];
                         settings.MakeLinkCopy = ResolveBool(settingFile[++i]);
                         settings.CpyUserIcon = ResolveBool(settingFile[++i]);
@@ -166,10 +163,10 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"There was a error while loading {FileOps.SettingFileBin}", App.ErroTrace);
+                    System.Diagnostics.Trace.WriteLine($"There was a error while loading \"{FileOps.SettingFileBin}\"", App.ErroTrace);
                     System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
                     settings = new();
-                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting {FileOps.SettingFileBin}...", App.InfoTrace);
+                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting \"{FileOps.SettingFileBin}\"...", App.InfoTrace);
                     WriteSettings(settings);
                 }  
             }
@@ -203,10 +200,6 @@ namespace RetroLinker.Models
             CachedSettings = savingSettings;
             FileOps.WriteSettingsFile(fileString);
         }
-        
-#if DEBUG
-        public static void TestfillPrevConfigs()  => PrevConfigs = new() { "esto", "es", "una", "prueba,", "cambio."};
-#endif
     }
 
 
@@ -216,7 +209,7 @@ namespace RetroLinker.Models
         public string DEFRADir { get; set; } = string.Empty;
         public string DEFROMPath { get; set; } = string.Empty;
         public bool PrevConfig { get; set; } = false;
-        public bool AllwaysAskOutput { get; set; } = true;
+        public bool AlwaysAskOutput { get; set; } = true;
         public string DEFLinkOutput { get; set; } = string.Empty;
         public bool MakeLinkCopy { get; set; } = false;
         public bool CpyUserIcon { get; set; } = false;
@@ -238,7 +231,7 @@ namespace RetroLinker.Models
         public void SetLanguage(LanguageItem languageItem)
         { LanguageCulture = LanguageManager.ResolveLocale(languageItem); }
 
-        public void SetDefaultLaunguage()
+        public void SetDefaultLanguage()
         { LanguageCulture = DEFLanguage; }
         
         //public void Dispose() => this.Dispose();
@@ -254,13 +247,13 @@ namespace RetroLinker.Models
         
         private string GetString()
         {
-            // It may not be smart, but if it works...
+            // TODO: There should be a better way... like JSON (0.8)
             string objectString = 
                 $"{UserAssetsPath}\n" +
                 $"{DEFRADir}\n" +
                 $"{DEFROMPath}\n";
             objectString += (PrevConfig)       ? "1\n" : "0\n";
-            objectString += (AllwaysAskOutput) ? "1\n" : "0\n";
+            objectString += (AlwaysAskOutput) ? "1\n" : "0\n";
             objectString += $"{DEFLinkOutput}\n";
             objectString += (MakeLinkCopy)     ? "1\n" : "0\n"; 
             objectString += (CpyUserIcon)      ? "1\n" : "0\n";

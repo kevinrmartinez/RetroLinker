@@ -19,56 +19,45 @@
 using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Projektanker.Icons.Avalonia;
 using RetroLinker.Models;
+
+using ProjektankerIcon = Projektanker.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
-// TODO: All this file requires some documentation!!
+// All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
-    // Link Copy ListItem
-    private Grid NewItemGrid { get; set; }
-    private Label NewItemText { get; set; }
-    private Button NewItemTrash { get; set; }
-
-    public LinkCopyItemGrid()
-    {
-        DefineNewLinkCopyItem(null);
-    }
+    // TODO: Reimplement using DataTemplates
     
-    public LinkCopyItemGrid(string Dir)
-    {
-        DefineNewLinkCopyItem(Dir);
-        
-    }
+    // Link Copy ListItem
+    public Grid NewItemGrid { get; private set; }
+    public Label NewItemText { get;  private set; }
+    public Button NewItemTrash { get; private set; }
+
+    public LinkCopyItemGrid(string Dir) => DefineNewLinkCopyItem(Dir);
     
     void DefineNewLinkCopyItem(string? path)
     {
         NewItemGrid = new Grid()
         {
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        NewItemGrid.ColumnDefinitions = new ColumnDefinitions()
-        {
-            new ColumnDefinition(1, GridUnitType.Star),
-            new ColumnDefinition(1, GridUnitType.Auto)
+            VerticalAlignment = VerticalAlignment.Center,
+            ColumnDefinitions = new ColumnDefinitions("*, Auto")
         };
             
         NewItemText = new Label();
-        if (!string.IsNullOrEmpty(path))
-        {
-            NewItemText.Content = path;
-        }
+        if (!string.IsNullOrEmpty(path)) NewItemText.Content = path;
             
-        Icon trashcan = new()
+        ProjektankerIcon trashcan = new()
         {
             Value = "fa-trash",
-            Foreground = new SolidColorBrush(Colors.Crimson)
+            Foreground = new SolidColorBrush(Colors.Firebrick)
         };
         NewItemTrash = new Button()
         {
@@ -89,9 +78,9 @@ public class LinkCopyItemGrid
     }
 }
 
-public class LocaleComboItem
+public static class LocaleComboItem
 {
-
+    // TODO: Reimplement using DataTemplates
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
         var item = new ComboBoxItem()
@@ -106,22 +95,12 @@ public class LocaleComboItem
 
     private static Grid DefineNewLocaleComboItem(LanguageItem locale)
     {
-        var grid = new Grid();
-        grid.ColumnDefinitions = new ColumnDefinitions()
-        {
-            new(1, GridUnitType.Auto),
-            new(1, GridUnitType.Star)
-        };
+        var grid = new Grid(){ ColumnDefinitions = new ColumnDefinitions("Auto, *") };
 
         var icon = new Image()
-        {
-            Source = new Bitmap(AssetLoader.Open(locale.LangIconPath))
-        };
+            { Source = new Bitmap(AssetLoader.Open(locale.LangIconPath)) };
         var pictureBox = new Viewbox()
-        {
-            Width = 35,
-            Child = icon
-        };
+            { Width = 35, Child = icon };
 
         var text = new Label()
         {
@@ -134,5 +113,155 @@ public class LocaleComboItem
         grid.Children.Add(pictureBox);
         grid.Children.Add(text);
         return grid;
+    }
+}
+
+
+public class MainWindowHeader : Grid
+{
+    // Overrides
+    protected override Type StyleKeyOverride { get; } = typeof(Grid);
+
+    // Avalonia Properties
+    public static readonly DirectProperty<MainWindowHeader, string> TitleProperty = 
+        AvaloniaProperty.RegisterDirect<MainWindowHeader, string>(
+            nameof(Title), 
+            h => h.Title, 
+            (h,  v) => h.Title = v);
+    
+    private string _title = string.Empty;
+    public string Title
+    {
+        get => _title;
+        set => SetAndRaise(TitleProperty, ref _title, value);
+    }
+    
+    public MainWindowHeader()
+    {
+        SetDimmensions();
+        var child = PopulateChildren();
+        SetColumn(child,1);
+        Children.Add(child);
+    }
+    
+    public MainWindowHeader(string title) : this() {
+        Title = title;
+    }
+
+    private void SetDimmensions() {
+        Height = 45;
+        ColumnDefinitions =  new ColumnDefinitions("Auto,*,Auto");
+    }
+
+    private StackPanel PopulateChildren()
+    {
+        return new StackPanel()
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Children = { new Label()
+            {
+                DataContext = this,
+                [!ContentControl.ContentProperty] = new Binding(nameof(Title))
+            } }
+        };
+    }
+}
+
+
+public class ExtraMainControlButton : Button
+{
+    // Content Properties
+    const string blankText = "blank";
+    const string blankIcon = "fa-question";
+    
+    // Overrides
+    protected override Type StyleKeyOverride { get; } = typeof(Button);
+    
+    
+    // Avalonia Properties
+    public enum ButtonFunctions
+    { None, Save, Discard }
+
+    // - ButtonFunction Selection
+    public static readonly DirectProperty<ExtraMainControlButton, ButtonFunctions> ButtonFunctionProperty =
+        AvaloniaProperty.RegisterDirect<ExtraMainControlButton, ButtonFunctions>(
+            nameof(ButtonFunction),
+            b => b.ButtonFunction,
+            (b, v) => b.ButtonFunction = v);
+
+    private ButtonFunctions _buttonFunction = ButtonFunctions.None;
+    public ButtonFunctions ButtonFunction {
+        get => _buttonFunction;
+        set => SetButtonFunction(value);
+    }
+    
+    // Content Properties
+    private string ButtonText { get; set; } = blankText;
+    private string ButtonIconValue { get; set; } =  blankIcon;
+    private SolidColorBrush? ButtonIconColor { get; set; }
+
+    public ExtraMainControlButton() {
+        RefreshContent();
+    }
+
+    private StackPanel GetContent()
+    {
+        var icon = new ProjektankerIcon()
+        {
+            DataContext = this,
+            // [!ProjektankerIcon.ValueProperty] = new Binding(nameof(ButtonIconValue)),
+            // [!ProjektankerIcon.ForegroundProperty] =  new Binding(nameof(ButtonIconColor))
+            Value = ButtonIconValue,
+            Foreground = ButtonIconColor
+        };
+        var textBlock = new TextBlock()
+        {
+            DataContext = this,
+            // [!TextBlock.TextProperty] = new Binding(nameof(ButtonText))
+            Text = ButtonText
+        };
+        return new StackPanel() {
+            Children = { icon, textBlock }
+        };
+    }
+
+    private void RefreshContent() {
+        // I did not want to do this, but the method of binding the controls to the objects did not worked.
+        Content = GetContent();
+    }
+
+    private void SetButtonFunction(ButtonFunctions function)
+    {
+        var yesIcon = "fa-check";
+        var yesColor = new SolidColorBrush(Colors.Green);
+        var yesText = Translations.resGeneric.btnConfirm;
+        
+        var noIcon = "fa-x";
+        var noColor = new SolidColorBrush(Colors.Crimson);
+        var noText = Translations.resGeneric.btnDiscard;
+        
+        
+        switch (function)
+        {
+            case ButtonFunctions.Save:
+                ButtonText = yesText;
+                ButtonIconValue = yesIcon;
+                ButtonIconColor = yesColor;
+                break;
+            case ButtonFunctions.Discard:
+                ButtonText = noText;
+                ButtonIconValue = noIcon;
+                ButtonIconColor = noColor;
+                break;
+            default:
+                ButtonText = blankText;
+                ButtonIconValue = blankIcon;
+                ButtonIconColor = null;
+                break;
+        }
+        SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
+        RefreshContent();
     }
 }

@@ -122,4 +122,7 @@
     <data name="popIconsError_Mess" xml:space="preserve">
         <value>Hubo un error al importar la lista de iconos.</value>
     </data>
+    <data name="chkMenuOnError" xml:space="preserve">
+        <value>Cargar Menú en Caso de Error</value>
+    </data>
 </root>

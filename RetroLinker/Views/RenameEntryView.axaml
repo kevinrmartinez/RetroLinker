@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
              x:Class="RetroLinker.Views.RenameEntryView"
              Name="RenameEntry" Loaded="View_OnLoaded" Unloaded="View_OnUnloaded">
@@ -11,18 +11,18 @@
         <!-- ROW0 - Name Controls -->
         <StackPanel Grid.Row="0">
             <Grid ColumnDefinitions="0.25*, *">
-                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static locale:resMainExtras.lblFriendlyName}"/>
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static lc:resMainExtras.lblFriendlyName}"/>
                 <TextBox Name="txtFriendlyName" Grid.Column="1" HorizontalAlignment="Stretch" TextChanged="TxtFriendlyName_OnTextChanged"
-                         ToolTip.Tip="{x:Static locale:resMainExtras.txtFriendlyName_Tip}"/>
+                         ToolTip.Tip="{x:Static lc:resMainExtras.txtFriendlyName_Tip}"/>
             </Grid>
         
             <Grid ColumnDefinitions="0.25*, *" Margin="0,8,0,0">
-                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static locale:resMainExtras.lblFileName}"/>
+                <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static lc:resMainExtras.lblFileName}"/>
                 <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
                     <TextBox Name="txtFileName" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Text="---" TextChanged="TxtFileName_OnTextChanged"
-                             ToolTip.Tip="{x:Static locale:resMainExtras.txtFileName_Tip}"/>
+                             ToolTip.Tip="{x:Static lc:resMainExtras.txtFileName_Tip}"/>
                     <Label Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content="---"
-                           ToolTip.Tip="{x:Static locale:resMainExtras.lblExt_Tip}"/>
+                           ToolTip.Tip="{x:Static lc:resMainExtras.lblExt_Tip}"/>
                 </Grid>
             </Grid>
         </StackPanel>
@@ -32,18 +32,18 @@
         
         <!-- ROW2 - Controls -->
         <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto">
-            <CheckBox Name="chkCustomFilename" Grid.Column="0" Margin="10,0" Content="{x:Static locale:resMainExtras.chkCustomFilename}" 
+            <CheckBox Name="chkCustomFilename" Grid.Column="0" Margin="10,0" Content="{x:Static lc:resMainExtras.chkCustomFilename}" 
                       IsCheckedChanged="ChkCustomFilename_OnIsCheckedChanged"/>
-            <!-- ROW1 - Spacing -->
+            
             <Rectangle Grid.Column="1"/>
             
-            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static locale:resMainExtras.btnClear_Tip}" Click="BtnClear_OnClick"
+            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainExtras.btnClear_Tip}" Click="BtnClear_OnClick"
                     i:Attached.Icon="fa-arrow-rotate-left" FontSize="20"/>
             
             <Button Name="btnNameApply" Grid.Column="3" Click="BtnNameApply_OnClick">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                     <i:Icon FontSize="20" Value="fa-check" Foreground="Green"/>
-                    <TextBlock FontSize="16" Text="{x:Static locale:resGeneric.btnApply}" VerticalAlignment="Center"/>
+                    <TextBlock FontSize="16" Text="{x:Static lc:resGeneric.btnApply}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
         </Grid>

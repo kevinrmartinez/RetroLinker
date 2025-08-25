@@ -3,22 +3,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:locale="clr-namespace:RetroLinker.Translations"
+             xmlns:pc="clr-namespace:RetroLinker.Styles"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.PatchesView"
              Name="ViewPatch" Loaded="PatchView_OnLoaded">
     
-    <Grid RowDefinitions="Auto, *, Auto">
+    <UserControl.Styles>
+        <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
+    </UserControl.Styles>
+    
+    <Grid Name="gridContent" RowDefinitions="Auto, *, Auto">
         <!--Top-->
-        <Grid Name="gridTOP" Grid.Row="0" Height="45" ColumnDefinitions="Auto, *, Auto" Background="Firebrick">
-            <!-- <Button Name="btnBack" Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="Button_OnClick" -->
-            <!--         i:Attached.Icon="fa-arrow-left" FontSize="24"/> -->
-            
-            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Label Content="{x:Static locale:resMainExtras.tittleSoftPatching}" FontWeight="Bold"/>
-            </StackPanel>
-            <!-- <Rectangle Grid.Column="2" Width="40" Margin="0,0,5,0"/> -->
-        </Grid>
+        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.tittleSoftPatching}" Classes="Header"/>
+        <!-- Header -->
     
         <!--Body-->
         <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto, Auto, *, Auto">
@@ -30,41 +28,30 @@
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="3, 0">
                 <Label Content="Patch Type"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="ToggleButton_OnIsCheckedChanged"
-                                 Content="{x:Static locale:resMainExtras.rdoNoPatch}"/>
-                    <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="ToggleButton_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoXDPatch" GroupName="PatchType" Content="xDelta" Click="ToggleButton_OnIsCheckedChanged"/>
+                    <!-- TODO: add Auto -->
+                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
+                                 Content="{x:Static lc:resMainExtras.rdoNoPatch}"/>
+                    <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoXDPatch" GroupName="PatchType" Content="xDelta" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                 </StackPanel>
                 <Grid ColumnDefinitions="*, Auto" Margin="3,10">
                     <TextBox Name="txtPatchPath" Grid.Column="0" HorizontalAlignment="Stretch"
                              IsReadOnly="True" Watermark="super mario bros.ups"/>
-                    <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static locale:resMainView.tipBrowse}" Click="BtnPatchPath_OnClick"
+                    <Button Name="btnPatchPath" Grid.Column="1"  ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="BtnPatchPath_OnClick"
                             i:Attached.Icon="fa-folder-open" FontSize="18"/>
                 </Grid>
-                <CheckBox Name="chkNoPatch" Content="{x:Static locale:resMainExtras.chkNoPatch}"/>
+                <CheckBox Name="chkNoPatch" Content="{x:Static lc:resMainExtras.chkNoPatch}"/>
             </StackPanel>
             
             <!-- ROW2 - Spacing -->
             <Rectangle Grid.Row="2"/>
             
-            <!-- ROW3 - Patch Controls -->
+            <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <Button Name="btnSavePatch" Grid.Column="0" Height="50" Click="BtnSavePatch_OnClick"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <i:Icon FontSize="24" Value="fa-check" Foreground="Green"/>
-                        <TextBlock FontSize="24" Text="{x:Static locale:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button Name="btnDiscPatch" Grid.Column="1" Height="50" Click="BtnDiscPatch_OnClick" 
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <i:Icon FontSize="24" Value="fa-x" Foreground="Crimson"/>
-                        <TextBlock FontSize="24" Text="{x:Static locale:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                <pc:ExtraMainControlButton Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSavePatch_OnClick"/>
+                <pc:ExtraMainControlButton Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscPatch_OnClick"/>
             </Grid>
             
         </Grid>

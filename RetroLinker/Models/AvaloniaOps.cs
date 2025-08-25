@@ -17,117 +17,84 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
+using RetroLinker.Views;
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
 
 namespace RetroLinker.Models;
 
 public static class AvaloniaOps
 {
     private static bool FirstLoad = true;
-    private static Task<string[]> coresTask;
-    private static Task<object[]> iconTask;
-    private static string[] cores = Array.Empty<string>();
-    private static object[] iconList = Array.Empty<object>();
+    private static string[] Cores = [];
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
-    private const string NoAplica = "avares://RetroLinkerLib/Assets/Images/no-aplica.png";
-    
-    public static string DefLinRAIcon { get; private set; }
+    private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 
     
     #region FUNCTIONS
-    public static Settings MainViewPreConstruct()
+    public static string[] GetCoresArray()
     {
-        if (!FirstLoad) return FileOps.LoadCachedSettingsFO();
-        System.Diagnostics.Trace.WriteLine($"Current OS: {RuntimeInformation.OSDescription}", App.InfoTrace);
-        //System.Diagnostics.Trace.WriteLine($"OS Version: {Environment.OSVersion.Version}", App.InfoTrace);
-        var settings = FileOps.LoadSettingsFO();
-        System.Diagnostics.Debug.WriteLine("Settings loaded for MainView.", App.DebgTrace);
-        System.Diagnostics.Debug.WriteLine("Settings converted to Base64:" + settings.GetBase64(), App.DebgTrace);
-        
-        LanguageManager.SetLocale(settings.LanguageCulture);
-        
-        return settings;
-    }
-
-    public static Settings DesignerMainViewPreConstruct() => FileOps.LoadDesignerSettingsFO(false);
-
-    public static void MainViewLoad(bool DesktopOS)
-    {
-        DefLinRAIcon = FileOps.GetSystemRAIcons();
-
-        string coreFile;
-        if (!FileOps.GetCoreFile(out coreFile))
+        if (Cores.Length >= 1) return Cores;
+        if (!FileOps.GetCoreFile(out string coresFile))
         {
             var assetStream = AssetLoader.Open(GetDefaultCores());
-            coreFile = FileOps.DumpStreamToFile(assetStream);
+            coresFile = FileOps.DumpStreamToFile(assetStream);
         }
-        coresTask = FileOps.LoadCores(coreFile);
-        
-        iconTask = FileOps.LoadIcons(DesktopOS);
-
-        FirstLoad = false;
+        Cores = FileOps.LoadCores(coresFile);
+        return Cores;
     }
 
-    public static async Task<string[]> GetCoresArray()
-    {
-        if (cores.Length < 1) cores = await coresTask;
-        return cores;
-    }
+    private static Uri GetDefaultCores() => new(CoreList);
     
-    public static async Task<object[]> GetIconList()
-    {
-        if (iconList.Length != 0) return iconList;
-        iconList = await iconTask;
-        return iconList;
-    }
+    public static Uri GetDefaultIcon() => new(DEFicon1);
 
-    public static Uri GetDefaultCores() => new Uri(CoreList);
+    public static Uri GetNAimage() => new(NaN);
     
-    public static Uri GetDefaultIcon() => new Uri(DEFicon1);
+    public static AvaloniaBitmap GetBitmap(string path) => new(path);
 
-    public static Uri GetNAimage() => new Uri(NoAplica);
-    
-    public static Bitmap GetBitmap(string path) => new Bitmap(path);
+    public static AvaloniaBitmap GetBitmap(Stream imgStream) => new(imgStream);
 
-    public static Bitmap GetBitmap(Stream img_stream) => new Bitmap(img_stream);
-
-    private static async Task<IStorageFolder> GetStorageFolder(string dir, TopLevel topLevel) =>  
+    private static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
 
     public static async void SetDesktopStorageFolder(TopLevel topLevel)
     {
         DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
-        System.Diagnostics.Debug.WriteLine($"DesktopStorageFolder set to: {DesktopFolder.Path.LocalPath}", App.DebgTrace);
+        var dbgOut = (DesktopFolder is null) 
+            ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
+            : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
+        Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
     {
-        if (!string.IsNullOrWhiteSpace(dir_ROMTop))
-        {
-            ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
-            System.Diagnostics.Debug.WriteLine($"ROMPadreStorageFolder set to: {ROMTopDir.Path.LocalPath}", App.DebgTrace);
-        }
+        if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
+        ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
+        var dbgOut = (ROMTopDir is null)
+            ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
+            : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
+        Debug.WriteLine(dbgOut, App.DebgTrace);
     }
     #endregion
     
     #region FileDialogs
-    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, string currentFile, TopLevel topLevel)
+    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel, string? currentFile = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))
         {
-            currentFile = FileOps.GetDirFromPath(currentFile);
+            currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
@@ -170,7 +137,7 @@ public static class AvaloniaOps
         var opt = PickerOpt.SavePickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))
         {
-            currentFile = FileOps.GetDirFromPath(currentFile);
+            currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
         }
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);

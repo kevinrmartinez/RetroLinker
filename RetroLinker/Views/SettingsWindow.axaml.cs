@@ -31,7 +31,7 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
-            mainWindow = null;
+            // mainWindow = new MainWindow(true);
             settings = new Settings();
         }
         
@@ -77,7 +77,7 @@ namespace RetroLinker.Views
         
         
         #region Window/Dialog Controls
-        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseView(null);
+        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseWindow(null);
 
         async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -98,7 +98,7 @@ namespace RetroLinker.Views
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettings(DEFsettings);
-                CloseView(DEFsettings);
+                CloseWindow(DEFsettings);
             }
                 
         }
@@ -106,17 +106,13 @@ namespace RetroLinker.Views
         void btnSAVESettings_Click(object sender, RoutedEventArgs e)
         {
             if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
-            if (!settings.AllwaysAskOutput) settings.AllwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
+            if (!settings.AlwaysAskOutput) settings.AlwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
             SettingsOps.WriteSettings(settings);
-            CloseView(settings);
+            CloseWindow(settings);
         }
 
-        void CloseView(Settings? retSettings)
-        {
-            Close(retSettings);
-            //ParentWindow.ReturnToMainView(this);
-        }
+        void CloseWindow(Settings? retSettings) => Close(retSettings);
         #endregion
 
         

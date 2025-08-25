@@ -22,6 +22,7 @@ using System.IO;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
+using RetroLinker.Models;
 
 namespace RetroLinker.Desktop;
 
@@ -33,18 +34,28 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        TimeSpan timeSpan = TimeSpan.FromTicks(DateTime.Now.Ticks);
-
         StartStopLogging(true);
-        var appAssembly = System.Reflection.Assembly.GetExecutingAssembly().GetName(); 
-        var appName = appAssembly.Name;
-        var appVersion = appAssembly.Version.ToString(3);
-        Trace.WriteLine($"{appName} v{appVersion}", "[Info]");
-        Debug.WriteLine($"LaunchTime: {timeSpan}", "[Time]");
+        Trace.WriteLine($"{AppName} v{AppVersion}", "[Info]");
+        Debug.WriteLine($"Launch Time: {DateTime.Now:HH:mm:ss.fff}", "[Time]");
         
         Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
+        #if DEBUG
+        // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
+        // Invalidating the purpose of the debugger lol
         BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+            .StartWithClassicDesktopLifetime(args);
+        #else
+        // Try-Catch is used to print the Exception to log, and then close the log.
+        try {
+            // I think that every exception that happens while the app is running can be capture here, thrusting that 
+            // the 'Program' class doesn't cause exceptions.
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception e) {
+            Trace.WriteLine(e, "[Erro]");
+        }
+        #endif
         
         // App Closing
         StartStopLogging(false);
@@ -56,29 +67,53 @@ class Program
         IconProvider.Current.Register<FontAwesomeIconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();
+            .AfterSetup(AppCallback)
+#if DEBUG
+            .LogToTrace()
+#endif
+            .WithInterFont();
     }
 
-    private static ConsoleTraceListener ConsoleTracer;
-    private static TextWriterTraceListener TextfileTracer;
-    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "trace.log");
+    private static void AppCallback(AppBuilder obj)
+    {
+        var instance = (App?)obj.Instance;
+        instance?.SetAppInfo(GetAppInfo());
+    }
+
+    // Parameters
+    private static readonly System.Reflection.Assembly AppAssembly1 = typeof(Program).Assembly;
+    private static readonly System.Reflection.AssemblyName AppAssembly2 = AppAssembly1.GetName();
+    private static readonly string AppName = AppAssembly2.Name!;
+    private static readonly string AppVersion = AppAssembly2.Version!.ToString(3);
+    
+    // Logging
+    private static ConsoleTraceListener ConsoleTracer = new();
+    private static TextWriterTraceListener TextfileTracer = new();
+    private static readonly string LogFileName = $"{AppName}.log";
+    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
 
     private static void StartStopLogging(bool mode)
     {
         if (mode)
         {
-            try
-            {   File.Delete(LogFile);   }
-            catch
-            {   Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]"); }
+            try {
+                File.Delete(LogFile);
+            }
+            catch {
+                // TODO: extend the catch to posible exceptions by 'File.Delete'
+                Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]");
+            }
             
-            ConsoleTracer = new()
-            { Name = "mainConsoleTracer", TraceOutputOptions = TraceOptions.Timestamp };
-            TextfileTracer = new(LogFile, "mainTextTracer")
-            { TraceOutputOptions = TraceOptions.DateTime };
-            
-            Trace.Listeners.AddRange(new TraceListener[] { ConsoleTracer, TextfileTracer });
+            ConsoleTracer = new() {
+                Name = "mainConsoleTracer", 
+                TraceOutputOptions = TraceOptions.Timestamp 
+            };
+            TextfileTracer = new(LogFile, "mainTextTracer") {
+                TraceOutputOptions = TraceOptions.DateTime,
+            };
+
+            Trace.Listeners.Add(ConsoleTracer);
+            Trace.Listeners.Add(TextfileTracer);
         }
         else
         {
@@ -87,5 +122,49 @@ class Program
             ConsoleTracer.Close();
             TextfileTracer.Close();
         }
+    }
+
+    private static DateTime? GetBuildDateOfAssembly()
+    {
+        try
+        {
+            var assemblyFile = new FileInfo(AppAssembly1.Location);
+            return assemblyFile.LastWriteTime;
+        }
+        catch (Exception e) {
+            // TODO: Redirect to log
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    private static string? GetGitHashOfRepo()
+    {
+        const string resourceName = "RetroLinker.Desktop.git-hash";
+        const int sha1Length = 40;
+        try
+        {
+            var result = ResourceLoader.GetTextFromResource(AppAssembly1, resourceName);
+            string hash = string.Empty;
+            foreach (var line in result) {
+                if (line.Length != sha1Length) continue;
+                hash = line;
+                break;
+            }
+            return hash;
+        }
+        catch (Exception e) {
+            // TODO: Redirect to log
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    private static AppInfo GetAppInfo()
+    {
+        var fullName = AppAssembly2.FullName;
+        var buildDate = GetBuildDateOfAssembly();
+        var gitHash = GetGitHashOfRepo();
+        return new AppInfo(fullName, AppName, AppVersion,  buildDate, gitHash);
     }
 }

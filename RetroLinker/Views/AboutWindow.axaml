@@ -1,0 +1,101 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lc="clr-namespace:RetroLinker.Translations"
+        mc:Ignorable="d" d:DesignWidth="510" d:DesignHeight="400"
+        x:Class="RetroLinker.Views.AboutWindow"
+        MinWidth="450" MinHeight="350" Width="510" Height="400"
+        WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
+    <Window.Styles>
+        <Style Selector="Label#LabelTitle">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        
+        <Style Selector="Border#BorderDev">
+            <!-- The Background should be a little different tone than the body's, but that's we'll need a theme to control that -->
+            <Setter Property="Background" Value="LightSlateGray"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style Selector="TextBlock#LabelBuild">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <Style Selector="TextBlock#LabelDesc">
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <Style Selector="Label#LabelCopyright">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
+        
+        <Style Selector="StackPanel#StackPanelCredits">
+            <Setter Property="Orientation" Value="Vertical"/>
+            <Style Selector="^ TextBlock">
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="TextDecorations" Value="Underline"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+            <Style Selector="^ HyperlinkButton">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Margin" Value="2,1"/>
+            </Style>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Width" Value="65"/>
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+    </Window.Styles>
+    
+    
+    <Grid RowDefinitions="*,Auto" Margin="5">
+        <!-- BODY -->
+        <!-- TODO: Add External Libraries -->
+        <Grid Grid.Row="0" RowDefinitions="0.7*,*">
+            <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
+                <!-- PENDING: Change image with app logo -->
+                <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Images/NaN.png"/>
+                
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
+                    <Label Name="LabelTitle" Content="APP TITTLE, APP VERSION"/>
+                    <Border Name="BorderDev">
+                        <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT HASH"/>
+                    </Border>
+                    <TextBlock Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
+                    <Label Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto">
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <Rectangle Height="6"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label><StackPanel Orientation="Horizontal" Spacing="0">
+                                <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
+                                <Label Content=": "/>
+                            </StackPanel></Label>
+                        <HyperlinkButton Content="kevinrmartinez" NavigateUri="https://github.com/kevinrmartinez" Padding="0"/>
+                    </StackPanel>
+                    <Rectangle Height="6"/>
+                    <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
+                </StackPanel>
+                <ListBox Name="ListBoxContributors" Grid.Row="1" SelectionMode="Single" VerticalAlignment="Stretch" Margin="2" IsVisible="False"/>
+                <StackPanel Name="StackPanelCredits" Grid.Row="2">
+                    <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
+                    <!-- Filled by code behind -->
+                </StackPanel>
+                <Rectangle Grid.Row="3" Height="8"/>
+            </Grid>
+        </Grid>
+        
+        <!-- EXIT BUTTON -->
+        <Button Grid.Row="1" Content="{x:Static lc:resAboutWindow.btnClose}" Click="Button_OnClick"/>
+    </Grid>
+</Window>

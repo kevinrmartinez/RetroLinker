@@ -50,4 +50,10 @@
     <data name="chkNoPatch" xml:space="preserve">
         <value>Explicitamente Sin Parche</value>
     </data>
+    <data name="tittleAppendConfig" xml:space="preserve">
+        <value>Anexar Config</value>
+    </data>
+    <data name="lblAppendPath" xml:space="preserve">
+        <value>Rutas de las Configs a Anexar</value>
+    </data>
 </root>

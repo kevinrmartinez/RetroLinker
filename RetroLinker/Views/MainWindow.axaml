@@ -2,18 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:RetroLinker.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-		Width="800" Height="550" MinWidth="790" MinHeight="530"
+        mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
+		Width="850" Height="550" MinWidth="790" MinHeight="530"
         x:Class="RetroLinker.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="RetroLinker (beta)"
-		WindowStartupLocation="CenterScreen" Name="MainWindow1">
-        
-        <TransitioningContentControl Name="MainCC1">
-	        <TransitioningContentControl.PageTransition>
-				<CrossFade Duration="0:00:00.280"/>
-				<!-- <Rotate3DTransition Duration="0:00:00.300"/> -->
-	        </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+		WindowStartupLocation="CenterScreen">
+	
+	<!-- TODO: One ContentControl in CrossFade, to refresh the view; another one (child of the first) in PageSilde to change views  -->
+	<TransitioningContentControl Name="MainCC1">
+		<TransitioningContentControl.PageTransition>
+			<CrossFade Duration="0:00:00.280"/>
+		</TransitioningContentControl.PageTransition>
+	</TransitioningContentControl>
 </Window>
