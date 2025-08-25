@@ -1,7 +1,7 @@
 # RetroLinker
-A helper for creating shortcuts of games that use libretro's emulator frontend RetroArch. It aims to help set most of the parameters that RetroArch takes and writes it to a shortcut file, along with shortcut an icon of your choice. Currently compatible with Windows Shortcut (.lnk) and linux desktop entry (.desktop).
+A helper for creating shortcuts of games that use Libretro's emulator frontend RetroArch. It aims to help set most of the parameters that RetroArch takes and writes it to a shortcut file for you, along with an icon of your choice. Currently compatible with the Windows shortcut (.lnk) and Linux desktop entry (.desktop)[(FreeDesktop spec)](https://specifications.freedesktop.org/desktop-entry-spec/latest/).
 
-As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready for converting .png, .jpeg and .svg images into .icos, as well to extract .icos from other Windows executable files (.exe only for now), that way you'll have more freedom on your icon choices!
+As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready for converting .png, .jpeg and even .svg images into .ico files, as well to extract .ico files from other Windows executable files (.exe only for now), that way you'll have more freedom on your icon choices!
 
 ## Features
 - Let the user create a custom link per game for desktop integration.
@@ -17,9 +17,11 @@ As Windows Shortcuts can only use .ico for its icons, RetroLinker comes ready fo
   - contentless
 - rom soft-patching
 - custom Config file
+- appending Config files
 - fullscreen
 - verbose
 - accessibility
+- load menu on error
 
 ## Captures
 ![Main Application Window](MainApp.png)
@@ -35,7 +37,8 @@ In the following capture, we can see that the example from before are now part o
 
 ## Planned RetroArch parameters
 - core subsystems
-- append config
+- log-file
+- environment variables (all)
 
 ## Restrictions
 - This app won't ask for admin permissions; reading and writing to paths without the proper permissions will simple result in an error.
