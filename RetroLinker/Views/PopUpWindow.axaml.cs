@@ -34,19 +34,10 @@ public partial class PopUpWindow : Window
     }
 
     public PopUpWindow(bool isDesigner) => InitializeComponent();
-    
-    public PopUpWindow(MainWindow mainWindow)
-    {
-        InitializeComponent();
-        ParentWindow = mainWindow;
-    }
-    
-    // FIELDS
-    public MainWindow ParentWindow;
 
     public void RenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput>outputs)
     {
-        this.Title = Translations.resMainExtras.tittleEntryName;
+        Title = Translations.resMainExtras.tittleEntryName;
         PopCC1.Content = new RenameEntryView(this, givenPath, givenCore, outputs);
     }
 }

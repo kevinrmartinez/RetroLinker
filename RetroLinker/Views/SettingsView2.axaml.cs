@@ -28,23 +28,22 @@ public partial class SettingsView2 : UserControl
     {
         // Constructor for Designer
         InitializeComponent();
-        ParentWindow = new SettingsWindow();
+        ParentWindow = new SettingsWindow(true);
     }
     
-    public SettingsView2(MainWindow mainWindow, SettingsWindow settingsWindow, bool desktopOs)
+    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs)
     {
         InitializeComponent();
-        MainAppWindow = mainWindow;
         ParentWindow = settingsWindow;
         DesktopOS = desktopOs;
     }
     
     // Window Obj
-    private MainWindow MainAppWindow;
+    // private MainWindow MainAppWindow;
     private SettingsWindow ParentWindow;
     
     // PROPS/STATICS
-    private bool FirstTimeLoad = true;
+    // private bool FirstTimeLoad = true;
     private bool DesktopOS;
     
     // LOAD

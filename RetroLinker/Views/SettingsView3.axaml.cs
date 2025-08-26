@@ -30,23 +30,23 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
-            appMainWindow = new MainWindow(true);
-            ParentWindow = new SettingsWindow();
+            ParentWindow = new SettingsWindow(true);
+            IsDesigner = true;
         }
         
-        public SettingsView3(MainWindow mainWindow, SettingsWindow settingsWindow, bool OS)
+        public SettingsView3(SettingsWindow settingsWindow, bool OS)
         {
             InitializeComponent();
-            appMainWindow = mainWindow;
             ParentWindow = settingsWindow;
             DesktopOS = OS;
         }
         
         // Window Obj
-        private MainWindow appMainWindow;
+        // private MainWindow appMainWindow;
         private SettingsWindow ParentWindow;
 
         // PROPS/STATICS
+        private bool IsDesigner;
         private bool FirstTimeLoad = true;
         private bool DesktopOS;
         private int candidatesCount;
@@ -63,7 +63,7 @@ namespace RetroLinker.Views
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
-            if (appMainWindow.IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
+            if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
                 if (!DesktopOS)

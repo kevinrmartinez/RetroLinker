@@ -95,7 +95,7 @@ public partial class AppendView : UserControl
         ParentWindow.ReturnToMainView(this, appendArg);
     }
 
-    private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView(this);
+    private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
 
     private List<string> FillListTest()
     {

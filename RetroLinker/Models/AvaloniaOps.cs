@@ -32,12 +32,13 @@ namespace RetroLinker.Models;
 
 public static class AvaloniaOps
 {
-    private static bool FirstLoad = true;
+    // private static bool FirstLoad = true;
     private static string[] Cores = [];
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
+    // TODO: these two are set to many times on runtime
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 

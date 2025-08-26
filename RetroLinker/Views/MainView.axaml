@@ -41,6 +41,7 @@
 						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>
+					<Button Content="bleh" Click="TestButton_OnClick"/>
 				</StackPanel>
 
 				<!-- ROW2 - ROM Directory -->

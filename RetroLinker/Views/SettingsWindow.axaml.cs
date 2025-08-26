@@ -31,50 +31,43 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
-            // mainWindow = new MainWindow(true);
             settings = new Settings();
+            
+            SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+            CCTab1.Content = new SettingsView(this, DesktopOS);
+            CCTab2.Content = new SettingsView2(this, DesktopOS);
+            CCTab3.Content = new SettingsView3(this, DesktopOS);
         }
-        
-        public SettingsWindow(MainWindow parentWindow, Settings _settings)
+
+        public SettingsWindow(bool isDesigner)
         {
             InitializeComponent();
-            mainWindow = parentWindow;
+            settings = new Settings();
+            SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+        }
+        
+        public SettingsWindow(MainWindow mainWindow, Settings _settings)
+        {
+            InitializeComponent();
+            // this.mainWindow = mainWindow;
             settings = _settings;
+            
+            SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+            CCTab1.Content = new SettingsView(this, DesktopOS);
+            CCTab2.Content = new SettingsView2(this, DesktopOS);
+            CCTab3.Content = new SettingsView3(this, DesktopOS);
         }
         
         // Window Obj
-        private MainWindow mainWindow;
+        // private MainWindow mainWindow;
 
         // PROPS/STATICS
         public Settings settings { get; set; }
         public Settings DEFsettings { get; set; } = new();
         
         private bool DesktopOS = System.OperatingSystem.IsWindows();
-        private SettingsView SettingsPage1;
-        private SettingsView2 SettingsPage2;
-        private SettingsView3 SettingsPage3;
         public List<string> SetLinkCopyPaths;
 
-        #region LoadContent
-        private void Window_OnLoaded(object? sender, RoutedEventArgs e)
-        {
-            LoadFromSettings();
-            SettingsPage1 = new SettingsView(mainWindow, this, DesktopOS);
-            SettingsPage2 = new SettingsView2(mainWindow, this, DesktopOS);
-            SettingsPage3 = new SettingsView3(mainWindow, this, DesktopOS);
-            CCTab1.Content = SettingsPage1;
-            CCTab2.Content = SettingsPage2;
-            CCTab3.Content = SettingsPage3;
-        }
-        
-        void LoadFromSettings()
-        {
-            // settings = SettingsOps.GetCachedSettings();
-            SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
-            // SetLinkCopyPaths = new List<string>();
-        }
-        #endregion
-        
         
         #region Window/Dialog Controls
         void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseWindow(null);

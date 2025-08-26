@@ -63,10 +63,10 @@ namespace RetroLinker.Models
         public string PatchArg { get; set; }    // 14
         public string CONFappend { get; set; }  // 15
 
-        private string ra_dir;
-        private string ra_path;
-        private string rom_dir;
-        private string rom_name;
+        private string ra_dir   = string.Empty;
+        private string ra_path  = string.Empty;
+        private string rom_dir  = string.Empty;
+        private string rom_name = string.Empty;
         
         
         
@@ -111,7 +111,11 @@ namespace RetroLinker.Models
             RApath = value;
         }
 
-        private void SetRApath(string value) => ra_path = FileOps.GetDirFromPath(value);
+        private void SetRApath(string value)
+        {
+            var result = FileOps.GetDirFromPath(value);
+            ra_path = (string.IsNullOrEmpty(result)) ? string.Empty : result;
+        }
 
         private void SetROMdir(string value) {
             rom_dir = value;

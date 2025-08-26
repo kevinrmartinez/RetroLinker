@@ -45,7 +45,7 @@ public partial class MainView : UserControl
     {
         // Constructor for Designer
         InitializeComponent();
-        ParentWindow = new MainWindow(true);
+        ParentWindow = new MainWindow(this);
         IsDesingner = true;
         settings =  new Settings();
     }
@@ -58,7 +58,7 @@ public partial class MainView : UserControl
     }
     
     // Debug
-    private bool IsDesingner = false;
+    private bool IsDesingner;
     
     // Window Object
     private MainWindow ParentWindow;
@@ -67,7 +67,7 @@ public partial class MainView : UserControl
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
-    private byte CurrentTheme = 250;
+    // private byte CurrentTheme = 250;
     private Settings settings;
     private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
     private IconsItems? IconItemSET;
@@ -216,7 +216,7 @@ public partial class MainView : UserControl
             2 => ThemeVariant.Dark,
             _ => ThemeVariant.Default,
         };
-        CurrentTheme = settings.PreferedTheme;
+        // CurrentTheme = settings.PreferedTheme;
         System.Diagnostics.Trace.WriteLine($"The requested theme was: {theme}", App.InfoTrace);
         System.Diagnostics.Debug.WriteLine($"Index in byte: {settings.PreferedTheme}", App.DebgTrace);
         return theme;
@@ -332,7 +332,7 @@ public partial class MainView : UserControl
 
     async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs)
     {
-        var popupWindow = new PopUpWindow(ParentWindow);
+        var popupWindow = new PopUpWindow();
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
         return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
         // BuildingLink.OutputPaths = result;
@@ -908,5 +908,11 @@ public partial class MainView : UserControl
             ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) 
             || !settings.Equals(cachedSettings)
         ) SettingsOps.WriteSettings(settings);
+    }
+
+    private void TestButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var set = new SettingsWindow();
+        set.ShowDialog(ParentWindow);
     }
 }

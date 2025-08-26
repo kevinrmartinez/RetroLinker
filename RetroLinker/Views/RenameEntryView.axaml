@@ -6,7 +6,7 @@
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
              x:Class="RetroLinker.Views.RenameEntryView"
-             Name="RenameEntry" Loaded="View_OnLoaded" Unloaded="View_OnUnloaded">
+             Name="RenameEntry" Unloaded="View_OnUnloaded">
     <Grid Margin="6,10" RowDefinitions="Auto, *, Auto">
         <!-- ROW0 - Name Controls -->
         <StackPanel Grid.Row="0">

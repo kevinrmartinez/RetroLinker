@@ -41,9 +41,7 @@ public class LinkCopyItemGrid
     public Label NewItemText { get;  private set; }
     public Button NewItemTrash { get; private set; }
 
-    public LinkCopyItemGrid(string Dir) => DefineNewLinkCopyItem(Dir);
-    
-    void DefineNewLinkCopyItem(string? path)
+    public LinkCopyItemGrid(string path)
     {
         NewItemGrid = new Grid()
         {
@@ -69,12 +67,6 @@ public class LinkCopyItemGrid
         Grid.SetColumn(NewItemTrash,1);
         NewItemGrid.Children.Add(NewItemText);
         NewItemGrid.Children.Add(NewItemTrash);
-    }
-
-    public Grid GetNewCopyGrid(string path)
-    {
-        NewItemText.Content = path;
-        return NewItemGrid;
     }
 }
 

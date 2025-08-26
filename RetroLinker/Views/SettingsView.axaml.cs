@@ -30,20 +30,19 @@ namespace RetroLinker.Views
         public SettingsView()
         {
             InitializeComponent();
-            ParentWindow = new SettingsWindow();
+            ParentWindow = new SettingsWindow(true);
         }
 
-        public SettingsView(MainWindow _mainWindow, SettingsWindow parentWindow, bool desktopOs)
+        public SettingsView(SettingsWindow parentWindow, bool desktopOs)
         {
             InitializeComponent();
-            MainAppWindow = _mainWindow;
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
             // settings = ParentWindow.settings;
         }
         
         // Window Obj
-        private MainWindow MainAppWindow;
+        // private MainWindow MainAppWindow;
         private SettingsWindow ParentWindow;
 
         // PROPS/STATICS

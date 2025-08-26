@@ -146,13 +146,13 @@ public partial class PatchesView : UserControl
         {
             var standardParams = new MessageBoxStandardParams()
             {
-                WindowIcon = ParentWindow.Icon,
                 MaxWidth = 550,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 ContentTitle = resMainExtras.popNonSelected_Tittle,
                 ContentMessage = resMainExtras.popNonSelected_Msg,
                 Icon = MsBox.Avalonia.Enums.Icon.Info
             };
+            if (ParentWindow.Icon is { } icon)  standardParams.WindowIcon = icon;
             var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
             msBox.ShowWindowDialogAsync(ParentWindow);
             
@@ -169,5 +169,5 @@ public partial class PatchesView : UserControl
         ParentWindow.ReturnToMainView(this, patchComm);
     }
 
-    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView(this);
+    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
 }

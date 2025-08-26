@@ -49,13 +49,23 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         IsDesigner = isDesigner;
+        CoresList = [];
+        IconsList = [];
+        // Settings = FileOps.LoadDesignerSettingsFO(true);
+        Settings = new Settings();
+        PermaView = new RenameEntryView();
+        if (!isDesigner)
+        {
+            Settings = FileOps.LoadSettingsFO();
+            PermaView = new MainView(this);
+            MainCC1.Content = PermaView;
+        }
+    }
+
+    public MainWindow(MainView mainViewDesigner) : this(true)
+    {
         CoresList = AvaloniaOps.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);
-        PermaView = new RenameEntryView();
-        if (isDesigner) return;
-        Settings = FileOps.LoadSettingsFO();
-        PermaView = new MainView(this);
-        MainCC1.Content = PermaView;
     }
 
     public enum ViewsTypes
@@ -80,11 +90,7 @@ public partial class MainWindow : Window
     }
     
     // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
-    public void ReturnToMainView(UserControl view)
-    {
-        MainCC1.Content = PermaView;
-        view = null;
-    }
+    public void ReturnToMainView() => MainCC1.Content = PermaView;
 
     public void ReturnToMainView(PatchesView pView, string pString)
     {

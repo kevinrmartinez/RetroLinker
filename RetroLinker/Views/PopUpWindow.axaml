@@ -6,6 +6,6 @@
         Width="600" Height="150"
         MinWidth="450" MaxWidth="700" MinHeight="130" MaxHeight="200"
         x:Class="RetroLinker.Views.PopUpWindow"
-        Name="PopUpWindow1" Title="PopUpWindow">
+        Title="PopUpWindow">
     <ContentControl Name="PopCC1"/>
 </Window>

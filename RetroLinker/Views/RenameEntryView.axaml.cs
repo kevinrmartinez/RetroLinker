@@ -32,6 +32,7 @@ public partial class RenameEntryView : UserControl
         InitializeComponent();
         _popUpWindow = new PopUpWindow(true);
         GivenPath = "designer.txt";
+        GivenName = NamePlaceHolder;
         CurrentCore = "mesen";
         Outputs = new List<ShortcutterOutput>();
     }
@@ -42,7 +43,8 @@ public partial class RenameEntryView : UserControl
         InitializeComponent();
         _popUpWindow = parentWindow;
         GivenPath = "designer.txt";
-        CurrentCore = "nestopia";
+        GivenName = NamePlaceHolder;
+        CurrentCore = "mesen";
         Outputs = new List<ShortcutterOutput>();
     }
     
@@ -51,8 +53,13 @@ public partial class RenameEntryView : UserControl
         InitializeComponent();
         _popUpWindow = parentWindow;
         GivenPath = givenPath;
+        GivenName = FileOps.GetFileNameNoExtFromPath(GivenPath);
         CurrentCore = givenCore;
         Outputs = outputs;
+        
+        CustomFilename = false;
+        txtFriendlyName.Text = GivenName;
+        lblExt.Content = FileOps.GetOutputExt(false);
     }
     
     // FIELDS
@@ -66,14 +73,6 @@ public partial class RenameEntryView : UserControl
     
     private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
     
-    // LOAD EVENTS
-    private void View_OnLoaded(object? sender, RoutedEventArgs e)
-    {
-        CustomFilename = false;
-        GivenName = FileOps.GetFileNameNoExtFromPath(GivenPath);
-        txtFriendlyName.Text = GivenName;
-        lblExt.Content = FileOps.GetOutputExt(false);
-    }
 
     #region Functions
 

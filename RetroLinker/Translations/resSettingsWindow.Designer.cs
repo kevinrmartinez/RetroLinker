@@ -272,5 +272,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblLocale", resourceCulture);
             }
         }
+        
+        public static string wndTitle {
+            get {
+                return ResourceManager.GetString("wndTitle", resourceCulture);
+            }
+        }
     }
 }
