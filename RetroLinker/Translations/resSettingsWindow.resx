@@ -132,4 +132,7 @@
     <data name="lblLocale" xml:space="preserve">
         <value>Language</value>
     </data>
+    <data name="wndTitle" xml:space="preserve">
+        <value>RetroLinker Settings</value>
+    </data>
 </root>
