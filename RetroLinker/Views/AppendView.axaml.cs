@@ -43,17 +43,15 @@ public partial class AppendView : UserControl
     // Active Constructor
     public AppendView(MainWindow mainWindow, string appendArg)
     {
-        // FillListTest();
         InitializeComponent();
         ParentWindow = mainWindow;
         List<string> appendConfigFiles;
         try {
-            appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg);
+            appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg).Item2;
         }
         catch (System.ArgumentException argumentException) {
-            System.Console.WriteLine(argumentException);
+            System.Diagnostics.Trace.WriteLine(argumentException.Message);
             appendConfigFiles = new();
-            // TODO
         }
 
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);

@@ -69,17 +69,18 @@ namespace RetroLinker.Models
         {
             var argException = new System.ArgumentException(@"Invalid patch argument",  nameof(arg));
             var split = arg.Split('=');
-            if (split.Length != 2) throw argException;
+            if (split.Length != 2) {
+                if ((split.Length == 1) && (split[0] == ExNoPatch.Argument)) return (ExNoPatch.Argument, ExNoPatch);
+                throw argException;
+            }
             
             var argSplit = split[0] + '=';
             var fileSplit = Utils.ReverseFixUnusualPaths(split[1]);
-            if (argSplit == NoPatch.Argument) return (NoPatch.Argument, NoPatch);
-            else if (argSplit == ExNoPatch.Argument) return (ExNoPatch.Argument, ExNoPatch);
-            else if (argSplit == UpsPatch.Argument) return (fileSplit, UpsPatch);
+            if (argSplit == UpsPatch.Argument) return (fileSplit, UpsPatch);
             else if (argSplit == BpsPatch.Argument) return (fileSplit, BpsPatch);
             else if (argSplit == IpsPatch.Argument) return (fileSplit, IpsPatch);
             else if (argSplit == XdPatch.Argument) return (fileSplit, XdPatch);
-            else throw argException; 
+            else throw argException;
         }
 
         public static string GetSoftPatchingArg(string patchFile, SoftPatch patchType)
@@ -101,14 +102,14 @@ namespace RetroLinker.Models
         }
         
         // AppendConfig
-        public static List<string> ResolveAppendConfigArg(string arg)
+        public static (string, List<string>) ResolveAppendConfigArg(string arg)
         {
             if (!arg.StartsWith(appendConfig))
                 throw new System.ArgumentException(@"Invalid append config argument", nameof(arg));
             var pathsCombined = arg.Substring(appendConfig.Length);
             pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
             var paths = pathsCombined.Split(appendConfigDeli);
-            return new List<string>(paths);
+            return (pathsCombined, new List<string>(paths));
         }
 
         public static string GetAppendConfigArg(List<string> configFiles) {

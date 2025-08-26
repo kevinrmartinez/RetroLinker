@@ -23,6 +23,21 @@
         </Style>
     </Style>
     
+    <!-- Main View Body -->
+    <Style Selector="StackPanel.extensions">
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="Margin" Value="6,0,6,4"/>
+        
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Foreground" Value="LightSkyBlue"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </Style>
+    
     <!-- Extra Views -->
     <Style Selector="Button.ExtraControl">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>

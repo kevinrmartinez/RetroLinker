@@ -3,10 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              xmlns:pc="clr-namespace:RetroLinker.Styles"
 			 xmlns:lc="clr-namespace:RetroLinker.Translations"
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
+             x:DataType="vw:MainView"
+             x:CompileBindings="True"
 			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
 	
 	<UserControl.Styles>
@@ -38,10 +41,10 @@
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<!-- TODO: Move non-style properties to code behind, during load -->
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" MaxLength="255" Watermark="retroarch.exe"/>
+						<!-- TODO: Create a premade control for these browse buttons -->
 						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
-								i:Attached.Icon="fa-folder-open" FontSize="18"/>
+						        i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>
-					<Button Content="bleh" Click="TestButton_OnClick"/>
 				</StackPanel>
 
 				<!-- ROW2 - ROM Directory -->
@@ -50,14 +53,17 @@
 						<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblROMDir}"/>
 						<CheckBox Name="chkContentless" Content="{x:Static lc:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
-					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto" Margin="3,0,3,10">
+					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
-						<!-- TODO: Small textblock indicating the patch (just file name, and a ToolTip for the full path), if any (0.7) -->
 					</Grid>
+					<StackPanel Name="panelPatchPresent" Classes="extensions" IsVisible="False">
+						<TextBlock Text="Patch: "/>
+						<TextBlock Text="/path/to/patch" Tag="{Binding Name, ElementName=panelPatchPresent}"/>
+					</StackPanel>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
@@ -85,8 +91,20 @@
 								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}" Click="btnAppendConfig_Click"
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
-							<!-- TODO: Small textblock indicating the appended config (just file name, and a ToolTip for the full path), if any (0.7) -->
 						</Grid>
+						<ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+							<ScrollViewer.Styles>
+								<Style Selector="ScrollBar">
+									<Setter Property="MinHeight" Value="1"/>
+									<Setter Property="Height" Value="4"/>
+									<Setter Property="AllowAutoHide" Value="False"/>
+								</Style>
+							</ScrollViewer.Styles>
+							<StackPanel Name="panelAppendPresent" Classes="extensions" IsVisible="False">
+								<TextBlock Text="Appended: "/>
+								<TextBlock Text="/path/to/config" Tag="{Binding Name, ElementName=panelAppendPresent}"/>
+							</StackPanel>
+						</ScrollViewer>
 					</StackPanel>
 				</Grid>
 

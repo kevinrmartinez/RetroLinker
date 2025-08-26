@@ -49,7 +49,6 @@ public partial class PatchesView : UserControl
     private MainWindow ParentWindow;
     
     // == FIELDS ==
-    // TODO: Migrate argument parts to Commander class
     private string PatchString;
     private PickerOpt.PatchOpts PatchOpts;
     private List<RadioButton> patchRadioButtons = new();
@@ -89,10 +88,8 @@ public partial class PatchesView : UserControl
                     break;
             }
         }
-        catch (System.ArgumentException argumentException)
-        {
-            System.Console.WriteLine(argumentException);
-            // TODO
+        catch (System.ArgumentException argumentException) {
+            System.Diagnostics.Trace.WriteLine(argumentException.Message);
             rdoNoPatch.IsChecked = true;
         }
     }
@@ -159,11 +156,14 @@ public partial class PatchesView : UserControl
             patchComm = string.Empty;
         }
         else
+        {
+            if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Commander.ExNoPatch;
             patchComm = selectedPatch.Equals(Commander.NoPatch) switch
             {
                 true => selectedPatch.Argument,
                 _ => Commander.GetSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
             };
+        }
 
         // ParentWindow.BuildingLink.PatchArg = patchComm;
         ParentWindow.ReturnToMainView(this, patchComm);
