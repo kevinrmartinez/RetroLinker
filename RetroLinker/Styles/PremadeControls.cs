@@ -19,6 +19,7 @@
 using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -69,6 +70,7 @@ public class LinkCopyItemGrid
         NewItemGrid.Children.Add(NewItemTrash);
     }
 }
+
 
 public static class LocaleComboItem
 {
@@ -255,5 +257,60 @@ public class ExtraMainControlButton : Button
         }
         SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
         RefreshContent();
+    }
+}
+
+
+public class MainViewExtensionText : ScrollViewer
+{
+    // Overrides
+    protected override Type StyleKeyOverride { get; } = typeof(ScrollViewer);
+    
+    // Avalonia Properties
+    // - TextHeader
+    public static readonly DirectProperty<MainViewExtensionText, string> HeaderProperty = 
+        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
+            nameof(Header), 
+            h => h.Header, 
+            (h,  v) => h.Header = v);
+    
+    private string _header = string.Empty;
+    public string Header
+    {
+        get => _header;
+        set => SetAndRaise(HeaderProperty, ref _header, value);
+    }
+    
+    // - Text
+    public static readonly DirectProperty<MainViewExtensionText, string> TextProperty = 
+        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
+            nameof(Text), 
+            h => h.Text, 
+            (h,  v) => h.Text = v);
+    
+    private string _text = string.Empty;
+    public string Text
+    {
+        get => _text;
+        set => SetAndRaise(TextProperty, ref _text, value);
+    }
+
+    public MainViewExtensionText()
+    {
+        // Building
+        var header = new TextBlock() {
+            DataContext = this,
+            [!TextBlock.TextProperty] = new Binding(nameof(Header))
+        };
+        var text = new TextBlock() {
+            DataContext = this,
+            [!TextBlock.TextProperty] = new Binding(nameof(Text))
+        };
+        var stackPanel = new StackPanel();
+        stackPanel.Children.Add(header);
+        stackPanel.Children.Add(text);
+
+        // Result
+        Content = stackPanel;
     }
 }

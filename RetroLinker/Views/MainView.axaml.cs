@@ -350,18 +350,12 @@ public partial class MainView : UserControl
         {
             case MainWindow.ViewsTypes.PatchesView:
                 BuildingLink.PatchArg = argStrings[0];
-                panelPatchPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.PatchArg);
-                if (panelPatchPresent.IsVisible)
+                extxtPatchPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.PatchArg);
+                if (extxtPatchPresent.IsVisible)
                 {
-                    foreach (var control in panelPatchPresent.Children)
-                    {
-                        if (control is not TextBlock textBlk) continue;
-                        if (textBlk.Tag is not string s_tag) continue;
-                        if (s_tag != nameof(panelPatchPresent)) continue;
-                        var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
-                        if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
-                        textBlk.Text = path;
-                    }
+                    var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
+                    if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
+                    extxtPatchPresent.Text = path;
                 }
                 break;
             case MainWindow.ViewsTypes.SubsysView:
@@ -369,17 +363,10 @@ public partial class MainView : UserControl
                 break;
             case MainWindow.ViewsTypes.AppendView:
                 BuildingLink.CONFappend =  argStrings[0];
-                panelAppendPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.CONFappend);
-                if (panelAppendPresent.IsVisible)
-                {
-                    foreach (var control in panelAppendPresent.Children)
-                    {
-                        if (control is not TextBlock textBlk) continue;
-                        if (textBlk.Tag is not string s_tag) continue;
-                        if (s_tag != nameof(panelAppendPresent)) continue;
-                        var paths = Commander.ResolveAppendConfigArg(BuildingLink.CONFappend).Item1;
-                        textBlk.Text = paths;
-                    }
+                extxtAppendPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.CONFappend);
+                if (extxtAppendPresent.IsVisible) {
+                    var paths = Commander.ResolveAppendConfigArg(BuildingLink.CONFappend).Item1;
+                    extxtAppendPresent.Text = paths;
                 }
                 break;
         }
