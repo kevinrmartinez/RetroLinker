@@ -195,18 +195,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string dllErrorHead {
-            get {
-                return ResourceManager.GetString("dllErrorHead", resourceCulture);
-            }
-        }
-        
-        public static string dllErrorMess {
-            get {
-                return ResourceManager.GetString("dllErrorMess", resourceCulture);
-            }
-        }
-        
         public static string comboDefItem {
             get {
                 return ResourceManager.GetString("comboDefItem", resourceCulture);
@@ -297,12 +285,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string dllErrorMess2 {
-            get {
-                return ResourceManager.GetString("dllErrorMess2", resourceCulture);
-            }
-        }
-        
         public static string popIconsError_Tittle {
             get {
                 return ResourceManager.GetString("popIconsError_Tittle", resourceCulture);
@@ -324,6 +306,18 @@ namespace RetroLinker.Translations {
         public static string chkMenuOnError {
             get {
                 return ResourceManager.GetString("chkMenuOnError", resourceCulture);
+            }
+        }
+        
+        public static string extxtPatch {
+            get {
+                return ResourceManager.GetString("extxtPatch", resourceCulture);
+            }
+        }
+        
+        public static string extxtAppend {
+            get {
+                return ResourceManager.GetString("extxtAppend", resourceCulture);
             }
         }
     }

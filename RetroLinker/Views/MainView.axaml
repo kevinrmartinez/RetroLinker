@@ -60,10 +60,7 @@
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
-					<StackPanel Name="panelPatchPresent" Classes="extensions" IsVisible="False">
-						<TextBlock Text="Patch: "/>
-						<TextBlock Text="/path/to/patch" Tag="{Binding Name, ElementName=panelPatchPresent}"/>
-					</StackPanel>
+					<pc:MainViewExtensionText Name="extxtPatchPresent" Classes="extensions" Header="{x:Static lc:resMainView.extxtPatch}" Text="/path/to/patch"/>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
@@ -92,19 +89,7 @@
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>
-						<ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-							<ScrollViewer.Styles>
-								<Style Selector="ScrollBar">
-									<Setter Property="MinHeight" Value="1"/>
-									<Setter Property="Height" Value="4"/>
-									<Setter Property="AllowAutoHide" Value="False"/>
-								</Style>
-							</ScrollViewer.Styles>
-							<StackPanel Name="panelAppendPresent" Classes="extensions" IsVisible="False">
-								<TextBlock Text="Appended: "/>
-								<TextBlock Text="/path/to/config" Tag="{Binding Name, ElementName=panelAppendPresent}"/>
-							</StackPanel>
-						</ScrollViewer>
+						<pc:MainViewExtensionText Name="extxtAppendPresent" Classes="extensions" Header="{x:Static lc:resMainView.extxtAppend}" Text="/path/to/config"/>
 					</StackPanel>
 				</Grid>
 

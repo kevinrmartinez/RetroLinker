@@ -62,12 +62,6 @@
     <data name="tipIconNoImage" xml:space="preserve">
         <value>El programa no puede visualizar el icono seleccionado. Sin embargo, el archivo será usado al crear el shortcut.</value>
     </data>
-    <data name="dllErrorHead" xml:space="preserve">
-        <value>El importado de {0} ha fallado!</value>
-    </data>
-    <data name="dllErrorMess" xml:space="preserve">
-        <value>El importado a fallado con el siguiente error:</value>
-    </data>
     <data name="LinPopUp_Title" xml:space="preserve">
         <value>Observacion</value>
     </data>
@@ -110,9 +104,6 @@
     <data name="btnMoreParams" xml:space="preserve">
         <value>Más</value>
     </data>
-    <data name="dllErrorMess2" xml:space="preserve">
-        <value>Sin este módulo el programa no puede cumplir su funcion.</value>
-    </data>
     <data name="popIconsError_Tittle" xml:space="preserve">
         <value>Error al importar iconos</value>
     </data>
@@ -124,5 +115,11 @@
     </data>
     <data name="chkMenuOnError" xml:space="preserve">
         <value>Cargar Menú en Caso de Error</value>
+    </data>
+    <data name="extxtPatch" xml:space="preserve">
+        <value>Parche: </value>
+    </data>
+    <data name="extxtAppend" xml:space="preserve">
+        <value>Anexado: </value>
     </data>
 </root>

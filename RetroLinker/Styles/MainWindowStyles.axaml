@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="https://github.com/projektanker/icons.avalonia">
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:pc="clr-namespace:RetroLinker.Styles">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -24,17 +25,33 @@
     </Style>
     
     <!-- Main View Body -->
-    <Style Selector="StackPanel.extensions">
-        <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Margin" Value="6,0,6,4"/>
+    <Style Selector="ScrollViewer.extensions">
+        <Setter Property="IsVisible" Value="False"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
         
-        <Style Selector="^ > TextBlock">
-            <Setter Property="Foreground" Value="LightSkyBlue"/>
-            <Setter Property="FontSize" Value="9"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
+        <Style Selector="^ StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Margin" Value="6,0,6,4"/>
+        
+            <Style Selector="^ > TextBlock:nth-child(1)">
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Style>
+            
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Foreground" Value="LightSkyBlue"/>
+                <Setter Property="FontSize" Value="9"/>
+                <!-- <Setter Property="TextWrapping" Value="Wrap"/> -->
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+        </Style>
+        
+        <Style Selector="^ ScrollBar">
+            <Setter Property="MinHeight" Value="1"/>
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="AllowAutoHide" Value="False"/>
         </Style>
     </Style>
     

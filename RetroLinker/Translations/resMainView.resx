@@ -93,12 +93,6 @@
     <data name="tipIconNoImage" xml:space="preserve">
         <value>The program can not display the selected icon. However, the selected file will be used to create the shortcut.</value>
     </data>
-    <data name="dllErrorHead" xml:space="preserve">
-        <value>The import of {0} has failed!</value>
-    </data>
-    <data name="dllErrorMess" xml:space="preserve">
-        <value>The import has failed with the following error:</value>
-    </data>
     <data name="comboDefItem" xml:space="preserve">
         <value>Default</value>
     </data>
@@ -144,9 +138,6 @@
     <data name="btnMoreParams" xml:space="preserve">
         <value>More</value>
     </data>
-    <data name="dllErrorMess2" xml:space="preserve">
-        <value>Without this library the program cannot accomplish its function.</value>
-    </data>
     <data name="popIconsError_Tittle" xml:space="preserve">
         <value>Error importing icons</value>
     </data>
@@ -158,5 +149,11 @@
     </data>
     <data name="chkMenuOnError" xml:space="preserve">
         <value>Load Menu on Error</value>
+    </data>
+    <data name="extxtPatch" xml:space="preserve">
+        <value>Patch: </value>
+    </data>
+    <data name="extxtAppend" xml:space="preserve">
+        <value>Appended: </value>
     </data>
 </root>
