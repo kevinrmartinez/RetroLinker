@@ -740,10 +740,13 @@ public partial class MainView : UserControl
         }
 
         // REQUIRED FIELDS VALIDATION!
+        var outputIsValid = false;
+        if (OutputLink.OutputPaths.Count > 0)
+            if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
         if ((!string.IsNullOrEmpty(OutputLink.RAdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMcore))
-            && (OutputLink.OutputPaths[0].ValidOutput))
+            && (outputIsValid))
         {
             System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.DebgTrace);
             
