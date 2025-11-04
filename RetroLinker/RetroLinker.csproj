@@ -4,8 +4,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x64</Platforms>
     <Platforms>AnyCPU</Platforms>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AssemblyName>RetroLinkerLib</AssemblyName>
     <VersionPrefix>0.7.0</VersionPrefix>
   </PropertyGroup>
@@ -21,6 +21,12 @@
     <AvaloniaResource Include="Styles\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="ILLink.Descriptors.xml">
+      <LogicalName>ILLink.Descriptors.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />

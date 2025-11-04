@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+    <!-- Keep all ClearScript assemblies -->
+    <assembly fullname="ClearScript.Core" preserve="all" />
+    <assembly fullname="ClearScript.Windows" preserve="all" />
+    <assembly fullname="ClearScript.Windows.Core" preserve="all" />
+    
+    <!-- Keep System.Text.Json assembly -->
+    <assembly fullname="System.Text.Json" preserve="all" />
+</linker>

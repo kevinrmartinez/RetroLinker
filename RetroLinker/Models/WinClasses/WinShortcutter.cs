@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.ClearScript.Windows.Core;
 
@@ -28,6 +27,8 @@ public static class WinShortcutter
     private const string objShell = "shell";
     private const string objLink = "link";
     private const string objArray = "valueArray";
+    private const string createLink = "CreateLink";
+    private const string readLink = "ReadLink";
     private static readonly string scriptTitle = $"{App.AppName} Script Runner";
     
     public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
@@ -35,7 +36,7 @@ public static class WinShortcutter
         var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
         var scriptStrings = $"""
                           ' {App.AppName} v{App.AppVersion}
-                          Function CreateLink()
+                          Function {createLink}()
                             Set {objShell} = CreateObject("WScript.Shell")
                             Set {objLink} = {objShell}.CreateShortcut("{_outputPath}")
                             {objLink}.TargetPath = "{_shortcut.RAdir}"
@@ -44,7 +45,7 @@ public static class WinShortcutter
                             {objLink}.Description = "{_shortcut.Desc}"
                             {objLink}.IconLocation = "{iconPath}"
                             {objLink}.Save
-                          	CreateLink = 0
+                          	{createLink} = 0
                           End Function
                           """;
         
@@ -52,12 +53,13 @@ public static class WinShortcutter
         Trace.WriteLine($"\"{_outputPath}\" file created successfully.", App.InfoTrace);
     }
 
-    public static string[] ReadShortcut(string linkPath)
+    // Return a Shortcutter type
+    public static string?[] ReadShortcut(string linkPath)
     {
         // Why does creating a Array(4) is VBS results in a 5 positions array?
         var scriptStrings = $"""
                             ' {App.AppName} v{App.AppVersion}
-                            Function ReadLink()
+                            Function {readLink}()
                                 Dim {objArray}(4)
                                 Set {objShell} = CreateObject("WScript.Shell")
                                 Set {objLink} = {objShell}.CreateShortcut("{linkPath}")
@@ -66,13 +68,17 @@ public static class WinShortcutter
                                 {objArray}(2) = {objLink}.Arguments
                                 {objArray}(3) = {objLink}.Description
                                 {objArray}(4) = {objLink}.IconLocation
-                                ReadLink = {objArray}
+                                {readLink} = {objArray}
                             End Function
                             """;
         
         var linkContent = RunLinkReadScript(scriptStrings);
         Trace.WriteLine($"\"{linkPath}\" file read successfully.", App.InfoTrace);
-        return linkContent;
+        var linkStrings = new string?[linkContent.Length];
+        for (int i = 0; i < linkContent.Length; i++)
+            linkStrings[i] = linkContent[i].ToString();
+        return linkStrings;
+        Trace.WriteLine("bleh");
     }
     
     private static VBScriptEngine RunScriptEngine(string script)
@@ -81,26 +87,23 @@ public static class WinShortcutter
         engine.Execute(script);
         return engine;
     }
-
+    
     private static void RunLinkWriteScript(string script)
     {
         var engine = RunScriptEngine(script);
-        int result = engine.Script.CreateLink();
+        // VBS returns Int16 (short) instead of Int32 (int)
+        var result = (short)engine.Invoke($"{createLink}");
         
         if (result == 0) return;
         var err = "The LinkWrite script was not executed properly!";
         Trace.WriteLine(err, App.ErroTrace);
         throw new ApplicationException(err);
     }
-
-    private static string[] RunLinkReadScript(string script)
+    
+    private static object[] RunLinkReadScript(string script)
     {
         var engine = RunScriptEngine(script);
-        object[] values = engine.Script.ReadLink();
-        
-        var linkContent = new List<string>();
-        foreach (var o in values)
-            linkContent.Add((string)o);
-        return linkContent.ToArray();
+        var values = (object[])engine.Invoke($"{readLink}");
+        return values;
     }
 }
