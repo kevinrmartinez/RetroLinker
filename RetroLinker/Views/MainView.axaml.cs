@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -742,7 +743,7 @@ public partial class MainView : UserControl
         // REQUIRED FIELDS VALIDATION!
         var outputIsValid = false;
         if (OutputLink.OutputPaths.Count > 0)
-            if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
+            if (OutputLink.OutputPaths[Index.Start].ValidOutput) outputIsValid = true;
         if ((!string.IsNullOrEmpty(OutputLink.RAdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMcore))
