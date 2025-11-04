@@ -12,12 +12,11 @@
     <VersionPrefix>0.7.0</VersionPrefix>
     <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-
+  
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
   </ItemGroup>
@@ -29,4 +28,8 @@
   <ItemGroup>
     <EmbeddedResource Include="git-hash" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="git rev-parse HEAD &gt; &quot;$(ProjectDir)git-hash&quot;" WorkingDirectory="$(SolutionDir)" />
+  </Target>
 </Project>

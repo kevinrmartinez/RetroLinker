@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RetroLinker.Models
 {
@@ -93,7 +94,7 @@ namespace RetroLinker.Models
             return ((path[0] == DQ) && (path[lastCharIndex] == DQ));
         }
 
-        public static List<string> ExtractClassProperties(Type type)
+        public static List<string> ExtractClassProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
         {
             var props = type.GetProperties();
             var members = new List<string>();
