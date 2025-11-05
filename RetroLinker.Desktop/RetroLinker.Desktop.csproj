@@ -9,7 +9,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>RetroLinker</AssemblyName>
     <Description>A .NET GUI application to help create desktop links of games running on RetroArch.</Description>
-    <VersionPrefix>0.7.0</VersionPrefix>
+    <VersionPrefix>0.7.1</VersionPrefix>
     <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -30,6 +30,6 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="git rev-parse HEAD &gt; &quot;$(ProjectDir)git-hash&quot;" WorkingDirectory="$(SolutionDir)" />
+    <Exec Command="git rev-parse HEAD &gt; git-hash" />
   </Target>
 </Project>

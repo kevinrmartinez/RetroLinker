@@ -852,15 +852,15 @@ public partial class MainView : UserControl
     void ControlBox_DropParse(object? sender, DragEventArgs e)
     {
         if (sender is not AvaloniaTemplatedControl tc) return;
-        var filesEnum = e.Data.GetFiles();
-        var text = e.Data.GetText();
+        var filesEnum = e.DataTransfer.TryGetFiles();
+        var text = e.DataTransfer.TryGetText();
         if (filesEnum is not null)
         {
             var files = new List<IStorageItem>(filesEnum);
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandleDrop(tc, files[0].Path.LocalPath), tc));
             return;
         }
-        else if (!string.IsNullOrWhiteSpace(text))
+        if (!string.IsNullOrWhiteSpace(text))
         {
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc));
             return;

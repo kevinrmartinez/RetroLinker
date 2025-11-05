@@ -78,7 +78,6 @@ public static class WinShortcutter
         for (int i = 0; i < linkContent.Length; i++)
             linkStrings[i] = linkContent[i].ToString();
         return linkStrings;
-        Trace.WriteLine("bleh");
     }
     
     private static VBScriptEngine RunScriptEngine(string script)
