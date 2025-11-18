@@ -50,13 +50,13 @@ public static class WinShortcutter
                           """;
         
         RunLinkWriteScript(scriptStrings);
-        Trace.WriteLine($"\"{_outputPath}\" file created successfully.", App.InfoTrace);
+        App.Logger?.LogInfo($"\"{_outputPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
     public static string?[] ReadShortcut(string linkPath)
     {
-        // Why does creating a Array(4) is VBS results in a 5 positions array?
+        // Why does creating a Array(4) is VBS results in an array with 5 positions?
         var scriptStrings = $"""
                             ' {App.AppName} v{App.AppVersion}
                             Function {readLink}()
@@ -73,7 +73,7 @@ public static class WinShortcutter
                             """;
         
         var linkContent = RunLinkReadScript(scriptStrings);
-        Trace.WriteLine($"\"{linkPath}\" file read successfully.", App.InfoTrace);
+        App.Logger?.LogInfo($"\"{linkPath}\" file read successfully.");
         var linkStrings = new string?[linkContent.Length];
         for (int i = 0; i < linkContent.Length; i++)
             linkStrings[i] = linkContent[i].ToString();
@@ -95,7 +95,7 @@ public static class WinShortcutter
         
         if (result == 0) return;
         var err = "The LinkWrite script was not executed properly!";
-        Trace.WriteLine(err, App.ErroTrace);
+        App.Logger?.LogErro(err);
         throw new ApplicationException(err);
     }
     

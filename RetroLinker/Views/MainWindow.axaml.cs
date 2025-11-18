@@ -36,7 +36,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        System.Diagnostics.Debug.WriteLine("Starting MainView...", App.DebgTrace);
         Settings = FileOps.LoadSettingsFO();
         CoresList = AvaloniaOps.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);

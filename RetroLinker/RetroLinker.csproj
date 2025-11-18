@@ -7,7 +7,8 @@
     <Platforms>AnyCPU</Platforms>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AssemblyName>RetroLinkerLib</AssemblyName>
-    <VersionPrefix>0.7.1</VersionPrefix>
+    <VersionPrefix>0.8</VersionPrefix>
+    <VersionSuffix>dev</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />

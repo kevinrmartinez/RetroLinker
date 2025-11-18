@@ -9,7 +9,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>RetroLinker</AssemblyName>
     <Description>A .NET GUI application to help create desktop links of games running on RetroArch.</Description>
-    <VersionPrefix>0.7.1</VersionPrefix>
+    <VersionPrefix>0.8</VersionPrefix>
+    <VersionSuffix>dev</VersionSuffix>
     <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>

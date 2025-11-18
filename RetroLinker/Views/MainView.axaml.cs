@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -84,20 +83,19 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Reimplement this.
+        // TODO: Implement an Event for theme handling
         if (FormFirstLoad)
         {
             // AvaloniaOps.MainViewLoad();
 
 #if DEBUG
-            // TODO: Implement an Event for theme handling
             try
             {
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
             }
             catch (System.Exception e_theme) 
             {
-                System.Diagnostics.Debug.WriteLine(e_theme, App.DebgTrace);
+                App.Logger?.LogDebg(e_theme);
                 TopLevel.GetTopLevel(this)!.RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
@@ -134,9 +132,9 @@ public partial class MainView : UserControl
 
     void comboCore_Loaded(string[] cores)
     {
-        System.Diagnostics.Trace.WriteLine("Cores list imported.", App.InfoTrace);
         if (cores.Length < 1) lblNoCores.IsVisible = true;
         else comboCore.ItemsSource = cores;
+        App.Logger?.LogInfo($"{cores.Length} cores were imported.");
      }
 
     void comboConfig_Loaded()
@@ -160,7 +158,7 @@ public partial class MainView : UserControl
             comboICONDir.Items.Add(resMainView.comboDefItem);
             foreach (var iconFile in iconsList)
                 comboICONDir.Items.Add(iconFile);
-            System.Diagnostics.Trace.WriteLine("Icons list imported", App.InfoTrace);
+            App.Logger?.LogInfo("Icons list imported");
 
             PreloadedIconsCount = comboICONDir.ItemCount;
             comboICONDir.SelectedIndex++;
@@ -218,8 +216,8 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         // CurrentTheme = settings.PreferedTheme;
-        System.Diagnostics.Trace.WriteLine($"The requested theme was: {theme}", App.InfoTrace);
-        System.Diagnostics.Debug.WriteLine($"Index in byte: {settings.PreferedTheme}", App.DebgTrace);
+        App.Logger?.LogInfo($"The requested theme was: {theme}");
+        App.Logger?.LogDebg($"Index in byte: {settings.PreferedTheme}");
         return theme;
     }
 
@@ -247,11 +245,10 @@ public partial class MainView : UserControl
         // 2. Starting from a ROM
         var args = App.Args;
         if (args is null)  return;
-        if (args.Length == 0) System.Diagnostics.Debug.WriteLine("bleh", App.DebgTrace);
-        else
-        {
+        if (args.Length == 0) App.Logger?.LogDebg("bleh");
+        else {
             foreach (var arg in args)
-                System.Diagnostics.Debug.WriteLine(arg, App.DebgTrace);
+                App.Logger?.LogDebg(arg);
         }
     }
 
@@ -594,7 +591,7 @@ public partial class MainView : UserControl
     
     private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e)
     {
-        System.Diagnostics.Trace.WriteLine("COMING SOON");
+        App.Logger?.LogDebg("COMING SOON");
     }
     
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
@@ -607,14 +604,9 @@ public partial class MainView : UserControl
             LINKDir_Set(file);
         }
 #if DEBUG
-        else
-        {
-            System.Diagnostics.Debug.WriteLine("Running on debug...", App.DebgTrace);
-
+        else {
+            App.Logger?.LogDebg("Running on debug...");
             // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
-            // System.Diagnostics.Debug.WriteLine(readLink[0], App.DebgTrace);
-            // Testing.LinShortcutTest(DesktopOS);
-            // var bitm = FileOps.IconExtractTest(); FillIconBoxes(bitm);
         }
 #endif
     }
@@ -743,13 +735,13 @@ public partial class MainView : UserControl
         // REQUIRED FIELDS VALIDATION!
         var outputIsValid = false;
         if (OutputLink.OutputPaths.Count > 0)
-            if (OutputLink.OutputPaths[Index.Start].ValidOutput) outputIsValid = true;
+            if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
         if ((!string.IsNullOrEmpty(OutputLink.RAdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMdir))
             && (!string.IsNullOrEmpty(OutputLink.ROMcore))
             && (outputIsValid))
         {
-            System.Diagnostics.Debug.WriteLine("All fields for link creation have benn accepted.", App.DebgTrace);
+            App.Logger?.LogDebg("All fields for link creation have been accepted.");
             
             // Double quotes for directories that are parameters ->
             // -> for the ROM file

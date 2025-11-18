@@ -58,7 +58,6 @@ namespace RetroLinker.Views
         // LOADS
         void View_OnLoaded(object sender, RoutedEventArgs e)
         { 
-            System.Diagnostics.Debug.WriteLine($"SettingView loaded for the fist time? {FirstTimeLoad}", App.DebgTrace);
             if (FirstTimeLoad) FillComboLocale();
             
             // Settings

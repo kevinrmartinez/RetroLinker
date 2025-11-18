@@ -38,7 +38,7 @@ public static class AvaloniaOps
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
-    // TODO: these two are set to many times on runtime
+    // TODO: these two are set to many times on runtime...
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 
@@ -75,7 +75,7 @@ public static class AvaloniaOps
         var dbgOut = (DesktopFolder is null) 
             ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
             : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
-        Debug.WriteLine(dbgOut, App.DebgTrace);
+        App.Logger?.LogDebg(dbgOut);
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
@@ -85,7 +85,7 @@ public static class AvaloniaOps
         var dbgOut = (ROMTopDir is null)
             ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
             : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
-        Debug.WriteLine(dbgOut, App.DebgTrace);
+        App.Logger?.LogDebg(dbgOut);
     }
     #endregion
     

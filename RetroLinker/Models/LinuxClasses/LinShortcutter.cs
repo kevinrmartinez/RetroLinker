@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace RetroLinker.Models.LinuxClasses;
 
@@ -72,16 +71,16 @@ public static class LinShortcutter
 
     private static void SetExecPermissions(string filePath)
     {
-        Debug.WriteLine($"SetExecPermissions Thread ID: {Environment.CurrentManagedThreadId}", App.DebgTrace);
-        Trace.WriteLine($"Trying to set executable permissions to \"{filePath}\".", App.InfoTrace);
+        App.Logger?.LogDebg($"SetExecPermissions Thread ID: {Environment.CurrentManagedThreadId}");
+        App.Logger?.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
             FileOps.MakeFileExecutable(filePath);
-            Trace.WriteLine($"Executable permissions to \"{filePath}\" were set successfully.", App.InfoTrace);
+            App.Logger?.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {
-            Trace.WriteLine($"Failed to set executable permissions to \"{filePath}\".", App.ErroTrace);
-            Trace.WriteLine($"Error: {e.Message}",  App.ErroTrace);
+            App.Logger?.LogErro($"Failed to set executable permissions to \"{filePath}\".");
+            App.Logger?.LogErro($"Error: {e.Message}");
         }
     }
 }

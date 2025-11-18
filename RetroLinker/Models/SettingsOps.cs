@@ -24,6 +24,8 @@ namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
+        private static App? _app = Avalonia.Application.Current as App;
+        
         private const string StartMark = "[START]";
         private const string EndMark = "[END]";
         private const string GeneralHeader = "[GENERAL]";
@@ -163,10 +165,10 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"There was a error while loading \"{FileOps.SettingFileBin}\"", App.ErroTrace);
-                    System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
+                    App.Logger?.LogErro($"There was a error while loading \"{FileOps.SettingFileBin}\"");
+                    App.Logger?.LogErro($"{e}\n{e.Message}");
                     settings = new();
-                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting \"{FileOps.SettingFileBin}\"...", App.InfoTrace);
+                    App.Logger?.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileBin}\"...");
                     WriteSettings(settings);
                 }  
             }

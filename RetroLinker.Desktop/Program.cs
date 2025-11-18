@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
@@ -34,11 +33,11 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        StartStopLogging(true);
-        Trace.WriteLine($"{AppName} v{AppVersion}", "[Info]");
-        Debug.WriteLine($"Launch Time: {DateTime.Now:HH:mm:ss.fff}", "[Time]");
+        SetUpLogger();
+        appLogger?.LogInfo($"{AppName} v{AppVersion}");
+        appLogger?.LogDebg($"Launch Time: {DateTime.Now:HH:mm:ss.fff}");
         
-        Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
+        appLogger?.LogDebg("Starting AvaloniaApp");
         #if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
@@ -58,7 +57,7 @@ class Program
         #endif
         
         // App Closing
-        StartStopLogging(false);
+        appLogger?.Close();
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
@@ -78,6 +77,7 @@ class Program
     {
         var instance = (App?)obj.Instance;
         instance?.SetAppInfo(GetAppInfo());
+        instance?.SetLogger(appLogger);
     }
 
     // Parameters
@@ -87,43 +87,24 @@ class Program
     private static readonly string AppVersion = AppAssembly2.Version!.ToString(3);
     
     // Logging
-    private static ConsoleTraceListener ConsoleTracer = new();
-    private static TextWriterTraceListener TextfileTracer = new();
+    private static Logger? appLogger;
     private static readonly string LogFileName = $"{AppName}.log";
     private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
+    private static readonly string LogFileBak = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{LogFileName}.bak");
 
-    private static void StartStopLogging(bool mode)
+    private static void SetUpLogger()
     {
-        if (mode)
+        if (File.Exists(LogFile))
         {
-            try {
-                File.Delete(LogFile);
-            }
-            catch {
-                // TODO: extend the catch to posible exceptions by 'File.Delete'
-                Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]");
-            }
-            
-            ConsoleTracer = new() {
-                Name = "mainConsoleTracer", 
-                TraceOutputOptions = TraceOptions.Timestamp 
-            };
-            TextfileTracer = new(LogFile, "mainTextTracer") {
-                TraceOutputOptions = TraceOptions.DateTime,
-            };
-
-            Trace.Listeners.Add(ConsoleTracer);
-            Trace.Listeners.Add(TextfileTracer);
+            if (File.Exists(LogFileBak)) File.Delete(LogFileBak);
+            File.Move(LogFile, LogFileBak);
         }
-        else
-        {
-            Trace.Listeners.Remove(ConsoleTracer);
-            Trace.Listeners.Remove(TextfileTracer);
-            ConsoleTracer.Close();
-            TextfileTracer.Close();
-        }
+        
+        appLogger = new Logger(LogFile) {
+            AutoFlush =  true
+        };
     }
-
+    
     private static DateTime? GetBuildDateOfAssembly()
     {
         try

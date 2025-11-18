@@ -67,7 +67,7 @@ namespace RetroLinker.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
-            System.Diagnostics.Debug.WriteLine("Settings loaded for FileOps.", App.DebgTrace);
+            App.Logger?.LogDebg("Settings loaded for FileOps.");
             BuildConfigDir(LoadedSettings);
             return LoadedSettings;
         }
@@ -109,12 +109,12 @@ namespace RetroLinker.Models
             try
             {
                 await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
-                System.Diagnostics.Trace.WriteLine($"Setting file \"{PathToSettingFileBin}\" written successfully", App.InfoTrace);
+                App.Logger?.LogInfo($"Setting file \"{PathToSettingFileBin}\" written successfully");
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"Setting file \"{PathToSettingFileBin}\" could not be written!", App.ErroTrace);
-                System.Diagnostics.Trace.WriteLine(e, App.ErroTrace);
+                App.Logger?.LogErro($"Setting file \"{PathToSettingFileBin}\" could not be written!");
+                App.Logger?.LogErro(e);
             }
         }
 
@@ -145,14 +145,14 @@ namespace RetroLinker.Models
         {
             try
             {
-                System.Diagnostics.Trace.WriteLine($"Starting reading of \"{filePath}\".", App.InfoTrace);
+                App.Logger?.LogInfo($"Starting reading of \"{filePath}\".");
                 var cores = ReadFileLinesToEnd(filePath);
-                System.Diagnostics.Trace.WriteLine($"Completed reading of \"{filePath}\".", App.InfoTrace);
+                App.Logger?.LogInfo($"Completed reading of \"{filePath}\".");
                 return cores;
             }
             catch
             {
-                System.Diagnostics.Trace.WriteLine($"The file \"{filePath}\" could not be found!", App.InfoTrace);
+                App.Logger?.LogWarn($"The file \"{filePath}\" could not be found!");
                 return Array.Empty<string>();
             }
         }
@@ -160,6 +160,7 @@ namespace RetroLinker.Models
         public static object[] LoadIcons(bool OS)
         {
             // TODO: Refactor all of this. Also, tuples are a thing in C# (0.8)
+            var dir = LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar;
             var files = new List<string>();
             var isError = false;
             var iconException = string.Empty;
@@ -167,8 +168,7 @@ namespace RetroLinker.Models
             try
             {
                 files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
-                System.Diagnostics.Trace.WriteLine(
-                    $"Starting Icons reading at \"{LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar}\".", App.InfoTrace);
+                App.Logger?.LogInfo($"Searching for Icons at \"{dir}\".");
                 for (int i = 0; i < files.Count; i++)
                 {
                     string ext = Path.GetExtension(files[i]);
@@ -184,10 +184,7 @@ namespace RetroLinker.Models
                         IconProc.IconItemsList.Add(new IconsItems(filename, filepath));
                 }
 
-                System.Diagnostics.Trace.WriteLine(
-                    files.Count == 0
-                        ? $"No icons found at \"{LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar}\"."
-                        : $"{IconProc.IconItemsList.Count} icons were found.", App.InfoTrace);
+                App.Logger?.LogInfo(files.Count == 0 ? "No icons found." : $"{IconProc.IconItemsList.Count} icons were found.");
 
                 files.Clear();
                 int newindex = 1;
@@ -198,20 +195,18 @@ namespace RetroLinker.Models
                     newindex++;
                 }
             }
-
             catch (DirectoryNotFoundException e)
             {
-                // Possibly redundant
-                System.Diagnostics.Trace.WriteLine(
-                    $"The directory \"{Path.GetFullPath(LoadedSettings.UserAssetsPath) + Path.DirectorySeparatorChar}\" could not be found.", App.WarnTrace);
+                // TODO: Catch more types of exceptions
+                App.Logger?.LogWarn($"The directory \"{dir}\" could not be found.");
                 iconException = e.Message;
                 isError = true;
             }
             catch (Exception e)
             {
-                System.Diagnostics.Trace.WriteLine($"An error has occurred while loading icons.", App.ErroTrace);
-                System.Diagnostics.Debug.WriteLine(
-                    $"In FileOps, he element {e.Source} has returned the error:\n{e.Message}", App.ErroTrace);
+                App.Logger?.LogErro("An error has occurred while loading icons.");
+                App.Logger?.LogDebg($"Source: {e.Source}");
+                App.Logger?.LogErro(e.Message);
                 iconException = e.Message;
                 isError = true;
             }
@@ -245,15 +240,13 @@ namespace RetroLinker.Models
 
         private static bool CheckUsrSetDir(string path)
         {
-            try
-            {
+            try {
                 Directory.CreateDirectory(path);
                 return true;
             }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message, App.ErroTrace);
-                System.Diagnostics.Trace.WriteLine($"The folder \"{path}\" could not be created!", App.ErroTrace);
+            catch (Exception e) {
+                App.Logger?.LogDebg(e.Message);
+                App.Logger?.LogErro($"The folder \"{path}\" could not be created!");
                 return false;
             }
         }
