@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using System.IO;
 using ImageMagick;
-using RetroLinker.Models.WinClasses;
+using RetroLinker.Models.Windows;
 using SkiaSharp;
 
 namespace RetroLinker.Models

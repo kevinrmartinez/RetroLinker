@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views
@@ -203,7 +204,7 @@ namespace RetroLinker.Views
         private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
         {
             string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
-            string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // int customDirIndex = candidatesCount;
             if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
@@ -233,7 +234,7 @@ namespace RetroLinker.Views
 
             if (currentItem == StrAddCustomCopyPath)
             {
-                string folder = await AvaloniaOps.OpenFolderAsync(template:3, string.Empty, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(template:3, string.Empty, ParentWindow);
                 if (!string.IsNullOrWhiteSpace(folder))
                 {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
@@ -268,7 +269,7 @@ namespace RetroLinker.Views
         async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
         {
             string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
-            string folder = await AvaloniaOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
             txtIcoSavPath.Text = folder; 
             ParentWindow.settings.IcoSavPath = folder;
@@ -282,6 +283,7 @@ namespace RetroLinker.Views
 
         void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
         {
+            // TODO: Obsolete?
             panelWindowsOnlyControls2.IsEnabled = !chkMakeLinkCopy.IsChecked.GetValueOrDefault();
             ParentWindow.settings.IcoSavPath = ParentWindow.settings.UserAssetsPath;
             txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;

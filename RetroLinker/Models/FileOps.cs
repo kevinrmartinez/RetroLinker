@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.Linux;
 
 namespace RetroLinker.Models
 {
@@ -423,7 +423,7 @@ namespace RetroLinker.Models
         public static string[] DesktopEntryArray(string LinkDir, string? core)
         {
             var EntryName = SeparateFileNameFromPath(LinkDir);
-            EntryName[2] = LinDesktopEntry.StdDesktopEntry(EntryName[1], core);
+            EntryName[2] = DesktopEntry.StdDesktopEntry(EntryName[1], core);
             EntryName[2] += EntryName[3];
             EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0])!, EntryName[2]);
             return EntryName;

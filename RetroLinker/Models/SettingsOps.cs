@@ -18,14 +18,12 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
-        private static App? _app = Avalonia.Application.Current as App;
-        
         private const string StartMark = "[START]";
         private const string EndMark = "[END]";
         private const string GeneralHeader = "[GENERAL]";
@@ -241,7 +239,7 @@ namespace RetroLinker.Models
         public string GetBase64()
         {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
             var objectString = GetString();
-            var object64 = GenerateBase64(objectString);
+            var object64 = Utils.GenerateBase64(objectString);
             return object64;
         }
 
@@ -266,13 +264,6 @@ namespace RetroLinker.Models
             objectString += $"{LanguageCulture.Name}\n";
             objectString += (LinDesktopPopUp)  ? "1\n" : "0\n";
             return objectString;
-        }
-        
-        private string GenerateBase64(string objectString)
-        {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
-            var objectBytes = Encoding.UTF8.GetBytes(objectString);
-            var object64 = System.Convert.ToBase64String(objectBytes);
-            return object64;
         }
     }
 }

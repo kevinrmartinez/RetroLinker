@@ -16,9 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-namespace RetroLinker.Models.LinuxClasses;
+namespace RetroLinker.Models.Linux;
 
-public static class LinDesktopEntry
+public static class DesktopEntry
 {
     // What a mess...
     // TODO: Remake this. Better yet, don't do this sh*t...

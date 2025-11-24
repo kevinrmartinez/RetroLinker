@@ -29,7 +29,9 @@ using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
-using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.Generic;
+using RetroLinker.Models.Linux;
 using RetroLinker.Translations;
 
 using MessageBoxBottomResult = MsBox.Avalonia.Enums.ButtonResult;
@@ -69,7 +71,7 @@ public partial class MainView : UserControl
     private int PreloadedIconsCount;
     // private byte CurrentTheme = 250;
     private Settings settings;
-    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
+    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetNAimage()));
     private IconsItems? IconItemSET;
     private Shortcutter BuildingLink = new();
     private bool LinkCustomName;
@@ -227,8 +229,8 @@ public partial class MainView : UserControl
         BuildingLink.RAdir = settings.DEFRADir;
         if (!IsDesingner && !ParentWindow.IsDesigner)
         {
-            AvaloniaOps.SetROMTop(settings.DEFROMPath, ParentWindow);
-            AvaloniaOps.SetDesktopStorageFolder(ParentWindow);
+            Operations.SetROMTop(settings.DEFROMPath, ParentWindow);
+            Operations.SetDesktopStorageFolder(ParentWindow);
         }
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
@@ -275,7 +277,7 @@ public partial class MainView : UserControl
     { 
         return (DesktopOS)
             ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
-            : FileOps.GetDefinedLinkPath(LinDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
+            : FileOps.GetDefinedLinkPath(DesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
     }
 
     void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
@@ -291,7 +293,7 @@ public partial class MainView : UserControl
 
     void FillIconBoxes(string path)
     {
-        ICONimage = AvaloniaOps.GetBitmap(path);
+        ICONimage = Operations.GetBitmap(path);
         FillIconSource(ICONimage);
     }
     
@@ -422,7 +424,7 @@ public partial class MainView : UserControl
         string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
             ? (string)comboICONDir.SelectedItem!
             : string.Empty;
-        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
+        string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         ICONDir_Set(file);
     }
@@ -440,7 +442,7 @@ public partial class MainView : UserControl
             
             if (IconItemSET.IconStream != null) {
                 IconItemSET.IconStream.Position = 0;
-                var bitmap = AvaloniaOps.GetBitmap(IconItemSET.IconStream);
+                var bitmap = Operations.GetBitmap(IconItemSET.IconStream);
                 FillIconBoxes(bitmap);
             }
             else {
@@ -449,14 +451,14 @@ public partial class MainView : UserControl
                     panelIconNoImage.IsVisible = false;
                 }
                 catch {
-                    AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetNAimage()));
+                    AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(Operations.GetNAimage()));
                     FillIconBoxes(bitmap);
                     panelIconNoImage.IsVisible = true;
                 } 
             }
         }
         else {   
-            AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(AvaloniaOps.GetDefaultIcon()));
+            AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(Operations.GetDefaultIcon()));
             FillIconBoxes(bitmap);
         }
     }
@@ -480,7 +482,7 @@ public partial class MainView : UserControl
             currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
         }
         else { opt = PickerOpt.OpenOpts.RAbin; }
-        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
+        string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         RADirSet(file);
     }
@@ -501,7 +503,7 @@ public partial class MainView : UserControl
     async void btnROMDir_Click(object sender, RoutedEventArgs e)
     {
         string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
-        string file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
+        string file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         ROMDir_Set(file);
     }
@@ -521,14 +523,14 @@ public partial class MainView : UserControl
         string? outputDir;
         if (settings.AlwaysAskOutput)
         {
-            newFile = LinDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
+            newFile = DesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
         else
         {
-            newFile = LinDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
+            newFile = DesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = settings.DEFLinkOutput;
             lblLinkDefinedDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
@@ -555,7 +557,7 @@ public partial class MainView : UserControl
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
         string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
-        var file = await AvaloniaOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
+        var file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
         comboConfig_Set(file);
     }
@@ -599,7 +601,7 @@ public partial class MainView : UserControl
         PickerOpt.SaveOpts opt;
         opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
         string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
-        string file = await AvaloniaOps.SaveFileAsync(opt, currentFile, ParentWindow);
+        string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file)) {
             LINKDir_Set(file);
         }
@@ -616,7 +618,7 @@ public partial class MainView : UserControl
         LinkCustomName = false;
         var fullPath = FileOps.CombineDirAndFile(
             settings.DEFLinkOutput, 
-            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? LinDesktopEntry.NamePlaceHolder : txtLINKDir.Text)
+            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? DesktopEntry.NamePlaceHolder : txtLINKDir.Text)
         );
         BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
         if (BuildingLink.OutputPaths.Count == 0) return;

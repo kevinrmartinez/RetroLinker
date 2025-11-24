@@ -17,12 +17,11 @@
 */
 
 using System;
-using System.Diagnostics;
 using Microsoft.ClearScript.Windows.Core;
 
-namespace RetroLinker.Models.WinClasses;
+namespace RetroLinker.Models.Windows;
 
-public static class WinShortcutter
+public static class ShortcutCreator
 {
     private const string objShell = "shell";
     private const string objLink = "link";

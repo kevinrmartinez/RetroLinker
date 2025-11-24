@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
 {

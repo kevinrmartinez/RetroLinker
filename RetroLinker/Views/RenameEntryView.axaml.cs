@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
-using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.Linux;
 
 namespace RetroLinker.Views;
 
@@ -71,7 +71,7 @@ public partial class RenameEntryView : UserControl
     private ShortcutterOutput NewName = new();
     private List<ShortcutterOutput> Outputs;
     
-    private const string NamePlaceHolder = LinDesktopEntry.NamePlaceHolder;
+    private const string NamePlaceHolder = DesktopEntry.NamePlaceHolder;
     
 
     #region Functions
@@ -79,7 +79,7 @@ public partial class RenameEntryView : UserControl
     private void UpdateFilename()
     {
         if (CustomFilename) return;
-        txtFileName.Text = LinDesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
+        txtFileName.Text = DesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
     }
 
     private List<ShortcutterOutput> ResolveOutput()
@@ -127,7 +127,7 @@ public partial class RenameEntryView : UserControl
         var friendlyName = txtFriendlyName.Text!;
         var fileName = (CustomFilename) 
             ? txtFileName.Text! 
-            : LinDesktopEntry.StdDesktopEntry(friendlyName + FileOps.GetOutputExt(false), CurrentCore);
+            : DesktopEntry.StdDesktopEntry(friendlyName + FileOps.GetOutputExt(false), CurrentCore);
         var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
         NewName.CustomEntryName = CustomFilename;

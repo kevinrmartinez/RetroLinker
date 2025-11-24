@@ -18,6 +18,7 @@
 
 using Avalonia.Controls;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views;
 
@@ -37,7 +38,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         Settings = FileOps.LoadSettingsFO();
-        CoresList = AvaloniaOps.GetCoresArray();
+        CoresList = Operations.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
@@ -63,7 +64,7 @@ public partial class MainWindow : Window
 
     public MainWindow(MainView mainViewDesigner) : this(true)
     {
-        CoresList = AvaloniaOps.GetCoresArray();
+        CoresList = Operations.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);
     }
 

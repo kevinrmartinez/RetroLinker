@@ -22,6 +22,7 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
@@ -122,7 +123,7 @@ public partial class PatchesView : UserControl
     private async void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e)
     {
         var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
-        string file = await AvaloniaOps.OpenFileAsync(openOptions, ParentWindow);
+        string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
         if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
     }
 

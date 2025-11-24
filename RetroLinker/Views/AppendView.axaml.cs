@@ -24,6 +24,7 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views;
 
@@ -77,7 +78,7 @@ public partial class AppendView : UserControl
     
     private async void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e)
     {
-        var loadedFile = await AvaloniaOps.OpenFileAsync(ConfigOpt, ParentWindow);
+        var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
         if (string.IsNullOrWhiteSpace(loadedFile)) return;
         if (!AppendPaths.Contains(loadedFile))
             AppendPaths.Add(loadedFile);

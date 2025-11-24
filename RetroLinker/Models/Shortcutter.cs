@@ -17,14 +17,17 @@
 */
 
 using System.Collections.Generic;
-using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.Generic;
+using RetroLinker.Models.Linux;
+using RetroLinker.Models.Windows;
 using RetroLinker.Translations;
+using ShortcutCreator = RetroLinker.Models.Windows.ShortcutCreator;
 
 namespace RetroLinker.Models
 {
     public class Shortcutter
     {
-        // TODO: Revise the names and setter of the properties
+        // TODO: Revise the names and setter of the properties (0.8)
         #region Object
         
         public string RAdir
@@ -127,8 +130,9 @@ namespace RetroLinker.Models
         #endregion
 
         #region Link Output
-
-        // Link Creatinon - OS selection
+        // TODO: Change from static to dynamic
+        
+        // Link Creation - OS selection
         public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
         {
             // Building the arguments
@@ -154,7 +158,7 @@ namespace RetroLinker.Models
                 App.Logger?.LogInfo($"Creating \"{outputFile}\"...");
                 try 
                 { 
-                    WinClasses.WinShortcutter.CreateShortcut(link, outputFile);
+                    ShortcutCreator.CreateShortcut(link, outputFile);
                     LinkResult.Messeage = LinkResult.Success1; 
                 }
                 catch (System.Exception e)
@@ -185,7 +189,7 @@ namespace RetroLinker.Models
                 App.Logger?.LogInfo($"Creating \"{outputFile}\"...");
                 
                 try { 
-                    LinShortcutter.CreateShortcut(link, output);
+                    Linux.ShortcutCreator.CreateShortcut(link, output);
                     LinkResult.Messeage = LinkResult.Success1;
                 }
                 catch (System.Exception e)

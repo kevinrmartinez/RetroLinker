@@ -19,9 +19,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace RetroLinker.Models.LinuxClasses;
+namespace RetroLinker.Models.Linux;
 
-public static class LinShortcutter
+public static class ShortcutCreator
 {
     private static readonly string CommentLine = $"# Created with {App.AppName} v{App.AppVersion}";
     private const string EntryHeader = "[Desktop Entry]";

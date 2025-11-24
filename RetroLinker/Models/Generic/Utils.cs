@@ -19,8 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
-namespace RetroLinker.Models
+namespace RetroLinker.Models.Generic
 {
     public static class Utils
     {
@@ -113,6 +114,13 @@ namespace RetroLinker.Models
                 result += $"{item}\n";
             }
             return result;
+        }
+        
+        public static string GenerateBase64(string objectString)
+        {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
+            var objectBytes = Encoding.UTF8.GetBytes(objectString);
+            var object64 = Convert.ToBase64String(objectBytes);
+            return object64;
         }
     }
 }

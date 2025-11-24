@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
 
-namespace RetroLinker.Models
+namespace RetroLinker.Models.Avalonia
 {
     public static class PickerOpt
     {
@@ -70,8 +70,8 @@ namespace RetroLinker.Models
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (AvaloniaOps.ROMTopDir is not null)
-                    { options.SuggestedStartLocation = AvaloniaOps.ROMTopDir; }
+                    if (Operations.ROMTopDir is not null)
+                    { options.SuggestedStartLocation = Operations.ROMTopDir; }
                     /*
                      * From the XDG Portal Docs:
                      * 
@@ -125,7 +125,7 @@ namespace RetroLinker.Models
             var options = new FilePickerSaveOptions();
             options.ShowOverwritePrompt = true;
             options.Title = resAvaloniaOps.dlgFileLINKDir;
-            options.SuggestedStartLocation = AvaloniaOps.DesktopFolder;
+            options.SuggestedStartLocation = Operations.DesktopFolder;
             switch (template) 
             {
                 // Windows .lnk
