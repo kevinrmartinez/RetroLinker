@@ -211,7 +211,7 @@ public partial class MainView : UserControl
     
     ThemeVariant LoadThemeVariant()
     {
-        ThemeVariant theme = settings.PreferedTheme switch
+        ThemeVariant theme = settings.ChosenTheme switch
         {
             1 => ThemeVariant.Light,
             2 => ThemeVariant.Dark,
@@ -219,7 +219,7 @@ public partial class MainView : UserControl
         };
         // CurrentTheme = settings.PreferedTheme;
         App.Logger?.LogInfo($"The requested theme was: {theme}");
-        App.Logger?.LogDebg($"Index in byte: {settings.PreferedTheme}");
+        App.Logger?.LogDebg($"Index in byte: {settings.ChosenTheme}");
         return theme;
     }
 

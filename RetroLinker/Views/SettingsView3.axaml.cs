@@ -69,10 +69,10 @@ namespace RetroLinker.Views
             {
                 if (!DesktopOS)
                 {
-                    candidateCopiesPath.AddRange(SettingsOps.LINLinkPathCandidates);
+                    candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
                     panelWindowsOnlyControls.IsEnabled = false;
                 }
-                else candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates);
+                else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
 
                 foreach (var candidate in candidateCopiesPath)

@@ -26,8 +26,8 @@ namespace RetroLinker.Models
 {
     public static class FileOps
     {
-        // public const string SettingFile = "RLsettings.cfg";
-        public const string SettingFileBin = "RLsettings.dat";
+        // public const string SettingFileBin = "RLsettings.dat";
+        public const string SettingFileJson = "RLsettings.json";
         public const string DefUserAssets = "UserAssets";
         public const string tempFile = "temp.txt";
         public const string CoresFile = "cores.txt";
@@ -42,7 +42,8 @@ namespace RetroLinker.Models
         public static List<string> ConfigDir { get; private set; } = new();
 
         public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
-        private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
+        // private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
+        private static string PathToSettingFileJson = Path.Combine(BaseDir, SettingFileJson);
         public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
         
         public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
@@ -62,7 +63,7 @@ namespace RetroLinker.Models
 
         #region Settings
 
-        public static bool ExistSettingsBinFile() => File.Exists(PathToSettingFileBin);
+        public static bool ExistSettingsJsonFile() => File.Exists(PathToSettingFileJson);
 
         public static Settings LoadSettingsFO()
         {
@@ -93,27 +94,16 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
-        public static string[] ReadSettingsFile() => ReadFileLinesToEnd(PathToSettingFileBin);
-
-        public static string ResolveSettingUA(string userAssetPath)
-        {
-            string fullPath = Path.GetFullPath(userAssetPath);
-            if (Directory.Exists(fullPath) && !File.Exists(fullPath))
-            { return userAssetPath; }
-            else
-            { throw new InvalidDataException("Invalid settings file!"); }
-        }
+        public static string ReadSettingsFile() => ReadFileTextToEnd(PathToSettingFileJson);
         
         public static async void WriteSettingsFile(string settingString)
         {
-            try
-            {
-                await File.WriteAllTextAsync(PathToSettingFileBin, settingString);
-                App.Logger?.LogInfo($"Setting file \"{PathToSettingFileBin}\" written successfully");
+            try {
+                await File.WriteAllTextAsync(PathToSettingFileJson, settingString);
+                App.Logger?.LogInfo($"Setting file \"{PathToSettingFileJson}\" written successfully");
             }
-            catch (Exception e)
-            {
-                App.Logger?.LogErro($"Setting file \"{PathToSettingFileBin}\" could not be written!");
+            catch (Exception e) {
+                App.Logger?.LogErro($"Setting file \"{PathToSettingFileJson}\" could not be written!");
                 App.Logger?.LogErro(e);
             }
         }
@@ -225,16 +215,15 @@ namespace RetroLinker.Models
 
         public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
 
-        public static string GetDirAndCombine(string fullPath, string newFileName)
-        {
-            string? dir = GetDirFromPath(fullPath);
+        public static string GetDirAndCombine(string fullPath, string newFileName) {
+            var dir = GetDirFromPath(fullPath);
             if (string.IsNullOrWhiteSpace(dir)) dir = BaseDir;
             return Path.Combine(dir, newFileName);
         }
 
         public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
         
-        // public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
+        public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
 
         public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 
@@ -251,9 +240,8 @@ namespace RetroLinker.Models
             }
         }
 
-        public static string GetDefinedLinkPath(string linkName, string linkPath)
-        {
-            string newDir = Path.GetFileName(linkName);
+        public static string GetDefinedLinkPath(string linkName, string linkPath) {
+            var newDir = Path.GetFileName(linkName);
             newDir = Path.Combine(linkPath, newDir);
             return newDir;
         }
