@@ -104,24 +104,19 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public byte ChosenTheme { get; set; } = 0;
-        [System.Text.Json.Serialization.JsonIgnore] public CultureInfo LanguageCulture { get; private set; } = DefaultLanguage;
+        public string LanguageLocale { get; set; } = DefaultLanguage;
         // TODO: Obsolete?
         public bool LinDesktopPopUp { get; set; } = true;
         public List<string> SavedConfigs { get; set; } = new();
         public List<string> SavedCopyPaths { get; set; } = new();
-
-
-        private static readonly CultureInfo DefaultLanguage = LanguageManager.ENLocale;
+        
+        private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
         public Settings() {
             IcoSavPath = UserAssetsPath; 
         }
-        
-        public void SetLanguage(CultureInfo availableLocale) => LanguageCulture = availableLocale;
-        
-        public void SetLanguage(LanguageItem languageItem) => LanguageCulture = LanguageManager.ResolveLocale(languageItem);
 
-        public void SetDefaultLanguage() => LanguageCulture = DefaultLanguage;
+        public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
         
         public string GetBase64()
         {   // Solution thanks to Kevin Driedger @ Stackoverflow.com

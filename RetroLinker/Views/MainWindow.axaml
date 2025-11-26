@@ -8,7 +8,7 @@
         Icon="/Assets/avalonia-logo.ico"
 		WindowStartupLocation="CenterScreen">
 	
-	<!-- TODO: One ContentControl in CrossFade, to refresh the view; another one (child of the first) in PageSilde to change views  -->
+	<!-- TODO: One ContentControl in CrossFade to refresh the view; another one (child of the first) in PageSilde to change views (0.8) -->
 	<TransitioningContentControl Name="MainCC1">
 		<TransitioningContentControl.PageTransition>
 			<CrossFade Duration="0:00:00.280"/>

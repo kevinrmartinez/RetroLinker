@@ -136,14 +136,10 @@ namespace RetroLinker.Views
         }
         
         
-        
-        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e)
-        {
+        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
+            // TODO: Refactor so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
-            try
-            { ParentWindow.settings.SetLanguage(locale); }
-            catch
-            { ParentWindow.settings.SetDefaultLanguage(); }
+            ParentWindow.settings.LanguageLocale = locale.Culture.Name;
         }
 
         // OTHER PREFERENCES

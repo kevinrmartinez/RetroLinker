@@ -257,7 +257,7 @@ public partial class MainView : UserControl
     void LoadLocalization()
     {
         if (FormFirstLoad) return;
-        ParentWindow.LocaleReload(settings);
+        ParentWindow.LocaleReload(settings.LanguageLocale);
     }
 
     void AllwaysAskOutputLink(bool ask)

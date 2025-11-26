@@ -48,13 +48,8 @@ public static class LanguageManager
         )
     };
 
-    public static CultureInfo ResolveLocale(string cultureName)
-    {
-        foreach (var item in LanguageList)
-            if (item.Culture.Name == cultureName) 
-                return item.Culture;
-        return ENLocale;
-    }
+    public static CultureInfo ResolveLocale(string cultureName) =>
+        LanguageList.Find(l => l.Culture.Name == cultureName)?.Culture ?? ENLocale;
     
     public static CultureInfo ResolveLocale(LanguageItem languageItem) => languageItem.Culture;
 
@@ -73,26 +68,19 @@ public static class LanguageManager
         return item;
     }
 
-    public static LanguageItem ResolveLocale(CultureInfo cultureInfo)
-    {
-        int i;
-        for (i = 0; i < LanguageList.Count; i++)
-        {
-            if (LanguageList[i].Culture.Equals(cultureInfo)) break;
-        }
-
-        return LanguageList[i];
-    }
+    public static LanguageItem? ResolveLocale(CultureInfo cultureInfo) => 
+        LanguageList.Find(l => l.Culture.Name == cultureInfo.Name) ?? LanguageList.Find(l => l.DefaultLocale);
     
     public static int GetLocaleIndex(Settings settings)
     {
-        var item = ResolveLocale(settings.LanguageCulture);
+        var cultureInfo = ResolveLocale(settings.LanguageLocale);
+        var item = ResolveLocale(cultureInfo);
         return item.ItemIndex.GetValueOrDefault();
     }
     
     public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
 
-    public static bool SetLocale(Settings settings) => ChangeRuntimeLocale(settings.LanguageCulture);
+    public static bool SetLocale(string locale) => ChangeRuntimeLocale(ResolveLocale(locale));
 
     private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
     {

@@ -16,8 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -32,7 +30,7 @@ public class App : Application
     public static Logger? Logger { get; private set; }
     public static string AppName { get; private set; } = string.Empty;
     public static string AppVersion { get; private set; } = string.Empty;
-    public static DateTime? AppBuildDate { get; private set; }
+    public static System.DateTime? AppBuildDate { get; private set; }
     public static string? AppCommitHash { get; private set; }
     
     public const string RetroBin = "retroarch";
@@ -43,12 +41,10 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        const string defaultLocale = "en_US";
-        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             Args = desktop.Args;
-            LanguageManager.FixLocale(new CultureInfo(defaultLocale));
+            LanguageManager.FixLocale(LanguageManager.ENLocale);
             desktop.MainWindow = new MainWindow
             {
                 Title = $"{AppName} v{AppVersion}",

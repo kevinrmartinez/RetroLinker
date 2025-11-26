@@ -25,13 +25,14 @@ namespace RetroLinker.Views;
 public partial class MainWindow : Window
 {
     // Props
-    public Settings Settings { get; set; }
-    public string[] CoresList { get; set; }
-    public object[] IconsList { get; set; }
+    public Settings Settings { get; }
+    public string[] CoresList { get; }
+    public object[] IconsList { get; }
     
     // Fields
     private UserControl PermaView;
     public bool IsDesigner = true;
+    // TODO: MainView should inherit this
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
     
     public MainWindow()
@@ -40,6 +41,7 @@ public partial class MainWindow : Window
         Settings = FileOps.LoadSettingsFO();
         CoresList = Operations.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);
+        LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
     }
@@ -54,16 +56,18 @@ public partial class MainWindow : Window
         // Settings = FileOps.LoadDesignerSettingsFO(true);
         Settings = new Settings();
         PermaView = new RenameEntryView();
-        if (!isDesigner)
-        {
-            Settings = FileOps.LoadSettingsFO();
-            PermaView = new MainView(this);
-            MainCC1.Content = PermaView;
-        }
+        if (isDesigner) return;
+        
+        // This is needed because of an edge case with the designer (can't remember witch)
+        Settings = FileOps.LoadSettingsFO();
+        LanguageManager.SetLocale(Settings.LanguageLocale);
+        PermaView = new MainView(this);
+        MainCC1.Content = PermaView;
     }
 
     public MainWindow(MainView mainViewDesigner) : this(true)
     {
+        mainViewDesigner.Name = "MainViewDesigner";
         CoresList = Operations.GetCoresArray();
         IconsList = FileOps.LoadIcons(DesktopOS);
     }
@@ -81,7 +85,7 @@ public partial class MainWindow : Window
         };
     }
 
-    public void LocaleReload(Settings locale)
+    public void LocaleReload(string locale)
     {
         if (LanguageManager.SetLocale(locale)) return;
         MainCC1.Content = null;
