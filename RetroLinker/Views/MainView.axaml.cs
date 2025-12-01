@@ -148,17 +148,13 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    void comboICONDir_Loaded(object[] iconsObject)
+    void comboICONDir_Loaded((List<string>, System.Exception?) iconsObject)
     {
-        var iconsList = (List<string>)iconsObject[0];
-        var hasError = (bool)iconsObject[1];
-        var exception = (string)iconsObject[2];
-
         comboICONDir.Items.Clear();
-        if (!hasError)
+        if (iconsObject.Item2 is null)
         {
             comboICONDir.Items.Add(resMainView.comboDefItem);
-            foreach (var iconFile in iconsList)
+            foreach (var iconFile in iconsObject.Item1)
                 comboICONDir.Items.Add(iconFile);
             App.Logger?.LogInfo("Icons list imported");
 
@@ -171,7 +167,7 @@ public partial class MainView : UserControl
             var popParams = new MessageBoxStandardParams()
             {
                 ContentTitle = resMainView.popIconsError_Tittle,
-                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{exception}'",
+                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{iconsObject.Item2.Message}'",
                 Icon = MsBox.Avalonia.Enums.Icon.Error,
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
             };

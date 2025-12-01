@@ -63,19 +63,18 @@ namespace RetroLinker.Models
 
         public static void BuildIconItem(string filePath, int newIndex, bool OS)
         {
-            string file_name = Path.GetFileName(filePath);
-            string file_ext = Path.GetExtension(filePath);
-            filePath = Path.GetFullPath(filePath);
-            var ico_item = new IconsItems(file_name, filePath, newIndex);
+            filePath = FileOps.GetAbsolutePath(filePath);
+            var fileExt = FileOps.GetFileExtFromPath(filePath);
+            var icoItem = new IconsItems(filePath, newIndex);
             
-            if (FileOps.IsVectorImage(filePath)) ico_item.IconStream = GetStream(filePath);
+            if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
             if (OS)
             {
-                if (FileOps.IsFileWinPE(filePath)) ico_item.IconStream = ExtractIco(filePath, 0);
-                if (FileOps.WinExtraIconsExt.Contains($"*{file_ext}") || (FileOps.IsExtWinPE(file_ext))) 
-                    ico_item.ConversionRequired = true;
+                if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, 0);
+                if (FileOps.WinExtraIconsExt.Contains($"*{fileExt}") || (FileOps.IsExtWinPE(fileExt))) 
+                    icoItem.ConversionRequired = true;
             }
-            IconItemsList.Add(ico_item);
+            IconItemsList.Add(icoItem);
         }
 
         #region Windows Only
@@ -102,28 +101,38 @@ namespace RetroLinker.Models
     
     public class IconsItems
     {
-        public string FileName { get; set; }
-        public string FilePath { get; set; }
+        public string FileName { get; private set; }
+
+        public string FilePath
+        {
+            get => filePath;
+            set => SetFilePath(value);
+        }
         public MemoryStream? IconStream { get; set; }
         public int? comboIconIndex { get; set; }
         public bool ConversionRequired { get; set; }
 
-        public IconsItems()
-        {
+        private string filePath = string.Empty;
+        
+        public IconsItems() {
             FileName = string.Empty;
             FilePath = string.Empty;
             ConversionRequired = false;
         }
 
-        public IconsItems(string fileName, string filePath, bool conversionRequired = false) 
-        {
-            FileName = fileName;
+        public IconsItems(string filePath, bool conversionRequired = false) {
+            FileName = string.Empty;
             FilePath = filePath;
             ConversionRequired = conversionRequired;
         }
 
-        public IconsItems(string fileName, string filePath, int? comboIconInd, bool conversionRequired = false) : this(fileName, filePath, conversionRequired) {
+        public IconsItems(string filePath, int? comboIconInd, bool conversionRequired = false) : this(filePath, conversionRequired) {
             comboIconIndex = comboIconInd;
+        }
+
+        private void SetFilePath(string value) {
+            filePath = value;
+            FileName = (string.IsNullOrWhiteSpace(value)) ? string.Empty : FileOps.GetFileNameNoExtFromPath(filePath);
         }
         
         public bool HasSameFile(IconsItems? other) => (other != null) && (FilePath == other.FilePath);

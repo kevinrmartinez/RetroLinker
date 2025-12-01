@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using Avalonia.Controls;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -27,12 +28,11 @@ public partial class MainWindow : Window
     // Props
     public Settings Settings { get; }
     public string[] CoresList { get; }
-    public object[] IconsList { get; }
+    public (List<string>, System.Exception?) IconsList { get; }
     
     // Fields
     private UserControl PermaView;
     public bool IsDesigner = true;
-    // TODO: MainView should inherit this
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
     
     public MainWindow()
@@ -52,7 +52,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         IsDesigner = isDesigner;
         CoresList = [];
-        IconsList = [];
+        IconsList = (new List<string>(), null);
         // Settings = FileOps.LoadDesignerSettingsFO(true);
         Settings = new Settings();
         PermaView = new RenameEntryView();

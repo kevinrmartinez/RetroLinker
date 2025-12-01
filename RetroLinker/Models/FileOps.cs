@@ -147,71 +147,70 @@ namespace RetroLinker.Models
             }
         }
 
-        public static object[] LoadIcons(bool OS)
+        public static (List<string>, Exception?) LoadIcons(bool DesktopOS)
         {
-            // TODO: Refactor all of this. Also, tuples are a thing in C# (0.8)
             var dir = LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar;
             var files = new List<string>();
-            var isError = false;
-            var iconException = string.Empty;
+            Exception? iconException = null;
             
             try
             {
-                files = new(Directory.EnumerateFiles(LoadedSettings.UserAssetsPath));
+                var filesList = new DirectoryInfo(dir).GetFiles();
                 App.Logger?.LogInfo($"Searching for Icons at \"{dir}\".");
-                for (int i = 0; i < files.Count; i++)
+                foreach (var file in filesList)
                 {
-                    string ext = Path.GetExtension(files[i]);
-                    string filename = Path.GetFileName(files[i]);
-                    string filepath = Path.GetFullPath(Path.Combine(files[i]));
-                    if (OS)
+                    var ext = file.Extension;
+                    var filePath = file.FullName;
+                    if (DesktopOS)
                     {
                         if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe")) 
-                            IconProc.IconItemsList.Add(new IconsItems(filename, filepath, true));
-                        else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filename, filepath));
+                            IconProc.IconItemsList.Add(new IconsItems(filePath, true));
+                        else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filePath));
                     }
                     else if (LinIconsExt.Contains("*" + ext)) 
-                        IconProc.IconItemsList.Add(new IconsItems(filename, filepath));
+                        IconProc.IconItemsList.Add(new IconsItems(filePath));
                 }
 
-                App.Logger?.LogInfo(files.Count == 0 ? "No icons found." : $"{IconProc.IconItemsList.Count} icons were found.");
+                App.Logger?.LogInfo(filesList.Length == 0 ? "No icons found." : $"{IconProc.IconItemsList.Count} icons were found.");
 
-                files.Clear();
-                int newindex = 1;
-                foreach (var file in IconProc.IconItemsList)
-                {
+                var index = 1;
+                foreach (var file in IconProc.IconItemsList) {
                     files.Add(file.FileName);
-                    file.comboIconIndex = newindex;
-                    newindex++;
+                    file.comboIconIndex = index;
+                    index++;
                 }
             }
             catch (DirectoryNotFoundException e)
             {
                 // TODO: Catch more types of exceptions
                 App.Logger?.LogWarn($"The directory \"{dir}\" could not be found.");
-                iconException = e.Message;
-                isError = true;
+                iconException = e;
             }
             catch (Exception e)
             {
                 App.Logger?.LogErro("An error has occurred while loading icons.");
                 App.Logger?.LogDebg($"Source: {e.Source}");
                 App.Logger?.LogErro(e.Message);
-                iconException = e.Message;
-                isError = true;
+                iconException = e;
             }
             
-            return [ files, isError, iconException ];
+            return (files, iconException);
         }
         #endregion
 
-        #region FUNCTIONS
+        #region ABSTRACTIONS
 
+        public static string GetAbsolutePath(string path) => Path.GetFullPath(path);
+        
         public static string? GetDirFromPath(string path) => Path.GetDirectoryName(path);
         
         public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
         
         public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
+        
+        public static string GetFileExtFromPath(string pathToFile) => Path.GetExtension(pathToFile);
+        
+        public static string CombineMultipleInputs(params string[] paths) => Path.Combine(paths); 
 
         public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
 
@@ -224,6 +223,10 @@ namespace RetroLinker.Models
         public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
         
         public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
+
+        #endregion
+
+        #region FUNCTIONS
 
         public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 
@@ -268,7 +271,7 @@ namespace RetroLinker.Models
 
         public static bool IsConfigFile(string filePath, out string fileExt)
         {
-            fileExt = Path.GetExtension(filePath);
+            fileExt = GetFileExtFromPath(filePath);
             return (fileExt is ".txt" or ".cfg");
         }
         
@@ -281,11 +284,11 @@ namespace RetroLinker.Models
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
-            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
+            if (File.Exists(newPath)) return GetAbsolutePath(newPath);
             
             // TODO: Update IconItem
             File.Copy(ogPath, newPath);
-            return Path.GetFullPath(newPath);
+            return GetAbsolutePath(newPath);
         }
 
         public static string CpyIconToCustomSet(string ogPath, string destPath)
@@ -293,13 +296,13 @@ namespace RetroLinker.Models
             destPath = Path.GetDirectoryName(destPath)!;
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(destPath, name);
-            if (File.Exists(newPath)) return Path.GetFullPath(newPath);
+            if (File.Exists(newPath)) return GetAbsolutePath(newPath);
 
             File.Copy(ogPath, newPath);
-            return Path.GetFullPath(newPath);
+            return GetAbsolutePath(newPath);
         }
 
-        public static bool IsVectorImage(string file) => (Path.GetExtension(file) is ".svg" or ".svgz");
+        public static bool IsVectorImage(string file) => (GetFileExtFromPath(file) is ".svg" or ".svgz");
 
         public static bool IsFileAnIcon(string filePath, bool OS, out string fileExt)
         {
@@ -316,7 +319,7 @@ namespace RetroLinker.Models
                 extList.Add(".ico");
             }
             else extList.AddRange(LinIconsExt);
-            fileExt = Path.GetExtension(filePath);
+            fileExt = GetFileExtFromPath(filePath);
             
             return extList.Contains(fileExt);
         }
@@ -328,11 +331,11 @@ namespace RetroLinker.Models
 
         public static bool IsExtWinPE(string ext) => ext is ".exe" or ".dll";
         
-        public static bool IsFileWinPE(string file) => IsExtWinPE(Path.GetExtension(file));
+        public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
         public static string SaveWinIco(IconsItems selectedIconItem)
         {
-            string icoExt = Path.GetExtension(selectedIconItem.FileName);
+            string icoExt = GetFileExtFromPath(selectedIconItem.FileName);
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : LoadedSettings.UserAssetsPath;
             string newPath = Path.Combine(newDir, icoName);
@@ -404,7 +407,7 @@ namespace RetroLinker.Models
                 GetFileNameFromPath(path),
                 
                 // Extension
-                Path.GetExtension(path)
+                GetFileExtFromPath(path)
             ];
         }
         
