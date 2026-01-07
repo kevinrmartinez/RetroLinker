@@ -22,28 +22,30 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using RetroLinker.Models;
 
 namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
+    private AppInfo? appInfo;
     private readonly string[] Contributors;
     private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
     
     public AboutWindow()
     {
         InitializeComponent();
+        appInfo = App.LocalInformation;
         BorderDev.IsVisible = false;
         
         // About the App
-        var title = (string.IsNullOrWhiteSpace(App.AppName)) ? nameof(App.AppName) : App.AppName;
-        var version = (string.IsNullOrWhiteSpace(App.AppVersion)) ? nameof(App.AppVersion) : App.AppVersion;
+        var title = (string.IsNullOrWhiteSpace(appInfo?.Name)) ? nameof(AppInfo.Name) : appInfo?.Name;
+        var version = (string.IsNullOrWhiteSpace(appInfo?.Version)) ? nameof(AppInfo.Version) : appInfo?.Version;
         LabelTitle.Content = $"{title} v{version}";
 
 #if !RELEASE
-        
-        var buildDate = (App.AppBuildDate.HasValue) ? App.AppBuildDate.Value.ToString("s") : "BuildDate";
-        var gitCommitHash = (!string.IsNullOrEmpty(App.AppCommitHash)) ?  App.AppCommitHash : "GitCommitHash";
+        var buildDate = (appInfo?.BuildDate is not null) ? appInfo?.BuildDate.Value.ToString("s") : nameof(AppInfo.BuildDate);
+        var gitCommitHash = (!string.IsNullOrEmpty(appInfo?.GitHash)) ?  appInfo?.GitHash : nameof(AppInfo.GitHash);
         LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
         BorderDev.IsVisible = true;
 #endif

@@ -28,13 +28,14 @@ public static class ShortcutCreator
     private const string objArray = "valueArray";
     private const string createLink = "CreateLink";
     private const string readLink = "ReadLink";
-    private static readonly string scriptTitle = $"{App.AppName} Script Runner";
+    private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
+    private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
     
     public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
     {
         var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
         var scriptStrings = $"""
-                          ' {App.AppName} v{App.AppVersion}
+                          {commentLine}
                           Function {createLink}()
                             Set {objShell} = CreateObject("WScript.Shell")
                             Set {objLink} = {objShell}.CreateShortcut("{_outputPath}")
@@ -57,7 +58,7 @@ public static class ShortcutCreator
     {
         // Why does creating a Array(4) is VBS results in an array with 5 positions?
         var scriptStrings = $"""
-                            ' {App.AppName} v{App.AppVersion}
+                            {commentLine}
                             Function {readLink}()
                                 Dim {objArray}(4)
                                 Set {objShell} = CreateObject("WScript.Shell")

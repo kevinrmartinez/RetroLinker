@@ -76,8 +76,8 @@ class Program
     private static void AppCallback(AppBuilder obj)
     {
         var instance = (App?)obj.Instance;
-        instance?.SetAppInfo(GetAppInfo());
         instance?.SetLogger(appLogger);
+        instance?.SetAppInfo(GetAppInfo());
     }
 
     // Parameters
@@ -113,8 +113,8 @@ class Program
             return assemblyFile.LastWriteTime;
         }
         catch (Exception e) {
-            // TODO: Redirect to log
-            Console.WriteLine(e);
+            appLogger?.LogErro("App Build Date was requested, but it could not be accessed");
+            appLogger?.LogErro("'GetBuildDateOfAssembly' failed with the following error: " + e.Message);
             return null;
         }
     }
@@ -135,8 +135,8 @@ class Program
             return hash;
         }
         catch (Exception e) {
-            // TODO: Redirect to log
-            Console.WriteLine(e);
+            appLogger?.LogErro("The hash of the git repo this build is based on was requested, but it could not be accessed");
+            appLogger?.LogErro("'GetGitHashOfRepo' failed with the following error: " + e.Message);
             return null;
         }
     }

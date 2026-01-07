@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <linker>
+    <!-- Here are listed the DLLs/NuGets that we do not want to trim on release -->
+    
+    <!-- ClearScript and Text.Json both handle dynamic types, so all their assemblies are preserved to prevent problems -->
     <!-- Keep all ClearScript assemblies -->
     <assembly fullname="ClearScript.Core" preserve="all" />
     <assembly fullname="ClearScript.Windows" preserve="all" />

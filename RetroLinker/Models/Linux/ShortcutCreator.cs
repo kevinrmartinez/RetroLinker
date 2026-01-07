@@ -23,7 +23,10 @@ namespace RetroLinker.Models.Linux;
 
 public static class ShortcutCreator
 {
-    private static readonly string CommentLine = $"# Created with {App.AppName} v{App.AppVersion}";
+    // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
+    // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>= 0.8) 
+    
+    private static readonly string CommentLine = $"# Created with {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private const string EntryHeader = "[Desktop Entry]";
     // private const string Notify = "StartupNotify=false";
     private const string Category = "Categories=Game";

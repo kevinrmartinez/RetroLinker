@@ -36,4 +36,21 @@ public readonly struct AppInfo
         BuildDate = buildDate;
         GitHash = gitHash;
     }
+
+
+    public override string ToString() => $"{Name} v{Version}";
+
+    public readonly string ToStringLines()
+    {
+        const string noData = "No data";
+        var finalDate = BuildDate?.ToString() ?? noData;
+        var finalGitHash = GitHash ?? noData;
+        return $"""
+               FullName  {FullName}
+               Name      {Name}
+               Version   {Version}
+               BuildDate {finalDate}
+               Git Hash  {finalGitHash}
+               """;
+    }
 }

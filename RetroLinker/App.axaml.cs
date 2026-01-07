@@ -26,12 +26,8 @@ namespace RetroLinker;
 
 public class App : Application
 {
-    public string AppFullName { get; private set; } = string.Empty;
+    public static AppInfo LocalInformation { get; private set; } 
     public static Logger? Logger { get; private set; }
-    public static string AppName { get; private set; } = string.Empty;
-    public static string AppVersion { get; private set; } = string.Empty;
-    public static System.DateTime? AppBuildDate { get; private set; }
-    public static string? AppCommitHash { get; private set; }
     
     public const string RetroBin = "retroarch";
     
@@ -47,7 +43,7 @@ public class App : Application
             LanguageManager.FixLocale(LanguageManager.ENLocale);
             desktop.MainWindow = new MainWindow
             {
-                Title = $"{AppName} v{AppVersion}",
+                Title = $"{LocalInformation.Name} v{LocalInformation.Version}",
                 DataContext = null,
                 IsDesigner = false
             };
@@ -64,14 +60,13 @@ public class App : Application
     }
 
     // Added
+    public void SetLogger(Logger? logger) => Logger = logger;
+    
     public void SetAppInfo(AppInfo appInfo)
     {
-        AppFullName = appInfo.FullName;
-        AppName = appInfo.Name;
-        AppVersion = appInfo.Version;
-        AppBuildDate = appInfo.BuildDate;
-        AppCommitHash = appInfo.GitHash;
+        LocalInformation = appInfo;
+        
+        Logger?.LogDebg("'AppInfo' has been set with the following properties:");
+        Logger?.LogDebg(LocalInformation.ToStringLines());
     }
-    
-    public void SetLogger(Logger? logger) => Logger = logger;
 }
