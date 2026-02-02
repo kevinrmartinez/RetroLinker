@@ -7,6 +7,7 @@
         x:Class="RetroLinker.Views.AboutWindow"
         MinWidth="450" MinHeight="350" Width="510" Height="400"
         WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
+    
     <Window.Styles>
         <Style Selector="Label#LabelTitle">
             <Setter Property="FontSize" Value="22"/>
@@ -71,11 +72,15 @@
                     </Border>
                     <TextBlock Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
                     <Label Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
+                        <HyperlinkButton Name="LinkLicense" Padding="0" Content="{x:Static lc:resAboutWindow.hypLicense}" 
+                                         NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto">
+            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto" Margin="0,14,0,8">
                 <StackPanel Grid.Row="0" Orientation="Vertical">
-                    <Rectangle Height="6"/>
                     <StackPanel Orientation="Horizontal">
                         <Label><StackPanel Orientation="Horizontal" Spacing="0">
                                 <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
@@ -91,7 +96,6 @@
                     <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
                     <!-- Filled by code behind -->
                 </StackPanel>
-                <Rectangle Grid.Row="3" Height="8"/>
             </Grid>
         </Grid>
         

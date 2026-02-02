@@ -86,5 +86,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("btnClose", resourceCulture);
             }
         }
+        
+        public static string lblLicense {
+            get {
+                return ResourceManager.GetString("lblLicense", resourceCulture);
+            }
+        }
+        
+        public static string hypLicense {
+            get {
+                return ResourceManager.GetString("hypLicense", resourceCulture);
+            }
+        }
     }
 }

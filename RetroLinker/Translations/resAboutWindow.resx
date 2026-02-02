@@ -25,7 +25,7 @@
         <value>A GUI application to create desktop links of games running on RetroArch.</value>
     </data>
     <data name="lblCopyright" xml:space="preserve">
-        <value>© Kevin R. Martinez J. 2023-2025</value>
+        <value>© Kevin R. Martinez J. 2023-2026</value>
     </data>
     <data name="lblMaintainer" xml:space="preserve">
         <value>Founder &amp; Maintainer</value>
@@ -38,5 +38,11 @@
     </data>
     <data name="btnClose" xml:space="preserve">
         <value>Ok</value>
+    </data>
+    <data name="lblLicense" xml:space="preserve">
+        <value>License: </value>
+    </data>
+    <data name="hypLicense" xml:space="preserve">
+        <value>GNU General Public License v3</value>
     </data>
 </root>
