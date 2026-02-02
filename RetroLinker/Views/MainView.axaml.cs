@@ -534,7 +534,7 @@ public partial class MainView : UserControl
     
     void btnSubSys_Click(object sender, RoutedEventArgs e)
     {
-        // TODO    
+        // TODO (0.8)
     }
     #endregion
 
@@ -594,8 +594,7 @@ public partial class MainView : UserControl
     
     async void btnLINKDir_Click(object sender, RoutedEventArgs e)
     {
-        PickerOpt.SaveOpts opt;
-        opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
+        var opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
         string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
         string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
         if (!string.IsNullOrEmpty(file)) {
@@ -673,7 +672,7 @@ public partial class MainView : UserControl
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
-                // TODO: Ask for overwrite when AlwaysAskOutput = false
+                // TODO: Ask for overwrite when AlwaysAskOutput = false (0.8)
                 var outputPathStr = (!settings.AlwaysAskOutput) 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : txtLINKDir.Text;
@@ -705,7 +704,6 @@ public partial class MainView : UserControl
         // Icons handling
         // RA binary icon (Default)
         if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
-        // TODO: Move the conversion to after the required fields check
         else
         {
             // If it's Windows OS, the images may have to be converted to .ico
@@ -730,7 +728,7 @@ public partial class MainView : UserControl
             if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile!);
         }
 
-        // REQUIRED FIELDS VALIDATION!
+        // REQUIRED FIELDS CHECKS
         var outputIsValid = false;
         if (OutputLink.OutputPaths.Count > 0)
             if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
