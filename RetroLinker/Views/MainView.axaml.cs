@@ -85,6 +85,7 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
+        // TODO: Evaluate what can be moved from this event function, and move it
         // TODO: Implement an Event for theme handling
         if (FormFirstLoad)
         {
@@ -104,14 +105,8 @@ public partial class MainView : UserControl
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
 #endif
         
-            // Based on current OS
-            if (!DesktopOS)
-            {
-                if (string.IsNullOrEmpty(settings.DEFRADir)) settings.DEFRADir = App.RetroBin;
-                txtRADir.IsReadOnly = false;
-                // DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
-            }
-            else IconItemSET = new();
+            
+            SetViewPreSettings();
 
             BuildingLink = new Shortcutter();
             txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
@@ -177,7 +172,7 @@ public partial class MainView : UserControl
 
     void LoadDragDropEvents()
     {
-        var BorderTransition = new BrushTransition()
+        var borderTransition = new BrushTransition()
         {
             Property = BorderBrushProperty,
             Duration = System.TimeSpan.FromMilliseconds(250),
@@ -187,8 +182,8 @@ public partial class MainView : UserControl
         foreach (var control in templatedControls)
         {
             DragDrop.SetAllowDrop(control, true);
-            if (control.Transitions != null) control.Transitions.Add(BorderTransition);
-            else control.Transitions = new Transitions() { BorderTransition };
+            if (control.Transitions != null) control.Transitions.Add(borderTransition);
+            else control.Transitions = [borderTransition];
             control.AddHandler(DragDrop.DragEnterEvent, ControlBox_DragEnter);
             control.AddHandler(DragDrop.DragLeaveEvent, ControlBox_DragLeave);
             control.AddHandler(DragDrop.DropEvent, ControlBox_DropParse);
@@ -197,6 +192,22 @@ public partial class MainView : UserControl
     #endregion
 
     #region Functions
+
+    void SetViewPreSettings()
+    {
+        txtRADir.MaxLength = 255;
+        // Based on current OS
+        if (!DesktopOS) {
+            if (string.IsNullOrEmpty(settings.DEFRADir)) settings.DEFRADir = App.RetroBin;
+            txtRADir.IsReadOnly = false;
+            // DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
+        }
+        else IconItemSET = new();
+
+        txtROMDir.IsReadOnly = true;
+        comboConfig.IsTextSearchEnabled = false;
+        txtLINKDir.IsReadOnly = true;
+    }
     
     void LoadNewSettings()
     {
@@ -223,8 +234,7 @@ public partial class MainView : UserControl
     {
         if (!string.IsNullOrEmpty(settings.DEFRADir)) txtRADir.Text = settings.DEFRADir;
         BuildingLink.RAdir = settings.DEFRADir;
-        if (!IsDesingner && !ParentWindow.IsDesigner)
-        {
+        if (!IsDesingner && !ParentWindow.IsDesigner) {
             Operations.SetROMTop(settings.DEFROMPath, ParentWindow);
             Operations.SetDesktopStorageFolder(ParentWindow);
         }
@@ -552,6 +562,7 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
     {
+        // TODO: Test ALL void functions without await (use the Result method)
         string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
         var file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
         if (string.IsNullOrEmpty(file)) return;
@@ -706,7 +717,7 @@ public partial class MainView : UserControl
         if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
         else
         {
-            // If it's Windows OS, the images may have to be converted to .ico
+            // If it's Windows OS, the images may need to be converted to .ico
             if (IconItemSET!.ConversionRequired)
             {
                 OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);

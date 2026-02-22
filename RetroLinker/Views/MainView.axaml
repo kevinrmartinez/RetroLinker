@@ -39,9 +39,8 @@
 				<StackPanel Name="panelRADir" Grid.Row="1">
 					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<!-- TODO: Move non-style properties to code behind, during load -->
-						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" MaxLength="255" Watermark="retroarch.exe"/>
-						<!-- TODO: Create a premade control for these browse buttons -->
+						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="retroarch.exe"/>
+						<!-- TODO: Create a premade control for these browse buttons (>= 0.8) -->
 						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
 						        i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>
@@ -54,7 +53,7 @@
 						<CheckBox Name="chkContentless" Content="{x:Static lc:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
-						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Watermark="supermariobros.nes"/>
+						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
@@ -80,8 +79,7 @@
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
 						<Label Content="{x:Static lc:resMainView.lblConfig}"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
-									  SelectionChanged="comboConfig_SelectionChanged"/>
+							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
 								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnCONFIGDir_Click" 
 										i:Attached.Icon="fa-folder-open" FontSize="18"/>
@@ -112,8 +110,7 @@
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged"
-						         IsReadOnly="True" Watermark="Super Mario Bros.lnk" />
+						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" Watermark="Super Mario Bros.lnk" />
 						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
 						        i:Attached.Icon="fa-pen" FontSize="18"/>
 						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnLINKDir_Click"
