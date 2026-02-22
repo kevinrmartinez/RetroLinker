@@ -219,6 +219,8 @@ namespace RetroLinker.Models
             if (string.IsNullOrWhiteSpace(dir)) dir = BaseDir;
             return Path.Combine(dir, newFileName);
         }
+        
+        public static bool PathAlreadyExists(string path) => Path.Exists(path);
 
         public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
         

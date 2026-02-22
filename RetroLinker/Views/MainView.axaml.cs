@@ -34,7 +34,9 @@ using RetroLinker.Models.Generic;
 using RetroLinker.Models.Linux;
 using RetroLinker.Translations;
 
-using MessageBoxBottomResult = MsBox.Avalonia.Enums.ButtonResult;
+using MessageBoxIcons = MsBox.Avalonia.Enums.Icon;
+using MessageBoxButtons = MsBox.Avalonia.Enums.ButtonEnum;
+using MessageBoxButtonResult = MsBox.Avalonia.Enums.ButtonResult;
 using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
@@ -163,8 +165,8 @@ public partial class MainView : UserControl
             {
                 ContentTitle = resMainView.popIconsError_Tittle,
                 ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{iconsObject.Item2.Message}'",
-                Icon = MsBox.Avalonia.Enums.Icon.Error,
-                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
+                Icon = MessageBoxIcons.Error,
+                ButtonDefinitions = MessageBoxButtons.Ok
             };
             _ = MessageBoxPopUp(popParams);
         }
@@ -317,7 +319,7 @@ public partial class MainView : UserControl
         pic128.Source = memImage;
     }
     
-    async Task<MessageBoxBottomResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
+    async Task<MessageBoxButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
     {
         if (ParentWindow.Icon is { } icon) standardParams.WindowIcon = icon;
         standardParams.MaxWidth = 550;
@@ -342,6 +344,26 @@ public partial class MainView : UserControl
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
         return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
         // BuildingLink.OutputPaths = result;
+    }
+    
+    private bool OverwriteFilePopUp(string pathToFile)
+    {
+        var @params = new MessageBoxStandardParams()
+        {
+            ContentTitle = "Overwrite file",
+            ContentMessage = $"The file '{pathToFile}' already exist, do you wish to overwrite it?",
+            ButtonDefinitions = MessageBoxButtons.YesNo,
+            Icon = MessageBoxIcons.Warning
+        };
+        if (FileOps.PathAlreadyExists(pathToFile)) {
+            var result = MessageBoxPopUp(@params).Result;
+            return result switch
+            {
+                MessageBoxButtonResult.No => false,
+                _ => true
+            };
+        }
+        else return true;
     }
 
     string ValidateLINBin(string RAPath)
@@ -657,7 +679,6 @@ public partial class MainView : UserControl
     {
         var OutputLink = new Shortcutter(BuildingLink);
         BuildingLink.OutputPaths = new();
-        var msbox_params = new MessageBoxStandardParams();
 
         // Controls Lock
         LockForExecute(true);
@@ -683,7 +704,6 @@ public partial class MainView : UserControl
             ShortcutterOutput outputPath;
             if (DesktopOS)
             {
-                // TODO: Ask for overwrite when AlwaysAskOutput = false (0.8)
                 var outputPathStr = (!settings.AlwaysAskOutput) 
                     ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
                     : txtLINKDir.Text;
@@ -740,6 +760,7 @@ public partial class MainView : UserControl
         }
 
         // REQUIRED FIELDS CHECKS
+        var msboxParams = new MessageBoxStandardParams();
         var outputIsValid = false;
         if (OutputLink.OutputPaths.Count > 0)
             if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
@@ -749,6 +770,12 @@ public partial class MainView : UserControl
             && (outputIsValid))
         {
             App.Logger?.LogDebg("All fields for link creation have been accepted.");
+            
+            // Check for overwriting
+            if (!settings.AlwaysAskOutput) {
+                // If the user selects no, the execution process is canceled
+                if (!OverwriteFilePopUp(OutputLink.OutputPaths[0].FullPath)) return; 
+            }
             
             // Double quotes for directories that are parameters ->
             // -> for the ROM file
@@ -763,7 +790,7 @@ public partial class MainView : UserControl
             if (settings.MakeLinkCopy)
                 OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));
             PreviousOutput = OutputLink.OutputPaths[0];
-
+            
             // Create Shortcuts
             List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
             // Single Shortcut
@@ -771,16 +798,16 @@ public partial class MainView : UserControl
             {
                 if (!opResult[0].Error)
                 {
-                    msbox_params.ContentMessage = resMainView.popSingleOutput1_Mess;
-                    msbox_params.ContentTitle = resGeneric.genSucces;
-                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
+                    msboxParams.ContentMessage = resMainView.popSingleOutput1_Mess;
+                    msboxParams.ContentTitle = resGeneric.genSucces;
+                    msboxParams.Icon = MessageBoxIcons.Success;
                 }   
                 else
                 {
-                    msbox_params.ContentHeader = resMainView.popSingleOutput0_Head; 
-                    msbox_params.ContentTitle = resGeneric.genError;
-                    msbox_params.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
-                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Error;
+                    msboxParams.ContentHeader = resMainView.popSingleOutput0_Head; 
+                    msboxParams.ContentTitle = resGeneric.genError;
+                    msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
+                    msboxParams.Icon = MessageBoxIcons.Error;
                 }
             }
             // Multiple Shortcut
@@ -795,13 +822,13 @@ public partial class MainView : UserControl
 
                 if (!hasErrors)
                 {
-                    msbox_params.ContentMessage = resMainView.popMultiOutput1_Mess; 
-                    msbox_params.ContentTitle = resGeneric.genSucces;
-                    msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Success;
+                    msboxParams.ContentMessage = resMainView.popMultiOutput1_Mess; 
+                    msboxParams.ContentTitle = resGeneric.genSucces;
+                    msboxParams.Icon = MessageBoxIcons.Success;
                 }
                 else
                 {
-                    msbox_params.ContentHeader = resMainView.popMultiOutput0_Head;
+                    msboxParams.ContentHeader = resMainView.popMultiOutput0_Head;
                     int successCount = 0;
                     string content = string.Empty;
                     foreach (var R in opResult)
@@ -817,20 +844,20 @@ public partial class MainView : UserControl
                         }
                         else successCount++;
                     }
-                    msbox_params.ContentTitle = resGeneric.genWarning;
-                    msbox_params.Icon = (successCount > 0) ? MsBox.Avalonia.Enums.Icon.Warning : MsBox.Avalonia.Enums.Icon.Error;
-                    msbox_params.ContentMessage = content;
+                    msboxParams.ContentTitle = resGeneric.genWarning;
+                    msboxParams.Icon = (successCount > 0) ? MessageBoxIcons.Warning : MessageBoxIcons.Error;
+                    msboxParams.ContentMessage = content;
                 }
             }
         }
         else
         {
-            msbox_params.ContentMessage = resMainView.popMissReq_Mess; 
-            msbox_params.ContentTitle = resMainView.popMissReq_Title; 
-            msbox_params.Icon = MsBox.Avalonia.Enums.Icon.Forbidden;
+            msboxParams.ContentMessage = resMainView.popMissReq_Mess; 
+            msboxParams.ContentTitle = resMainView.popMissReq_Title; 
+            msboxParams.Icon = MessageBoxIcons.Forbidden;
         }
         // The collection of IFs before fills 'msbox_params', then it's used to Pop Up a MessageBox
-        _ = MessageBoxPopUp(msbox_params);
+        _ = MessageBoxPopUp(msboxParams);
         ResetAfterExecute();
     }
 
