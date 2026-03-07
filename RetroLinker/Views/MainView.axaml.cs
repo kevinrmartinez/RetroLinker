@@ -195,6 +195,7 @@ public partial class MainView : UserControl
 
     #region Functions
 
+    // Controls Modifiers
     void SetViewPreSettings()
     {
         txtRADir.MaxLength = 255;
@@ -288,17 +289,15 @@ public partial class MainView : UserControl
             : FileOps.GetDefinedLinkPath(DesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
     }
 
-    void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
-
-    void ResetAfterExecute()
+    // Icon Boxes
+    void FillIconSource(IImage memImage)
     {
-        if (BuildingLink.OutputPaths.Count == 0)
-            BuildingLink.OutputPaths.Add(
-                ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, DesktopOS, string.Empty));
-        
-        LockForExecute(false);
+        pic16.Source = memImage;
+        pic32.Source = memImage;
+        pic64.Source = memImage;
+        pic128.Source = memImage;
     }
-
+    
     void FillIconBoxes(string path)
     {
         ICONimage = Operations.GetBitmap(path);
@@ -310,15 +309,8 @@ public partial class MainView : UserControl
         ICONimage = bitmap;
         FillIconSource(ICONimage);
     }
-
-    void FillIconSource(IImage memImage)
-    {
-        pic16.Source = memImage;
-        pic32.Source = memImage;
-        pic64.Source = memImage;
-        pic128.Source = memImage;
-    }
     
+    // Pop-ups
     async Task<MessageBoxButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
     {
         if (ParentWindow.Icon is { } icon) standardParams.WindowIcon = icon;
@@ -343,22 +335,20 @@ public partial class MainView : UserControl
         var popupWindow = new PopUpWindow();
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
         return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
-        // BuildingLink.OutputPaths = result;
     }
     
-    private bool OverwriteFilePopUp(string pathToFile)
+    async Task<bool> OverwriteFilePopUp(string pathToFile)
     {
-        var @params = new MessageBoxStandardParams()
+        var stdParams = new MessageBoxStandardParams()
         {
-            ContentTitle = "Overwrite file",
+            ContentTitle = "Overwrite file?",
             ContentMessage = $"The file '{pathToFile}' already exist, do you wish to overwrite it?",
             ButtonDefinitions = MessageBoxButtons.YesNo,
             Icon = MessageBoxIcons.Warning
         };
         if (FileOps.PathAlreadyExists(pathToFile)) {
-            var result = MessageBoxPopUp(@params).Result;
-            return result switch
-            {
+            var result = await MessageBoxPopUp(stdParams);
+            return result switch {
                 MessageBoxButtonResult.No => false,
                 _ => true
             };
@@ -372,6 +362,7 @@ public partial class MainView : UserControl
         return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
     }
     
+    // External/Call-back
     public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string[] argStrings)
     {
         switch (viewType)
@@ -399,6 +390,222 @@ public partial class MainView : UserControl
                 break;
         }
     }
+    
+    // Execution
+    void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
+
+    void ResetAfterExecute()
+    {
+        if (BuildingLink.OutputPaths.Count == 0)
+            BuildingLink.OutputPaths.Add(
+                ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, 
+                    DesktopOS, 
+                    string.Empty));
+        
+        LockForExecute(false);
+    }
+
+    async void RunExecution()
+    {
+        try {
+            var OutputLink = new Shortcutter(BuildingLink);
+            BuildingLink.OutputPaths = new();
+
+            // Controls Lock
+            LockForExecute(true);
+            // Avalonia.Threading.Dispatcher.UIThread.Invoke(() => LockForExecute(true), DispatcherPriority.Normal);
+            
+            // Checkboxes!
+            OutputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
+            OutputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
+            OutputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
+            OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
+
+            // Validating contentless or not
+            OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? Commander.contentless : OutputLink.ROMdir;
+
+            // Validate theres an executable (Linux)
+            OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
+
+            // Validate there is a core
+            OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
+
+            // Link handling
+            if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
+            {
+                ShortcutterOutput outputPath;
+                if (DesktopOS)
+                {
+                    var outputPathStr = (!settings.AlwaysAskOutput) 
+                        ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
+                        : txtLINKDir.Text;
+                    outputPath = new ShortcutterOutput(outputPathStr);
+                }
+                else
+                {
+                    if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths[0].CustomEntryName)
+                        outputPath = OutputLink.OutputPaths[0];
+                    else
+                    {
+                        if (!settings.AlwaysAskOutput)
+                        {
+                            var outputPathStr = FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS),
+                                settings.DEFLinkOutput);
+                            outputPath = new ShortcutterOutput(outputPathStr, OutputLink.ROMcore);
+                        }
+                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, OutputLink.ROMcore);
+                    }
+                }
+
+                if (OutputLink.OutputPaths.Count == 0) OutputLink.OutputPaths.Add(outputPath);
+                else if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath) OutputLink.OutputPaths[0] = outputPath;
+            }
+            
+            // Include a link description, if any
+            OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
+
+            // Icons handling
+            // RA binary icon (Default)
+            if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
+            else
+            {
+                // If it's Windows OS, the images may need to be converted to .ico
+                if (IconItemSET!.ConversionRequired)
+                {
+                    OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
+                    if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
+                    {
+                        var ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
+                        ROMIcoSavAUX = (ROMIcoSavAUX != Commander.contentless) ? ROMIcoSavAUX : OutputLink.ROMcore;
+                        if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
+                        OutputLink.ICONfile = settings.IcoSavPath switch
+                        {
+                            SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
+                            SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
+                            _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
+                        };
+                    }
+                }
+
+                // In case of 'CpyUserIcon = true'
+                if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile!);
+            }
+
+            // REQUIRED FIELDS CHECKS
+            var msboxParams = new MessageBoxStandardParams();
+            var outputIsValid = false;
+            if (OutputLink.OutputPaths.Count > 0)
+                if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
+            if ((!string.IsNullOrEmpty(OutputLink.RAdir))
+                && (!string.IsNullOrEmpty(OutputLink.ROMdir))
+                && (!string.IsNullOrEmpty(OutputLink.ROMcore))
+                && (outputIsValid))
+            {
+                App.Logger?.LogDebg("All fields for link creation have been accepted.");
+                
+                // Check for overwriting
+                if (!settings.AlwaysAskOutput) {
+                    // If the user selects no, the execution process is canceled
+                    var overwriteResult = await OverwriteFilePopUp(OutputLink.OutputPaths[0].FullPath);
+                    if (!overwriteResult) {
+                        ResetAfterExecute();
+                        return;
+                    }
+                }
+                
+                // Double quotes for directories that are parameters ->
+                // -> for the ROM file
+                if (!chkContentless.IsChecked.GetValueOrDefault()) 
+                { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
+
+                // -> for the config file
+                if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
+                { OutputLink.CONFfile = Utils.FixUnusualPaths(OutputLink.CONFfile); }
+
+                // Link Copies handling
+                if (settings.MakeLinkCopy)
+                    OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));
+                PreviousOutput = OutputLink.OutputPaths[0];
+                
+                // Create Shortcuts
+                List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
+                // Single Shortcut
+                if (opResult.Count == 1)
+                {
+                    if (!opResult[0].Error)
+                    {
+                        msboxParams.ContentMessage = resMainView.popSingleOutput1_Mess;
+                        msboxParams.ContentTitle = resGeneric.genSucces;
+                        msboxParams.Icon = MessageBoxIcons.Success;
+                    }   
+                    else
+                    {
+                        msboxParams.ContentHeader = resMainView.popSingleOutput0_Head; 
+                        msboxParams.ContentTitle = resGeneric.genError;
+                        msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
+                        msboxParams.Icon = MessageBoxIcons.Error;
+                    }
+                }
+                // Multiple Shortcut
+                else
+                {
+                    bool hasErrors = false;
+                    foreach (var r in opResult) {
+                        if (r.Error) hasErrors = true;
+                        break;
+                    }
+
+                    if (!hasErrors) {
+                        msboxParams.ContentMessage = resMainView.popMultiOutput1_Mess; 
+                        msboxParams.ContentTitle = resGeneric.genSucces;
+                        msboxParams.Icon = MessageBoxIcons.Success;
+                    }
+                    else
+                    {
+                        msboxParams.ContentHeader = resMainView.popMultiOutput0_Head;
+                        int successCount = 0;
+                        string content = string.Empty;
+                        foreach (var R in opResult)
+                        {
+                            string output = R.OutputPath + ": ";
+                            content = string.Concat(content, output);
+                            content = string.Concat(content, R.Messeage);
+                            content = string.Concat(content, "\n");
+                            if (R.Error)
+                            {
+                                content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
+                                content = string.Concat(content, "\n");
+                            }
+                            else successCount++;
+                        }
+                        msboxParams.ContentTitle = resGeneric.genWarning;
+                        msboxParams.Icon = (successCount > 0) ? MessageBoxIcons.Warning : MessageBoxIcons.Error;
+                        msboxParams.ContentMessage = content;
+                    }
+                }
+            }
+            else
+            {
+                msboxParams.ContentMessage = resMainView.popMissReq_Mess; 
+                msboxParams.ContentTitle = resMainView.popMissReq_Title; 
+                msboxParams.Icon = MessageBoxIcons.Forbidden;
+            }
+            // The collection of IFs before fills 'msbox_params', then it's used to Pop Up a MessageBox
+            _ = MessageBoxPopUp(msboxParams);
+            ResetAfterExecute();
+        }
+        catch (System.Exception e) {
+            App.Logger?.LogErro(e.Message);
+            var erroParams = new MessageBoxStandardParams()
+            {
+                ContentHeader = resMainView.popSingleOutput0_Head, 
+                ContentTitle = resGeneric.genError,
+                ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {e.Message}",
+                Icon = MessageBoxIcons.Error
+            };
+            _ = MessageBoxPopUp(erroParams);
+        }
+    }
     #endregion
 
 
@@ -411,8 +618,7 @@ public partial class MainView : UserControl
         LoadNewSettings();
     }
     
-    private void ButtonAbout_OnClick(object? sender, RoutedEventArgs e)
-    {
+    private void ButtonAbout_OnClick(object? sender, RoutedEventArgs e) {
         var aboutWindow = new AboutWindow();
         aboutWindow.ShowDialog(ParentWindow);
     }
@@ -675,191 +881,7 @@ public partial class MainView : UserControl
 
     
     // EXECUTE
-    void btnEXECUTE_Click(object sender, RoutedEventArgs e)
-    {
-        var OutputLink = new Shortcutter(BuildingLink);
-        BuildingLink.OutputPaths = new();
-
-        // Controls Lock
-        LockForExecute(true);
-        
-        // Checkboxes!
-        OutputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
-        OutputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
-        OutputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
-        OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
-
-        // Validating contentless or not
-        OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? Commander.contentless : OutputLink.ROMdir;
-
-        // Validate theres an executable (Linux)
-        OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
-
-        // Validate there is a core
-        OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
-
-        // Link handling
-        if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
-        {
-            ShortcutterOutput outputPath;
-            if (DesktopOS)
-            {
-                var outputPathStr = (!settings.AlwaysAskOutput) 
-                    ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
-                    : txtLINKDir.Text;
-                outputPath = new ShortcutterOutput(outputPathStr);
-            }
-            else
-            {
-                if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths[0].CustomEntryName)
-                    outputPath = OutputLink.OutputPaths[0];
-                else
-                {
-                    if (!settings.AlwaysAskOutput)
-                    {
-                        var outputPathStr = FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS),
-                            settings.DEFLinkOutput);
-                        outputPath = new ShortcutterOutput(outputPathStr, OutputLink.ROMcore);
-                    }
-                    else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, OutputLink.ROMcore);
-                }
-            }
-
-            if (OutputLink.OutputPaths.Count == 0) OutputLink.OutputPaths.Add(outputPath);
-            else if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath) OutputLink.OutputPaths[0] = outputPath;
-        }
-        
-        // Include a link description, if any
-        OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
-
-        // Icons handling
-        // RA binary icon (Default)
-        if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
-        else
-        {
-            // If it's Windows OS, the images may need to be converted to .ico
-            if (IconItemSET!.ConversionRequired)
-            {
-                OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
-                {
-                    var ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
-                    ROMIcoSavAUX = (ROMIcoSavAUX != Commander.contentless) ? ROMIcoSavAUX : OutputLink.ROMcore;
-                    if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
-                    OutputLink.ICONfile = settings.IcoSavPath switch
-                    {
-                        SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
-                        SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
-                        _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
-                    };
-                }
-            }
-
-            // In case of 'CpyUserIcon = true'
-            if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile!);
-        }
-
-        // REQUIRED FIELDS CHECKS
-        var msboxParams = new MessageBoxStandardParams();
-        var outputIsValid = false;
-        if (OutputLink.OutputPaths.Count > 0)
-            if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
-        if ((!string.IsNullOrEmpty(OutputLink.RAdir))
-            && (!string.IsNullOrEmpty(OutputLink.ROMdir))
-            && (!string.IsNullOrEmpty(OutputLink.ROMcore))
-            && (outputIsValid))
-        {
-            App.Logger?.LogDebg("All fields for link creation have been accepted.");
-            
-            // Check for overwriting
-            if (!settings.AlwaysAskOutput) {
-                // If the user selects no, the execution process is canceled
-                if (!OverwriteFilePopUp(OutputLink.OutputPaths[0].FullPath)) return; 
-            }
-            
-            // Double quotes for directories that are parameters ->
-            // -> for the ROM file
-            if (!chkContentless.IsChecked.GetValueOrDefault()) 
-            { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
-
-            // -> for the config file
-            if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
-            { OutputLink.CONFfile = Utils.FixUnusualPaths(OutputLink.CONFfile); }
-
-            // Link Copies handling
-            if (settings.MakeLinkCopy)
-                OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));
-            PreviousOutput = OutputLink.OutputPaths[0];
-            
-            // Create Shortcuts
-            List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
-            // Single Shortcut
-            if (opResult.Count == 1)
-            {
-                if (!opResult[0].Error)
-                {
-                    msboxParams.ContentMessage = resMainView.popSingleOutput1_Mess;
-                    msboxParams.ContentTitle = resGeneric.genSucces;
-                    msboxParams.Icon = MessageBoxIcons.Success;
-                }   
-                else
-                {
-                    msboxParams.ContentHeader = resMainView.popSingleOutput0_Head; 
-                    msboxParams.ContentTitle = resGeneric.genError;
-                    msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
-                    msboxParams.Icon = MessageBoxIcons.Error;
-                }
-            }
-            // Multiple Shortcut
-            else
-            {
-                bool hasErrors = false;
-                foreach (var r in opResult)
-                {
-                    if (r.Error) hasErrors = true;
-                    break;
-                }
-
-                if (!hasErrors)
-                {
-                    msboxParams.ContentMessage = resMainView.popMultiOutput1_Mess; 
-                    msboxParams.ContentTitle = resGeneric.genSucces;
-                    msboxParams.Icon = MessageBoxIcons.Success;
-                }
-                else
-                {
-                    msboxParams.ContentHeader = resMainView.popMultiOutput0_Head;
-                    int successCount = 0;
-                    string content = string.Empty;
-                    foreach (var R in opResult)
-                    {
-                        string output = R.OutputPath + ": ";
-                        content = string.Concat(content, output);
-                        content = string.Concat(content, R.Messeage);
-                        content = string.Concat(content, "\n");
-                        if (R.Error)
-                        {
-                            content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
-                            content = string.Concat(content, "\n");
-                        }
-                        else successCount++;
-                    }
-                    msboxParams.ContentTitle = resGeneric.genWarning;
-                    msboxParams.Icon = (successCount > 0) ? MessageBoxIcons.Warning : MessageBoxIcons.Error;
-                    msboxParams.ContentMessage = content;
-                }
-            }
-        }
-        else
-        {
-            msboxParams.ContentMessage = resMainView.popMissReq_Mess; 
-            msboxParams.ContentTitle = resMainView.popMissReq_Title; 
-            msboxParams.Icon = MessageBoxIcons.Forbidden;
-        }
-        // The collection of IFs before fills 'msbox_params', then it's used to Pop Up a MessageBox
-        _ = MessageBoxPopUp(msboxParams);
-        ResetAfterExecute();
-    }
+    void btnEXECUTE_Click(object sender, RoutedEventArgs e) => RunExecution();
 
     #region Genric Envents
 

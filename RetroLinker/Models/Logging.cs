@@ -81,7 +81,7 @@ public class Logger
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogDebg(object obj) => LogDebg(obj.ToString() ?? string.Empty);
+    public void LogDebg(object? obj) => LogDebg(obj?.ToString() ?? string.Empty);
 
     public void Close()
     {
