@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.11" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
   </ItemGroup>
 
   <ItemGroup>
