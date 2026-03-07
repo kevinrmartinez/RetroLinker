@@ -29,8 +29,7 @@ public static class FileDialogOps
     public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel, string? currentFile = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
-        if (!string.IsNullOrEmpty(currentFile))
-        {
+        if (!string.IsNullOrEmpty(currentFile)) {
             currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
         }
@@ -48,6 +47,7 @@ public static class FileDialogOps
 
     public static async Task<string> OpenFolderAsync(byte template, string currentFolder, TopLevel topLevel)
     {
+        // TODO: replace 'template' with an Enum, for a more verbose programming experience (0.8) 
         FolderPickerOpenOptions opt = new()
         {
             AllowMultiple = false,

@@ -54,4 +54,10 @@
     <data name="genSucces" xml:space="preserve">
         <value>Success</value>
     </data>
+    <data name="popUnError_Head0" xml:space="preserve">
+        <value>An unexpected error occured</value>
+    </data>
+    <data name="popUnError_Mess0" xml:space="preserve">
+        <value>The operation failed with the following error:</value>
+    </data>
 </root>

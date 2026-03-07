@@ -22,7 +22,7 @@
 				<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
 				        i:Attached.Icon="fa-circle-info" FontSize="22"/>
 				<!-- Grid.Column="0" Already filled by MainWindowHeader -->
-				<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_Click"
+				<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_OnClick"
 				        i:Attached.Icon="fa-gear" FontSize="24"/>
 		</pc:MainWindowHeader>
 		
@@ -41,7 +41,7 @@
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="retroarch.exe"/>
 						<!-- TODO: Create a premade control for these browse buttons (>= 0.8) -->
-						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_Click" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
+						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
 						        i:Attached.Icon="fa-folder-open" FontSize="18"/>
 					</Grid>
 				</StackPanel>
@@ -55,7 +55,7 @@
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
-							<Button Name="btnROMDir" Click="btnROMDir_Click" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"/>
+							<Button Name="btnROMDir" Click="btnROMDir_OnClick" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
@@ -81,9 +81,9 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
-								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnCONFIGDir_Click" 
+								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnCONFIGDir_OnClick" 
 										i:Attached.Icon="fa-folder-open" FontSize="18"/>
-								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}" Click="btnAppendConfig_Click"
+								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}" Click="btnAppendConfig_OnClick"
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>
@@ -113,7 +113,7 @@
 						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" Watermark="Super Mario Bros.lnk" />
 						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
 						        i:Attached.Icon="fa-pen" FontSize="18"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnLINKDir_Click"
+						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnLINKDir_OnClick"
 								i:Attached.Icon="fa-folder-open" FontSize="18"/>
 						<TextBlock Name="lblLinkDefinedDir" Grid.Row="1" Grid.Column="0" Text="{x:Static lc:resMainView.lblLinkDeskDir}" 
 						           FontSize="11" TextWrapping="Wrap" Margin="2 ,0"/>
@@ -132,7 +132,7 @@
 							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
 							Height="55" 
 							Content="{x:Static lc:resGeneric.btnExecute}"
-							Click="btnEXECUTE_Click"/>
+							Click="btnEXECUTE_OnClick"/>
 				</Panel>
 			</Grid>
 
@@ -154,7 +154,7 @@
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged"/>
-								<Button Name="btnICONDir" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="btnICONDir_Click"/>
+								<Button Name="btnICONDir" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="btnICONDir_OnClick"/>
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"

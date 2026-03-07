@@ -69,7 +69,7 @@
 				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
 					<TextBox Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
 			        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-				        <Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_Click"
+				        <Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_OnClick"
 				                i:Attached.Icon="fa-folder-open"/>
 				        <Button Name="btnclrIcoSavPath" Height="30" Classes="SettingCatg" Click="btnclrIcoSavPath_Click">
 					            <i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>

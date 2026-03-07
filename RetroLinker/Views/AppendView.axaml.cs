@@ -23,6 +23,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 
@@ -38,7 +40,6 @@ public partial class AppendView : UserControl
         List<string> appendConfigFiles = FillListTest();
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);
         ItemsControlPaths.ItemsSource = AppendPaths;
-        
     }
     
     // Active Constructor
@@ -69,28 +70,48 @@ public partial class AppendView : UserControl
     private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
 
     // Append Config controls
-    private void ButtonTrash_OnClick(object? sender, RoutedEventArgs e)
-    {
+    private void ButtonTrash_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button button) return;
         if (button.Parent!.Parent!.Parent is ContentPresenter { Content: string content })
             AppendPaths.Remove(content);
     }
-    
-    private async void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e)
+
+    private async void BtnConfigPathBrowse_ClickAsync()
     {
-        var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
-        if (string.IsNullOrWhiteSpace(loadedFile)) return;
-        if (!AppendPaths.Contains(loadedFile))
-            AppendPaths.Add(loadedFile);
+        try {
+            var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
+            if (string.IsNullOrWhiteSpace(loadedFile)) return;
+            if (!AppendPaths.Contains(loadedFile))
+                AppendPaths.Add(loadedFile);
+        }
+        catch (System.Exception e)
+        {
+            App.Logger?.LogErro(e);
+            MessageBoxStandardParams mbParams = new()
+            {
+                ContentTitle = Translations.resGeneric.genError,
+                ContentHeader = Translations.resGeneric.popUnError_Head0,
+                ContentMessage = $"{Translations.resGeneric.popUnError_Head0}\n{e.Message}",
+                Icon = MsBox.Avalonia.Enums.Icon.Error,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                MaxWidth = 550
+            };
+            if (ParentWindow.Icon is { } icon) mbParams.WindowIcon = icon;
+            var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
+            _ = msBox.ShowWindowDialogAsync(ParentWindow);
+        }
     }
+
+    private void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e) => BtnConfigPathBrowse_ClickAsync();
 
     private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) => AppendPaths.Clear();
     
     
     // View Buttons
-    private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var appendArg = (AppendPaths.Count == 0) ? string.Empty : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
+    private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
+        var appendArg = (AppendPaths.Count == 0) 
+            ? string.Empty 
+            : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
         ParentWindow.ReturnToMainView(this, appendArg);
     }
 
@@ -99,6 +120,7 @@ public partial class AppendView : UserControl
     private List<string> FillListTest()
     {
         var _appendPaths = new List<string>();
+        // Todo: Make the test os agnostic
         for (int i = 0; i < 16; i++) {
             _appendPaths.Add($"/home/public/testing/retroarch{i}.cfg");
         }

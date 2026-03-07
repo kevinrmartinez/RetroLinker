@@ -116,5 +116,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("genSucces", resourceCulture);
             }
         }
+        
+        public static string popUnError_Head0 {
+            get {
+                return ResourceManager.GetString("popUnError_Head0", resourceCulture);
+            }
+        }
+        
+        public static string popUnError_Mess0 {
+            get {
+                return ResourceManager.GetString("popUnError_Mess0", resourceCulture);
+            }
+        }
     }
 }

@@ -120,12 +120,32 @@ public partial class PatchesView : UserControl
         
     }
 
-    private async void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e)
+    private async void BtnPatchPath_ClickAsycn()
     {
-        var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
-        string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
-        if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
+        try {
+            var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
+            string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
+            if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
+        }
+        catch (System.Exception e)
+        {
+            App.Logger?.LogErro(e);
+            MessageBoxStandardParams mbParams = new()
+            {
+                ContentTitle = resGeneric.genError,
+                ContentHeader = resGeneric.popUnError_Head0,
+                ContentMessage = $"{resGeneric.popUnError_Head0}\n{e.Message}",
+                Icon = MsBox.Avalonia.Enums.Icon.Error,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                MaxWidth = 550
+            };
+            if (ParentWindow.Icon is { } icon) mbParams.WindowIcon = icon;
+            var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
+            _ = msBox.ShowWindowDialogAsync(ParentWindow);
+        }
     }
+
+    private void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e) => BtnPatchPath_ClickAsycn();
 
     // == VIEW CONTROLS ==
     private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
@@ -152,7 +172,7 @@ public partial class PatchesView : UserControl
             };
             if (ParentWindow.Icon is { } icon)  standardParams.WindowIcon = icon;
             var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
-            msBox.ShowWindowDialogAsync(ParentWindow);
+            _ = msBox.ShowWindowDialogAsync(ParentWindow);
             
             patchComm = string.Empty;
         }

@@ -288,6 +288,12 @@ public partial class MainView : UserControl
             ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
             : FileOps.GetDefinedLinkPath(DesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
     }
+    
+    string ValidateLINBin(string RAPath)
+    {
+        if (RAPath == txtRADir.Text) return RAPath;
+        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
+    }
 
     // Icon Boxes
     void FillIconSource(IImage memImage)
@@ -356,11 +362,18 @@ public partial class MainView : UserControl
         else return true;
     }
 
-    string ValidateLINBin(string RAPath)
+    void GenericAsyncErrorPopup(System.Exception error)
     {
-        if (RAPath == txtRADir.Text) return RAPath;
-        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
-    }
+        App.Logger?.LogErro(error);
+        var stdParams = new MessageBoxStandardParams()
+        {
+            ContentHeader = resGeneric.popUnError_Head0, 
+            ContentTitle = resGeneric.genError,
+            ContentMessage = $"{resGeneric.popUnError_Mess0}\n{error.Message}",
+            Icon = MessageBoxIcons.Error
+        };
+        _ = MessageBoxPopUp(stdParams);
+    } 
     
     // External/Call-back
     public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string[] argStrings)
@@ -542,7 +555,7 @@ public partial class MainView : UserControl
                     {
                         msboxParams.ContentHeader = resMainView.popSingleOutput0_Head; 
                         msboxParams.ContentTitle = resGeneric.genError;
-                        msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {opResult[0].eMesseage}";
+                        msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess}\n{opResult[0].eMesseage}";
                         msboxParams.Icon = MessageBoxIcons.Error;
                     }
                 }
@@ -590,7 +603,7 @@ public partial class MainView : UserControl
                 msboxParams.ContentTitle = resMainView.popMissReq_Title; 
                 msboxParams.Icon = MessageBoxIcons.Forbidden;
             }
-            // The collection of IFs before fills 'msbox_params', then it's used to Pop Up a MessageBox
+            // The collection of IFs fills 'msbox_params', then it's used to Pop-Up a MessageBox
             _ = MessageBoxPopUp(msboxParams);
             ResetAfterExecute();
         }
@@ -610,13 +623,18 @@ public partial class MainView : UserControl
 
 
     // TOP CONTROLS
-    async void btnSettings_Click(object sender, RoutedEventArgs e)
+    async void btnSettings_ClickAsync()
     {
-        var settingWindow = new SettingsWindow(ParentWindow, settings); 
-        var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
-        settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
-        LoadNewSettings();
-    }
+        try {
+            var settingWindow = new SettingsWindow(ParentWindow, settings); 
+            var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
+            settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
+            LoadNewSettings();
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+    } 
+    
+    void btnSettings_OnClick(object sender, RoutedEventArgs e) => btnSettings_ClickAsync();
     
     private void ButtonAbout_OnClick(object? sender, RoutedEventArgs e) {
         var aboutWindow = new AboutWindow();
@@ -629,7 +647,7 @@ public partial class MainView : UserControl
     {
         int newIndex = comboICONDir.ItemCount;
         const int indexNotFound = -1;
-        int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(Item => Item.FilePath == filePath)!);
+        int existingItem = IconProc.IconItemsList.IndexOf(IconProc.IconItemsList.Find(item => item.FilePath == filePath)!);
         if (existingItem == indexNotFound)
         {
             comboICONDir.Items.Add(filePath);
@@ -650,18 +668,21 @@ public partial class MainView : UserControl
         else gridIconControl.IsEnabled = true;
     }
 
-    async void btnICONDir_Click(object sender, RoutedEventArgs e)
+    async void btnICONDir_ClickAsync()
     {
-        PickerOpt.OpenOpts opt;
-        opt = DesktopOS ? PickerOpt.OpenOpts.WINico : PickerOpt.OpenOpts.LINico;
-
-        string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
-            ? (string)comboICONDir.SelectedItem!
-            : string.Empty;
-        string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
-        if (string.IsNullOrEmpty(file)) return;
-        ICONDir_Set(file);
+        try {
+            var opt = DesktopOS ? PickerOpt.OpenOpts.WINico : PickerOpt.OpenOpts.LINico;
+            string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
+                ? (string)comboICONDir.SelectedItem!
+                : string.Empty;
+            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            if (string.IsNullOrEmpty(file)) return;
+            ICONDir_Set(file);
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
+    
+    void btnICONDir_OnClick(object sender, RoutedEventArgs e) => btnICONDir_ClickAsync();
 
     // Solution of SelectionChangedEventArgs thanks to snurre @ stackoverflow.com
     void comboICONDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -680,7 +701,7 @@ public partial class MainView : UserControl
                 FillIconBoxes(bitmap);
             }
             else {
-                try{
+                try {
                     FillIconBoxes(BuildingLink.ICONfile); 
                     panelIconNoImage.IsVisible = false;
                 }
@@ -700,32 +721,34 @@ public partial class MainView : UserControl
     
     #region RADirectory Controls
 
-    void RADirSet(string filePath)
-    {
+    void RADirSet(string filePath) {
         BuildingLink.RAdir = filePath;
         txtRADir.Text = filePath;
     }
-    
-    async void btnRADir_Click(object sender, RoutedEventArgs e)
+
+    async void btnRADir_ClickAsync()
     {
-        PickerOpt.OpenOpts opt;
-        string currentFile = string.Empty;
-        if (DesktopOS)
-        {
-            opt = PickerOpt.OpenOpts.RAexe;
-            currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
+        try {
+            PickerOpt.OpenOpts opt;
+            string currentFile = string.Empty;
+            if (DesktopOS) {
+                opt = PickerOpt.OpenOpts.RAexe;
+                currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
+            }
+            else { opt = PickerOpt.OpenOpts.RAbin; }
+            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            if (string.IsNullOrEmpty(file)) return;
+            RADirSet(file);
         }
-        else { opt = PickerOpt.OpenOpts.RAbin; }
-        string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
-        if (string.IsNullOrEmpty(file)) return;
-        RADirSet(file);
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
+    
+    void btnRADir_OnClick(object sender, RoutedEventArgs e) => btnRADir_ClickAsync();
     #endregion
 
     #region ROM Controls
 
-    void ROMDir_Set(string filePath)
-    {
+    void ROMDir_Set(string filePath) {
         BuildingLink.ROMdir = filePath;
         txtROMDir.Text = filePath;
     }
@@ -734,13 +757,18 @@ public partial class MainView : UserControl
         panelROMDirControl.IsEnabled = !chkContentless.IsChecked.GetValueOrDefault();
     }
 
-    async void btnROMDir_Click(object sender, RoutedEventArgs e)
+    async void btnROMDir_ClickAsync()
     {
-        string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
-        string file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
-        if (string.IsNullOrEmpty(file)) return;
-        ROMDir_Set(file);
+        try {
+            string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
+            string file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
+            if (string.IsNullOrEmpty(file)) return;
+            ROMDir_Set(file);
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
+    
+    void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
     
     void BtnPatches_OnClick(object? sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, [BuildingLink.PatchArg]);
@@ -770,7 +798,7 @@ public partial class MainView : UserControl
         }
     }
     
-    void btnSubSys_Click(object sender, RoutedEventArgs e)
+    void btnSubSys_OnClick(object sender, RoutedEventArgs e)
     {
         // TODO (0.8)
     }
@@ -788,14 +816,18 @@ public partial class MainView : UserControl
         comboConfig.SelectedItem = filePath;
     }
 
-    async void btnCONFIGDir_Click(object sender, RoutedEventArgs e)
+    async void btnCONFIGDir_ClickAsync()
     {
-        // TODO: Test ALL void functions without await (use the Result method)
-        string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
-        var file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
-        if (string.IsNullOrEmpty(file)) return;
-        comboConfig_Set(file);
+        try {
+            string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
+            var file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
+            if (string.IsNullOrEmpty(file)) return;
+            comboConfig_Set(file);
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
+    
+    void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
     
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -807,60 +839,66 @@ public partial class MainView : UserControl
         };
     }
     
-    void btnAppendConfig_Click(object sender, RoutedEventArgs e) {
+    void btnAppendConfig_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, [BuildingLink.CONFappend]);
     }
     #endregion
 
     #region LinkPath Controls
-
-    async void LINKDir_Set(string filePath)
-    {
-        LinkCustomName = false;
-        if (!DesktopOS)
-        {
-            BuildingLink.OutputPaths = await ResolveRenamePopUp(filePath, comboCore.Text, BuildingLink.OutputPaths);
-            LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
-            filePath = BuildingLink.OutputPaths[0].FullPath;
-        }
-        txtLINKDir.Text = filePath;
-    }
-    
     private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e)
     {
         App.Logger?.LogDebg("COMING SOON");
     }
-    
-    async void btnLINKDir_Click(object sender, RoutedEventArgs e)
+
+    async void btnLINKDir_ClickAsync()
     {
-        var opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
-        string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
-        string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
-        if (!string.IsNullOrEmpty(file)) {
-            LINKDir_Set(file);
-        }
+        try {
+            var opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
+            string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
+            string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
+            if (!string.IsNullOrEmpty(file)) {
+                LinkCustomName = false;
+                if (!DesktopOS)
+                {
+                    BuildingLink.OutputPaths = await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
+                    LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
+                    file = BuildingLink.OutputPaths[0].FullPath;
+                }
+                txtLINKDir.Text = file;
+            }
 #if DEBUG
-        else {
-            App.Logger?.LogDebg("Running on debug...");
-            // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
-        }
+            else {
+                App.Logger?.LogDebg("Running on debug...");
+                var imposible = 1684 / (comboConfig.Items.Count - 1);
+                App.Logger?.LogDebg(imposible);
+                // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
+            }
 #endif
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
     
-    private async void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e)
+    void btnLINKDir_OnClick(object sender, RoutedEventArgs e) => btnLINKDir_ClickAsync();
+
+    async void BtnLINKRename_ClickAsync()
     {
-        LinkCustomName = false;
-        var fullPath = FileOps.CombineDirAndFile(
-            settings.DEFLinkOutput, 
-            (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? DesktopEntry.NamePlaceHolder : txtLINKDir.Text)
-        );
-        BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
-        if (BuildingLink.OutputPaths.Count == 0) return;
+        try {
+            LinkCustomName = false;
+            var fullPath = FileOps.CombineDirAndFile(
+                settings.DEFLinkOutput, 
+                (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? DesktopEntry.NamePlaceHolder : txtLINKDir.Text)
+            );
+            BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
+            if (BuildingLink.OutputPaths.Count == 0) return;
         
-        LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
-        txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
-        lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
+            LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
+            txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
+            lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
+        }
+        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
     }
+    
+    void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e) => BtnLINKRename_ClickAsync();
 
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -881,8 +919,9 @@ public partial class MainView : UserControl
 
     
     // EXECUTE
-    void btnEXECUTE_Click(object sender, RoutedEventArgs e) => RunExecution();
+    void btnEXECUTE_OnClick(object sender, RoutedEventArgs e) => RunExecution();
 
+    
     #region Genric Envents
 
     void ControlBox_DragEnter(object? sender, DragEventArgs e)
