@@ -182,7 +182,7 @@ namespace RetroLinker.Models
             }
             catch (DirectoryNotFoundException e)
             {
-                // TODO: Catch more types of exceptions
+                // TODO: Catch more types of exceptions (0.8)
                 App.Logger?.LogWarn($"The directory \"{dir}\" could not be found.");
                 iconException = e;
             }
@@ -288,7 +288,7 @@ namespace RetroLinker.Models
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
             if (File.Exists(newPath)) return GetAbsolutePath(newPath);
             
-            // TODO: Update IconItem
+            // TODO: Update IconItem with new path
             File.Copy(ogPath, newPath);
             return GetAbsolutePath(newPath);
         }
@@ -300,6 +300,7 @@ namespace RetroLinker.Models
             string newPath = Path.Combine(destPath, name);
             if (File.Exists(newPath)) return GetAbsolutePath(newPath);
 
+            // TODO: Update IconItem with new path
             File.Copy(ogPath, newPath);
             return GetAbsolutePath(newPath);
         }
@@ -420,12 +421,6 @@ namespace RetroLinker.Models
             EntryName[2] += EntryName[3];
             EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0])!, EntryName[2]);
             return EntryName;
-        }
-        
-        public static string GetSystemRAIcons()
-        {
-            // TODO: Find a way to use xdg-desktop-icon and/or xdg-icon-resource to access linux desktop icon files
-            return string.Empty;
         }
         
         public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);

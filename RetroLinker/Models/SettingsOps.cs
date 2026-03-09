@@ -32,7 +32,7 @@ namespace RetroLinker.Models
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
 
-        // TODO: change the literal directories with Path.Combine functions, maybe
+        // TODO: change the literal directories with Path.Combine functions (0.8)
         public static string[] WinLinkPathCandidates { get; } =
         [
             FileOps.UserDesktop,
@@ -105,8 +105,6 @@ namespace RetroLinker.Models
         public bool IcoLinkName { get; set; } = false;
         public byte ChosenTheme { get; set; } = 0;
         public string LanguageLocale { get; set; } = DefaultLanguage;
-        // TODO: Obsolete?
-        public bool LinDesktopPopUp { get; set; } = true;
         public List<string> SavedConfigs { get; set; } = new();
         public List<string> SavedCopyPaths { get; set; } = new();
         

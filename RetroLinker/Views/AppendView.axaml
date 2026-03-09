@@ -16,7 +16,7 @@
     
     <Grid Name="gridContent" RowDefinitions="Auto,*">
         <!--Top-->
-        <pc:MainWindowHeader Grid.Row="0" Classes="Header" Title="{x:Static lc:resMainExtras.tittleAppendConfig}"/>
+        <pc:MainWindowHeader Grid.Row="0" Classes="Header" Title="{x:Static lc:resMainExtras.titleAppendConfig}"/>
         <!-- Header -->
         
         <!-- Body -->

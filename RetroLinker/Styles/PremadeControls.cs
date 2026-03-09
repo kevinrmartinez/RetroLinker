@@ -35,7 +35,7 @@ namespace RetroLinker.Styles;
 // All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
-    // TODO: Reimplement using DataTemplates
+    // TODO: Reimplement using DataTemplates (>=0.9)
     
     // Link Copy ListItem
     public Grid NewItemGrid { get; private set; }
@@ -74,7 +74,7 @@ public class LinkCopyItemGrid
 
 public static class LocaleComboItem
 {
-    // TODO: Reimplement using DataTemplates
+    // TODO: Reimplement using DataTemplates (>=0.9)
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
         var item = new ComboBoxItem()

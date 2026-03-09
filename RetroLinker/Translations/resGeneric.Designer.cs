@@ -128,5 +128,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("popUnError_Mess0", resourceCulture);
             }
         }
+        
+        public static string btnAuto {
+            get {
+                return ResourceManager.GetString("btnAuto", resourceCulture);
+            }
+        }
     }
 }

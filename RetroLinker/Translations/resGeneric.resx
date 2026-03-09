@@ -60,4 +60,7 @@
     <data name="popUnError_Mess0" xml:space="preserve">
         <value>The operation failed with the following error:</value>
     </data>
+    <data name="btnAuto" xml:space="preserve">
+        <value>Auto</value>
+    </data>
 </root>

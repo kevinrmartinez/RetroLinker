@@ -15,7 +15,7 @@
     
     <Grid Name="gridContent" RowDefinitions="Auto, *, Auto">
         <!--Top-->
-        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.tittleSoftPatching}" Classes="Header"/>
+        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.titleSoftPatching}" Classes="Header"/>
         <!-- Header -->
     
         <!--Body-->
@@ -28,7 +28,7 @@
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="3, 0">
                 <Label Content="Patch Type"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <!-- TODO: add Auto -->
+                    <!-- TODO: add Auto (0.8) -->
                     <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
                                  Content="{x:Static lc:resMainExtras.rdoNoPatch}"/>
                     <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>

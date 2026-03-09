@@ -18,7 +18,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="tittleEntryName" xml:space="preserve">
+    <data name="titleEntryName" xml:space="preserve">
         <value>Name the Desktop Entry</value>
     </data>
     <data name="lblFriendlyName" xml:space="preserve">
@@ -42,7 +42,7 @@
     <data name="btnClear_Tip" xml:space="preserve">
         <value>Undo changes</value>
     </data>
-    <data name="tittleSoftPatching" xml:space="preserve">
+    <data name="titleSoftPatching" xml:space="preserve">
         <value>Soft Patching</value>
     </data>
     <data name="rdoNoPatch" xml:space="preserve">
@@ -75,7 +75,7 @@
     <data name="popNonSelected_Msg" xml:space="preserve">
         <value>No patch file selected. Using implicit No Patch.</value>
     </data>
-    <data name="tittleAppendConfig" xml:space="preserve">
+    <data name="titleAppendConfig" xml:space="preserve">
         <value>Append Config</value>
     </data>
     <data name="lblAppendPath" xml:space="preserve">

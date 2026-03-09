@@ -59,7 +59,7 @@
     
     <Grid RowDefinitions="*,Auto" Margin="5">
         <!-- BODY -->
-        <!-- TODO: Add External Libraries -->
+        <!-- TODO: Add External Libraries (0.8) -->
         <Grid Grid.Row="0" RowDefinitions="0.7*,*">
             <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
                 <!-- PENDING: Change image with app logo -->

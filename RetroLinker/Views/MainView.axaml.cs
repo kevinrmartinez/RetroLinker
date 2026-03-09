@@ -122,7 +122,7 @@ public partial class MainView : UserControl
             // Arguments should only load when above controls are ready
             ApplyArgs();
             
-            // TODO: Tutorial event for new users
+            // TODO_MAYBE: Tutorial event for new users
             
             FormFirstLoad = false;
         }
@@ -251,7 +251,7 @@ public partial class MainView : UserControl
 
     void ApplyArgs()
     {
-        // TODO: Add argument loading support. 2 Cases:
+        // TODO: (0.9) Add argument loading support. 2 Cases:
         // 1. Opening existing links
         // 2. Starting from a ROM
         var args = App.Args;

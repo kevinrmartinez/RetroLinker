@@ -27,7 +27,7 @@ namespace RetroLinker.Models
 {
     public class Shortcutter
     {
-        // TODO: Revise the names and setter of the properties (0.8)
+        // TODO: Revise the names and setter of the properties (>= 0.8)
         #region Object
         
         public string RAdir

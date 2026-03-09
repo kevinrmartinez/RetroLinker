@@ -45,9 +45,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tittleEntryName {
+        public static string titleEntryName {
             get {
-                return ResourceManager.GetString("tittleEntryName", resourceCulture);
+                return ResourceManager.GetString("titleEntryName", resourceCulture);
             }
         }
         
@@ -93,9 +93,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tittleSoftPatching {
+        public static string titleSoftPatching {
             get {
-                return ResourceManager.GetString("tittleSoftPatching", resourceCulture);
+                return ResourceManager.GetString("titleSoftPatching", resourceCulture);
             }
         }
         
@@ -159,9 +159,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tittleAppendConfig {
+        public static string titleAppendConfig {
             get {
-                return ResourceManager.GetString("tittleAppendConfig", resourceCulture);
+                return ResourceManager.GetString("titleAppendConfig", resourceCulture);
             }
         }
         

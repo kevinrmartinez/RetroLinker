@@ -137,7 +137,7 @@ namespace RetroLinker.Views
         
         
         private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
-            // TODO: Refactor so this button shouldn't be necessary
+            // REWRITE: Rewrite so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
             ParentWindow.settings.LanguageLocale = locale.Culture.Name;
         }
