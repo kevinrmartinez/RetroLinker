@@ -170,5 +170,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblAppendPath", resourceCulture);
             }
         }
+        
+        public static string titleSubsystems {
+            get {
+                return ResourceManager.GetString("titleSubsystems", resourceCulture);
+            }
+        }
     }
 }

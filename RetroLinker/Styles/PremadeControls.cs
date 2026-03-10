@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
+// using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -111,59 +111,6 @@ public static class LocaleComboItem
 }
 
 
-public class MainWindowHeader : Grid
-{
-    // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(Grid);
-
-    // Avalonia Properties
-    public static readonly DirectProperty<MainWindowHeader, string> TitleProperty = 
-        AvaloniaProperty.RegisterDirect<MainWindowHeader, string>(
-            nameof(Title), 
-            h => h.Title, 
-            (h,  v) => h.Title = v);
-    
-    private string _title = string.Empty;
-    public string Title
-    {
-        get => _title;
-        set => SetAndRaise(TitleProperty, ref _title, value);
-    }
-    
-    public MainWindowHeader()
-    {
-        SetDimmensions();
-        var child = PopulateChildren();
-        SetColumn(child,1);
-        Children.Add(child);
-    }
-    
-    public MainWindowHeader(string title) : this() {
-        Title = title;
-    }
-
-    private void SetDimmensions() {
-        Height = 45;
-        ColumnDefinitions =  new ColumnDefinitions("Auto,*,Auto");
-    }
-
-    private StackPanel PopulateChildren()
-    {
-        return new StackPanel()
-        {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Children = { new Label()
-            {
-                DataContext = this,
-                [!ContentControl.ContentProperty] = new Binding(nameof(Title))
-            } }
-        };
-    }
-}
-
-
 public class ExtraMainControlButton : Button
 {
     // Content Properties
@@ -171,7 +118,7 @@ public class ExtraMainControlButton : Button
     const string blankIcon = "fa-question";
     
     // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(Button);
+    protected override System.Type StyleKeyOverride { get; } = typeof(Button);
     
     
     // Avalonia Properties
@@ -264,7 +211,7 @@ public class ExtraMainControlButton : Button
 public class MainViewExtensionText : ScrollViewer
 {
     // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(ScrollViewer);
+    protected override System.Type StyleKeyOverride { get; } = typeof(ScrollViewer);
     
     // Avalonia Properties
     // - TextHeader

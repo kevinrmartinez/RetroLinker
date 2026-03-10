@@ -19,11 +19,15 @@
 	<Grid RowDefinitions="Auto, *">
 		<!--Top-->
 		<pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
-				<Button Grid.Column="0" Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
-				        i:Attached.Icon="fa-circle-info" FontSize="22"/>
+				<pc:MainWindowHeader.LeftControl>
+					<Button Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
+					        i:Attached.Icon="fa-circle-info" FontSize="22"/>
+				</pc:MainWindowHeader.LeftControl>
 				<!-- Grid.Column="0" Already filled by MainWindowHeader -->
-				<Button Grid.Column="2" Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_OnClick"
-				        i:Attached.Icon="fa-gear" FontSize="24"/>
+				<pc:MainWindowHeader.RightControl>
+					<Button Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_OnClick"
+					        i:Attached.Icon="fa-gear" FontSize="24"/>
+				</pc:MainWindowHeader.RightControl>
 		</pc:MainWindowHeader>
 		
 		<!--Body-->

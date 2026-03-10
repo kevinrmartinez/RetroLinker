@@ -7,6 +7,8 @@
             <!-- Add Controls for Previewer Here -->
         </Border>
     </Design.PreviewWith>
+    
+    <StyleInclude Source="../Styles/MainWindowHeader.axaml"/>
 
     <!-- TODO: Add Common Controls -->
     <Style Selector="Button.trash">

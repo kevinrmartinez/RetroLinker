@@ -56,4 +56,7 @@
     <data name="lblAppendPath" xml:space="preserve">
         <value>Rutas de las Configs a Anexar</value>
     </data>
+    <data name="titleSubsystems" xml:space="preserve">
+        <value>Subsistema (Subsystem)</value>
+    </data>
 </root>

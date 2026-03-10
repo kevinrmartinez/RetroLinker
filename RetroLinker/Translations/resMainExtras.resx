@@ -81,4 +81,7 @@
     <data name="lblAppendPath" xml:space="preserve">
         <value>Paths of Configs to Append</value>
     </data>
+    <data name="titleSubsystems" xml:space="preserve">
+        <value>Subsystem</value>
+    </data>
 </root>

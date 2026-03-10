@@ -68,8 +68,8 @@ public static class LanguageManager
         return item;
     }
 
-    public static LanguageItem? ResolveLocale(CultureInfo cultureInfo) => 
-        LanguageList.Find(l => l.Culture.Name == cultureInfo.Name) ?? LanguageList.Find(l => l.DefaultLocale);
+    public static LanguageItem ResolveLocale(CultureInfo cultureInfo) => 
+        LanguageList.Find(l => l.Culture.Name == cultureInfo.Name) ?? LanguageList.Find(l => l.DefaultLocale)!;
     
     public static int GetLocaleIndex(Settings settings)
     {
