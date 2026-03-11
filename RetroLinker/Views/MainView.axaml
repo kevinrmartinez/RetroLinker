@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:vw="clr-namespace:RetroLinker.Views"
-             xmlns:pc="clr-namespace:RetroLinker.Styles"
+             xmlns:cc="clr-namespace:RetroLinker.Styles"
 			 xmlns:lc="clr-namespace:RetroLinker.Translations"
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
@@ -18,17 +18,17 @@
 	
 	<Grid RowDefinitions="Auto, *">
 		<!--Top-->
-		<pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
-				<pc:MainWindowHeader.LeftControl>
+		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
+				<cc:MainWindowHeader.LeftControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
 					        i:Attached.Icon="fa-circle-info" FontSize="22"/>
-				</pc:MainWindowHeader.LeftControl>
+				</cc:MainWindowHeader.LeftControl>
 				<!-- Grid.Column="0" Already filled by MainWindowHeader -->
-				<pc:MainWindowHeader.RightControl>
+				<cc:MainWindowHeader.RightControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_OnClick"
 					        i:Attached.Icon="fa-gear" FontSize="24"/>
-				</pc:MainWindowHeader.RightControl>
-		</pc:MainWindowHeader>
+				</cc:MainWindowHeader.RightControl>
+		</cc:MainWindowHeader>
 		
 		<!--Body-->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
@@ -63,7 +63,7 @@
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
-					<pc:MainViewExtensionText Name="extxtPatchPresent" Classes="extensions" Header="{x:Static lc:resMainView.extxtPatch}" Text="/path/to/patch"/>
+					<cc:MainViewExtensionNotice Name="exnotPatchPresent" Title="{x:Static lc:resMainView.extxtPatch}" Text="/path/to/patch"/>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
@@ -91,7 +91,7 @@
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>
-						<pc:MainViewExtensionText Name="extxtAppendPresent" Classes="extensions" Header="{x:Static lc:resMainView.extxtAppend}" Text="/path/to/config"/>
+						<cc:MainViewExtensionNotice Name="exnotAppendPresent" Title="{x:Static lc:resMainView.extxtAppend}" Text="/path/to/config"/>
 					</StackPanel>
 				</Grid>
 
@@ -141,15 +141,15 @@
 			</Grid>
 
 			<!--Spacing-->
-			<Rectangle Grid.Column="1" Margin="2,0" Stretch="Fill" Stroke="Gray" StrokeThickness="0.4" StrokeDashArray="4"/>
+			<Rectangle Grid.Column="1" Margin="2,0"/>
 			
 			<!--Icon Selection-->
-			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" ShowGridLines="False">
+			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" Margin="2,0">
 				<Rectangle Grid.Row="0" Height="15"/>
 				<StackPanel Grid.Row="1">
 					<Label Content="{x:Static lc:resMainView.lblICON}"/>
 					<Border BorderThickness="1" BorderBrush="Gray">
-						<StackPanel>
+						<StackPanel Orientation="Vertical" Margin="2">
 							<StackPanel Orientation="Horizontal" Spacing="14">
 								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnDefault}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnCustom}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
@@ -198,8 +198,8 @@
 					</Border>
 				</StackPanel>
 			</Grid>
-			<!--BODY END-->
 		</Grid>
+		<!--BODY END-->
 	</Grid>
 	<!--https://stackify.com/cross-platform-net-core-apps/-->
 </UserControl>

@@ -17,6 +17,9 @@
         </Border>
     </Design.PreviewWith>
 
+    <StyleInclude Source="SimpleCustomControls.axaml"/>
+    <StyleInclude Source="ComplexCustomControls.axaml"/>
+    
     <!-- Add Styles Here -->
     <Style Selector="Border.SettingCatg">
         <Setter Property="Padding" Value="1"/>

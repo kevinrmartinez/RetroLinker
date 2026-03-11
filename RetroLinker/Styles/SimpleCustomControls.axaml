@@ -1,0 +1,24 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Orientation="Horizontal" Spacing="2">
+                <Button Classes="check"/>
+                <Button Classes="trash"/>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Here goes simple buttons, panels, etc. that are used across the whole app, -->
+    <!-- being either custom-made classes, or just styles -->
+    <Style Selector="Button.check">
+        <Setter Property="i:Attached.Icon" Value="fa-check"/>
+        <Setter Property="Foreground" Value="ForestGreen"/>
+    </Style>
+    
+    <Style Selector="Button.trash">
+        <Setter Property="i:Attached.Icon" Value="fa-trash"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+</Styles>

@@ -1,0 +1,96 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:RetroLinker.Styles"
+        x:DataType="controls:MainWindowHeader"
+        x:CompileBindings="True">
+    <Design.PreviewWith>
+        <Border Padding="0">
+            <StackPanel Orientation="Vertical" Spacing="2">
+                <controls:MainViewExtensionNotice Width="300" Title="Power:" 
+                                                  Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
+                
+                <controls:MainWindowHeader Width="300" Title="Testing" Classes="Header">
+                    <controls:MainWindowHeader.RightControl>
+                        <Label Content="aaa"/>
+                    </controls:MainWindowHeader.RightControl>
+                    <controls:MainWindowHeader.LeftControl>
+                        <Label Content="bbb"/>
+                    </controls:MainWindowHeader.LeftControl>
+                </controls:MainWindowHeader>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- MainViewExtensionNotice -->
+    <Style Selector="controls|MainViewExtensionNotice">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ScrollViewer>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="TitleBlock" Text="{TemplateBinding Title}"/>
+                        <TextBlock x:Name="TextBlock" Text="{TemplateBinding Text}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ > ScrollViewer">
+            <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+            
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Spacing" Value="1"/>
+                <Setter Property="Margin" Value="6,0,6,4"/>
+            </Style>
+        </Style>
+        <Style Selector="^ TextBlock#TitleBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="LightSkyBlue"/>
+            <Setter Property="FontSize" Value="9"/>
+            <!-- <Setter Property="TextWrapping" Value="Wrap"/> -->
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style Selector="^ ScrollBar">
+            <Setter Property="MinHeight" Value="1"/>
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="AllowAutoHide" Value="False"/>
+        </Style>
+    </Style>
+    
+    <!-- MainWindowHeader -->
+    <Style Selector="controls|MainWindowHeader">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" 
+                                VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Label x:Name="HeaderLabel" Content="{TemplateBinding Title}"/>
+                    </StackPanel>
+                    
+                    <ContentControl x:Name="LeftControl" Grid.Column="0" Content="{TemplateBinding LeftControl}" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <ContentControl x:Name="RightControl" Grid.Column="2" Content="{TemplateBinding RightControl}"
+                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    
+    <Style Selector="controls|MainWindowHeader.Header">
+        <Style Selector="^ Grid">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Background" Value="Firebrick"/>
+        
+            <Style Selector="^ Label#HeaderLabel">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Style>
+        </Style>
+    </Style>
+</Styles>

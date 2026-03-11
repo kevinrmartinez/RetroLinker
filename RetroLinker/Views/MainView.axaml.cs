@@ -364,6 +364,7 @@ public partial class MainView : UserControl
 
     void GenericAsyncErrorPopup(System.Exception error)
     {
+        // TODO: Move to Models.Avalonia.OtherDialogs.cs* (0.8)
         App.Logger?.LogErro(error);
         var stdParams = new MessageBoxStandardParams()
         {
@@ -382,12 +383,12 @@ public partial class MainView : UserControl
         {
             case MainWindow.ViewsTypes.PatchesView:
                 BuildingLink.PatchArg = argStrings[0];
-                extxtPatchPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.PatchArg);
-                if (extxtPatchPresent.IsVisible)
+                exnotPatchPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.PatchArg);
+                if (exnotPatchPresent.IsVisible)
                 {
                     var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
                     if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
-                    extxtPatchPresent.Text = path;
+                    exnotPatchPresent.Text = path;
                 }
                 break;
             case MainWindow.ViewsTypes.SubsysView:
@@ -395,10 +396,10 @@ public partial class MainView : UserControl
                 break;
             case MainWindow.ViewsTypes.AppendView:
                 BuildingLink.CONFappend =  argStrings[0];
-                extxtAppendPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.CONFappend);
-                if (extxtAppendPresent.IsVisible) {
+                exnotAppendPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.CONFappend);
+                if (exnotAppendPresent.IsVisible) {
                     var paths = Commander.ResolveAppendConfigArg(BuildingLink.CONFappend).Item1;
-                    extxtAppendPresent.Text = paths;
+                    exnotAppendPresent.Text = paths;
                 }
                 break;
         }

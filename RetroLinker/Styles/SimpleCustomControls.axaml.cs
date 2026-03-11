@@ -1,6 +1,6 @@
 ﻿/*
     A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -204,60 +203,5 @@ public class ExtraMainControlButton : Button
         }
         SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
         RefreshContent();
-    }
-}
-
-
-public class MainViewExtensionText : ScrollViewer
-{
-    // Overrides
-    protected override System.Type StyleKeyOverride { get; } = typeof(ScrollViewer);
-    
-    // Avalonia Properties
-    // - TextHeader
-    public static readonly DirectProperty<MainViewExtensionText, string> HeaderProperty = 
-        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
-            nameof(Header), 
-            h => h.Header, 
-            (h,  v) => h.Header = v);
-    
-    private string _header = string.Empty;
-    public string Header
-    {
-        get => _header;
-        set => SetAndRaise(HeaderProperty, ref _header, value);
-    }
-    
-    // - Text
-    public static readonly DirectProperty<MainViewExtensionText, string> TextProperty = 
-        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
-            nameof(Text), 
-            h => h.Text, 
-            (h,  v) => h.Text = v);
-    
-    private string _text = string.Empty;
-    public string Text
-    {
-        get => _text;
-        set => SetAndRaise(TextProperty, ref _text, value);
-    }
-
-    public MainViewExtensionText()
-    {
-        // Building
-        var header = new TextBlock() {
-            DataContext = this,
-            [!TextBlock.TextProperty] = new Binding(nameof(Header))
-        };
-        var text = new TextBlock() {
-            DataContext = this,
-            [!TextBlock.TextProperty] = new Binding(nameof(Text))
-        };
-        var stackPanel = new StackPanel();
-        stackPanel.Children.Add(header);
-        stackPanel.Children.Add(text);
-
-        // Result
-        Content = stackPanel;
     }
 }
