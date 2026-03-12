@@ -14,13 +14,13 @@
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
     
-    <Grid Name="gridContent" RowDefinitions="Auto,*">
+    <Grid x:Name="gridContent" RowDefinitions="Auto,*">
         <!--Top-->
         <pc:MainWindowHeader Grid.Row="0" Classes="Header" Title="{x:Static lc:resMainExtras.titleAppendConfig}"/>
         <!-- Header -->
         
         <!-- Body -->
-        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
+        <Grid x:Name="gridBODY" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
             
             <!-- ROW0 - Spacing -->
             <Rectangle Grid.Row="0" Height="8"/>
@@ -30,36 +30,13 @@
             
             <!-- ROW2 - Append Controls -->
             <Border Grid.Row="2" Classes="AppendControls">
-                <Grid RowDefinitions="*,Auto,Auto">
-                    <!-- Append Paths List -->
-                    <ScrollViewer Grid.Row="0">
-                        <ItemsControl Name="ItemsControlPaths">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Classes="AppendPathItem">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0" Text="{Binding}"/>
-                                            <Button Grid.Column="1" Classes="trash" Click="ButtonTrash_OnClick"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                    <!-- Style Division -->
-                    <Rectangle Grid.Row="1"/>
-                    <!-- Controls for Append Paths List -->
-                    <StackPanel Grid.Row="2">
-                        <Button Foreground="DarkRed" i:Attached.Icon="fa-eraser" Click="BtnConfigPathClear_OnClick"/>
-                        <Button Foreground="ForestGreen" i:Attached.Icon="fa-plus" Click="BtnConfigPathBrowse_OnClick"/>
-                    </StackPanel>
-                </Grid>
+                <pc:UserStringList x:Name="ItemsControlPaths" AddItemClick="BtnConfigPathBrowse_OnClick"/>
             </Border>
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ExtraMainControlButton Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
-                <pc:ExtraMainControlButton Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
+                <pc:ExtraMainControlButton x:Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
+                <pc:ExtraMainControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
             </Grid>
             
         </Grid>

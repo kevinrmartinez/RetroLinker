@@ -39,7 +39,7 @@ public partial class AppendView : UserControl
         ParentWindow = new MainWindow(true);
         List<string> appendConfigFiles = FillListTest();
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);
-        ItemsControlPaths.ItemsSource = AppendPaths;
+        ItemsControlPaths.Items = AppendPaths;
     }
     
     // Active Constructor
@@ -57,7 +57,7 @@ public partial class AppendView : UserControl
         }
 
         AppendPaths = new(appendConfigFiles);
-        ItemsControlPaths.ItemsSource = AppendPaths;
+        ItemsControlPaths.Items = AppendPaths;
     }
     
     // Window Object
@@ -70,11 +70,6 @@ public partial class AppendView : UserControl
     private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
 
     // Append Config controls
-    private void ButtonTrash_OnClick(object? sender, RoutedEventArgs e) {
-        if (sender is not Button button) return;
-        if (button.Parent!.Parent!.Parent is ContentPresenter { Content: string content })
-            AppendPaths.Remove(content);
-    }
 
     private async void BtnConfigPathBrowse_ClickAsync()
     {
@@ -103,8 +98,6 @@ public partial class AppendView : UserControl
     }
 
     private void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e) => BtnConfigPathBrowse_ClickAsync();
-
-    private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) => AppendPaths.Clear();
     
     
     // View Buttons
@@ -119,11 +112,12 @@ public partial class AppendView : UserControl
 
     private List<string> FillListTest()
     {
-        var _appendPaths = new List<string>();
-        // Todo: Make the test os agnostic
+        var appendPaths = new List<string>();
+        var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
         for (int i = 0; i < 16; i++) {
-            _appendPaths.Add($"/home/public/testing/retroarch{i}.cfg");
+            var testPath = FileOps.CombineMultipleInputs(pfx, $"retroarch{i}.cfg");
+            appendPaths.Add(testPath);
         }
-        return _appendPaths;
+        return appendPaths;
     }
 }

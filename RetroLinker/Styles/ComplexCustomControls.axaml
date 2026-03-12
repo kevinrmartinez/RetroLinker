@@ -1,13 +1,13 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:RetroLinker.Styles"
-        x:DataType="controls:MainWindowHeader"
-        x:CompileBindings="True">
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:controls="using:RetroLinker.Styles">
+    
+    
     <Design.PreviewWith>
         <Border Padding="0">
             <StackPanel Orientation="Vertical" Spacing="2">
-                <controls:MainViewExtensionNotice Width="300" Title="Power:" 
-                                                  Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
+                <controls:MainViewExtensionNotice Width="300" Title="Power:" Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
                 
                 <controls:MainWindowHeader Width="300" Title="Testing" Classes="Header">
                     <controls:MainWindowHeader.RightControl>
@@ -17,10 +17,17 @@
                         <Label Content="bbb"/>
                     </controls:MainWindowHeader.LeftControl>
                 </controls:MainWindowHeader>
+                
+                <controls:UserStringList Height="180">
+                    Hello World!
+                </controls:UserStringList>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
+    
+    <StyleInclude Source="SimpleCustomControls.axaml"/>
 
+    <!-- ============================================== -->
     <!-- MainViewExtensionNotice -->
     <Style Selector="controls|MainViewExtensionNotice">
         <!-- Set Defaults -->
@@ -90,6 +97,104 @@
             <Style Selector="^ Label#HeaderLabel">
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="FontWeight" Value="Bold"/>
+            </Style>
+        </Style>
+    </Style>
+    
+    <!-- UserControlledList1 -->
+    <!-- TODO: Create ControlTheme to hold the ControlTemplate (Avalonia v12) -->
+    <!-- https://docs.avaloniaui.net/docs/custom-controls/templated-controls#defining-the-control-theme -->
+    <!-- <ControlTheme x:Key="{x:Type controls:UserControlledList1}" TargetType="controls:UserControlledList1"></ControlTheme> -->
+    
+    <Style Selector="controls|UserStringList">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="*,Auto,Auto">
+                    <!-- Append Paths List -->
+                    <ScrollViewer Grid.Row="0">
+                        <ItemsControl x:Name="PART_ItemsControl" ItemsSource="{TemplateBinding Items}"/>
+                    </ScrollViewer>
+                    <!-- Style Division -->
+                    <Rectangle Grid.Row="1"/>
+                    <!-- Controls for Append Paths List -->
+                    <StackPanel Grid.Row="2">
+                        <Button x:Name="PART_ButtonClr" Content="⌫"/>
+                        <Button x:Name="PART_ButtonAdd" Content="+"/>
+                    </StackPanel>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        
+        <Style Selector="^ > Grid">
+            <!-- Items ScrollViewer -->
+            <Style Selector="^ > ScrollViewer">
+                <Setter Property="Margin" Value="4"/>
+            </Style>
+            <!-- Separator Line -->
+            <Style Selector="^ > Rectangle">
+                <Setter Property="Stroke" Value="Gray"/>
+                <Setter Property="StrokeThickness" Value="2"/>
+                <Setter Property="StrokeLineCap" Value="Round"/>
+                <Setter Property="Margin" Value="4,0"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+            
+            <!-- List Controls -->
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Spacing" Value="4"/>
+                <Setter Property="Orientation" Value="Horizontal"/>
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="Margin" Value="5"/>
+                
+                <Style Selector="^ > Button">
+                    <Setter Property="FontSize" Value="24"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                    
+                    <Style Selector="^#PART_ButtonClr">
+                        <Setter Property="i:Attached.Icon" Value="fa-eraser"/>
+                        <Setter Property="Foreground" Value="Firebrick"/>
+                    </Style>
+                    <Style Selector="^#PART_ButtonAdd">
+                        <Setter Property="i:Attached.Icon" Value="fa-plus"/>
+                        <Setter Property="Foreground" Value="ForestGreen"/>
+                    </Style>
+                </Style>
+                
+            </Style>
+        </Style>
+        
+        <Style Selector="^ ItemsControl#PART_ItemsControl">
+            <Setter Property="ItemTemplate">
+                <DataTemplate>
+                    <Border Classes="Item">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding .}"/>
+                            <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </Setter>
+            <Setter Property="Margin" Value="6,0"/>
+        </Style>
+        
+        <Style Selector="^ Border.Item">
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        
+            <Style Selector="^ TextBlock">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
         </Style>
     </Style>

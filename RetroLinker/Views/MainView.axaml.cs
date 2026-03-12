@@ -402,6 +402,7 @@ public partial class MainView : UserControl
                     exnotAppendPresent.Text = paths;
                 }
                 break;
+            // TODO: Add default; report the arguments to log
         }
     }
     
