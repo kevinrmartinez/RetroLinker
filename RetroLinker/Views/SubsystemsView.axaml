@@ -3,10 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              xmlns:pc="clr-namespace:RetroLinker.Styles"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
-             x:Class="RetroLinker.Views.SubsystemsView">
+             x:Class="RetroLinker.Views.SubsystemsView"
+             x:DataType="vw:SubsystemsView"
+             x:CompileBindings="True">
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
@@ -17,32 +20,47 @@
         <!-- Header -->
     
         <!--Body-->
-        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto, Auto, *, Auto">
+        <Grid Name="gridBODY" Grid.Row="1" RowDefinitions="Auto, *, Auto, Auto">
     
             <!-- ROW0 - Spacing -->
             <Rectangle Grid.Row="0" Height="8"/>
     
             <!-- ROW1 - Patch Controls -->
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="3, 0">
-                <Grid ColumnDefinitions="*,4*,0.2*" RowDefinitions="Auto,Auto,Auto">
-                    <!-- <Rectangle Grid.Column="2" Grid.Row="0" Width="60"/> -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,4*,0.2*" RowDefinitions="Auto,Auto,Auto,*,Auto">
+                
+                <Label Grid.Column="0" Grid.Row="0" Content="Core: " 
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Grid.Row="0" IsReadOnly="True" Margin="0,3"/>
                     
-                    <Label Grid.Column="0" Grid.Row="0" Content="Core: " 
-                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="0" IsReadOnly="True" Margin="0,3"/>
+                <Label Grid.Column="0" Grid.Row="1" Content="Content: " 
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Margin="0,3"/>
                     
-                    <Label Grid.Column="0" Grid.Row="1" Content="Subsystem: " 
-                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Margin="0,3"/>
+                <Label Grid.Column="0" Grid.Row="2" Content="Subsystem: " 
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="false" Margin="0,3"/>
                     
-                    <Label Grid.Column="0" Grid.Row="2" Content="Core: " 
-                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" IsReadOnly="True" Margin="0,3"/>
-                </Grid>
-            </StackPanel>
+                <Label Grid.Column="0" Grid.Row="3" Content="Arguments: " 
+                       HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
+                <Border Grid.Column="1" Grid.Row="3" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                    <pc:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick"/>
+                </Border>
+                
+                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="4" IsVisible="False"
+                        BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="New Argument:"/>
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="2">
+                            <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
+                            <Button Grid.Column="1" Content="⌫" Click="ButtonNewArgDiscard_OnClick"/>
+                            <Button Grid.Column="2" Content="✓" Click="ButtonNewArgAccept_OnClick"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
             
             <!-- ROW2 - Spacing -->
-            <Rectangle Grid.Row="2"/>
+            <Rectangle Grid.Row="2" Height="10"/>
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">

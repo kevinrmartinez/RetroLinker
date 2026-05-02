@@ -37,9 +37,9 @@ public partial class AppendView : UserControl
     {
         InitializeComponent();
         ParentWindow = new MainWindow(true);
-        List<string> appendConfigFiles = FillListTest();
-        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
+        AppendPaths = FillListTest();
         ItemsControlPaths.Items = AppendPaths;
+        DataContext =  this;
     }
     
     // Active Constructor
@@ -57,7 +57,7 @@ public partial class AppendView : UserControl
         }
 
         AppendPaths = new(appendConfigFiles);
-        ItemsControlPaths.Items = AppendPaths;
+        DataContext =  this;
     }
     
     // Window Object
@@ -105,14 +105,14 @@ public partial class AppendView : UserControl
         var appendArg = (AppendPaths.Count == 0) 
             ? string.Empty 
             : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
-        ParentWindow.ReturnToMainView(this, appendArg);
+        ParentWindow.ReturnToMainView(this, [ appendArg ]);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
 
-    private List<string> FillListTest()
+    private ObservableCollection<string> FillListTest()
     {
-        var appendPaths = new List<string>();
+        var appendPaths = new ObservableCollection<string>();
         var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
         for (int i = 0; i < 16; i++) {
             var testPath = FileOps.CombineMultipleInputs(pfx, $"retroarch{i}.cfg");

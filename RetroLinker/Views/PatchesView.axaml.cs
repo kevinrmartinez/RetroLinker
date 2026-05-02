@@ -187,7 +187,7 @@ public partial class PatchesView : UserControl
         }
 
         // ParentWindow.BuildingLink.PatchArg = patchComm;
-        ParentWindow.ReturnToMainView(this, patchComm);
+        ParentWindow.ReturnToMainView(this, [ patchComm ]);
     }
 
     private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();

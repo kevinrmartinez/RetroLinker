@@ -800,9 +800,8 @@ public partial class MainView : UserControl
         }
     }
     
-    void btnSubSys_OnClick(object sender, RoutedEventArgs e)
-    {
-        // TODO (0.8)
+    void btnSubSys_OnClick(object sender, RoutedEventArgs e) {
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.SubsysView, [ "This", "is", "a", "test" ]);
     }
     #endregion
 

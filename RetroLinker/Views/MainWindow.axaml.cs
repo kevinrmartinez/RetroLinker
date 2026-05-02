@@ -79,8 +79,9 @@ public partial class MainWindow : Window
     {
         MainCC1.Content = views switch
         {
-            ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
             ViewsTypes.AppendView => new AppendView(this,  (string)currentValues[0]),
+            ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
+            ViewsTypes.SubsysView => new SubsystemsView(this, currentValues),
             _ => PermaView
         };
     }
@@ -96,19 +97,17 @@ public partial class MainWindow : Window
     // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
     public void ReturnToMainView() => MainCC1.Content = PermaView;
 
-    public void ReturnToMainView(PatchesView pView, string pString)
+    public void ReturnToMainView(UserControl view, string[] args)
     {
+        var viewType = view switch {
+            AppendView => ViewsTypes.AppendView,
+            PatchesView => ViewsTypes.PatchesView,
+            SubsystemsView => ViewsTypes.SubsysView,
+            _ => ViewsTypes.MainView
+        };
         if (PermaView is not MainView permaView) return;
-        permaView.UpdateLinkFromOutside(ViewsTypes.PatchesView, [pString]);
+        permaView.UpdateLinkFromOutside(viewType, args);
         MainCC1.Content = PermaView;
-        // pView = null;
-    }
-
-    public void ReturnToMainView(AppendView aView, string aString)
-    {
-        if (PermaView is not MainView permaView) return;
-        permaView.UpdateLinkFromOutside(ViewsTypes.AppendView, [aString]);
-        MainCC1.Content = PermaView;
-        // aView = null;
+        // view = null;
     }
 }

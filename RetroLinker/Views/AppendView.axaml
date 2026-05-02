@@ -30,7 +30,7 @@
             
             <!-- ROW2 - Append Controls -->
             <Border Grid.Row="2" Classes="AppendControls">
-                <pc:UserStringList x:Name="ItemsControlPaths" AddItemClick="BtnConfigPathBrowse_OnClick"/>
+                <pc:UserStringList x:Name="ItemsControlPaths" Items="{Binding AppendPaths}" AddItemClick="BtnConfigPathBrowse_OnClick"/>
             </Border>
             
             <!-- ROW3 - Return Controls -->

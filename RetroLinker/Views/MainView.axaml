@@ -73,7 +73,7 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
 							                 TextChanged="ComboCore_OnTextChanged"/>
-							<Button Name="btnSubSys" Grid.Column="1" IsEnabled="False" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
+							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
 						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="{x:Static lc:resMainView.lblNoCores}" IsVisible="False"/>
