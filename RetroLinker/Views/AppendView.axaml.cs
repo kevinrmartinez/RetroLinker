@@ -52,7 +52,7 @@ public partial class AppendView : UserControl
             appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg).Item2;
         }
         catch (System.ArgumentException ex) {
-            System.Diagnostics.Trace.WriteLine(ex.Message);
+            App.Logger?.LogErro(ex.Message);
             appendConfigFiles = new();
         }
 

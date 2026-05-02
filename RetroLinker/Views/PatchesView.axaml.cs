@@ -89,8 +89,8 @@ public partial class PatchesView : UserControl
                     break;
             }
         }
-        catch (System.ArgumentException argumentException) {
-            System.Diagnostics.Trace.WriteLine(argumentException.Message);
+        catch (System.ArgumentException ex) {
+            App.Logger?.LogErro(ex.Message);
             rdoNoPatch.IsChecked = true;
         }
     }

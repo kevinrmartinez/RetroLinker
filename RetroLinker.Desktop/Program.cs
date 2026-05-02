@@ -52,7 +52,7 @@ class Program
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e) {
-            Trace.WriteLine(e, "[Erro]");
+            appLogger?.LogErro($"{AppName} has crashed to desktop with the following error:\n" + e);
         }
         #endif
         

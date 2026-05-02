@@ -66,7 +66,6 @@ public class App : Application
     {
         LocalInformation = appInfo;
         
-        Logger?.LogDebg("'AppInfo' has been set with the following properties:");
-        Logger?.LogDebg(LocalInformation.ToStringLines());
+        Logger?.LogDebg("'AppInfo' has been set with the following properties:\n" + LocalInformation.ToStringLines());
     }
 }

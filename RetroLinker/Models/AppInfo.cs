@@ -20,37 +20,33 @@ using System;
 
 namespace RetroLinker.Models;
 
-public readonly struct AppInfo
+public readonly struct AppInfo(
+    string fullName,
+    string name,
+    string version,
+    DateTime? buildDate = null,
+    string? gitHash = null)
 {
-    public string FullName { get; init; }
-    public string Name { get; init; }
-    public string Version { get; init; }
-    public DateTime? BuildDate { get; init; }
-    public string? GitHash { get; init; }
-
-    public AppInfo(string fullName, string name, string version, DateTime? buildDate = null, string? gitHash = null)
-    {
-        FullName = fullName;
-        Name = name;
-        Version = version;
-        BuildDate = buildDate;
-        GitHash = gitHash;
-    }
+    public string FullName { get; } = fullName;
+    public string Name { get; } = name;
+    public string Version { get; } = version;
+    public DateTime? BuildDate { get; } = buildDate;
+    public string? GitHash { get; } = gitHash;
 
 
     public override string ToString() => $"{Name} v{Version}";
 
-    public readonly string ToStringLines()
+    public string ToStringLines()
     {
-        const string noData = "No data";
-        var finalDate = BuildDate?.ToString() ?? noData;
+        const string noData = "No Data";
+        var finalDate = BuildDate?.ToString("u") ?? noData;
         var finalGitHash = GitHash ?? noData;
         return $"""
-               FullName  {FullName}
-               Name      {Name}
-               Version   {Version}
-               BuildDate {finalDate}
-               Git Hash  {finalGitHash}
+                FullName  {FullName}
+                Name      {Name}
+                Version   {Version}
+                BuildDate {finalDate}
+                Git Hash  {finalGitHash}
                """;
     }
 }
