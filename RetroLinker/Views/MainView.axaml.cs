@@ -32,6 +32,7 @@ using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Generic;
 using RetroLinker.Models.Linux;
+using RetroLinker.Styles;
 using RetroLinker.Translations;
 
 using MessageBoxIcons = MsBox.Avalonia.Enums.Icon;
@@ -49,14 +50,20 @@ public partial class MainView : UserControl
     {
         // Constructor for Designer
         InitializeComponent();
+        DataContext = this;
         ParentWindow = new MainWindow(this);
         IsDesingner = true;
         settings =  new Settings();
+
+        PatchArg = "--ups=\"path/to/rom.bin\"";
+        SubsysArg = "--subsystem abc \"path/to/rom.bin\"";
+        CONFappend = "--appendconfig \"/path/to/config1.conf|/path/to/config2.conf|/path/to/config3.conf\"";
     }
     
     public MainView(MainWindow mainWindow)
     {
         InitializeComponent();
+        DataContext = this;
         ParentWindow = mainWindow;
         settings = mainWindow.Settings;
     }
@@ -67,6 +74,48 @@ public partial class MainView : UserControl
     // Window Object
     private MainWindow ParentWindow;
     
+    // Props
+    public string PatchArg
+    {
+        get;
+        private set
+        {
+            BuildingLink.PatchArg = value;
+            var newValue = string.Empty;
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
+                if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
+                newValue = path;
+            }
+            noticePatchPresent.Text = newValue;
+            field = newValue;
+        }
+    } = string.Empty;
+
+    public string SubsysArg
+    {
+        get;
+        set {
+            BuildingLink.SubsysArg = value;
+            noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
+                ? Commander.GetArgumentNoOption(value) 
+                : string.Empty;
+        }
+    } = string.Empty;
+
+    public string CONFappend
+    {
+        get;
+        set {
+            BuildingLink.CONFappend = value;
+            noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
+                ? Commander.GetArgumentNoOption(value) 
+                : string.Empty;
+        }
+    } = string.Empty;
+
+    // Fields
     private bool FormFirstLoad = true;
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
@@ -377,32 +426,22 @@ public partial class MainView : UserControl
     } 
     
     // External/Call-back
-    public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string[] argStrings)
+    public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string longArg)
     {
         switch (viewType)
         {
             case MainWindow.ViewsTypes.PatchesView:
-                BuildingLink.PatchArg = argStrings[0];
-                exnotPatchPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.PatchArg);
-                if (exnotPatchPresent.IsVisible)
-                {
-                    var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
-                    if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
-                    exnotPatchPresent.Text = path;
-                }
+                PatchArg = longArg;
                 break;
             case MainWindow.ViewsTypes.SubsysView:
-                // Subsystem loading
+                SubsysArg = longArg;
                 break;
             case MainWindow.ViewsTypes.AppendView:
-                BuildingLink.CONFappend =  argStrings[0];
-                exnotAppendPresent.IsVisible = !string.IsNullOrWhiteSpace(BuildingLink.CONFappend);
-                if (exnotAppendPresent.IsVisible) {
-                    var paths = Commander.ResolveAppendConfigArg(BuildingLink.CONFappend).Item1;
-                    exnotAppendPresent.Text = paths;
-                }
+                CONFappend =  longArg;
                 break;
-            // TODO: Add default; report the arguments to log
+            default:
+                App.Logger?.LogErro("Unexpected view type at UpdateLinkFromOutside: " + viewType);
+                break;
         }
     }
     
@@ -773,7 +812,7 @@ public partial class MainView : UserControl
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
     
     void BtnPatches_OnClick(object? sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, [BuildingLink.PatchArg]);
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, BuildingLink.PatchArg);
     }
     #endregion
 
@@ -800,8 +839,14 @@ public partial class MainView : UserControl
         }
     }
     
-    void btnSubSys_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.SubsysView, [ "This", "is", "a", "test" ]);
+    void btnSubSys_OnClick(object sender, RoutedEventArgs e)
+    {
+        // BuildingLink.ROMcore, BuildingLink.ROMdir,
+        var reqs = new SubsystemReq(
+            comboCore.Text ?? string.Empty, 
+            txtROMDir.Text ?? string.Empty, 
+            BuildingLink.SubsysArg);
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.SubsysView, reqs);
     }
     #endregion
 
@@ -809,8 +854,7 @@ public partial class MainView : UserControl
 
     void comboConfig_Set(string filePath)
     {
-        if (!comboConfig.Items.Contains(filePath))
-        {
+        if (!comboConfig.Items.Contains(filePath)) {
             comboConfig.Items.Add(filePath);
             if (settings.PrevConfig) SettingsOps.PrevConfigs.Add(filePath);
         }
@@ -841,7 +885,7 @@ public partial class MainView : UserControl
     }
     
     void btnAppendConfig_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, [BuildingLink.CONFappend]);
+        ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, BuildingLink.CONFappend);
     }
     #endregion
 

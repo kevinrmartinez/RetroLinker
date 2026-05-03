@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using RetroLinker.Models;
@@ -72,18 +73,26 @@ public partial class MainWindow : Window
         IconsList = FileOps.LoadIcons(DesktopOS);
     }
 
+    // TODO: Move outside of MainWindow, can be this same file
     public enum ViewsTypes
     { MainView, PatchesView, SubsysView, AppendView }
     
-    public void ChangeOut(ViewsTypes views, object[] currentValues)
+    public void ChangeOut(ViewsTypes views, object currentValue)
     {
-        MainCC1.Content = views switch
+        try
         {
-            ViewsTypes.AppendView => new AppendView(this,  (string)currentValues[0]),
-            ViewsTypes.PatchesView => new PatchesView(this, (string)currentValues[0]),
-            ViewsTypes.SubsysView => new SubsystemsView(this, currentValues),
-            _ => PermaView
-        };
+            MainCC1.Content = views switch {
+                ViewsTypes.AppendView => new AppendView(this,  (string)currentValue),
+                ViewsTypes.PatchesView => new PatchesView(this, (string)currentValue),
+                ViewsTypes.SubsysView => new SubsystemsView(this, (SubsystemReq)currentValue),
+                _ => PermaView
+            };
+        }
+        catch (InvalidCastException e) {
+            App.Logger?.LogErro(e.Message);
+            // TODO: Show an error PopUp
+            MainCC1.Content = PermaView;
+        }
     }
 
     public void LocaleReload(string locale)
@@ -97,7 +106,7 @@ public partial class MainWindow : Window
     // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
     public void ReturnToMainView() => MainCC1.Content = PermaView;
 
-    public void ReturnToMainView(UserControl view, string[] args)
+    public void ReturnToMainView(UserControl view, string args)
     {
         var viewType = view switch {
             AppendView => ViewsTypes.AppendView,
@@ -106,8 +115,10 @@ public partial class MainWindow : Window
             _ => ViewsTypes.MainView
         };
         if (PermaView is not MainView permaView) return;
-        permaView.UpdateLinkFromOutside(viewType, args);
+        
         MainCC1.Content = PermaView;
+        permaView.UpdateLinkFromOutside(viewType, args);
+        
         // view = null;
     }
 }

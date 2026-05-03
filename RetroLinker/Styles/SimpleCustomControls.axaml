@@ -6,6 +6,7 @@
             <StackPanel Orientation="Horizontal" Spacing="2">
                 <Button Classes="check"/>
                 <Button Classes="trash"/>
+                <Button Classes="clear_text"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -19,6 +20,11 @@
     
     <Style Selector="Button.trash">
         <Setter Property="i:Attached.Icon" Value="fa-trash"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
+    <Style Selector="Button.clear_text">
+        <Setter Property="i:Attached.Icon" Value="fa-delete-left"/>
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
 </Styles>

@@ -182,12 +182,11 @@ public partial class PatchesView : UserControl
             patchComm = selectedPatch.Equals(Commander.NoPatch) switch
             {
                 true => selectedPatch.Argument,
-                _ => Commander.GetSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
+                _ => Commander.CreateSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
             };
         }
-
-        // ParentWindow.BuildingLink.PatchArg = patchComm;
-        ParentWindow.ReturnToMainView(this, [ patchComm ]);
+        
+        ParentWindow.ReturnToMainView(this, patchComm);
     }
 
     private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();

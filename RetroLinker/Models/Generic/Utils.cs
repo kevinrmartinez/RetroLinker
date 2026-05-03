@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RetroLinker.Models.Generic
 {
@@ -57,8 +58,7 @@ namespace RetroLinker.Models.Generic
             return false;
         }
 
-        public static string ReverseFixUnusualPaths(string path)
-        {
+        public static string ReverseFixUnusualPaths(string path) {
             if (!HasDoubleQuotes(path)) return path;
             var noDQ = path.Split(DQ);
             return noDQ[1];
@@ -89,8 +89,7 @@ namespace RetroLinker.Models.Generic
             return text;
         }
 
-        private static bool HasDoubleQuotes(string path)
-        {
+        private static bool HasDoubleQuotes(string path) {
             int lastCharIndex = path.Length - 1;
             return ((path[0] == DQ) && (path[lastCharIndex] == DQ));
         }
@@ -105,14 +104,18 @@ namespace RetroLinker.Models.Generic
             
             return members;
         }
-
-        public static string GetStringFromList(IEnumerable<string> list)
-        {
-            string result = "";
+        
+        public static string GetSingleLineStringFromList(IEnumerable<string> list, char separator = ' ') {
+            var result = string.Empty;
             foreach (var item in list)
-            {
+                result += $"{item}{separator}";
+            return result.TrimEnd(separator);
+        }
+
+        public static string GetMultiLineStringFromList(IEnumerable<string> list) {
+            var result = string.Empty;
+            foreach (var item in list)
                 result += $"{item}\n";
-            }
             return result;
         }
         
@@ -121,6 +124,28 @@ namespace RetroLinker.Models.Generic
             var objectBytes = Encoding.UTF8.GetBytes(objectString);
             var object64 = Convert.ToBase64String(objectBytes);
             return object64;
+        }
+
+        public static List<string> ParseArguments(string args)
+        {
+            var results = new List<string>();
+            if (string.IsNullOrWhiteSpace(args)) return results;
+
+            // Just wanted to mention that I HATE regular expressions, but is the most direct solution I found...
+            /* Regex Explanation:
+             * "([^"]*)"    : Matches content inside double quotes
+             * '([^']*)'    : Matches content inside single quotes
+             * [^\s'"]+     : Matches sequences of characters that aren't spaces or quotes
+             */
+            var pattern = @" ""([^""]*)"" | '([^']*)' | ([^\s'"" ]+) ";
+            var matches = Regex.Matches(args, pattern, RegexOptions.IgnorePatternWhitespace);
+
+            foreach (Match match in matches) {
+                if (match.Groups[1].Success) results.Add(match.Groups[1].Value);        // Group 1: Double quoted
+                else if (match.Groups[2].Success) results.Add(match.Groups[2].Value);   // Group 2: Single quoted
+                else if (match.Groups[3].Success) results.Add(match.Groups[3].Value);   // Group 3: Unquoted
+            }
+            return results;
         }
     }
 }

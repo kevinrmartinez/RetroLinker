@@ -1,7 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:cc="clr-namespace:RetroLinker.Styles">
+        xmlns:i="https://github.com/projektanker/icons.avalonia">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -12,11 +11,9 @@
 
     <!-- TODO: Add Common Controls -->
     <!-- Main View Body -->
-    <Style Selector="cc|MainViewExtensionNotice">
-        <Setter Property="IsVisible" Value="False"/>
-    </Style>
     
-    <!-- Extra Views -->
+    <!-- == Extra Views == -->
+    <!-- Generic -->
     <Style Selector="Button.ExtraControl">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>

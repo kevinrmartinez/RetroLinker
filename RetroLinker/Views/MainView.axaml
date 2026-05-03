@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:vw="clr-namespace:RetroLinker.Views"
+             xmlns:vw="using:RetroLinker.Views"
              xmlns:cc="clr-namespace:RetroLinker.Styles"
 			 xmlns:lc="clr-namespace:RetroLinker.Translations"
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
@@ -63,7 +63,8 @@
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
-					<cc:MainViewExtensionNotice Name="exnotPatchPresent" Title="{x:Static lc:resMainView.extxtPatch}" Text="/path/to/patch"/>
+					<cc:MainViewExtensionNotice Name="noticePatchPresent" Title="{x:Static lc:resMainView.extxtPatch}" 
+					                            IsVisible="{Binding #noticePatchPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
@@ -76,6 +77,9 @@
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
 									i:Attached.Icon="fa-microchip" FontSize="18"/>
 						</Grid>
+						<!-- TODO: Localization support -->
+						<cc:MainViewExtensionNotice Name="noticeSubsystemPresent" Title="Subsystem: "
+						                            IsVisible="{Binding #noticeSubsystemPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="{x:Static lc:resMainView.lblNoCores}" IsVisible="False"/>
 					</StackPanel>
 					
@@ -91,7 +95,8 @@
 										i:Attached.Icon="fa-plus" FontSize="18"/>
 							</StackPanel>
 						</Grid>
-						<cc:MainViewExtensionNotice Name="exnotAppendPresent" Title="{x:Static lc:resMainView.extxtAppend}" Text="/path/to/config"/>
+						<cc:MainViewExtensionNotice Name="noticeAppendPresent" Title="{x:Static lc:resMainView.extxtAppend}"
+						                            IsVisible="{Binding #noticeAppendPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 				</Grid>
 

@@ -101,10 +101,10 @@
         </Style>
     </Style>
     
-    <!-- UserControlledList1 -->
+    <!-- UserStringList -->
     <!-- TODO: Create ControlTheme to hold the ControlTemplate (Avalonia v12) -->
     <!-- https://docs.avaloniaui.net/docs/custom-controls/templated-controls#defining-the-control-theme -->
-    <!-- <ControlTheme x:Key="{x:Type controls:UserControlledList1}" TargetType="controls:UserControlledList1"></ControlTheme> -->
+    <!-- <ControlTheme x:Key="{x:Type controls:UserStringList}" TargetType="controls:UserStringList"></ControlTheme> -->
     
     <Style Selector="controls|UserStringList">
         <Setter Property="Template">

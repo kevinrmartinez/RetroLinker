@@ -47,16 +47,15 @@ public partial class AppendView : UserControl
     {
         InitializeComponent();
         ParentWindow = mainWindow;
-        List<string> appendConfigFiles;
+        var appendConfigFiles = new List<string>();
         try {
             appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg).Item2;
         }
         catch (System.ArgumentException ex) {
             App.Logger?.LogErro(ex.Message);
-            appendConfigFiles = new();
         }
 
-        AppendPaths = new(appendConfigFiles);
+        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
         DataContext =  this;
     }
     
@@ -104,8 +103,8 @@ public partial class AppendView : UserControl
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
         var appendArg = (AppendPaths.Count == 0) 
             ? string.Empty 
-            : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
-        ParentWindow.ReturnToMainView(this, [ appendArg ]);
+            : Commander.CreateAppendConfigArg(new List<string>(AppendPaths));
+        ParentWindow.ReturnToMainView(this, appendArg);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();

@@ -125,6 +125,28 @@ public class UserStringList : TemplatedControl
         set => SetAndRaise(ItemsProperty, ref _items, value);
     }
     
+    // Add Button
+    public static readonly DirectProperty<UserStringList, Button?> AddButtonProperty =
+        AvaloniaProperty.RegisterDirect<UserStringList, Button?>(
+            nameof(AddButton),
+            l => l.AddButton);
+    public Button? AddButton
+    {
+        get;
+        set => SetAndRaise(AddButtonProperty, ref field, value);
+    }
+    
+    // Clear Button
+    public static readonly DirectProperty<UserStringList, Button?> ClearButtonProperty =
+        AvaloniaProperty.RegisterDirect<UserStringList, Button?>(
+            nameof(ClearButton),
+            l => l.ClearButton);
+    public Button? ClearButton
+    {
+        get;
+        set => SetAndRaise(ClearButtonProperty, ref field, value);
+    }
+    
     // == Avalonia Events ==
     // AddItem
     public static readonly RoutedEvent<RoutedEventArgs> AddItemEvent =
@@ -169,8 +191,10 @@ public class UserStringList : TemplatedControl
         base.OnApplyTemplate(e);
         var btnAdd = e.NameScope.Find<Button>("PART_ButtonAdd");
         btnAdd?.Click += ButtonAdd_OnClick;
+        AddButton = btnAdd;
         var btnClr = e.NameScope.Find<Button>("PART_ButtonClr");
         btnClr?.Click += ButtonClr_OnClick;
+        ClearButton = btnClr;
         var itemsCtrl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         itemsCtrl?.TemplateApplied += ItemsControl_OnTemplateApplied;
     }

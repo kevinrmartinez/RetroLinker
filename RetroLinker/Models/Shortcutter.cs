@@ -18,8 +18,6 @@
 
 using System.Collections.Generic;
 using RetroLinker.Models.Generic;
-using RetroLinker.Models.Linux;
-using RetroLinker.Models.Windows;
 using RetroLinker.Translations;
 using ShortcutCreator = RetroLinker.Models.Windows.ShortcutCreator;
 
@@ -39,7 +37,7 @@ namespace RetroLinker.Models
         public string RApath
         {
             get => ra_path; 
-            private set { SetRApath(value); }
+            private set { SetRApath(value); }   // TODO: Set later in the workflow 
         }      // 1
 
         public string ROMdir
@@ -65,6 +63,7 @@ namespace RetroLinker.Models
         public bool MenuOnErrorB { get; set; }  // 13
         public string PatchArg { get; set; }    // 14
         public string CONFappend { get; set; }  // 15
+        public string SubsysArg { get; set; }      // 16
 
         private string ra_dir   = string.Empty;
         private string ra_path  = string.Empty;
@@ -87,26 +86,28 @@ namespace RetroLinker.Models
             MenuOnErrorB = false;
             PatchArg = string.Empty;
             CONFappend = string.Empty;
+            SubsysArg = string.Empty;
         }
 
-        public Shortcutter(Shortcutter ObjToClone)
+        public Shortcutter(Shortcutter objToClone)
         {
-            RAdir = ObjToClone.RAdir;
-            RApath = ObjToClone.RApath;
-            ROMdir = ObjToClone.ROMdir;
-            ROMname = ObjToClone.ROMname;
-            ROMcore = ObjToClone.ROMcore;
-            CONFfile = ObjToClone.CONFfile;
-            ICONfile = ObjToClone.ICONfile;
-            Command = ObjToClone.Command;
-            Desc = ObjToClone.Desc;
-            OutputPaths = ObjToClone.OutputPaths;
-            VerboseB = ObjToClone.VerboseB;
-            FullscreenB = ObjToClone.FullscreenB;
-            AccessibilityB = ObjToClone.AccessibilityB;
-            MenuOnErrorB = ObjToClone.MenuOnErrorB;
-            PatchArg = ObjToClone.PatchArg;
-            CONFappend = ObjToClone.CONFappend;
+            RAdir = objToClone.RAdir;
+            RApath = objToClone.RApath;
+            ROMdir = objToClone.ROMdir;
+            ROMname = objToClone.ROMname;
+            ROMcore = objToClone.ROMcore;
+            CONFfile = objToClone.CONFfile;
+            ICONfile = objToClone.ICONfile;
+            Command = objToClone.Command;
+            Desc = objToClone.Desc;
+            OutputPaths = objToClone.OutputPaths;
+            VerboseB = objToClone.VerboseB;
+            FullscreenB = objToClone.FullscreenB;
+            AccessibilityB = objToClone.AccessibilityB;
+            MenuOnErrorB = objToClone.MenuOnErrorB;
+            PatchArg = objToClone.PatchArg;
+            CONFappend = objToClone.CONFappend;
+            SubsysArg = objToClone.SubsysArg;
         }
 
         private void SetRAdir(string value) {
@@ -130,10 +131,8 @@ namespace RetroLinker.Models
         #endregion
 
         #region Link Output
-        // TODO: Change from static to dynamic
-        
         // Link Creation - OS selection
-        public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
+        public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)  // TODO: Change from static to dynamic (=0.8)
         {
             // Building the arguments
             link = Commander.CommandBuilder(link);

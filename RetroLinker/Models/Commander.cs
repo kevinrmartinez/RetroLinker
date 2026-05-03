@@ -30,7 +30,9 @@ namespace RetroLinker.Models
         private const string menuOnError = "--load-menu-on-error ";
         private const string appendConfig = "--appendconfig ";
         private const char appendConfigDeli = '|';
+        private const string subsystem = "--subsystem ";
         
+        // TODO: Rework patching to use ' ' instead of '='. Or rework everything else? 
         public enum PatchType {
             UPS, BPS, IPS,
             XDelta, NoPatch, ExNoPatch
@@ -44,25 +46,32 @@ namespace RetroLinker.Models
 
         public static Shortcutter CommandBuilder(Shortcutter shortcut)
         {
-            shortcut.Command = string.Empty;
+            var command = string.Empty;
             
-            if (!string.IsNullOrEmpty(shortcut.CONFfile)) shortcut.Command += $"-c {shortcut.CONFfile} ";
-            if (!string.IsNullOrEmpty(shortcut.CONFappend)) shortcut.Command += $"{shortcut.CONFappend} ";
+            if (!string.IsNullOrEmpty(shortcut.CONFfile)) command += $"-c {shortcut.CONFfile} ";
+            if (!string.IsNullOrEmpty(shortcut.CONFappend)) command += $"{shortcut.CONFappend} ";
             
-            shortcut.Command += $"-L {shortcut.ROMcore}";
-            if (shortcut.ROMdir != contentless)
-            {
-                shortcut.Command += $" {shortcut.ROMdir}";
-                shortcut.Command += $" {shortcut.PatchArg}";
+            command += $"-L {shortcut.ROMcore}";
+            if (shortcut.ROMdir != contentless) {
+                command += $" {shortcut.ROMdir}";
+                command += $" {shortcut.PatchArg}";
             }
             
-            if (shortcut.AccessibilityB) shortcut.Command = shortcut.Command.Insert(0, accessibility);
-            if (shortcut.MenuOnErrorB)   shortcut.Command = shortcut.Command.Insert(0, menuOnError);
-            if (shortcut.FullscreenB)    shortcut.Command = shortcut.Command.Insert(0, fullscreen);
-            if (shortcut.VerboseB)       shortcut.Command = shortcut.Command.Insert(0, verbose);
+            // Subsystem always goes last (Because I say so :p)
+            if (!string.IsNullOrEmpty(shortcut.SubsysArg)) command += $" {shortcut.SubsysArg} "; 
+            
+            if (shortcut.AccessibilityB) command = command.Insert(0, accessibility);
+            if (shortcut.MenuOnErrorB)   command = command.Insert(0, menuOnError);
+            if (shortcut.FullscreenB)    command = command.Insert(0, fullscreen);
+            if (shortcut.VerboseB)       command = command.Insert(0, verbose);
 
-            shortcut.Command = shortcut.Command.TrimEnd();
+            shortcut.Command = command.TrimEnd();
             return shortcut;
+        }
+
+        public static string GetArgumentNoOption(string arg) {
+            var firstSpace = arg.IndexOf(' ');
+            return (firstSpace > 0) ? arg.Substring(firstSpace + 1) : arg;
         }
         
         // SoftPatching
@@ -84,7 +93,7 @@ namespace RetroLinker.Models
             else throw argException;
         }
 
-        public static string GetSoftPatchingArg(string patchFile, SoftPatch patchType)
+        public static string CreateSoftPatchingArg(string patchFile, SoftPatch patchType)
         {
             switch (patchType.PatchType)
             {
@@ -107,22 +116,46 @@ namespace RetroLinker.Models
         {
             if (!arg.StartsWith(appendConfig))
                 throw new System.ArgumentException(@"Invalid append config argument", nameof(arg));
+            
             var pathsCombined = arg.Substring(appendConfig.Length);
             pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
             var paths = pathsCombined.Split(appendConfigDeli);
             return (pathsCombined, new List<string>(paths));
         }
 
-        public static string GetAppendConfigArg(List<string> configFiles) {
+        public static string CreateAppendConfigArg(List<string> configFiles) {
             string appendConfigArg;
             if (configFiles.Count == 1)
                 appendConfigArg = Utils.FixUnusualPaths(configFiles[0]);
-            else
-            {
+            else {
                 appendConfigArg = string.Join(appendConfigDeli, configFiles);
                 appendConfigArg = Utils.FixUnusualPaths(appendConfigArg);
             }
             return appendConfig + appendConfigArg;
+        }
+        
+        // Subsystem
+        public static (string, List<string>) ResolveSubsystemArg(string arg)
+        {
+            if (!arg.StartsWith(subsystem))
+                throw new System.ArgumentException(@"Invalid subsystem argument", nameof(arg));
+            
+            var noOption = GetArgumentNoOption(arg);
+            var subsys = noOption.Split(' ')[0];
+            var step = noOption.Substring(subsys.Length + 1);
+            var subsysArgs = Utils.ParseArguments(step);
+            // subsysArgs.ForEach(s => Utils.ReverseFixUnusualPaths(s));
+            return (subsys,  subsysArgs);
+        }
+
+        public static string CreateSubsystemArg(string subsys, ICollection<string> subsysArgs)
+        {
+            var arg = subsystem + subsys;
+            var fixedArgs = new List<string>();
+            foreach (var subsysArg in subsysArgs)
+                fixedArgs.Add(Utils.FixUnusualPaths(subsysArg));
+            arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
+            return arg;
         }
     }
 
