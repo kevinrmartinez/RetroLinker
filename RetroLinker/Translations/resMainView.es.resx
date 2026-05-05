@@ -116,10 +116,13 @@
     <data name="chkMenuOnError" xml:space="preserve">
         <value>Cargar Menú en Caso de Error</value>
     </data>
-    <data name="extxtPatch" xml:space="preserve">
+    <data name="noticePatch" xml:space="preserve">
         <value>Parche: </value>
     </data>
-    <data name="extxtAppend" xml:space="preserve">
+    <data name="noticeAppend" xml:space="preserve">
         <value>Anexado: </value>
+    </data>
+    <data name="noticeSubsystem" xml:space="preserve">
+        <value>Subsistema: </value>
     </data>
 </root>

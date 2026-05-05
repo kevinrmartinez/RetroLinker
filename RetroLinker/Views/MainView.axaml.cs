@@ -31,8 +31,6 @@ using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Generic;
-using RetroLinker.Models.Linux;
-using RetroLinker.Styles;
 using RetroLinker.Translations;
 
 using MessageBoxIcons = MsBox.Avalonia.Enums.Icon;
@@ -41,6 +39,7 @@ using MessageBoxButtonResult = MsBox.Avalonia.Enums.ButtonResult;
 using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
+using LinuxDesktopEntry = RetroLinker.Models.Linux.DesktopEntry;
 
 namespace RetroLinker.Views;
 
@@ -78,41 +77,19 @@ public partial class MainView : UserControl
     public string PatchArg
     {
         get;
-        private set
-        {
-            BuildingLink.PatchArg = value;
-            var newValue = string.Empty;
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
-                if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
-                newValue = path;
-            }
-            noticePatchPresent.Text = newValue;
-            field = newValue;
-        }
+        private set => field = SetPatchArg(value);
     } = string.Empty;
 
     public string SubsysArg
     {
         get;
-        set {
-            BuildingLink.SubsysArg = value;
-            noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-                ? Commander.GetArgumentNoOption(value) 
-                : string.Empty;
-        }
+        set => field = SetSubsysArg(value);
     } = string.Empty;
 
     public string CONFappend
     {
         get;
-        set {
-            BuildingLink.CONFappend = value;
-            noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-                ? Commander.GetArgumentNoOption(value) 
-                : string.Empty;
-        }
+        set => field = SetCONFappend(value);
     } = string.Empty;
 
     // Fields
@@ -243,6 +220,39 @@ public partial class MainView : UserControl
     #endregion
 
     #region Functions
+    
+    // Props Function
+    private string SetPatchArg(string value)
+    {
+        BuildingLink.PatchArg = value;
+        var newValue = string.Empty;
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
+            if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
+            newValue = path;
+        }
+        noticePatchPresent.Text = newValue;
+        return newValue;
+    }
+
+    private string SetSubsysArg(string value)
+    {
+        noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
+            ? Commander.GetArgumentNoOption(value) 
+            : string.Empty;
+        BuildingLink.SubsysArg = value;
+        return value;
+    }
+
+    private string SetCONFappend(string value)
+    {
+        BuildingLink.CONFappend = value;
+        noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
+            ? Commander.GetArgumentNoOption(value) 
+            : string.Empty;
+        return value;
+    }
 
     // Controls Modifiers
     void SetViewPreSettings()
@@ -335,7 +345,7 @@ public partial class MainView : UserControl
     { 
         return (DesktopOS)
             ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
-            : FileOps.GetDefinedLinkPath(DesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
+            : FileOps.GetDefinedLinkPath(LinuxDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
     }
     
     string ValidateLINBin(string RAPath)
@@ -826,14 +836,14 @@ public partial class MainView : UserControl
         string? outputDir;
         if (settings.AlwaysAskOutput)
         {
-            newFile = DesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
+            newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
         else
         {
-            newFile = DesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
+            newFile = LinuxDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = settings.DEFLinkOutput;
             lblLinkDefinedDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
         }
@@ -931,7 +941,7 @@ public partial class MainView : UserControl
             LinkCustomName = false;
             var fullPath = FileOps.CombineDirAndFile(
                 settings.DEFLinkOutput, 
-                (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? DesktopEntry.NamePlaceHolder : txtLINKDir.Text)
+                (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? LinuxDesktopEntry.NamePlaceHolder : txtLINKDir.Text)
             );
             BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
             if (BuildingLink.OutputPaths.Count == 0) return;

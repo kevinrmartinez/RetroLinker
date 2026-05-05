@@ -150,10 +150,13 @@
     <data name="chkMenuOnError" xml:space="preserve">
         <value>Load Menu on Error</value>
     </data>
-    <data name="extxtPatch" xml:space="preserve">
+    <data name="noticePatch" xml:space="preserve">
         <value>Patch: </value>
     </data>
-    <data name="extxtAppend" xml:space="preserve">
+    <data name="noticeAppend" xml:space="preserve">
         <value>Appended: </value>
+    </data>
+    <data name="noticeSubsystem" xml:space="preserve">
+        <value>Subsystem: </value>
     </data>
 </root>

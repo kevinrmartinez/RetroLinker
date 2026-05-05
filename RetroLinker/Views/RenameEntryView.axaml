@@ -8,6 +8,7 @@
              x:Class="RetroLinker.Views.RenameEntryView"
              Name="RenameEntry" Unloaded="View_OnUnloaded">
     <Grid Margin="6,10" RowDefinitions="Auto, *, Auto">
+        <!-- TODO: Get rid of the OnLoaded Event -->
         <!-- ROW0 - Name Controls -->
         <StackPanel Grid.Row="0">
             <Grid ColumnDefinitions="0.25*, *">
@@ -21,7 +22,7 @@
                 <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
                     <TextBox Name="txtFileName" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Text="---" TextChanged="TxtFileName_OnTextChanged"
                              ToolTip.Tip="{x:Static lc:resMainExtras.txtFileName_Tip}"/>
-                    <Label Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content="---"
+                    <Label Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content=".abc"
                            ToolTip.Tip="{x:Static lc:resMainExtras.lblExt_Tip}"/>
                 </Grid>
             </Grid>

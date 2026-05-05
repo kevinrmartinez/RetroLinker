@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using RetroLinker.Models;
@@ -88,8 +87,8 @@ public partial class MainWindow : Window
                 _ => PermaView
             };
         }
-        catch (InvalidCastException e) {
-            App.Logger?.LogErro(e.Message);
+        catch (System.InvalidCastException ex) {
+            App.Logger?.LogErro(ex.Message);
             // TODO: Show an error PopUp
             MainCC1.Content = PermaView;
         }

@@ -25,8 +25,7 @@
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnUserAssets" Height="30" Click="btnUserAssets_OnClick"
-							        i:Attached.Icon="fa-folder-open"/>
+							<Button Name="btnUserAssets" Height="30" Classes="browse" Click="btnUserAssets_OnClick"/>
 							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_OnClick">
 								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>
@@ -46,8 +45,7 @@
 							<i:Icon Value="fa-check" Foreground="ForestGreen"/>
 						</Button>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_OnClick"
-							        i:Attached.Icon="fa-folder-open"/>
+							<Button Name="btnDefRADir" Height="30" Classes="browse" Click="btnDefRADir_OnClick"/>
 							<Button Name="btnclrDefRADir" Height="30" Classes="SettingCatg" Click="btnclrDefRADir_Click">
 								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>
@@ -64,8 +62,7 @@
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 						<TextBox Name="txtDefROMPath" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefROMPath" Height="30" Click="btnDefROMPath_OnClick"
-							        i:Attached.Icon="fa-folder-open"/>
+							<Button Name="btnDefROMPath" Height="30" Classes="browse" Click="btnDefROMPath_OnClick"/>
 							<Button Name="btnclrDefROMPath" Height="30" Classes="SettingCatg" Click="btnclrDefROMPath_Click">
 								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>

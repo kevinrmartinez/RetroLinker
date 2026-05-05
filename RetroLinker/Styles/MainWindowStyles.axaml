@@ -8,9 +8,19 @@
     </Design.PreviewWith>
     
     <StyleInclude Source="ComplexCustomControls.axaml"/>
-
-    <!-- TODO: Add Common Controls -->
+    
     <!-- Main View Body -->
+    
+    <!-- comboCore -->
+    <Style Selector="AutoCompleteBox#comboCore">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="MaxDropDownHeight" Value="260"/>
+    </Style>
+    
+    <Style Selector="Label.minor_error">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="DarkRed"/>
+    </Style>
     
     <!-- == Extra Views == -->
     <!-- Generic -->

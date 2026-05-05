@@ -309,15 +309,21 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string extxtPatch {
+        public static string noticePatch {
             get {
-                return ResourceManager.GetString("extxtPatch", resourceCulture);
+                return ResourceManager.GetString("noticePatch", resourceCulture);
             }
         }
         
-        public static string extxtAppend {
+        public static string noticeAppend {
             get {
-                return ResourceManager.GetString("extxtAppend", resourceCulture);
+                return ResourceManager.GetString("noticeAppend", resourceCulture);
+            }
+        }
+        
+        public static string noticeSubsystem {
+            get {
+                return ResourceManager.GetString("noticeSubsystem", resourceCulture);
             }
         }
     }

@@ -20,7 +20,7 @@
         <!-- Header -->
         
         <!-- Body -->
-        <Grid x:Name="gridBODY" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
+        <Grid x:Name="gridBody" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
             
             <!-- ROW0 - Spacing -->
             <Rectangle Grid.Row="0" Height="8"/>

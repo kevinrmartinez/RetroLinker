@@ -24,8 +24,7 @@
 				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
 					<ComboBox Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" 
 					          SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
-					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Click="BtnDefLinkOutput_OnClick"
-					        i:Attached.Icon="fa-folder-open"/>
+					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Classes="browse" Click="BtnDefLinkOutput_OnClick"/>
 					<Button Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">
 						<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 					</Button>
@@ -69,8 +68,7 @@
 				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
 					<TextBox Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
 			        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-				        <Button Name="btnIcoSavPath" Height="30" Click="btnIcoSavPath_OnClick"
-				                i:Attached.Icon="fa-folder-open"/>
+				        <Button Name="btnIcoSavPath" Height="30" Classes="browse" Click="btnIcoSavPath_OnClick"/>
 				        <Button Name="btnclrIcoSavPath" Height="30" Classes="SettingCatg" Click="btnclrIcoSavPath_Click">
 					            <i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
 				        </Button>

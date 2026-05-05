@@ -54,11 +54,10 @@
                         <Grid ColumnDefinitions="*,Auto" Margin="2">
                             <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="⏏" FontSize="18" Click="ButtonNewArgBrowse_OnClick"
-                                        ToolTip.Tip="{x:Static lc:resGeneric.tipBrowse}"/>
-                                <Button Content="⌫" FontSize="18" Classes="clear_text" Click="ButtonNewArgDiscard_OnClick"
+                                <Button Content="⏏" Classes="textbox_inline browse" Click="ButtonNewArgBrowse_OnClick"/>
+                                <Button Content="⌫" Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
                                         ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgDis_Tip}"/>
-                                <Button Content="✓" FontSize="18" Classes="check" Click="ButtonNewArgAccept_OnClick"
+                                <Button Content="✓" Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
                                         ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgAdd_Tip}"/>
                             </StackPanel>
                         </Grid>

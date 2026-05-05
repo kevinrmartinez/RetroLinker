@@ -2,27 +2,27 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
         xmlns:lc="clr-namespace:RetroLinker.Translations"
-        xmlns:controls="using:RetroLinker.Styles">
-        xmlns:lc="clr-namespace:RetroLinker.Translations"
+        xmlns:ctrl="using:RetroLinker.Styles">
+        
     
     
     <Design.PreviewWith>
         <Border Padding="0">
             <StackPanel Orientation="Vertical" Spacing="2">
-                <controls:MainViewExtensionNotice Width="300" Title="Power:" Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
+                <ctrl:MainViewExtensionNotice Width="300" Title="Power:" Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
                 
-                <controls:MainWindowHeader Width="300" Title="Testing" Classes="Header">
-                    <controls:MainWindowHeader.RightControl>
+                <ctrl:MainWindowHeader Width="300" Title="Testing" Classes="Header">
+                    <ctrl:MainWindowHeader.RightControl>
                         <Label Content="aaa"/>
-                    </controls:MainWindowHeader.RightControl>
-                    <controls:MainWindowHeader.LeftControl>
+                    </ctrl:MainWindowHeader.RightControl>
+                    <ctrl:MainWindowHeader.LeftControl>
                         <Label Content="bbb"/>
-                    </controls:MainWindowHeader.LeftControl>
-                </controls:MainWindowHeader>
+                    </ctrl:MainWindowHeader.LeftControl>
+                </ctrl:MainWindowHeader>
                 
-                <controls:UserStringList Height="180">
+                <ctrl:UserStringList Height="180">
                     Hello World!
-                </controls:UserStringList>
+                </ctrl:UserStringList>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -31,7 +31,7 @@
 
     <!-- ============================================== -->
     <!-- MainViewExtensionNotice -->
-    <Style Selector="controls|MainViewExtensionNotice">
+    <Style Selector="ctrl|MainViewExtensionNotice">
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
@@ -72,7 +72,7 @@
     </Style>
     
     <!-- MainWindowHeader -->
-    <Style Selector="controls|MainWindowHeader">
+    <Style Selector="ctrl|MainWindowHeader">
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
@@ -91,7 +91,7 @@
         </Setter>
     </Style>
     
-    <Style Selector="controls|MainWindowHeader.Header">
+    <Style Selector="ctrl|MainWindowHeader.Header">
         <Style Selector="^ Grid">
             <Setter Property="Height" Value="45"/>
             <Setter Property="Background" Value="Firebrick"/>
@@ -108,7 +108,7 @@
     <!-- https://docs.avaloniaui.net/docs/custom-controls/templated-controls#defining-the-control-theme -->
     <!-- <ControlTheme x:Key="{x:Type controls:UserStringList}" TargetType="controls:UserStringList"></ControlTheme> -->
     
-    <Style Selector="controls|UserStringList">
+    <Style Selector="ctrl|UserStringList">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="*,Auto,Auto">

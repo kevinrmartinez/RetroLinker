@@ -44,9 +44,7 @@
 					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="retroarch.exe"/>
-						<!-- TODO: Create a premade control for these browse buttons (>= 0.8) -->
-						<Button Name="btnRADir" Grid.Column="1" Click="btnRADir_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"
-						        i:Attached.Icon="fa-folder-open" FontSize="18"/>
+						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browse" Click="btnRADir_OnClick"/>
 					</Grid>
 				</StackPanel>
 
@@ -59,28 +57,29 @@
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
-							<Button Name="btnROMDir" Click="btnROMDir_OnClick" i:Attached.Icon="fa-folder-open" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}"/>
+							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browse"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
-					<cc:MainViewExtensionNotice Name="noticePatchPresent" Title="{x:Static lc:resMainView.extxtPatch}" 
-					                            IsVisible="{Binding #noticePatchPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					<cc:MainViewExtensionNotice Name="noticePatchPresent" Title="{x:Static lc:resMainView.noticePatch}" 
+					                            IsVisible="{Binding $self.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
 				<Grid Name="COREconfig" Grid.Row="3" ColumnDefinitions="*, Auto, *, Auto" ShowGridLines="False">
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
-						<Label Content="{x:Static lc:resMainView.lblCore}"/>
+						<StackPanel Orientation="Horizontal">
+							<Label Content="{x:Static lc:resMainView.lblCore}"/>
+							<Label Name="lblNoCores" Classes="minor_error" Content="{x:Static lc:resMainView.lblNoCores}" 
+							       IsVisible="True"/>
+						</StackPanel>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" MaxDropDownHeight="260" HorizontalAlignment="Stretch"
-							                 TextChanged="ComboCore_OnTextChanged"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
-									i:Attached.Icon="fa-microchip" FontSize="18"/>
+									i:Attached.Icon="fa-microchip" Classes="textbox_inline"/>
 						</Grid>
-						<!-- TODO: Localization support -->
-						<cc:MainViewExtensionNotice Name="noticeSubsystemPresent" Title="Subsystem: "
-						                            IsVisible="{Binding #noticeSubsystemPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-						<Label Name="lblNoCores" FontSize="12" Foreground="DarkRed" Content="{x:Static lc:resMainView.lblNoCores}" IsVisible="False"/>
+						<cc:MainViewExtensionNotice Name="noticeSubsystemPresent" Title="{x:Static lc:resMainView.noticeSubsystem}"
+						                            IsVisible="{Binding $self.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 					
 
@@ -89,14 +88,13 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
-								<Button Name="btnCONFIGDir" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnCONFIGDir_OnClick" 
-										i:Attached.Icon="fa-folder-open" FontSize="18"/>
-								<Button Name="btnAppendConfig" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}" Click="btnAppendConfig_OnClick"
-										i:Attached.Icon="fa-plus" FontSize="18"/>
+								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browse"/>
+								<Button Name="btnAppendConfig" Click="btnAppendConfig_OnClick" Classes="textbox_inline" 
+								        i:Attached.Icon="fa-plus" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}"/>
 							</StackPanel>
 						</Grid>
-						<cc:MainViewExtensionNotice Name="noticeAppendPresent" Title="{x:Static lc:resMainView.extxtAppend}"
-						                            IsVisible="{Binding #noticeAppendPresent.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+						<cc:MainViewExtensionNotice Name="noticeAppendPresent" Title="{x:Static lc:resMainView.noticeAppend}"
+						                            IsVisible="{Binding $self.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 				</Grid>
 
@@ -122,8 +120,7 @@
 						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" Watermark="Super Mario Bros.lnk" />
 						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
 						        i:Attached.Icon="fa-pen" FontSize="18"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainView.tipBrowse}" Click="btnLINKDir_OnClick"
-								i:Attached.Icon="fa-folder-open" FontSize="18"/>
+						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" Classes="textbox_inline browse" Click="btnLINKDir_OnClick"/>
 						<TextBlock Name="lblLinkDefinedDir" Grid.Row="1" Grid.Column="0" Text="{x:Static lc:resMainView.lblLinkDeskDir}" 
 						           FontSize="11" TextWrapping="Wrap" Margin="2 ,0"/>
 					</Grid>
@@ -163,7 +160,7 @@
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged"/>
-								<Button Name="btnICONDir" Grid.Column="1" i:Attached.Icon="fa-folder-open" FontSize="18" Click="btnICONDir_OnClick"/>
+								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browse" Click="btnICONDir_OnClick"/>
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"

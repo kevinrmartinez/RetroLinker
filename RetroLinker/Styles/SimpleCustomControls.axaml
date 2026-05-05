@@ -1,18 +1,24 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="https://github.com/projektanker/icons.avalonia">
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:lc="clr-namespace:RetroLinker.Translations">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Orientation="Horizontal" Spacing="2">
                 <Button Classes="check"/>
                 <Button Classes="trash"/>
                 <Button Classes="clear_text"/>
+                <Button Classes="textbox_inline browse"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <!-- Here goes simple buttons, panels, etc. that are used across the whole app, -->
     <!-- being either custom-made classes, or just styles -->
+    <Style Selector="Button.textbox_inline">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    
     <Style Selector="Button.check">
         <Setter Property="i:Attached.Icon" Value="fa-check"/>
         <Setter Property="Foreground" Value="ForestGreen"/>
@@ -26,5 +32,10 @@
     <Style Selector="Button.clear_text">
         <Setter Property="i:Attached.Icon" Value="fa-delete-left"/>
         <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
+    <Style Selector="Button.browse">
+        <Setter Property="i:Attached.Icon" Value="fa-folder-open"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
     </Style>
 </Styles>
