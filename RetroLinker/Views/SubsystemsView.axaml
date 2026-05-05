@@ -14,7 +14,6 @@
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
     
-    <!-- TODO: Localization support -->
     <Grid x:Name="gridContent" RowDefinitions="Auto, *, Auto">
         <!--Top-->
         <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.titleSubsystems}" Classes="Header"/>
@@ -29,19 +28,19 @@
             <!-- ROW1 - Subsystem Controls -->
             <Grid x:Name="gridControls" Grid.Row="1" ColumnDefinitions="*,4*" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="10,0">
                 
-                <Label Grid.Column="0" Grid.Row="0" Content="Core: " 
+                <Label Grid.Column="0" Grid.Row="0" Content="{x:Static lc:resMainExtras.lblSubsysCore}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Grid.Row="0" IsEnabled="False" Margin="0,3" Text="{Binding Core}"/>
+                <TextBox x:Name="txtCore" Grid.Column="1" Grid.Row="0" IsEnabled="False" Margin="0,3" Text="{Binding Core}"/>
                     
-                <Label Grid.Column="0" Grid.Row="1" Content="Content: " 
+                <Label Grid.Column="0" Grid.Row="1" Content="{x:Static lc:resMainExtras.lblSubsysContent}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Grid.Row="1" IsEnabled="False" Margin="0,3" Text="{Binding CoreContent}"/>
+                <TextBox x:Name="txtContent" Grid.Column="1" Grid.Row="1" IsEnabled="False" Margin="0,3" Text="{Binding CoreContent}"/>
                     
-                <Label Grid.Column="0" Grid.Row="2" Content="Subsystem: " 
+                <Label Grid.Column="0" Grid.Row="2" Content="{x:Static lc:resMainExtras.lblSubsysBase}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtSubsys" Grid.Column="1" Grid.Row="2" Margin="0,3" Text="{Binding SubSystem}"/>
                     
-                <Label Grid.Column="0" Grid.Row="3" Content="Arguments: " 
+                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static lc:resMainExtras.lblSubsysArgs}" 
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
                 <Border Grid.Column="1" Grid.Row="3" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <pc:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
@@ -51,11 +50,17 @@
                 <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="4" IsVisible="False"
                         BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <StackPanel Orientation="Vertical">
-                        <Label Content="New Argument:"/>
-                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="2">
+                        <Label Content="{x:Static lc:resMainExtras.lblSubsysNewArg}"/>
+                        <Grid ColumnDefinitions="*,Auto" Margin="2">
                             <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
-                            <Button Grid.Column="1" Content="⌫" FontSize="18" Classes="clear_text" Click="ButtonNewArgDiscard_OnClick"/>
-                            <Button Grid.Column="2" Content="✓" FontSize="18" Classes="check" Click="ButtonNewArgAccept_OnClick"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="⏏" FontSize="18" Click="ButtonNewArgBrowse_OnClick"
+                                        ToolTip.Tip="{x:Static lc:resGeneric.tipBrowse}"/>
+                                <Button Content="⌫" FontSize="18" Classes="clear_text" Click="ButtonNewArgDiscard_OnClick"
+                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgDis_Tip}"/>
+                                <Button Content="✓" FontSize="18" Classes="check" Click="ButtonNewArgAccept_OnClick"
+                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgAdd_Tip}"/>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -66,8 +71,8 @@
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ExtraMainControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSavePatch_OnClick"/>
-                <pc:ExtraMainControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscPatch_OnClick"/>
+                <pc:ExtraMainControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
+                <pc:ExtraMainControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
             </Grid>
             
         </Grid>

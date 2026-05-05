@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:lc="clr-namespace:RetroLinker.Translations"
         xmlns:controls="using:RetroLinker.Styles">
+        xmlns:lc="clr-namespace:RetroLinker.Translations"
     
     
     <Design.PreviewWith>
@@ -118,8 +120,8 @@
                     <Rectangle Grid.Row="1"/>
                     <!-- Controls for Append Paths List -->
                     <StackPanel Grid.Row="2">
-                        <Button x:Name="PART_ButtonClr" Content="⌫"/>
-                        <Button x:Name="PART_ButtonAdd" Content="+"/>
+                        <Button x:Name="PART_ButtonClr" Content="⌫" ToolTip.Tip="{x:Static lc:resGeneric.btnClear}"/>
+                        <Button x:Name="PART_ButtonAdd" Content="+" ToolTip.Tip="{x:Static lc:resGeneric.btnAdd}"/>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>
@@ -176,7 +178,8 @@
                     <Border Classes="Item">
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0" Text="{Binding .}"/>
-                            <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash"/>
+                            <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash" 
+                                    ToolTip.Tip="{x:Static lc:resGeneric.btnDeleteItem}"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

@@ -87,12 +87,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string btnClear_Tip {
-            get {
-                return ResourceManager.GetString("btnClear_Tip", resourceCulture);
-            }
-        }
-        
         public static string titleSoftPatching {
             get {
                 return ResourceManager.GetString("titleSoftPatching", resourceCulture);
@@ -174,6 +168,48 @@ namespace RetroLinker.Translations {
         public static string titleSubsystems {
             get {
                 return ResourceManager.GetString("titleSubsystems", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysCore {
+            get {
+                return ResourceManager.GetString("lblSubsysCore", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysContent {
+            get {
+                return ResourceManager.GetString("lblSubsysContent", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysBase {
+            get {
+                return ResourceManager.GetString("lblSubsysBase", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysArgs {
+            get {
+                return ResourceManager.GetString("lblSubsysArgs", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysNewArg {
+            get {
+                return ResourceManager.GetString("lblSubsysNewArg", resourceCulture);
+            }
+        }
+        
+        public static string btnSubsysArgAdd_Tip {
+            get {
+                return ResourceManager.GetString("btnSubsysArgAdd_Tip", resourceCulture);
+            }
+        }
+        
+        public static string btnSubsysArgDis_Tip {
+            get {
+                return ResourceManager.GetString("btnSubsysArgDis_Tip", resourceCulture);
             }
         }
     }

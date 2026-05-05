@@ -29,14 +29,11 @@
     <data name="lblExt_Tip" xml:space="preserve">
         <value>La extensión .desktop is añadida automaticamente.</value>
     </data>
-    <data name="btnClear_Tip" xml:space="preserve">
-        <value>Deshacer cambios</value>
-    </data>
     <data name="chkCustomFilename" xml:space="preserve">
         <value>Personalizar nombre de archivo</value>
     </data>
     <data name="rdoNoPatch" xml:space="preserve">
-        <value>Sin Parcher</value>
+        <value>Sin Parche</value>
     </data>
     <data name="chkNoPatch_Tip2" xml:space="preserve">
         <value>Deshabilita todas los metodos de parches.</value>
@@ -58,5 +55,20 @@
     </data>
     <data name="titleSubsystems" xml:space="preserve">
         <value>Subsistema (Subsystem)</value>
+    </data>
+    <data name="lblSubsysNewArg" xml:space="preserve">
+        <value>Nuevo Argumento:</value>
+    </data>
+    <data name="lblSubsysArgs" xml:space="preserve">
+        <value>Argumentos: </value>
+    </data>
+    <data name="lblSubsysContent" xml:space="preserve">
+        <value>Contenido: </value>
+    </data>
+    <data name="btnSubsysArgAdd_Tip" xml:space="preserve">
+        <value>Añadir Arguemento</value>
+    </data>
+    <data name="btnSubsysArgDis_Tip" xml:space="preserve">
+        <value>Descartar Argumento</value>
     </data>
 </root>

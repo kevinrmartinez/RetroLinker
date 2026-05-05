@@ -77,7 +77,7 @@ namespace RetroLinker.Models
         // SoftPatching
         public static (string, SoftPatch) ResolveSoftPatchingArg(string arg)
         {
-            var argException = new System.ArgumentException(@"Invalid patch argument",  nameof(arg));
+            var argException = new System.ArgumentException(@"Invalid patch argument: " + arg,  nameof(arg));
             var split = arg.Split('=');
             if (split.Length != 2) {
                 if ((split.Length == 1) && (split[0] == ExNoPatch.Argument)) return (ExNoPatch.Argument, ExNoPatch);
@@ -115,7 +115,7 @@ namespace RetroLinker.Models
         public static (string, List<string>) ResolveAppendConfigArg(string arg)
         {
             if (!arg.StartsWith(appendConfig))
-                throw new System.ArgumentException(@"Invalid append config argument", nameof(arg));
+                throw new System.ArgumentException(@"Invalid append config argument: " + arg, nameof(arg));
             
             var pathsCombined = arg.Substring(appendConfig.Length);
             pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
@@ -138,7 +138,7 @@ namespace RetroLinker.Models
         public static (string, List<string>) ResolveSubsystemArg(string arg)
         {
             if (!arg.StartsWith(subsystem))
-                throw new System.ArgumentException(@"Invalid subsystem argument", nameof(arg));
+                throw new System.ArgumentException(@"Invalid subsystem argument: " + arg, nameof(arg));
             
             var noOption = GetArgumentNoOption(arg);
             var subsys = noOption.Split(' ')[0];

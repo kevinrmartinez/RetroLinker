@@ -63,4 +63,22 @@
     <data name="btnAuto" xml:space="preserve">
         <value>Auto</value>
     </data>
+    <data name="btnAdd" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="btnClear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
+    <data name="btnDelete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="btnDeleteItem" xml:space="preserve">
+        <value>Delete Item</value>
+    </data>
+    <data name="btnUndo" xml:space="preserve">
+        <value>Undo changes</value>
+    </data>
+    <data name="tipBrowse" xml:space="preserve">
+        <value>Browse for a file</value>
+    </data>
 </root>

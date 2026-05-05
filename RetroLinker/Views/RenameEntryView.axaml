@@ -37,7 +37,7 @@
             
             <Rectangle Grid.Column="1"/>
             
-            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static lc:resMainExtras.btnClear_Tip}" Click="BtnClear_OnClick"
+            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static lc:resGeneric.btnUndo}" Click="BtnClear_OnClick"
                     i:Attached.Icon="fa-arrow-rotate-left" FontSize="20"/>
             
             <Button Name="btnNameApply" Grid.Column="3" Click="BtnNameApply_OnClick">

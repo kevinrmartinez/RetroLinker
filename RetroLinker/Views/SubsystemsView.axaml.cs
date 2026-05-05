@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
-using Avalonia.VisualTree;
 using RetroLinker.Models;
 using RetroLinker.Styles;
 
@@ -15,7 +12,6 @@ namespace RetroLinker.Views;
 
 public partial class SubsystemsView : UserControl
 {
-    // TODO: Localization support
     // Window Object
     private MainWindow ParentWindow;
     
@@ -23,7 +19,7 @@ public partial class SubsystemsView : UserControl
     public string Core { get; init; }
     public string CoreContent { get; init; }
     public string SubSystem { get; set; }
-    public ObservableCollection<string> Arguments { get; private set; }
+    public ObservableCollection<string> Arguments { get; set; }
     public string? NewArgument { get; set; }
     
     // Designer Constructor
@@ -57,12 +53,11 @@ public partial class SubsystemsView : UserControl
         }
         SubSystem = subsystem;
         Arguments = new ObservableCollection<string>(subsystemArgs);
-        DataContext = this;     // Why is this necessary...
+        DataContext = this;
     }
 
 
     private void AddNewArgument(bool addNew) {
-        //ArgsList.IsEnabled = !addNew;
         if (ArgsList is null) return;
         ArgsList.AddButton?.IsEnabled = !addNew;
         BorderNewArg.IsVisible = addNew;
@@ -73,8 +68,23 @@ public partial class SubsystemsView : UserControl
         TextBoxNewArg.Focus();
     }
 
+    private async void ButtonNewArgBrowse_ClickAsync()
+    {
+        try {
+            var file = await Models.Avalonia.FileDialogOps.OpenFileAsync(Models.Avalonia.PickerOpt.OpenOpts.RAroms, ParentWindow);
+            if (string.IsNullOrEmpty(file)) return;
+            TextBoxNewArg.Text = file;
+        }
+        catch (System.Exception ex) {
+            App.Logger?.LogErro(ex.Message);
+            // TODO: Needs access to an generic error pop-up
+        }
+    }
+
+    private void ButtonNewArgBrowse_OnClick(object? sender, RoutedEventArgs e) => ButtonNewArgBrowse_ClickAsync();
+
     private void ButtonNewArgDiscard_OnClick(object? sender, RoutedEventArgs e) {
-        NewArgument = null;
+        TextBoxNewArg.Text = null;
         AddNewArgument(false);
     }
 
@@ -82,7 +92,7 @@ public partial class SubsystemsView : UserControl
     {
         if (!string.IsNullOrWhiteSpace(NewArgument))
             if (!Arguments.Contains(NewArgument)) Arguments.Add(NewArgument);
-        NewArgument = null;
+        TextBoxNewArg.Text = null;
         AddNewArgument(false);
     }
     
@@ -98,7 +108,8 @@ public partial class SubsystemsView : UserControl
         }
     }
     
-    private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
+    // View Controls
+    private void BtnSaveSubsystem_OnClick(object? sender, RoutedEventArgs e)
     {
         var subsysArg = (string.IsNullOrEmpty(SubSystem)) 
             ? string.Empty 
@@ -106,7 +117,7 @@ public partial class SubsystemsView : UserControl
         ParentWindow.ReturnToMainView(this, subsysArg);
     }
 
-    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
+    private void BtnDiscSubsystem_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
     
     // Designer Only
     private ObservableCollection<string> FillListTest()

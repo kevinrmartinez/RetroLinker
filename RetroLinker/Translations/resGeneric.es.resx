@@ -47,4 +47,22 @@
     <data name="popUnError_Mess0" xml:space="preserve">
         <value>La operacion falló con el siguienete error:</value>
     </data>
+    <data name="btnAdd" xml:space="preserve">
+        <value>Añadir</value>
+    </data>
+    <data name="btnClear" xml:space="preserve">
+        <value>Vaciar</value>
+    </data>
+    <data name="btnDelete" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+    <data name="btnDeleteItem" xml:space="preserve">
+        <value>Eliminar Ítem</value>
+    </data>
+    <data name="btnUndo" xml:space="preserve">
+        <value>Deshacer cambios</value>
+    </data>
+    <data name="tipBrowse" xml:space="preserve">
+        <value>Buscar un archivo</value>
+    </data>
 </root>

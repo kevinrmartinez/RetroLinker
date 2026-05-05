@@ -39,9 +39,6 @@
     <data name="chkCustomFilename" xml:space="preserve">
         <value>Custom Filename</value>
     </data>
-    <data name="btnClear_Tip" xml:space="preserve">
-        <value>Undo changes</value>
-    </data>
     <data name="titleSoftPatching" xml:space="preserve">
         <value>Soft Patching</value>
     </data>
@@ -83,5 +80,26 @@
     </data>
     <data name="titleSubsystems" xml:space="preserve">
         <value>Subsystem</value>
+    </data>
+    <data name="lblSubsysCore" xml:space="preserve">
+        <value>Core: </value>
+    </data>
+    <data name="lblSubsysContent" xml:space="preserve">
+        <value>Content: </value>
+    </data>
+    <data name="lblSubsysBase" xml:space="preserve">
+        <value>Subsystem: </value>
+    </data>
+    <data name="lblSubsysArgs" xml:space="preserve">
+        <value>Arguments: </value>
+    </data>
+    <data name="lblSubsysNewArg" xml:space="preserve">
+        <value>New Argument:</value>
+    </data>
+    <data name="btnSubsysArgAdd_Tip" xml:space="preserve">
+        <value>Add Argument</value>
+    </data>
+    <data name="btnSubsysArgDis_Tip" xml:space="preserve">
+        <value>Discard Argument</value>
     </data>
 </root>
