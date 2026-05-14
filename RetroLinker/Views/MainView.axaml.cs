@@ -529,30 +529,36 @@ public partial class MainView : UserControl
             OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
 
             // Icons handling
+            void UpdateUserIcon(string newPath) {
+                OutputLink.ICONfile = newPath;
+                IconItemSET?.FilePath =  newPath;
+            }
+            
             // RA binary icon (Default)
             if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
             else
             {
                 // If it's Windows OS, the images may need to be converted to .ico
-                if (IconItemSET!.ConversionRequired)
+                if ((IconItemSET is not null) && (IconItemSET.ConversionRequired))
                 {
                     OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
                     if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
                     {
-                        var ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
-                        ROMIcoSavAUX = (ROMIcoSavAUX != Commander.contentless) ? ROMIcoSavAUX : OutputLink.ROMcore;
-                        if (settings.IcoLinkName) OutputLink.ICONfile = FileOps.ChangeIcoNameToLinkName(OutputLink);
-                        OutputLink.ICONfile = settings.IcoSavPath switch
+                        string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
+                        if (ROMIcoSavAUX == Commander.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
+                        if (settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(OutputLink));
+                        var newPath = settings.IcoSavPath switch
                         {
                             SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
                             SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
                             _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
                         };
+                        UpdateUserIcon(newPath);
                     }
                 }
 
                 // In case of 'CpyUserIcon = true'
-                if (settings.CpyUserIcon) OutputLink.ICONfile = FileOps.CpyIconToUsrSet(OutputLink.ICONfile!);
+                if (settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(OutputLink.ICONfile ?? string.Empty));
             }
 
             // REQUIRED FIELDS CHECKS

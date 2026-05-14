@@ -288,7 +288,6 @@ namespace RetroLinker.Models
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
             if (File.Exists(newPath)) return GetAbsolutePath(newPath);
             
-            // TODO: Update IconItem with new path
             File.Copy(ogPath, newPath);
             return GetAbsolutePath(newPath);
         }
@@ -299,8 +298,7 @@ namespace RetroLinker.Models
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(destPath, name);
             if (File.Exists(newPath)) return GetAbsolutePath(newPath);
-
-            // TODO: Update IconItem with new path
+            
             File.Copy(ogPath, newPath);
             return GetAbsolutePath(newPath);
         }
@@ -312,8 +310,7 @@ namespace RetroLinker.Models
             var extList = new List<string>();
             if (OS)
             {
-                foreach (var ext in WinExtraIconsExt)
-                {
+                foreach (var ext in WinExtraIconsExt) {
                     var fixedExt = ext.Remove(0, 1);
                     extList.Add(fixedExt);
                 }

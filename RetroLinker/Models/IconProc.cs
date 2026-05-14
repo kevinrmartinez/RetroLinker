@@ -105,14 +105,16 @@ namespace RetroLinker.Models
 
         public string FilePath
         {
-            get => filePath;
-            set => SetFilePath(value);
+            get;
+            set {
+                field = value;
+                FileName = (string.IsNullOrWhiteSpace(value)) ? string.Empty : FileOps.GetFileNameFromPath(value);
+            }
         }
         public MemoryStream? IconStream { get; set; }
         public int? comboIconIndex { get; set; }
         public bool ConversionRequired { get; set; }
-
-        private string filePath = string.Empty;
+        
         
         public IconsItems() {
             FileName = string.Empty;
@@ -128,11 +130,6 @@ namespace RetroLinker.Models
 
         public IconsItems(string filePath, int? comboIconInd, bool conversionRequired = false) : this(filePath, conversionRequired) {
             comboIconIndex = comboIconInd;
-        }
-
-        private void SetFilePath(string value) {
-            filePath = value;
-            FileName = (string.IsNullOrWhiteSpace(value)) ? string.Empty : FileOps.GetFileNameNoExtFromPath(filePath);
         }
         
         public bool HasSameFile(IconsItems? other) => (other != null) && (FilePath == other.FilePath);

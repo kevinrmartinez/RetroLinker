@@ -6,8 +6,8 @@
 
     <Application.Styles>
         <FluentTheme />
-        <!-- TODO: Customize accent colors -->
+        <!-- TODO: Customize accent colors (>= 0.9) -->
         <!-- https://docs.avaloniaui.net/docs/basics/user-interface/styling/themes/fluent -->
     </Application.Styles>
-             <!-- TODO: Add globally fixed colors (Resources) -->
+             <!-- TODO: Add globally fixed colors (Resources) (>= 0.9) -->
 </Application>
