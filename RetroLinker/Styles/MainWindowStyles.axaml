@@ -4,12 +4,26 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
+            <Label Content="Cores" Classes="ReqField"/>
         </Border>
     </Design.PreviewWith>
     
     <StyleInclude Source="ComplexCustomControls.axaml"/>
     
     <!-- Main View Body -->
+    
+    <!-- Section Labes -->
+    <Style Selector="Label.ReqField">
+        <Setter Property="ContentTemplate">
+            <DataTemplate>
+                <TextBlock>
+                    <Run Text="{Binding Content,
+                    RelativeSource={RelativeSource FindAncestor, AncestorType=Label}}"/>
+                    <Run Text="*" Foreground="Crimson"/>
+                </TextBlock>
+            </DataTemplate>
+        </Setter>
+    </Style>
     
     <!-- comboCore -->
     <Style Selector="AutoCompleteBox#comboCore">

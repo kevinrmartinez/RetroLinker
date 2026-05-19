@@ -251,14 +251,13 @@ namespace RetroLinker.Models
             return newDir;
         }
         
-        public static string DumpStreamToFile(Stream fileStream)
+        public static void DumpStreamToFile(Stream fileStream, out string destFile, string fileName = tempFile)
         {
             fileStream.Position = 0;
             CheckUsrSetDir(UserTemp);
-            var temporalFile = Path.Combine(UserTemp, tempFile);
+            destFile = Path.Combine(UserTemp, fileName);
             var streamReader = new StreamReader(fileStream);
-            File.WriteAllText(temporalFile, streamReader.ReadToEnd());
-            return temporalFile;
+            File.WriteAllText(destFile, streamReader.ReadToEnd());
         }
 
         public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)

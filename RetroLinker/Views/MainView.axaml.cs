@@ -157,7 +157,7 @@ public partial class MainView : UserControl
 
     void comboCore_Loaded(string[] cores)
     {
-        if (cores.Length < 1) lblNoCores.IsVisible = true;
+        if (cores.Length < 1) ToolTip.SetTip(comboCore, resMainView.lblNoCores);
         else comboCore.ItemsSource = cores;
         App.Logger?.LogInfo($"{cores.Length} cores were imported.");
      }
@@ -211,7 +211,7 @@ public partial class MainView : UserControl
         {
             DragDrop.SetAllowDrop(control, true);
             if (control.Transitions != null) control.Transitions.Add(borderTransition);
-            else control.Transitions = [borderTransition];
+            else control.Transitions = [ borderTransition ];
             control.AddHandler(DragDrop.DragEnterEvent, ControlBox_DragEnter);
             control.AddHandler(DragDrop.DragLeaveEvent, ControlBox_DragLeave);
             control.AddHandler(DragDrop.DropEvent, ControlBox_DropParse);

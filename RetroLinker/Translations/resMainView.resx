@@ -22,22 +22,22 @@
         <value>RetroLinker</value>
     </data>
     <data name="lblRADir" xml:space="preserve">
-        <value>RetroArch executable*</value>
+        <value>RetroArch executable</value>
     </data>
     <data name="lblROMDir" xml:space="preserve">
-        <value>ROM directory*</value>
+        <value>ROM directory</value>
     </data>
     <data name="chkContentless" xml:space="preserve">
         <value>Contentless</value>
     </data>
     <data name="lblCore" xml:space="preserve">
-        <value>Core*</value>
+        <value>Core</value>
     </data>
     <data name="tipSubSys" xml:space="preserve">
         <value>Subsystem</value>
     </data>
     <data name="lblNoCores" xml:space="preserve">
-        <value>'cores.txt' not found!</value>
+        <value>'cores.txt' is empty</value>
     </data>
     <data name="lblConfig" xml:space="preserve">
         <value>Config</value>
@@ -52,10 +52,10 @@
         <value>Accessibility</value>
     </data>
     <data name="lblLinkDir" xml:space="preserve">
-        <value>Shortcut output directory*</value>
+        <value>Shortcut output directory</value>
     </data>
     <data name="lblLinkName" xml:space="preserve">
-        <value>Output Shortcut name*</value>
+        <value>Output Shortcut name</value>
     </data>
     <data name="lblLinkDeskDir" xml:space="preserve">
         <value>Desktop directory</value>

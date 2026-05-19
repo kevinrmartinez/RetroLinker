@@ -31,6 +31,7 @@
 		</cc:MainWindowHeader>
 		
 		<!--Body-->
+		<!-- TODO: Standardize margins and padding -->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
 			
 			<!--Main Operations-->
@@ -41,7 +42,7 @@
 
 				<!-- ROW1 - RetroArch Executable -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
-					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}"/>
+					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="retroarch.exe"/>
 						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browse" Click="btnRADir_OnClick"/>
@@ -51,7 +52,7 @@
 				<!-- ROW2 - ROM Directory -->
 				<StackPanel Name="panelROMDir" Grid.Row="2">
 					<StackPanel Orientation="Horizontal" Margin="5,5,0,0" Spacing="12">
-						<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblROMDir}"/>
+						<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblROMDir}" Classes="ReqField"/>
 						<CheckBox Name="chkContentless" Content="{x:Static lc:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
@@ -66,13 +67,10 @@
 				</StackPanel>
 
 				<!-- ROW3 - Core & Config Selection -->
-				<Grid Name="COREconfig" Grid.Row="3" ColumnDefinitions="*, Auto, *, Auto" ShowGridLines="False">
-					<StackPanel Name="panelCORE" Grid.Column="0" Margin="5,5,0,5">
-						<StackPanel Orientation="Horizontal">
-							<Label Content="{x:Static lc:resMainView.lblCore}"/>
-							<Label Name="lblNoCores" Classes="minor_error" Content="{x:Static lc:resMainView.lblNoCores}" 
-							       IsVisible="True"/>
-						</StackPanel>
+				<!-- Core -->
+				<Grid Name="COREconfig" Grid.Row="3" ColumnDefinitions="*, Auto, *" Margin="5,0,0,0">
+					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
+						<Label Content="{x:Static lc:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
@@ -82,8 +80,11 @@
 						                            IsVisible="{Binding $self.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 					
-
-					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="8,5,0,5">
+					<!-- Spacing -->
+					<Rectangle Grid.Column="1" Width="8"/>
+					
+					<!-- Config -->
+					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="0,5">
 						<Label Content="{x:Static lc:resMainView.lblConfig}"/>
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
@@ -114,8 +115,8 @@
 						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" IsEnabled="False"
 						        Content="{x:Static lc:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
 					</Grid>
-					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}"/>
-					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}"/>
+					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
+					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}" Classes="ReqField"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" Watermark="Super Mario Bros.lnk" />
 						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"

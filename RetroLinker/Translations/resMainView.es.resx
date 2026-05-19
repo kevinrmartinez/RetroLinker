@@ -12,22 +12,22 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="lblRADir" xml:space="preserve">
-        <value>Ejecutable de RetroArch*</value>
+        <value>Ejecutable de RetroArch</value>
     </data>
     <data name="lblROMDir" xml:space="preserve">
-        <value>Directorio de la ROM*</value>
+        <value>Directorio de la ROM</value>
     </data>
     <data name="chkContentless" xml:space="preserve">
         <value>Sin Contenido</value>
     </data>
     <data name="lblNoCores" xml:space="preserve">
-        <value>'cores.txt' no encontrado!</value>
+        <value>'cores.txt' esta vacio</value>
     </data>
     <data name="lblLinkDir" xml:space="preserve">
-        <value>Directorio destino del Shortcut*</value>
+        <value>Directorio destino del Shortcut</value>
     </data>
     <data name="lblLinkName" xml:space="preserve">
-        <value>Nombre del Shortcut destino*</value>
+        <value>Nombre del Shortcut destino</value>
     </data>
     <data name="lblLinkDeskDir" xml:space="preserve">
         <value>Directorio del Desktop</value>

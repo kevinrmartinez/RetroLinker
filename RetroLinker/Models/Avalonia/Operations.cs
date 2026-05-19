@@ -44,8 +44,10 @@ public static class Operations
         if (Cores.Length >= 1) return Cores;
         if (!FileOps.GetCoreFile(out string coresFile))
         {
+            App.Logger?.LogWarn("'cores.txt' was not found, extracting internal core asset...");
             var assetStream = AssetLoader.Open(GetDefaultCores());
-            coresFile = FileOps.DumpStreamToFile(assetStream);
+            FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
+            App.Logger?.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
         Cores = FileOps.LoadCores(coresFile);
         return Cores;
