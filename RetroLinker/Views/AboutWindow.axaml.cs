@@ -28,8 +28,9 @@ namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
-    private AppInfo? appInfo;
-    private readonly string[] Contributors;
+    // TODO: Move some things into Bindings
+    private readonly AppInfo? appInfo;
+    private readonly Contribs[] Contributors;
     private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
     
     public AboutWindow()
@@ -51,14 +52,19 @@ public partial class AboutWindow : Window
 #endif
         
         // Contributors (In order of arrival)
-        // TODO: Replace with HyperlinkButtons pointing to the github account. Maybe using Records (>= 0.8)
-        Contributors = [ "" ];
-        ListBoxContributors.ItemsSource = Contributors;
+        // Contributors feel free to add their names and social media/contact/GitHub in this record array
+        Contributors = [ 
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        ];
+        ItemsControlContributors.ItemsSource = Contributors;
         
         // Attribution
         // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
         ThirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        ThirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("http://www.iconbeast.com"));
+        ThirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
         foreach (var key in ThirdPartyCredits.Keys)
         {
             var hyperlink = new HyperlinkButton()
@@ -73,3 +79,5 @@ public partial class AboutWindow : Window
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
 }
+
+public record Contribs(string DisplayName, Uri? OnlinePageUrl);

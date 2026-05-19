@@ -2,9 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vw="clr-namespace:RetroLinker.Views"
         xmlns:lc="clr-namespace:RetroLinker.Translations"
         mc:Ignorable="d" d:DesignWidth="510" d:DesignHeight="400"
         x:Class="RetroLinker.Views.AboutWindow"
+        x:DataType="vw:AppendView"
+        x:CompileBindings="True"
         MinWidth="450" MinHeight="350" Width="510" Height="400"
         WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
     
@@ -36,6 +39,22 @@
             <Setter Property="FontWeight" Value="Light"/>
         </Style>
         
+        <Style Selector="Border#BorderContributors">
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="ItemsControl#ItemsControlContributors">
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="ItemTemplate">
+                <DataTemplate DataType="vw:Contribs"
+                              x:DataType="vw:Contribs">
+                    <HyperlinkButton Padding="2" Content="{Binding DisplayName}" NavigateUri="{Binding OnlinePageUrl}"/>
+                </DataTemplate>
+            </Setter>
+        </Style>
         <Style Selector="StackPanel#StackPanelCredits">
             <Setter Property="Orientation" Value="Vertical"/>
             <Style Selector="^ TextBlock">
@@ -82,16 +101,17 @@
             <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto" Margin="0,14,0,8">
                 <StackPanel Grid.Row="0" Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <Label><StackPanel Orientation="Horizontal" Spacing="0">
-                                <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
-                                <Label Content=": "/>
-                            </StackPanel></Label>
+                        <Label Content="{Binding Source={x:Static lc:resAboutWindow.lblMaintainer}, StringFormat='\{0\}: '}"/>
                         <HyperlinkButton Content="kevinrmartinez" NavigateUri="https://github.com/kevinrmartinez" Padding="0"/>
                     </StackPanel>
                     <Rectangle Height="6"/>
                     <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
                 </StackPanel>
-                <ListBox Name="ListBoxContributors" Grid.Row="1" SelectionMode="Single" VerticalAlignment="Stretch" Margin="2" IsVisible="False"/>
+                <Border Name="BorderContributors" Grid.Row="1" IsVisible="False">
+                    <ScrollViewer>
+                        <ItemsControl Name="ItemsControlContributors"/>
+                    </ScrollViewer>
+                </Border>
                 <StackPanel Name="StackPanelCredits" Grid.Row="2">
                     <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
                     <!-- Filled by code behind -->
