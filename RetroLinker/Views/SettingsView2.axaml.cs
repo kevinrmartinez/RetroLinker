@@ -114,7 +114,7 @@ public partial class SettingsView2 : UserControl
     async void btnDefRADir_ClickAsync()
     {
         try {
-            var opt = DesktopOS ? PickerOpt.OpenOpts.RAexe : PickerOpt.OpenOpts.RAbin;
+            var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
             string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrWhiteSpace(file)) return;
@@ -136,7 +136,7 @@ public partial class SettingsView2 : UserControl
     {
         try {
             string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(template:1, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
             txtDefROMPath.Text = folder; 
             ParentWindow.settings.DEFROMPath = folder;
@@ -146,8 +146,7 @@ public partial class SettingsView2 : UserControl
 
     void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();
     
-    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
-    {
+    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }

@@ -71,7 +71,7 @@ public partial class SubsystemsView : UserControl
     private async void ButtonNewArgBrowse_ClickAsync()
     {
         try {
-            var file = await Models.Avalonia.FileDialogOps.OpenFileAsync(Models.Avalonia.PickerOpt.OpenOpts.RAroms, ParentWindow);
+            var file = await Models.Avalonia.FileDialogOps.OpenFileAsync(Models.Avalonia.OpenOpts.RAroms, ParentWindow);
             if (string.IsNullOrEmpty(file)) return;
             TextBoxNewArg.Text = file;
         }

@@ -66,7 +66,7 @@ public partial class AppendView : UserControl
     public ObservableCollection<string> AppendPaths { get; private set; }
     
     // FIELDS
-    private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
+    private OpenOpts ConfigOpt = OpenOpts.RAcfg;
 
     // Append Config controls
 

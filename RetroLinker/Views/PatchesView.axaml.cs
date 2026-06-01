@@ -51,7 +51,7 @@ public partial class PatchesView : UserControl
     
     // == FIELDS ==
     private string PatchString;
-    private PickerOpt.PatchOpts PatchOpts;
+    private PatchOpts PatchOpts;
     private List<RadioButton> patchRadioButtons = new();
     
     
@@ -111,11 +111,11 @@ public partial class PatchesView : UserControl
         if (radioButton.Tag is not SoftPatch softPatch) return;
         PatchOpts = softPatch.PatchType switch
         {
-            Commander.PatchType.UPS => PickerOpt.PatchOpts.UPS,
-            Commander.PatchType.BPS => PickerOpt.PatchOpts.BPS,
-            Commander.PatchType.IPS => PickerOpt.PatchOpts.IPS,
-            Commander.PatchType.XDelta => PickerOpt.PatchOpts.XD,
-            _ => PickerOpt.PatchOpts.UPS
+            Commander.PatchType.UPS => PatchOpts.UPS,
+            Commander.PatchType.BPS => PatchOpts.BPS,
+            Commander.PatchType.IPS => PatchOpts.IPS,
+            Commander.PatchType.XDelta => PatchOpts.XD,
+            _ => PatchOpts.UPS
         };
         
     }

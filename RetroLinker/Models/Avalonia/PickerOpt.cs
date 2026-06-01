@@ -39,10 +39,6 @@ namespace RetroLinker.Models.Avalonia
         static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
         static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
 
-        public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
-        public enum SaveOpts { WINlnk, LINdesktop }
-        public enum PatchOpts { UPS, BPS, IPS, XD }
-
         static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
         static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
         static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
@@ -74,7 +70,6 @@ namespace RetroLinker.Models.Avalonia
                     { options.SuggestedStartLocation = Operations.ROMTopDir; }
                     /*
                      * From the XDG Portal Docs:
-                     * 
                      * "Suggested folder from which the files should be opened.
                      * The portal implementation is free to ignore this option."
                      *
@@ -168,4 +163,9 @@ namespace RetroLinker.Models.Avalonia
             };
         }
     }
+    
+    public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
+    public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy}
+    public enum SaveOpts { WINlnk, LINdesktop }
+    public enum PatchOpts { UPS, BPS, IPS, XD }
 }

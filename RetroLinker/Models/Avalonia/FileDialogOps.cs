@@ -26,7 +26,7 @@ namespace RetroLinker.Models.Avalonia;
 
 public static class FileDialogOps
 {
-    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel, string? currentFile = null)
+    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile)) {
@@ -45,18 +45,17 @@ public static class FileDialogOps
         return dir;
     }
 
-    public static async Task<string> OpenFolderAsync(byte template, string currentFolder, TopLevel topLevel)
+    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, string currentFolder, TopLevel topLevel)
     {
-        // TODO: replace 'template' with an Enum, for a more verbose programming experience (0.8) 
         FolderPickerOpenOptions opt = new()
         {
             AllowMultiple = false,
             Title = template switch
             {
-                0 => resAvaloniaOps.dlgFolderUserAssets,
-                1 => resAvaloniaOps.dlgFolderROMParent,
-                2 => resAvaloniaOps.dlgFolderIcoOutput,
-                3 => resAvaloniaOps.dlgFolderLinkCopy,
+                OpenFolderOpts.UserAssets => resAvaloniaOps.dlgFolderUserAssets,
+                OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
+                OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
+                OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
                 // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
             },
@@ -69,7 +68,7 @@ public static class FileDialogOps
         return dir;
     }
 
-    public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, string currentFile, TopLevel topLevel)
+    public static async Task<string> SaveFileAsync(SaveOpts template, string currentFile, TopLevel topLevel)
     {
         var opt = PickerOpt.SavePickerOpt(template);
         if (!string.IsNullOrEmpty(currentFile))
@@ -78,7 +77,7 @@ public static class FileDialogOps
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
         }
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
-        string dir = (file != null) ? file.Path.LocalPath : string.Empty;
+        string dir = (file != null) ? file.Path.LocalPath : string.Empty;   // Rewrite: replace all instances of this line to: file?.Path.LocalPath ?? string.Empty
         return dir;
     }
 }

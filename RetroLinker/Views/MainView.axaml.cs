@@ -728,7 +728,7 @@ public partial class MainView : UserControl
     async void btnICONDir_ClickAsync()
     {
         try {
-            var opt = DesktopOS ? PickerOpt.OpenOpts.WINico : PickerOpt.OpenOpts.LINico;
+            var opt = DesktopOS ? OpenOpts.WINico : OpenOpts.LINico;
             string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
                 ? (string)comboICONDir.SelectedItem!
                 : string.Empty;
@@ -786,13 +786,13 @@ public partial class MainView : UserControl
     async void btnRADir_ClickAsync()
     {
         try {
-            PickerOpt.OpenOpts opt;
+            OpenOpts opt;
             string currentFile = string.Empty;
             if (DesktopOS) {
-                opt = PickerOpt.OpenOpts.RAexe;
+                opt = OpenOpts.RAexe;
                 currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
             }
-            else { opt = PickerOpt.OpenOpts.RAbin; }
+            else { opt = OpenOpts.RAbin; }
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             RADirSet(file);
@@ -818,7 +818,7 @@ public partial class MainView : UserControl
     {
         try {
             string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
-            string file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAroms, ParentWindow, currentFile);
+            string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
@@ -881,7 +881,7 @@ public partial class MainView : UserControl
     {
         try {
             string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
-            var file = await FileDialogOps.OpenFileAsync(PickerOpt.OpenOpts.RAcfg, ParentWindow, currentFile);
+            var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAcfg, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
@@ -914,7 +914,7 @@ public partial class MainView : UserControl
     async void btnLINKDir_ClickAsync()
     {
         try {
-            var opt = (DesktopOS) ? PickerOpt.SaveOpts.WINlnk : PickerOpt.SaveOpts.LINdesktop;
+            var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
             string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
             string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
             if (!string.IsNullOrEmpty(file)) {

@@ -257,7 +257,7 @@ namespace RetroLinker.Views
 
                 if (currentItem == StrAddCustomCopyPath)
                 {
-                    string folder = await FileDialogOps.OpenFolderAsync(template:3, string.Empty, ParentWindow);
+                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, string.Empty, ParentWindow);
                     if (!string.IsNullOrWhiteSpace(folder)) {
                         lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
                         ParentWindow.SetLinkCopyPaths.Add(folder);
@@ -296,7 +296,7 @@ namespace RetroLinker.Views
         {
             try {
                 string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
-                string folder = await FileDialogOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, currentFolder, ParentWindow);
                 if (string.IsNullOrWhiteSpace(folder)) return;
                 txtIcoSavPath.Text = folder; 
                 ParentWindow.settings.IcoSavPath = folder;
