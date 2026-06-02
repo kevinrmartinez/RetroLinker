@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     // Props
     public Settings Settings { get; }
     public string[] CoresList { get; }
-    public (List<string>, System.Exception?) IconsList { get; }
+    public (List<string>, string?) IconsListEx { get; }
     
     // Fields
     private UserControl PermaView;
@@ -40,7 +40,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         Settings = FileOps.LoadSettingsFO();
         CoresList = Operations.GetCoresArray();
-        IconsList = FileOps.LoadIcons(DesktopOS);
+        IconsListEx = FileOps.LoadIcons(DesktopOS);
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         MainCC1.Content = PermaView;
@@ -52,7 +52,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         IsDesigner = isDesigner;
         CoresList = [];
-        IconsList = (new List<string>(), null);
+        IconsListEx = (new List<string>(), null);
         // Settings = FileOps.LoadDesignerSettingsFO(true);
         Settings = new Settings();
         PermaView = new RenameEntryView();
@@ -69,7 +69,7 @@ public partial class MainWindow : Window
     {
         mainViewDesigner.Name = "MainViewDesigner";
         CoresList = Operations.GetCoresArray();
-        IconsList = FileOps.LoadIcons(DesktopOS);
+        IconsListEx = FileOps.LoadIcons(DesktopOS);
     }
 
     // TODO: Move outside of MainWindow, can be this same file

@@ -193,8 +193,8 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    // TODO: Handle specific Exceptions 
                     App.Logger?.LogErro($"\"{outputFile}\" could not be created!");
+                    App.Logger?.LogErro(e);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -256,7 +256,7 @@ namespace RetroLinker.Models
         {
             FriendlyName = primeOutput.FriendlyName;
             FileName = primeOutput.FileName;
-            FullPath = FileOps.CombineDirAndFile(copyOutput, primeOutput.FileName);
+            FullPath = FileOps.CombineMultipleInputs(copyOutput, primeOutput.FileName);
             ValidOutput = true;
         }
         
@@ -272,8 +272,8 @@ namespace RetroLinker.Models
         {
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
             var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
-            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName))
-                    : new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName), romCore);
+            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))
+                    : new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
         }
 
         public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore, ShortcutterOutput? baseOutput)

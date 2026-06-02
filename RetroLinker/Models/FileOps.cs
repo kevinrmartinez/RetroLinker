@@ -147,12 +147,12 @@ namespace RetroLinker.Models
             }
         }
 
-        public static (List<string>, Exception?) LoadIcons(bool DesktopOS)
+        public static (List<string>, string?) LoadIcons(bool DesktopOS)
         {
             var dir = LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar;
             var files = new List<string>();
-            Exception? iconException = null;
-            
+            string? iconException = null;
+
             try
             {
                 var filesList = new DirectoryInfo(dir).GetFiles();
@@ -163,15 +163,17 @@ namespace RetroLinker.Models
                     var filePath = file.FullName;
                     if (DesktopOS)
                     {
-                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe")) 
+                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
                             IconProc.IconItemsList.Add(new IconsItems(filePath, true));
                         else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filePath));
                     }
-                    else if (LinIconsExt.Contains("*" + ext)) 
+                    else if (LinIconsExt.Contains("*" + ext))
                         IconProc.IconItemsList.Add(new IconsItems(filePath));
                 }
 
-                App.Logger?.LogInfo(filesList.Length == 0 ? "No icons found." : $"{IconProc.IconItemsList.Count} icons were found.");
+                App.Logger?.LogInfo(filesList.Length == 0
+                    ? "No icons found."
+                    : $"{IconProc.IconItemsList.Count} icons were found.");
 
                 var index = 1;
                 foreach (var file in IconProc.IconItemsList) {
@@ -180,18 +182,10 @@ namespace RetroLinker.Models
                     index++;
                 }
             }
-            catch (DirectoryNotFoundException e)
-            {
-                // TODO: Catch more types of exceptions (0.8)
-                App.Logger?.LogWarn($"The directory \"{dir}\" could not be found.");
-                iconException = e;
-            }
-            catch (Exception e)
-            {
-                App.Logger?.LogErro("An error has occurred while loading icons.");
-                App.Logger?.LogDebg($"Source: {e.Source}");
-                App.Logger?.LogErro(e.Message);
-                iconException = e;
+            catch (Exception e) {
+                App.Logger?.LogErro("An error has occurred while loading icons...");
+                App.Logger?.LogErro(e);
+                iconException = e.Message;
             }
             
             return (files, iconException);
@@ -210,15 +204,7 @@ namespace RetroLinker.Models
         
         public static string GetFileExtFromPath(string pathToFile) => Path.GetExtension(pathToFile);
         
-        public static string CombineMultipleInputs(params string[] paths) => Path.Combine(paths); 
-
-        public static string CombineDirAndFile(string dir, string file) => Path.Combine(dir, file);
-
-        public static string GetDirAndCombine(string fullPath, string newFileName) {
-            var dir = GetDirFromPath(fullPath);
-            if (string.IsNullOrWhiteSpace(dir)) dir = BaseDir;
-            return Path.Combine(dir, newFileName);
-        }
+        public static string CombineMultipleInputs(params string[] paths) => Path.Combine(paths);
         
         public static bool PathAlreadyExists(string path) => Path.Exists(path);
 

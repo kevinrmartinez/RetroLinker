@@ -128,7 +128,8 @@ public partial class RenameEntryView : UserControl
         var fileName = (CustomFilename) 
             ? txtFileName.Text! 
             : DesktopEntry.StdDesktopEntry(friendlyName + FileOps.GetOutputExt(false), CurrentCore);
-        var newPath = FileOps.GetDirAndCombine(GivenPath, fileName);
+        var newDir = FileOps.GetDirFromPath(GivenPath) ?? FileOps.BaseDir;
+        var newPath = FileOps.CombineMultipleInputs(newDir, fileName);
         NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
         NewName.CustomEntryName = CustomFilename;
         _popUpWindow.Close(ResolveOutput());

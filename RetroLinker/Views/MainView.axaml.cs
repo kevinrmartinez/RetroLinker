@@ -138,12 +138,12 @@ public partial class MainView : UserControl
 
             BuildingLink = new Shortcutter();
             txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
-            LoadDragDropEvents();
+            ApplyDragDropEvents();
             ApplySettingsToControls();
             
             comboCore_Loaded(ParentWindow.CoresList);
             comboConfig_Loaded();
-            comboICONDir_Loaded(ParentWindow.IconsList);
+            comboICONDir_Loaded(ParentWindow.IconsListEx);
             
             // Arguments should only load when above controls are ready
             ApplyArgs();
@@ -171,13 +171,13 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    void comboICONDir_Loaded((List<string>, System.Exception?) iconsObject)
+    void comboICONDir_Loaded((List<string> list, string? error) icons)
     {
         comboICONDir.Items.Clear();
-        if (iconsObject.Item2 is null)
+        if (string.IsNullOrEmpty(icons.error))
         {
             comboICONDir.Items.Add(resMainView.comboDefItem);
-            foreach (var iconFile in iconsObject.Item1)
+            foreach (var iconFile in icons.list)
                 comboICONDir.Items.Add(iconFile);
             App.Logger?.LogInfo("Icons list imported");
 
@@ -190,7 +190,7 @@ public partial class MainView : UserControl
             var popParams = new MessageBoxStandardParams()
             {
                 ContentTitle = resMainView.popIconsError_Tittle,
-                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{iconsObject.Item2.Message}'",
+                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{icons.error}'",
                 Icon = MessageBoxIcons.Error,
                 ButtonDefinitions = MessageBoxButtons.Ok
             };
@@ -198,14 +198,13 @@ public partial class MainView : UserControl
         }
     }
 
-    void LoadDragDropEvents()
+    void ApplyDragDropEvents()
     {
-        var borderTransition = new BrushTransition()
-        {
+        var borderTransition = new BrushTransition() {
             Property = BorderBrushProperty,
             Duration = System.TimeSpan.FromMilliseconds(250),
         };
-
+        
         AvaloniaTemplatedControl[] templatedControls = [comboICONDir, txtRADir, txtROMDir, comboConfig, txtLINKDir];
         foreach (var control in templatedControls)
         {
@@ -845,13 +844,13 @@ public partial class MainView : UserControl
             newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
-            txtLINKDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
+            txtLINKDir.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
         else
         {
             newFile = LinuxDesktopEntry.StdDesktopEntry(txtLINKDir.Text + FileOps.GetOutputExt(false), comboCore.Text);
             outputDir = settings.DEFLinkOutput;
-            lblLinkDefinedDir.Text = FileOps.CombineDirAndFile(outputDir, newFile);
+            lblLinkDefinedDir.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
     }
     
@@ -945,7 +944,7 @@ public partial class MainView : UserControl
     {
         try {
             LinkCustomName = false;
-            var fullPath = FileOps.CombineDirAndFile(
+            var fullPath = FileOps.CombineMultipleInputs(
                 settings.DEFLinkOutput, 
                 (string.IsNullOrWhiteSpace(txtLINKDir.Text) ? LinuxDesktopEntry.NamePlaceHolder : txtLINKDir.Text)
             );

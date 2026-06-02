@@ -17,7 +17,6 @@
 */
 
 using System.Collections.Generic;
-using System.Globalization;
 using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
@@ -31,22 +30,21 @@ namespace RetroLinker.Models
         
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
-
-        // TODO: change the literal directories with Path.Combine functions (0.8)
+        
         public static string[] WinLinkPathCandidates { get; } =
         [
             FileOps.UserDesktop,
             FileOps.WINPublicDesktop,
-            FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs",
-            "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
+            FileOps.CombineMultipleInputs(FileOps.UserProfile, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs"),
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu)
         ];  // Source: https://en.wikipedia.org/wiki/Start_menu
         
         public static string[] LinLinkPathCandidates { get; } =
         [
             FileOps.UserDesktop,
-            FileOps.UserProfile + "/.local/share/applications",
-            "/usr/local/share/applications",
-            "/usr/share/applications"
+            FileOps.CombineMultipleInputs(FileOps.UserProfile, ".local", "share", "applications"),
+            FileOps.CombineMultipleInputs("/", "usr", "local", "share", "applications"),
+            FileOps.CombineMultipleInputs("/", "usr", "share", "applications")
         ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
         
         public static Settings GetCachedSettings() => CachedSettings;
