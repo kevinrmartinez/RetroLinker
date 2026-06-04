@@ -25,7 +25,7 @@ namespace RetroLinker.Models
 {
     public class Shortcutter
     {
-        // TODO: Revise the names and setter of the properties (>= 0.8)
+        // TODO: Revise the names and setter of the properties (= 0.9)
         #region Object
         
         public string RAdir
@@ -37,7 +37,7 @@ namespace RetroLinker.Models
         public string RApath
         {
             get => ra_path; 
-            private set { SetRApath(value); }   // TODO: Set later in the workflow 
+            private set { SetRApath(value); }   // TODO: Set later in the workflow (= 0.9)
         }      // 1
 
         public string ROMdir
@@ -132,11 +132,10 @@ namespace RetroLinker.Models
 
         #region Link Output
         // Link Creation - OS selection
-        public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)  // TODO: Change from static to dynamic (=0.8)
-        {
+        public List<ShortcutterResult> BuildShortcut(bool os) {
             // Building the arguments
-            link = Commander.CommandBuilder(link);
-            return (os) ? BuildWinShortcut(link) : BuildLinShorcut(link);
+            Command = Commander.CommandBuilder(this);
+            return (os) ? BuildWinShortcut(this) : BuildLinShorcut(this);
         }
         
         // Windows
@@ -270,6 +269,7 @@ namespace RetroLinker.Models
 
         public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
         {
+            // REWRITE: reorganize constructors along with this method
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
             var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
             return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))

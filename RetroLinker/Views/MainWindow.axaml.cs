@@ -43,7 +43,7 @@ public partial class MainWindow : Window
         IconsListEx = FileOps.LoadIcons(DesktopOS);
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
-        MainCC1.Content = PermaView;
+        ContBotton.Content = PermaView;
     }
 
     // Constructor for Designer
@@ -62,62 +62,70 @@ public partial class MainWindow : Window
         Settings = FileOps.LoadSettingsFO();
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
-        MainCC1.Content = PermaView;
+        ContBotton.Content = PermaView;
     }
 
-    public MainWindow(MainView mainViewDesigner) : this(true)
-    {
+    public MainWindow(MainView mainViewDesigner) : this(true) {
         mainViewDesigner.Name = "MainViewDesigner";
         CoresList = Operations.GetCoresArray();
         IconsListEx = FileOps.LoadIcons(DesktopOS);
     }
-
-    // TODO: Move outside of MainWindow, can be this same file
-    public enum ViewsTypes
-    { MainView, PatchesView, SubsysView, AppendView }
     
-    public void ChangeOut(ViewsTypes views, object currentValue)
+    public void ChangeOut(MainViewTypes views, object currentValue)
     {
+        ContBotton.IsTransitionReversed = false;
         try
         {
-            MainCC1.Content = views switch {
-                ViewsTypes.AppendView => new AppendView(this,  (string)currentValue),
-                ViewsTypes.PatchesView => new PatchesView(this, (string)currentValue),
-                ViewsTypes.SubsysView => new SubsystemsView(this, (SubsystemReq)currentValue),
+            ContBotton.Content = views switch {
+                MainViewTypes.AppendView => new AppendView(this,  (string)currentValue),
+                MainViewTypes.PatchesView => new PatchesView(this, (string)currentValue),
+                MainViewTypes.SubsysView => new SubsystemsView(this, (SubsystemReq)currentValue),
                 _ => PermaView
             };
         }
         catch (System.InvalidCastException ex) {
-            App.Logger?.LogErro(ex.Message);
+            App.Logger?.LogErro(ex);
             // TODO: Show an error PopUp
-            MainCC1.Content = PermaView;
+            GoBackToMainView();
         }
     }
 
     public void LocaleReload(string locale)
     {
+        // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
         if (LanguageManager.SetLocale(locale)) return;
-        MainCC1.Content = null;
+        
+        var ogTransition = ContBotton.PageTransition;
+        ContTop.Content = null;
         PermaView = new MainView(this);
-        MainCC1.Content = PermaView;
+        ContBotton.PageTransition = null;
+        ContBotton.Content = PermaView;
+        ContTop.Content = ContBotton;
+        ContBotton.PageTransition = ogTransition;
     }
     
-    // TODO: Find a way to dispose of previous views (Maybe is not necessary?)
-    public void ReturnToMainView() => MainCC1.Content = PermaView;
+    private void GoBackToMainView() {
+        // Disposal of views only required if the view has native resources: https://github.com/AvaloniaUI/Avalonia/discussions/6556
+        ContBotton.IsTransitionReversed = true;
+        ContBotton.Content = PermaView;
+    }
+    
+    public void ReturnToMainView() => GoBackToMainView();
 
     public void ReturnToMainView(UserControl view, string args)
     {
         var viewType = view switch {
-            AppendView => ViewsTypes.AppendView,
-            PatchesView => ViewsTypes.PatchesView,
-            SubsystemsView => ViewsTypes.SubsysView,
-            _ => ViewsTypes.MainView
+            AppendView => MainViewTypes.AppendView,
+            PatchesView => MainViewTypes.PatchesView,
+            SubsystemsView => MainViewTypes.SubsysView,
+            _ => MainViewTypes.MainView
         };
         if (PermaView is not MainView permaView) return;
         
-        MainCC1.Content = PermaView;
+        GoBackToMainView();
         permaView.UpdateLinkFromOutside(viewType, args);
-        
-        // view = null;
     }
 }
+
+public enum MainViewTypes
+{ MainView, PatchesView, SubsysView, AppendView }

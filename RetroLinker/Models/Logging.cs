@@ -10,11 +10,12 @@ public class Logger
     public TraceSource TraceError { get; init; }
     public TraceSource TraceDebug { get; init; }
 
-    private string _prefixInfo = "[Info]";
-    private string _prefixWarn = "[Warn]";
-    private string _prefixErro = "[Erro]";
-    private string _prefixCrit = "[Crit]";
-    private string _prefixDebg = "[Debg]";
+    private const string _prefixInfo = "[Info]";
+    private const string _prefixWarn = "[Warn]";
+    private const string _prefixErro = "[Erro]";
+    private const string _prefixCrit = "[Crit]";
+    private const string _prefixDebg = "[Debg]";
+    private const string _null = "NULL";
     
     public Logger(string logFile)
     {
@@ -43,13 +44,15 @@ public class Logger
         // Trace.AutoFlush = true;
     }
     
+    private string ObjToString(object? obj) => obj?.ToString() ?? _null;
+    
     public void LogInfo(string message) {
         foreach (TraceListener listener in TraceDefault.Listeners) {
             listener.WriteLine(message,  _prefixInfo);
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogInfo(object obj) => LogInfo(obj.ToString() ?? string.Empty);
+    public void LogInfo(object? obj) => LogInfo(ObjToString(obj));
 
     public void LogWarn(string message) {
         foreach (TraceListener listener in TraceDefault.Listeners) {
@@ -57,7 +60,7 @@ public class Logger
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogWarn(object obj) => LogWarn(obj.ToString() ?? string.Empty);
+    public void LogWarn(object? obj) => LogWarn(ObjToString(obj));
 
     public void LogErro(string message) {
         foreach (TraceListener listener in TraceError.Listeners) {
@@ -65,7 +68,7 @@ public class Logger
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogErro(object obj) => LogErro(obj.ToString() ?? string.Empty);
+    public void LogErro(object? obj) => LogErro(ObjToString(obj));
 
     public void LogCrit(string message) {
         foreach (TraceListener listener in TraceError.Listeners) {
@@ -73,7 +76,7 @@ public class Logger
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogCrit(object obj) => LogCrit(obj.ToString() ?? string.Empty);
+    public void LogCrit(object? obj) => LogCrit(ObjToString(obj));
 
     public void LogDebg(string message) {
         foreach (TraceListener listener in TraceDebug.Listeners) {
@@ -81,11 +84,11 @@ public class Logger
             if (AutoFlush) listener.Flush();
         }
     }
-    public void LogDebg(object? obj) => LogDebg(obj?.ToString() ?? string.Empty);
+    public void LogDebg(object? obj) => LogDebg(ObjToString(obj));
 
-    public void Close()
-    {
+    public void Close() {
         TraceDefault.Close();
         TraceError.Close();
+        TraceDebug.Close();
     }
 }

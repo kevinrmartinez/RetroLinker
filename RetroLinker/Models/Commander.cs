@@ -44,7 +44,7 @@ namespace RetroLinker.Models
         public static SoftPatch NoPatch = new("no", string.Empty,  PatchType.NoPatch);
         public static SoftPatch ExNoPatch = new("explicit-no", "--no-patch", PatchType.ExNoPatch);
 
-        public static Shortcutter CommandBuilder(Shortcutter shortcut)
+        public static string CommandBuilder(Shortcutter shortcut)
         {
             var command = string.Empty;
             
@@ -65,8 +65,7 @@ namespace RetroLinker.Models
             if (shortcut.FullscreenB)    command = command.Insert(0, fullscreen);
             if (shortcut.VerboseB)       command = command.Insert(0, verbose);
 
-            shortcut.Command = command.TrimEnd();
-            return shortcut;
+            return command.TrimEnd();
         }
 
         public static string GetArgumentNoOption(string arg) {

@@ -119,4 +119,10 @@ public partial class AppendView : UserControl
         }
         return appendPaths;
     }
+
+    private void Visual_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        App.Logger?.LogDebg($"{GetType().Name} Detached From Visual Tree");
+        App.Logger?.LogDebg(e.Parent.GetType().Name);
+    }
 }

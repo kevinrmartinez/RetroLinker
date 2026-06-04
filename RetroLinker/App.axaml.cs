@@ -62,10 +62,8 @@ public class App : Application
     // Added
     public void SetLogger(Logger? logger) => Logger = logger;
     
-    public void SetAppInfo(AppInfo appInfo)
-    {
+    public void SetAppInfo(AppInfo appInfo) {
         LocalInformation = appInfo;
-        
         Logger?.LogDebg("'AppInfo' has been set with the following properties:\n" + LocalInformation.ToStringLines());
     }
 }

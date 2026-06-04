@@ -120,12 +120,10 @@ public partial class MainView : UserControl
             // AvaloniaOps.MainViewLoad();
 
 #if DEBUG
-            try
-            {
+            try {
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
             }
-            catch (System.Exception e_theme) 
-            {
+            catch (System.Exception e_theme) {
                 App.Logger?.LogDebg(e_theme);
                 TopLevel.GetTopLevel(this)!.RequestedThemeVariant = ThemeVariant.Light;
             }
@@ -435,17 +433,17 @@ public partial class MainView : UserControl
     } 
     
     // External/Call-back
-    public void UpdateLinkFromOutside(MainWindow.ViewsTypes viewType, string longArg)
+    public void UpdateLinkFromOutside(MainViewTypes viewType, string longArg)
     {
         switch (viewType)
         {
-            case MainWindow.ViewsTypes.PatchesView:
+            case MainViewTypes.PatchesView:
                 PatchArg = longArg;
                 break;
-            case MainWindow.ViewsTypes.SubsysView:
+            case MainViewTypes.SubsysView:
                 SubsysArg = longArg;
                 break;
-            case MainWindow.ViewsTypes.AppendView:
+            case MainViewTypes.AppendView:
                 CONFappend =  longArg;
                 break;
             default:
@@ -597,8 +595,8 @@ public partial class MainView : UserControl
                 PreviousOutput = OutputLink.OutputPaths[0];
                 
                 // Create Shortcuts
-                List<ShortcutterResult> opResult = Shortcutter.BuildShortcut(OutputLink, DesktopOS);
-                // Single Shortcut
+                List<ShortcutterResult> opResult = OutputLink.BuildShortcut(DesktopOS);
+                // Single Shortcut created
                 if (opResult.Count == 1)
                 {
                     if (!opResult[0].Error)
@@ -615,7 +613,7 @@ public partial class MainView : UserControl
                         msboxParams.Icon = MessageBoxIcons.Error;
                     }
                 }
-                // Multiple Shortcut
+                // Multiple Shortcuts created
                 else
                 {
                     bool hasErrors = false;
@@ -827,7 +825,7 @@ public partial class MainView : UserControl
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
     
     void BtnPatches_OnClick(object? sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.PatchesView, BuildingLink.PatchArg);
+        ParentWindow.ChangeOut(MainViewTypes.PatchesView, BuildingLink.PatchArg);
     }
     #endregion
 
@@ -861,7 +859,7 @@ public partial class MainView : UserControl
             comboCore.Text ?? string.Empty, 
             txtROMDir.Text ?? string.Empty, 
             BuildingLink.SubsysArg);
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.SubsysView, reqs);
+        ParentWindow.ChangeOut(MainViewTypes.SubsysView, reqs);
     }
     #endregion
 
@@ -900,13 +898,12 @@ public partial class MainView : UserControl
     }
     
     void btnAppendConfig_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainWindow.ViewsTypes.AppendView, BuildingLink.CONFappend);
+        ParentWindow.ChangeOut(MainViewTypes.AppendView, BuildingLink.CONFappend);
     }
     #endregion
 
     #region LinkPath Controls
-    private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e)
-    {
+    private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) {
         App.Logger?.LogDebg("COMING SOON");
     }
 

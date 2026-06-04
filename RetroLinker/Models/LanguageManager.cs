@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Models;
@@ -31,59 +32,35 @@ public static class LanguageManager
     private const string ENIcon = "avares://RetroLinkerLib/Assets/Icons/EN.png";
     private const string ESIcon = "avares://RetroLinkerLib/Assets/Icons/ES.png";
 
-    public static List<LanguageItem> LanguageList = new()
-    {
-        new LanguageItem
-        (
-            "English",
-            ENLocale,
-            new Uri(ENIcon)
-        )
-        { DefaultLocale = true },
-        new LanguageItem
-        (
-            "Español",
-            ESLocale,
-            new Uri(ESIcon)
-        )
-    };
+    public static readonly List<LanguageItem> LanguageList =
+    [
+        new("English", ENLocale, new Uri(ENIcon)) { DefaultLocale = true },
+        new("Español", ESLocale, new Uri(ESIcon))
+    ];
 
-    public static CultureInfo ResolveLocale(string cultureName) =>
-        LanguageList.Find(l => l.Culture.Name == cultureName)?.Culture ?? ENLocale;
+    public static CultureInfo ResolveCulture(LanguageItem languageItem) => languageItem.Culture;
     
-    public static CultureInfo ResolveLocale(LanguageItem languageItem) => languageItem.Culture;
-
-    public static LanguageItem ResolveLocale(int index)
-    {
-        // Defaults to en-US
-        LanguageItem item = LanguageList[0];
-        for (int i = 0; i < LanguageList.Count; i++)
-        {
-            if (LanguageList[i].ItemIndex == index)
-            {
-                item = LanguageList[i];
-                break;
-            }
-        }
-        return item;
-    }
+    public static CultureInfo ResolveCulture(string cultureName) =>
+        LanguageList.Find(l => l.Culture.Name == cultureName)?.Culture ?? ENLocale;
 
     public static LanguageItem ResolveLocale(CultureInfo cultureInfo) => 
-        LanguageList.Find(l => l.Culture.Name == cultureInfo.Name) ?? LanguageList.Find(l => l.DefaultLocale)!;
+        LanguageList.Find(l => l.Culture.Name == cultureInfo.Name) ?? LanguageList.First(l => l.DefaultLocale);
+    
+    public static LanguageItem ResolveLocale(int index) =>
+        LanguageList.Find(l => l.ItemIndex == index) ?? LanguageList.First(l => l.DefaultLocale);
     
     public static int GetLocaleIndex(Settings settings)
     {
-        var cultureInfo = ResolveLocale(settings.LanguageLocale);
+        var cultureInfo = ResolveCulture(settings.LanguageLocale);
         var item = ResolveLocale(cultureInfo);
         return item.ItemIndex.GetValueOrDefault();
     }
     
     public static bool SetLocale(CultureInfo cultureInfo) => ChangeRuntimeLocale(cultureInfo);
 
-    public static bool SetLocale(string locale) => ChangeRuntimeLocale(ResolveLocale(locale));
+    public static bool SetLocale(string locale) => ChangeRuntimeLocale(ResolveCulture(locale));
 
-    private static bool ChangeRuntimeLocale(CultureInfo cultureInfo)
-    {
+    private static bool ChangeRuntimeLocale(CultureInfo cultureInfo) {
         var sameLocale = resMainView.Culture.Equals(cultureInfo);
         if (!sameLocale) SetAllCultureInfo(cultureInfo);
         return sameLocale;
@@ -93,7 +70,7 @@ public static class LanguageManager
 
     private static void SetAllCultureInfo(CultureInfo cultureInfo)
     {
-        // Is this the best I can do?
+        // https://docs.avaloniaui.net/docs/app-development/localizing
         resAboutWindow.Culture = cultureInfo;
         resAvaloniaOps.Culture = cultureInfo;
         resGeneric.Culture = cultureInfo;
@@ -111,8 +88,7 @@ public class LanguageItem
     public int? ItemIndex { get; set; }
     public bool DefaultLocale { get; set; } = false;
 
-    public LanguageItem(string name, CultureInfo culture, Uri langIconPath)
-    {
+    public LanguageItem(string name, CultureInfo culture, Uri langIconPath) {
         Name = name;
         Culture = culture;
         LangIconPath = langIconPath;

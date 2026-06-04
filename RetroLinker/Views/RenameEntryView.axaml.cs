@@ -76,8 +76,7 @@ public partial class RenameEntryView : UserControl
 
     #region Functions
 
-    private void UpdateFilename()
-    {
+    private void UpdateFilename() {
         if (CustomFilename) return;
         txtFileName.Text = DesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
     }
@@ -98,14 +97,12 @@ public partial class RenameEntryView : UserControl
 
     #region Controls
 
-    private void TxtFriendlyName_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
+    private void TxtFriendlyName_OnTextChanged(object? sender, TextChangedEventArgs e) {
         LockButton(AreBoxesEmpty());
         UpdateFilename();
     }
     
-    private void TxtFileName_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
+    private void TxtFileName_OnTextChanged(object? sender, TextChangedEventArgs e) {
         if (!txtFileName.IsReadOnly) LockButton(AreBoxesEmpty());
     }
     
@@ -116,8 +113,7 @@ public partial class RenameEntryView : UserControl
         UpdateFilename();
     }
     
-    private void BtnClear_OnClick(object? sender, RoutedEventArgs e)
-    {
+    private void BtnClear_OnClick(object? sender, RoutedEventArgs e) {
         chkCustomFilename.IsChecked = false;
         txtFriendlyName.Text = GivenName;
     }
