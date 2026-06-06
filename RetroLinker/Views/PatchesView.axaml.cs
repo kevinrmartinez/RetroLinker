@@ -90,7 +90,7 @@ public partial class PatchesView : UserControl
             }
         }
         catch (System.ArgumentException ex) {
-            App.Logger?.LogErro(ex.Message);
+            Logger.LogErro(ex);
             rdoNoPatch.IsChecked = true;
         }
     }
@@ -129,7 +129,7 @@ public partial class PatchesView : UserControl
         }
         catch (System.Exception e)
         {
-            App.Logger?.LogErro(e);
+            Logger.LogErro(e);
             MessageBoxStandardParams mbParams = new()
             {
                 ContentTitle = resGeneric.genError,

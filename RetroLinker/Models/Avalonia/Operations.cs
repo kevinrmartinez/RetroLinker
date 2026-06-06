@@ -44,10 +44,10 @@ public static class Operations
         if (Cores.Length >= 1) return Cores;
         if (!FileOps.GetCoreFile(out string coresFile))
         {
-            App.Logger?.LogWarn("'cores.txt' was not found, extracting internal core asset...");
+            Logger.LogWarn("'cores.txt' was not found, extracting internal core asset...");
             var assetStream = AssetLoader.Open(GetDefaultCores());
             FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
-            App.Logger?.LogInfo($"Internal core asset extracted to '{coresFile}'");
+            Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
         Cores = FileOps.LoadCores(coresFile);
         return Cores;
@@ -72,7 +72,7 @@ public static class Operations
         var dbgOut = (DesktopFolder is null) 
             ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
             : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
-        App.Logger?.LogDebg(dbgOut);
+        Logger.LogDebg(dbgOut);
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
@@ -82,6 +82,6 @@ public static class Operations
         var dbgOut = (ROMTopDir is null)
             ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
             : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
-        App.Logger?.LogDebg(dbgOut);
+        Logger.LogDebg(dbgOut);
     }
 }

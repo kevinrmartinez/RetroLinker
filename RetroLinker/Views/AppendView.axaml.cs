@@ -49,10 +49,10 @@ public partial class AppendView : UserControl
         ParentWindow = mainWindow;
         var appendConfigFiles = new List<string>();
         try {
-            appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg).Item2;
+            (_, appendConfigFiles) = Commander.ResolveAppendConfigArg(appendArg);
         }
         catch (System.ArgumentException ex) {
-            App.Logger?.LogErro(ex.Message);
+            Logger.LogErro(ex);
         }
 
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);
@@ -80,7 +80,7 @@ public partial class AppendView : UserControl
         }
         catch (System.Exception e)
         {
-            App.Logger?.LogErro(e);
+            Logger.LogErro(e);
             MessageBoxStandardParams mbParams = new()
             {
                 ContentTitle = Translations.resGeneric.genError,
@@ -122,7 +122,7 @@ public partial class AppendView : UserControl
 
     private void Visual_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
-        App.Logger?.LogDebg($"{GetType().Name} Detached From Visual Tree");
-        App.Logger?.LogDebg(e.Parent.GetType().Name);
+        Logger.LogDebg($"{GetType().Name} Detached From Visual Tree");
+        Logger.LogDebg(e.Parent.GetType().Name);
     }
 }

@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -124,7 +125,7 @@ public partial class MainView : UserControl
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
             }
             catch (System.Exception e_theme) {
-                App.Logger?.LogDebg(e_theme);
+                Logger.LogDebg(e_theme);
                 TopLevel.GetTopLevel(this)!.RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
@@ -157,7 +158,7 @@ public partial class MainView : UserControl
     {
         if (cores.Length < 1) ToolTip.SetTip(comboCore, resMainView.lblNoCores);
         else comboCore.ItemsSource = cores;
-        App.Logger?.LogInfo($"{cores.Length} cores were imported.");
+        Logger.LogInfo($"{cores.Length} cores were imported.");
      }
 
     void comboConfig_Loaded()
@@ -177,7 +178,7 @@ public partial class MainView : UserControl
             comboICONDir.Items.Add(resMainView.comboDefItem);
             foreach (var iconFile in icons.list)
                 comboICONDir.Items.Add(iconFile);
-            App.Logger?.LogInfo("Icons list imported");
+            Logger.LogInfo("Icons list imported");
 
             PreloadedIconsCount = comboICONDir.ItemCount;
             comboICONDir.SelectedIndex++;
@@ -284,8 +285,8 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         // CurrentTheme = settings.PreferedTheme;
-        App.Logger?.LogInfo($"The requested theme was: {theme}");
-        App.Logger?.LogDebg($"Index in byte: {settings.ChosenTheme}");
+        Logger.LogInfo($"The requested theme was: {theme}");
+        Logger.LogDebg($"Index in byte: {settings.ChosenTheme}");
         return theme;
     }
 
@@ -312,10 +313,10 @@ public partial class MainView : UserControl
         // 2. Starting from a ROM
         var args = App.Args;
         if (args is null)  return;
-        if (args.Length == 0) App.Logger?.LogDebg("bleh");
+        if (args.Length == 0) Logger.LogDebg("bleh");
         else {
             foreach (var arg in args)
-                App.Logger?.LogDebg(arg);
+                Logger.LogDebg(arg);
         }
     }
 
@@ -421,7 +422,7 @@ public partial class MainView : UserControl
     void GenericAsyncErrorPopup(System.Exception error)
     {
         // TODO: Move to Models.Avalonia.OtherDialogs.cs* (0.8)
-        App.Logger?.LogErro(error);
+        Logger.LogErro(error);
         var stdParams = new MessageBoxStandardParams()
         {
             ContentHeader = resGeneric.popUnError_Head0, 
@@ -447,7 +448,7 @@ public partial class MainView : UserControl
                 CONFappend =  longArg;
                 break;
             default:
-                App.Logger?.LogErro("Unexpected view type at UpdateLinkFromOutside: " + viewType);
+                Logger.LogErro("Unexpected view type at UpdateLinkFromOutside: " + viewType);
                 break;
         }
     }
@@ -568,7 +569,7 @@ public partial class MainView : UserControl
                 && (!string.IsNullOrEmpty(OutputLink.ROMcore))
                 && (outputIsValid))
             {
-                App.Logger?.LogDebg("All fields for link creation have been accepted.");
+                Logger.LogDebg("All fields for link creation have been accepted.");
                 
                 // Check for overwriting
                 if (!settings.AlwaysAskOutput) {
@@ -662,7 +663,7 @@ public partial class MainView : UserControl
             ResetAfterExecute();
         }
         catch (System.Exception e) {
-            App.Logger?.LogErro(e.Message);
+            Logger.LogErro(e);
             var erroParams = new MessageBoxStandardParams()
             {
                 ContentHeader = resMainView.popSingleOutput0_Head, 
@@ -904,7 +905,7 @@ public partial class MainView : UserControl
 
     #region LinkPath Controls
     private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) {
-        App.Logger?.LogDebg("COMING SOON");
+        Logger.LogDebg("COMING SOON");
     }
 
     async void btnLINKDir_ClickAsync()
@@ -925,9 +926,9 @@ public partial class MainView : UserControl
             }
 #if DEBUG
             else {
-                App.Logger?.LogDebg("Running on debug...");
+                Logger.LogDebg("Running on debug...");
                 var imposible = 1684 / (comboConfig.Items.Count - 1);
-                App.Logger?.LogDebg(imposible);
+                Logger.LogDebg(imposible);
                 // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
             }
 #endif

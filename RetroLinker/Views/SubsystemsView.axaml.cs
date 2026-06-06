@@ -49,7 +49,7 @@ public partial class SubsystemsView : UserControl
             subsystemArgs = subsysArgs.Item2;
         }
         catch (System.ArgumentException ex) {
-            App.Logger?.LogErro(ex.Message);
+            Logger.LogErro(ex);
         }
         SubSystem = subsystem;
         Arguments = new ObservableCollection<string>(subsystemArgs);
@@ -76,7 +76,7 @@ public partial class SubsystemsView : UserControl
             TextBoxNewArg.Text = file;
         }
         catch (System.Exception ex) {
-            App.Logger?.LogErro(ex.Message);
+            Logger.LogErro(ex);
             // TODO: Needs access to an generic error pop-up
         }
     }

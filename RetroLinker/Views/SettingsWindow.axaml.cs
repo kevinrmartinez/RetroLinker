@@ -96,7 +96,7 @@ namespace RetroLinker.Views
             }
             catch (System.Exception e)
             {
-                App.Logger?.LogErro(e);
+                Logger.LogErro(e);
                 MessageBoxStandardParams mbParams = new()
                 {
                     ContentTitle = Translations.resGeneric.genError,

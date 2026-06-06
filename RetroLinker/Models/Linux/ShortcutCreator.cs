@@ -74,16 +74,15 @@ public static class ShortcutCreator
 
     private static void SetExecPermissions(string filePath)
     {
-        App.Logger?.LogDebg($"SetExecPermissions Thread ID: {Environment.CurrentManagedThreadId}");
-        App.Logger?.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
+        Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
             FileOps.MakeFileExecutable(filePath);
-            App.Logger?.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
+            Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {
-            App.Logger?.LogErro($"Failed to set executable permissions to \"{filePath}\".");
-            App.Logger?.LogErro($"Error: {e.Message}");
+            Logger.LogWarn($"Failed to set executable permissions to \"{filePath}\".");
+            Logger.LogErro(e);
         }
     }
 }

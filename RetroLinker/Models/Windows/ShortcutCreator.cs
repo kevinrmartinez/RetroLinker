@@ -50,7 +50,7 @@ public static class ShortcutCreator
                           """;
         
         RunLinkWriteScript(scriptStrings);
-        App.Logger?.LogInfo($"\"{_outputPath}\" file created successfully.");
+        Logger.LogInfo($"\"{_outputPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
@@ -73,7 +73,7 @@ public static class ShortcutCreator
                             """;
         
         var linkContent = RunLinkReadScript(scriptStrings);
-        App.Logger?.LogInfo($"\"{linkPath}\" file read successfully.");
+        Logger.LogInfo($"\"{linkPath}\" file read successfully.");
         var linkStrings = new string?[linkContent.Length];
         for (int i = 0; i < linkContent.Length; i++)
             linkStrings[i] = linkContent[i].ToString();
@@ -94,8 +94,8 @@ public static class ShortcutCreator
         var result = (short)engine.Invoke($"{createLink}");
         
         if (result == 0) return;
-        var err = "The LinkWrite script was not executed properly!";
-        App.Logger?.LogErro(err);
+        var err = $"The LinkWrite script was not executed properly! Error code {result}.";
+        Logger.LogErro(err);
         throw new ApplicationException(err);
     }
     

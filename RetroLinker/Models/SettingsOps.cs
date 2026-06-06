@@ -23,6 +23,7 @@ namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
+        // TODO: Create a static 'Settings' for the whole program
         public const string IcoSavRA = "_RA";
         public const string IcoSavROM = "_ROM";
         private const string InvalidDataMessage = "The setting file could not be serialized.";
@@ -36,7 +37,7 @@ namespace RetroLinker.Models
             FileOps.UserDesktop,
             FileOps.WINPublicDesktop,
             FileOps.CombineMultipleInputs(FileOps.UserProfile, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs"),
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu)
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu) // TODO: test
         ];  // Source: https://en.wikipedia.org/wiki/Start_menu
         
         public static string[] LinLinkPathCandidates { get; } =
@@ -64,10 +65,10 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    App.Logger?.LogErro($"There was a error while loading \"{FileOps.SettingFileJson}\"");
-                    App.Logger?.LogErro($"{e}\n{e.Message}");
+                    Logger.LogWarn($"There was a error while loading \"{FileOps.SettingFileJson}\"");
+                    Logger.LogErro(e);
                     settings = new();
-                    App.Logger?.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
+                    Logger.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
                     WriteSettings(settings);
                 }  
             }

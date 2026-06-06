@@ -114,7 +114,7 @@ namespace RetroLinker.Models
         public static (string, List<string>) ResolveAppendConfigArg(string arg)
         {
             if (!arg.StartsWith(appendConfig))
-                throw new System.ArgumentException(@"Invalid append config argument: " + arg, nameof(arg));
+                throw new System.ArgumentException(@"Invalid append config argument: " + arg + @"'", nameof(arg));
             
             var pathsCombined = arg.Substring(appendConfig.Length);
             pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
@@ -137,7 +137,7 @@ namespace RetroLinker.Models
         public static (string, List<string>) ResolveSubsystemArg(string arg)
         {
             if (!arg.StartsWith(subsystem))
-                throw new System.ArgumentException(@"Invalid subsystem argument: " + arg, nameof(arg));
+                throw new System.ArgumentException(@"Invalid subsystem argument: '" + arg + @"'", nameof(arg));
             
             var noOption = GetArgumentNoOption(arg);
             var subsys = noOption.Split(' ')[0];

@@ -26,7 +26,6 @@ namespace RetroLinker.Models
 {
     public static class FileOps
     {
-        // public const string SettingFileBin = "RLsettings.dat";
         public const string SettingFileJson = "RLsettings.json";
         public const string DefUserAssets = "UserAssets";
         public const string tempFile = "temp.txt";
@@ -55,7 +54,7 @@ namespace RetroLinker.Models
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), App.LocalInformation.Name);
         // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
         
-        public static readonly string WINPublicUser = "C:\\Users\\Public";
+        public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         
         private static Settings LoadedSettings = new();
@@ -68,7 +67,7 @@ namespace RetroLinker.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
-            App.Logger?.LogDebg("Settings loaded for FileOps.");
+            Logger.LogDebg("Settings loaded for FileOps.");
             BuildConfigDir(LoadedSettings);
             return LoadedSettings;
         }
@@ -100,11 +99,11 @@ namespace RetroLinker.Models
         {
             try {
                 await File.WriteAllTextAsync(PathToSettingFileJson, settingString);
-                App.Logger?.LogInfo($"Setting file \"{PathToSettingFileJson}\" written successfully");
+                Logger.LogInfo($"Setting file \"{PathToSettingFileJson}\" written successfully");
             }
             catch (Exception e) {
-                App.Logger?.LogErro($"Setting file \"{PathToSettingFileJson}\" could not be written!");
-                App.Logger?.LogErro(e);
+                Logger.LogWarn($"Setting file \"{PathToSettingFileJson}\" could not be written!");
+                Logger.LogErro(e);
             }
         }
 
@@ -135,14 +134,15 @@ namespace RetroLinker.Models
         {
             try
             {
-                App.Logger?.LogInfo($"Starting reading of \"{filePath}\".");
+                Logger.LogInfo($"Starting reading of \"{filePath}\".");
                 var cores = ReadFileLinesToEnd(filePath);
-                App.Logger?.LogInfo($"Completed reading of \"{filePath}\".");
+                Logger.LogInfo($"Completed reading of \"{filePath}\".");
                 return cores;
             }
-            catch
+            catch (Exception e)
             {
-                App.Logger?.LogWarn($"The file \"{filePath}\" could not be found!");
+                Logger.LogWarn($"The file \"{filePath}\" could not be found!");
+                Logger.LogErro(e);
                 return Array.Empty<string>();
             }
         }
@@ -156,7 +156,7 @@ namespace RetroLinker.Models
             try
             {
                 var filesList = new DirectoryInfo(dir).GetFiles();
-                App.Logger?.LogInfo($"Searching for Icons at \"{dir}\".");
+                Logger.LogInfo($"Searching for Icons at \"{dir}\".");
                 foreach (var file in filesList)
                 {
                     var ext = file.Extension;
@@ -171,7 +171,7 @@ namespace RetroLinker.Models
                         IconProc.IconItemsList.Add(new IconsItems(filePath));
                 }
 
-                App.Logger?.LogInfo(filesList.Length == 0
+                Logger.LogInfo(filesList.Length == 0
                     ? "No icons found."
                     : $"{IconProc.IconItemsList.Count} icons were found.");
 
@@ -183,8 +183,8 @@ namespace RetroLinker.Models
                 }
             }
             catch (Exception e) {
-                App.Logger?.LogErro("An error has occurred while loading icons...");
-                App.Logger?.LogErro(e);
+                Logger.LogErro("An error has occurred while loading icons...");
+                Logger.LogErro(e);
                 iconException = e.Message;
             }
             
@@ -212,6 +212,15 @@ namespace RetroLinker.Models
         
         public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
 
+        public static void FileMoving(string source, string destination, bool overwrite = false) => File.Move(source, destination, overwrite);
+        
+        public static void FileDeletion(string filePath) => File.Delete(filePath);
+        
+        
+        public static FileInfo GetFileInfo(string filePath) => new(filePath);
+        
+        public static DirectoryInfo GetDirectoryInfo(string dirPath) => new(dirPath);
+
         #endregion
 
         #region FUNCTIONS
@@ -225,8 +234,8 @@ namespace RetroLinker.Models
                 return true;
             }
             catch (Exception e) {
-                App.Logger?.LogDebg(e.Message);
-                App.Logger?.LogErro($"The folder \"{path}\" could not be created!");
+                Logger.LogWarn($"The folder \"{path}\" could not be created!");
+                Logger.LogErro(e);
                 return false;
             }
         }

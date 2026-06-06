@@ -84,7 +84,7 @@ public partial class MainWindow : Window
             };
         }
         catch (System.InvalidCastException ex) {
-            App.Logger?.LogErro(ex);
+            Logger.LogErro(ex);
             // TODO: Show an error PopUp
             GoBackToMainView();
         }

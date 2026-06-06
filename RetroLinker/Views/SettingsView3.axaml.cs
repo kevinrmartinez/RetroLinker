@@ -193,7 +193,8 @@ namespace RetroLinker.Views
         
         void GenericAsyncErrorPopup(System.Exception error)
         {
-            App.Logger?.LogErro(error);
+            // TODO: Move to a program-wide implementation
+            Logger.LogErro(error);
             var stdParams = new MessageBoxStandardParams()
             {
                 ContentHeader = resGeneric.popUnError_Head0, 

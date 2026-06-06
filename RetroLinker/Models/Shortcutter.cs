@@ -153,7 +153,7 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                App.Logger?.LogInfo($"Creating \"{outputFile}\"...");
+                Logger.LogInfo($"Creating \"{outputFile}\"...");
                 try 
                 { 
                     ShortcutCreator.CreateShortcut(link, outputFile);
@@ -161,7 +161,8 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    App.Logger?.LogErro($"\"{outputFile}\" could not be created!");
+                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
+                    Logger.LogErro(e);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -184,7 +185,7 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                App.Logger?.LogInfo($"Creating \"{outputFile}\"...");
+                Logger.LogInfo($"Creating \"{outputFile}\"...");
                 
                 try { 
                     Linux.ShortcutCreator.CreateShortcut(link, output);
@@ -192,8 +193,8 @@ namespace RetroLinker.Models
                 }
                 catch (System.Exception e)
                 {
-                    App.Logger?.LogErro($"\"{outputFile}\" could not be created!");
-                    App.Logger?.LogErro(e);
+                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
+                    Logger.LogErro(e);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;

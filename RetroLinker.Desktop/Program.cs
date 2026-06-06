@@ -17,7 +17,7 @@
 */
 
 using System;
-using System.IO;
+using System.Linq;
 using Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
@@ -33,11 +33,10 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        SetUpLogger();
-        appLogger?.LogInfo($"{AppName} v{AppVersion}");
-        appLogger?.LogDebg($"Launch Time: {DateTime.Now:HH:mm:ss.fff}");
+        Logger.LogInfo($"{AppName} v{AppVersion}");
+        // Logger.LogDebg($"Launch Time: {DateTime.Now:HH:mm:ss.fff}");
         
-        appLogger?.LogDebg("Starting AvaloniaApp");
+        Logger.LogDebg("Starting AvaloniaApp");
         #if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
@@ -52,12 +51,13 @@ class Program
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e) {
-            appLogger?.LogErro($"{AppName} has crashed to desktop with the following error:\n" + e);
+            Logger.LogErro($"{AppName} has crashed to desktop with the following error:");
+            Logger.LogError(e);
         }
         #endif
         
         // App Closing
-        appLogger?.Close();
+        Logger.Close();
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
@@ -76,45 +76,44 @@ class Program
     private static void AppCallback(AppBuilder obj)
     {
         var instance = (App?)obj.Instance;
-        instance?.SetLogger(appLogger);
+        // The 'LocalInformation' prop of the 'App' class should be filled before using FileOps from here
         instance?.SetAppInfo(GetAppInfo());
+        SetUpLogger();
     }
 
     // Parameters
-    private static readonly System.Reflection.Assembly AppAssembly1 = typeof(Program).Assembly;
-    private static readonly System.Reflection.AssemblyName AppAssembly2 = AppAssembly1.GetName();
-    private static readonly string AppName = AppAssembly2.Name!;
-    private static readonly string AppVersion = AppAssembly2.Version!.ToString(3);
+    private static readonly System.Reflection.Assembly AppAssembly = typeof(Program).Assembly;
+    private static readonly System.Reflection.AssemblyName AppAssemblyName = AppAssembly.GetName();
+    private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
+    private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
     
     // Logging
-    private static Logger? appLogger;
     private static readonly string LogFileName = $"{AppName}.log";
-    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
-    private static readonly string LogFileBak = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{LogFileName}.bak");
+    // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
+    private static readonly string LogFileBak = $"{LogFileName}.bak";
 
     private static void SetUpLogger()
     {
-        if (File.Exists(LogFile))
-        {
-            if (File.Exists(LogFileBak)) File.Delete(LogFileBak);
-            File.Move(LogFile, LogFileBak);
+        Logger.SetLogFile(LogFileName);
+        var bakFullName = FileOps.CombineMultipleInputs(FileOps.GetDirFromPath(Logger.LogFile) ?? FileOps.BaseDir, LogFileBak);
+        if (FileOps.PathAlreadyExists(Logger.LogFile)) {
+            if (FileOps.PathAlreadyExists(bakFullName)) FileOps.FileDeletion(bakFullName);
+            FileOps.FileMoving(Logger.LogFile, bakFullName);
         }
-        
-        appLogger = new Logger(LogFile) {
-            AutoFlush =  true
-        };
+
+        Logger.AutoFlush = true;
     }
     
     private static DateTime? GetBuildDateOfAssembly()
     {
         try
         {
-            var assemblyFile = new FileInfo(AppAssembly1.Location);
+            var assemblyFile = FileOps.GetFileInfo(AppAssembly.Location);
             return assemblyFile.LastWriteTime;
         }
         catch (Exception e) {
-            appLogger?.LogErro("App Build Date was requested, but it could not be accessed");
-            appLogger?.LogErro("'GetBuildDateOfAssembly' failed with the following error: " + e.Message);
+            Logger.LogWarn("App Build Date was requested, but it could not be accessed");
+            Logger.LogErro(e);
             return null;
         }
     }
@@ -125,25 +124,20 @@ class Program
         const int sha1Length = 40;
         try
         {
-            var result = ResourceLoader.GetTextFromResource(AppAssembly1, resourceName);
-            string hash = string.Empty;
-            foreach (var line in result) {
-                if (line.Length != sha1Length) continue;
-                hash = line;
-                break;
-            }
+            var result = ResourceLoader.GetTextLinesFromResource(AppAssembly, resourceName);
+            var hash = result.First(line => line.Length == sha1Length);
             return hash;
         }
         catch (Exception e) {
-            appLogger?.LogErro("The hash of the git repo this build is based on was requested, but it could not be accessed");
-            appLogger?.LogErro("'GetGitHashOfRepo' failed with the following error: " + e.Message);
+            Logger.LogWarn("The hash of the git repo this build is based on was requested, but it could not be accessed");
+            Logger.LogErro(e);
             return null;
         }
     }
 
     private static AppInfo GetAppInfo()
     {
-        var fullName = AppAssembly2.FullName;
+        var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();
         return new AppInfo(fullName, AppName, AppVersion,  buildDate, gitHash);
