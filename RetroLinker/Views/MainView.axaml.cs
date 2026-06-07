@@ -17,7 +17,6 @@
 */
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -124,9 +123,9 @@ public partial class MainView : UserControl
             try {
                 ParentWindow.RequestedThemeVariant = LoadThemeVariant();
             }
-            catch (System.Exception e_theme) {
-                Logger.LogDebg(e_theme);
-                TopLevel.GetTopLevel(this)!.RequestedThemeVariant = ThemeVariant.Light;
+            catch (System.Exception ex) {
+                Logger.LogDebg(ex);
+                TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
             }
 #else
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
