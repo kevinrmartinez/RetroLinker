@@ -275,8 +275,9 @@ namespace RetroLinker.Models
 
         #region ICONS
 
-        public static string CpyIconToUsrSet(string ogPath)
+        public static string CpyIconToUsrSet(string? ogPath)
         {
+            if (string.IsNullOrEmpty(ogPath)) return string.Empty;
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);

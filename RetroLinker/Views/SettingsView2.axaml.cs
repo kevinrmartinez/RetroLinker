@@ -18,8 +18,6 @@
 
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 
@@ -66,34 +64,18 @@ public partial class SettingsView2 : UserControl
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
     
-    void GenericAsyncErrorPopup(System.Exception error)
-    {
-        // TODO: Move to a program-wide implementation
-        Logger.LogErro(error);
-        var stdParams = new MessageBoxStandardParams()
-        {
-            ContentHeader = Translations.resGeneric.popUnError_Head0, 
-            ContentTitle = Translations.resGeneric.genError,
-            ContentMessage = $"{Translations.resGeneric.popUnError_Mess0}\n{error.Message}",
-            Icon = MsBox.Avalonia.Enums.Icon.Error,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            MaxWidth = 550
-        };
-        if (ParentWindow.Icon is { } icon) stdParams.WindowIcon = icon;
-        var msBox = MessageBoxManager.GetMessageBoxStandard(stdParams);
-        _ = msBox.ShowWindowDialogAsync(ParentWindow);
-    }
-    
     // USER ASSETS
     async void btnUserAssets_ClickAsync()
     {
-        try {
+        try
+        {
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder;
+            txtUserAssets.Text = folder;
+            ParentWindow.settings.UserAssetsPath = folder;
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
 
     void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
@@ -122,7 +104,7 @@ public partial class SettingsView2 : UserControl
             txtDefRADir.Text = file; 
             ParentWindow.settings.DEFRADir = file;
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
 
     void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
@@ -142,7 +124,7 @@ public partial class SettingsView2 : UserControl
             txtDefROMPath.Text = folder; 
             ParentWindow.settings.DEFROMPath = folder;
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
 
     void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();

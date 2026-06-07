@@ -19,8 +19,6 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
@@ -191,24 +189,6 @@ namespace RetroLinker.Views
             return newItem;
         }
         
-        void GenericAsyncErrorPopup(System.Exception error)
-        {
-            // TODO: Move to a program-wide implementation
-            Logger.LogErro(error);
-            var stdParams = new MessageBoxStandardParams()
-            {
-                ContentHeader = resGeneric.popUnError_Head0, 
-                ContentTitle = resGeneric.genError,
-                ContentMessage = $"{resGeneric.popUnError_Mess0}\n{error.Message}",
-                Icon = MsBox.Avalonia.Enums.Icon.Error,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                MaxWidth = 550
-            };
-            if (ParentWindow.Icon is { } icon) stdParams.WindowIcon = icon;
-            var msBox = MessageBoxManager.GetMessageBoxStandard(stdParams);
-            _ = msBox.ShowWindowDialogAsync(ParentWindow);
-        }
-        
         
         // DEFAULT OUTPUT
         private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e) {
@@ -231,7 +211,7 @@ namespace RetroLinker.Views
                 else comboDEFLinkOutput.Items[candidatesCount] = folder;
                 comboDEFLinkOutput.SelectedIndex = candidatesCount;
             }
-            catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
 
         private void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) => BtnDefLinkOutput_ClickAsync();
@@ -270,7 +250,7 @@ namespace RetroLinker.Views
                 }
                 comboaddLinkCopy.SelectedIndex = 0;
             }
-            catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
 
         private void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e) => BtnAddLinkCopy_ClickAsync();
@@ -302,7 +282,7 @@ namespace RetroLinker.Views
                 txtIcoSavPath.Text = folder; 
                 ParentWindow.settings.IcoSavPath = folder;
             }
-            catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
 
         private async void btnIcoSavPath_OnClick(object sender, RoutedEventArgs e) => btnIcoSavPath_ClickAsync();

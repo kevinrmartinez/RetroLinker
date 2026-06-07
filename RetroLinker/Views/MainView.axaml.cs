@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -26,16 +27,11 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Generic;
 using RetroLinker.Translations;
 
-using MessageBoxIcons = MsBox.Avalonia.Enums.Icon;
-using MessageBoxButtons = MsBox.Avalonia.Enums.ButtonEnum;
-using MessageBoxButtonResult = MsBox.Avalonia.Enums.ButtonResult;
 using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
@@ -185,14 +181,9 @@ public partial class MainView : UserControl
         }
         else
         {
-            var popParams = new MessageBoxStandardParams()
-            {
-                ContentTitle = resMainView.popIconsError_Tittle,
-                ContentMessage = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{icons.error}'",
-                Icon = MessageBoxIcons.Error,
-                ButtonDefinitions = MessageBoxButtons.Ok
-            };
-            _ = MessageBoxPopUp(popParams);
+            var message = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{icons.error}'";
+            var content = new PopUpGenericContent(message, resMainView.popIconsError_Title);
+            _ = this.PopUpGenericMessageBox(content, GenericPopUpType.Error);
         }
     }
 
@@ -268,8 +259,7 @@ public partial class MainView : UserControl
         txtLINKDir.IsReadOnly = true;
     }
     
-    void LoadNewSettings()
-    {
+    void LoadNewSettings() {
         // settings = FileOps.LoadCachedSettingsFO();
         ApplySettingsToControls();
         LoadLocalization();
@@ -319,8 +309,7 @@ public partial class MainView : UserControl
         }
     }
 
-    void LoadLocalization()
-    {
+    void LoadLocalization() {
         if (FormFirstLoad) return;
         ParentWindow.LocaleReload(settings.LanguageLocale);
     }
@@ -338,15 +327,11 @@ public partial class MainView : UserControl
         lblLinkDefinedDir.Text = settings.DEFLinkOutput;
     }
 
-    string UpdateLinkLabel(string fileNameNoExt, string? core)
-    { 
-        return (DesktopOS)
-            ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
-            : FileOps.GetDefinedLinkPath(LinuxDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
-    }
+    string UpdateLinkLabel(string fileNameNoExt, string? core) => (DesktopOS)
+        ? FileOps.GetDefinedLinkPath(fileNameNoExt + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput) 
+        : FileOps.GetDefinedLinkPath(LinuxDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + FileOps.GetOutputExt(DesktopOS), settings.DEFLinkOutput);
     
-    string ValidateLINBin(string RAPath)
-    {
+    string ValidateLINBin(string RAPath) {
         if (RAPath == txtRADir.Text) return RAPath;
         return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
     }
@@ -360,40 +345,18 @@ public partial class MainView : UserControl
         pic128.Source = memImage;
     }
     
-    void FillIconBoxes(string path)
-    {
+    void FillIconBoxes(string path) {
         ICONimage = Operations.GetBitmap(path);
         FillIconSource(ICONimage);
     }
     
-    void FillIconBoxes(AvaloniaBitmap bitmap)
-    {
+    void FillIconBoxes(AvaloniaBitmap bitmap) {
         ICONimage = bitmap;
         FillIconSource(ICONimage);
     }
     
     // Pop-ups
-    async Task<MessageBoxButtonResult> MessageBoxPopUp(MessageBoxStandardParams standardParams)
-    {
-        if (ParentWindow.Icon is { } icon) standardParams.WindowIcon = icon;
-        standardParams.MaxWidth = 550;
-        standardParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
-        return await msBox.ShowWindowDialogAsync(ParentWindow);
-    }
-    
-    async Task<string> MessageBoxPopUp(MessageBoxCustomParams customParams)
-    {
-        // Obsolete?
-        if (ParentWindow.Icon is { } icon) customParams.WindowIcon = icon;
-        customParams.MaxWidth = 600;
-        customParams.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        var msBox = MessageBoxManager.GetMessageBoxCustom(customParams);
-        return await msBox.ShowWindowDialogAsync(ParentWindow);
-    }
-
-    async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs)
-    {
+    async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs) {
         var popupWindow = new PopUpWindow();
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
         return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
@@ -401,36 +364,17 @@ public partial class MainView : UserControl
     
     async Task<bool> OverwriteFilePopUp(string pathToFile)
     {
-        var stdParams = new MessageBoxStandardParams()
-        {
-            ContentTitle = "Overwrite file?",
-            ContentMessage = $"The file '{pathToFile}' already exist, do you wish to overwrite it?",
-            ButtonDefinitions = MessageBoxButtons.YesNo,
-            Icon = MessageBoxIcons.Warning
-        };
+        var msg = string.Format(resMainView.popOverwrite_Mess, pathToFile);
+        var content = new PopUpGenericContent(msg, resMainView.popOverwrite_Title);
         if (FileOps.PathAlreadyExists(pathToFile)) {
-            var result = await MessageBoxPopUp(stdParams);
-            return result switch {
-                MessageBoxButtonResult.No => false,
+            var result = await this.PopUpGenericMessageBox(content, GenericPopUpType.Question);
+            return result switch { 
+                MsBox.Avalonia.Enums.ButtonResult.No => false,
                 _ => true
             };
         }
         else return true;
     }
-
-    void GenericAsyncErrorPopup(System.Exception error)
-    {
-        // TODO: Move to Models.Avalonia.OtherDialogs.cs* (0.8)
-        Logger.LogErro(error);
-        var stdParams = new MessageBoxStandardParams()
-        {
-            ContentHeader = resGeneric.popUnError_Head0, 
-            ContentTitle = resGeneric.genError,
-            ContentMessage = $"{resGeneric.popUnError_Mess0}\n{error.Message}",
-            Icon = MessageBoxIcons.Error
-        };
-        _ = MessageBoxPopUp(stdParams);
-    } 
     
     // External/Call-back
     public void UpdateLinkFromOutside(MainViewTypes viewType, string longArg)
@@ -457,7 +401,7 @@ public partial class MainView : UserControl
 
     void ResetAfterExecute()
     {
-        if (BuildingLink.OutputPaths.Count == 0)
+        if (BuildingLink.OutputPaths.Count == 0 && PreviousOutput.ValidOutput)
             BuildingLink.OutputPaths.Add(
                 ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, 
                     DesktopOS, 
@@ -485,7 +429,7 @@ public partial class MainView : UserControl
             // Validating contentless or not
             OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? Commander.contentless : OutputLink.ROMdir;
 
-            // Validate theres an executable (Linux)
+            // Validate there's an executable (Linux)
             OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
 
             // Validate there is a core
@@ -555,11 +499,13 @@ public partial class MainView : UserControl
                 }
 
                 // In case of 'CpyUserIcon = true'
-                if (settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(OutputLink.ICONfile ?? string.Empty));
+                if (settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(OutputLink.ICONfile));
             }
 
             // REQUIRED FIELDS CHECKS
-            var msboxParams = new MessageBoxStandardParams();
+            // var msboxParams = new MessageBoxStandardParams();
+            PopUpGenericContent popUpContent;
+            GenericPopUpType popUpType;
             var outputIsValid = false;
             if (OutputLink.OutputPaths.Count > 0)
                 if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
@@ -599,19 +545,10 @@ public partial class MainView : UserControl
                 // Single Shortcut created
                 if (opResult.Count == 1)
                 {
-                    if (!opResult[0].Error)
-                    {
-                        msboxParams.ContentMessage = resMainView.popSingleOutput1_Mess;
-                        msboxParams.ContentTitle = resGeneric.genSucces;
-                        msboxParams.Icon = MessageBoxIcons.Success;
-                    }   
-                    else
-                    {
-                        msboxParams.ContentHeader = resMainView.popSingleOutput0_Head; 
-                        msboxParams.ContentTitle = resGeneric.genError;
-                        msboxParams.ContentMessage = $"{resMainView.popSingleOutput0_Mess}\n{opResult[0].eMesseage}";
-                        msboxParams.Icon = MessageBoxIcons.Error;
-                    }
+                    (popUpContent, popUpType) = (!opResult.First().Error) 
+                        ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
+                        : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{opResult[0].eMesseage}",
+                            resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
                 }
                 // Multiple Shortcuts created
                 else
@@ -623,13 +560,11 @@ public partial class MainView : UserControl
                     }
 
                     if (!hasErrors) {
-                        msboxParams.ContentMessage = resMainView.popMultiOutput1_Mess; 
-                        msboxParams.ContentTitle = resGeneric.genSucces;
-                        msboxParams.Icon = MessageBoxIcons.Success;
+                        popUpContent = new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces);
+                        popUpType = GenericPopUpType.Success;
                     }
                     else
                     {
-                        msboxParams.ContentHeader = resMainView.popMultiOutput0_Head;
                         int successCount = 0;
                         string content = string.Empty;
                         foreach (var R in opResult)
@@ -645,32 +580,21 @@ public partial class MainView : UserControl
                             }
                             else successCount++;
                         }
-                        msboxParams.ContentTitle = resGeneric.genWarning;
-                        msboxParams.Icon = (successCount > 0) ? MessageBoxIcons.Warning : MessageBoxIcons.Error;
-                        msboxParams.ContentMessage = content;
+                        popUpContent = new(content, null, resMainView.popMultiOutput0_Head);
+                        popUpType = (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error;
                     }
                 }
             }
-            else
-            {
-                msboxParams.ContentMessage = resMainView.popMissReq_Mess; 
-                msboxParams.ContentTitle = resMainView.popMissReq_Title; 
-                msboxParams.Icon = MessageBoxIcons.Forbidden;
+            else {
+                popUpContent = new(resMainView.popMissReq_Mess, resMainView.popMissReq_Title);
+                popUpType = GenericPopUpType.Warning;
             }
             // The collection of IFs fills 'msbox_params', then it's used to Pop-Up a MessageBox
-            _ = MessageBoxPopUp(msboxParams);
+            _ = this.PopUpGenericMessageBox(popUpContent, popUpType);
             ResetAfterExecute();
         }
         catch (System.Exception e) {
-            Logger.LogErro(e);
-            var erroParams = new MessageBoxStandardParams()
-            {
-                ContentHeader = resMainView.popSingleOutput0_Head, 
-                ContentTitle = resGeneric.genError,
-                ContentMessage = $"{resMainView.popSingleOutput0_Mess} \n {e.Message}",
-                Icon = MessageBoxIcons.Error
-            };
-            _ = MessageBoxPopUp(erroParams);
+            _ = this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
         }
     }
     #endregion
@@ -685,7 +609,7 @@ public partial class MainView : UserControl
             settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
             LoadNewSettings();
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     } 
     
     void btnSettings_OnClick(object sender, RoutedEventArgs e) => btnSettings_ClickAsync();
@@ -733,7 +657,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ICONDir_Set(file);
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
     
     void btnICONDir_OnClick(object sender, RoutedEventArgs e) => btnICONDir_ClickAsync();
@@ -794,7 +718,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             RADirSet(file);
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
     
     void btnRADir_OnClick(object sender, RoutedEventArgs e) => btnRADir_ClickAsync();
@@ -819,7 +743,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
     
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
@@ -882,7 +806,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
     
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
@@ -909,11 +833,20 @@ public partial class MainView : UserControl
 
     async void btnLINKDir_ClickAsync()
     {
-        try {
+        /*
+         * TODO: Due to recents changes on async buttons clicks, dialogs now don't block the main window,
+         * allowing for more interactivity while the dialog is still open (therefore, code is pending to run)
+         * Solutions are:
+         *      A: lock the thread, returning to the previous way of async buttons clicks
+         *      B: lock the main window with LockForExecute()
+         */
+        try
+        {
             var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
             string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
             string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
-            if (!string.IsNullOrEmpty(file)) {
+            if (!string.IsNullOrEmpty(file))
+            {
                 LinkCustomName = false;
                 if (!DesktopOS)
                 {
@@ -921,10 +854,12 @@ public partial class MainView : UserControl
                     LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
                     file = BuildingLink.OutputPaths[0].FullPath;
                 }
+
                 txtLINKDir.Text = file;
             }
 #if DEBUG
-            else {
+            else
+            {
                 Logger.LogDebg("Running on debug...");
                 var imposible = 1684 / (comboConfig.Items.Count - 1);
                 Logger.LogDebg(imposible);
@@ -932,7 +867,9 @@ public partial class MainView : UserControl
             }
 #endif
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) {
+            _ = this.PopUpGenericError(e);
+        }
     }
     
     void btnLINKDir_OnClick(object sender, RoutedEventArgs e) => btnLINKDir_ClickAsync();
@@ -952,7 +889,7 @@ public partial class MainView : UserControl
             txtLINKDir.Text = BuildingLink.OutputPaths[0].FriendlyName;
             lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
         }
-        catch (System.Exception e) { GenericAsyncErrorPopup(e); }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
     }
     
     void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e) => BtnLINKRename_ClickAsync();

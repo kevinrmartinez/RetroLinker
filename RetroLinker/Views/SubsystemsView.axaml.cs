@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Styles;
 
 namespace RetroLinker.Views;
@@ -71,13 +72,12 @@ public partial class SubsystemsView : UserControl
     private async void ButtonNewArgBrowse_ClickAsync()
     {
         try {
-            var file = await Models.Avalonia.FileDialogOps.OpenFileAsync(Models.Avalonia.OpenOpts.RAroms, ParentWindow);
+            var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow);
             if (string.IsNullOrEmpty(file)) return;
             TextBoxNewArg.Text = file;
         }
         catch (System.Exception ex) {
-            Logger.LogErro(ex);
-            // TODO: Needs access to an generic error pop-up
+            _ = this.PopUpGenericError(ex);
         }
     }
 
