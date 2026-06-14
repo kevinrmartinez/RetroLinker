@@ -12,7 +12,7 @@
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
 	</UserControl.Styles>
 
-	<Grid RowDefinitions="Auto, Auto, Auto, *">
+	<Grid x:Name="gridContent" RowDefinitions="Auto, Auto, Auto, *">
 		<!-- DEFAULT OUTPUT -->
 		<Border Grid.Row="0" Classes="SettingCatg">
 			<StackPanel>

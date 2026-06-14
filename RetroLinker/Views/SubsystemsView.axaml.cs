@@ -56,8 +56,11 @@ public partial class SubsystemsView : UserControl
         Arguments = new ObservableCollection<string>(subsystemArgs);
         DataContext = this;
     }
-
-
+    
+    // Subsystem controls
+    
+    private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
+    
     private void AddNewArgument(bool addNew) {
         if (ArgsList is null) return;
         ArgsList.AddButton?.IsEnabled = !addNew;
@@ -71,14 +74,15 @@ public partial class SubsystemsView : UserControl
 
     private async void ButtonNewArgBrowse_ClickAsync()
     {
-        try {
+        try 
+        {
+            LockControls(true);
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow);
             if (string.IsNullOrEmpty(file)) return;
             TextBoxNewArg.Text = file;
         }
-        catch (System.Exception ex) {
-            _ = this.PopUpGenericError(ex);
-        }
+        catch (System.Exception ex) { _ = this.PopUpGenericError(ex); }
+        finally { LockControls(false); }
     }
 
     private void ButtonNewArgBrowse_OnClick(object? sender, RoutedEventArgs e) => ButtonNewArgBrowse_ClickAsync();

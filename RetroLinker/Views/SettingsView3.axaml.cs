@@ -188,7 +188,8 @@ namespace RetroLinker.Views
             newItem.Content = gridControl.NewItemGrid;
             return newItem;
         }
-        
+
+        private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
         
         // DEFAULT OUTPUT
         private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e) {
@@ -203,6 +204,7 @@ namespace RetroLinker.Views
         private async void BtnDefLinkOutput_ClickAsync()
         {
             try {
+                LockControls(true);
                 string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
                 string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
                 if (string.IsNullOrWhiteSpace(folder)) return;
@@ -212,6 +214,7 @@ namespace RetroLinker.Views
                 comboDEFLinkOutput.SelectedIndex = candidatesCount;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
         }
 
         private void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) => BtnDefLinkOutput_ClickAsync();
@@ -223,8 +226,7 @@ namespace RetroLinker.Views
         
         
         // LINK COPY
-        private void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e)
-        {
+        private void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e) {
             var chk = chkMakeLinkCopy.IsChecked.GetValueOrDefault();
             ParentWindow.settings.MakeLinkCopy = chk;
             lsboxLinkCopies.IsEnabled = chk;
@@ -233,6 +235,7 @@ namespace RetroLinker.Views
         private async void BtnAddLinkCopy_ClickAsync()
         {
             try {
+                LockControls(true);
                 string currentItem = (string)comboaddLinkCopy.SelectedItem!;
                 if (string.IsNullOrWhiteSpace(currentItem)) return;
 
@@ -251,6 +254,7 @@ namespace RetroLinker.Views
                 comboaddLinkCopy.SelectedIndex = 0;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally  { LockControls(false); }
         }
 
         private void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e) => BtnAddLinkCopy_ClickAsync();
@@ -276,6 +280,7 @@ namespace RetroLinker.Views
         private async void btnIcoSavPath_ClickAsync()
         {
             try {
+                LockControls(true);
                 string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
                 string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, currentFolder, ParentWindow);
                 if (string.IsNullOrWhiteSpace(folder)) return;
@@ -283,9 +288,10 @@ namespace RetroLinker.Views
                 ParentWindow.settings.IcoSavPath = folder;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
         }
 
-        private async void btnIcoSavPath_OnClick(object sender, RoutedEventArgs e) => btnIcoSavPath_ClickAsync();
+        private void btnIcoSavPath_OnClick(object sender, RoutedEventArgs e) => btnIcoSavPath_ClickAsync();
 
         private void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e) {
             ParentWindow.settings.IcoSavPath = ParentWindow.DEFsettings.IcoSavPath;

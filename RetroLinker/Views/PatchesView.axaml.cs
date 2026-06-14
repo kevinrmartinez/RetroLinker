@@ -96,6 +96,9 @@ public partial class PatchesView : UserControl
     }
     
     // == PATCHES CONTROLS ==
+    
+    private void LockControls(bool locked) => gridContent.ShowGridLines = !locked;
+    
     private void ControlsEnabled(bool enable)
     {
         txtPatchPath.IsEnabled = enable;
@@ -123,26 +126,13 @@ public partial class PatchesView : UserControl
     private async void BtnPatchPath_ClickAsycn()
     {
         try {
+            LockControls(true);
             var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
             string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
             if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
         }
-        catch (System.Exception e)
-        {
-            Logger.LogErro(e);
-            MessageBoxStandardParams mbParams = new()
-            {
-                ContentTitle = resGeneric.genError,
-                ContentHeader = resGeneric.popUnError_Head0,
-                ContentMessage = $"{resGeneric.popUnError_Head0}\n{e.Message}",
-                Icon = MsBox.Avalonia.Enums.Icon.Error,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                MaxWidth = 550
-            };
-            if (ParentWindow.Icon is { } icon) mbParams.WindowIcon = icon;
-            var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
-            _ = msBox.ShowWindowDialogAsync(ParentWindow);
-        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
     private void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e) => BtnPatchPath_ClickAsycn();

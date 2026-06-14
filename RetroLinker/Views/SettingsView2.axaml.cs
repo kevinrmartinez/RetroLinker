@@ -65,10 +65,14 @@ public partial class SettingsView2 : UserControl
     }
     
     // USER ASSETS
+    
+    void LockControls(bool locked) => gridConfigAll2.IsEnabled = !locked;
+    
     async void btnUserAssets_ClickAsync()
     {
         try
         {
+            LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
             string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
@@ -76,6 +80,7 @@ public partial class SettingsView2 : UserControl
             ParentWindow.settings.UserAssetsPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
     void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
@@ -97,6 +102,7 @@ public partial class SettingsView2 : UserControl
     async void btnDefRADir_ClickAsync()
     {
         try {
+            LockControls(true);
             var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
             string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
@@ -105,6 +111,7 @@ public partial class SettingsView2 : UserControl
             ParentWindow.settings.DEFRADir = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
     void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
@@ -118,6 +125,7 @@ public partial class SettingsView2 : UserControl
     async void btnDefROMPath_ClickAsync()
     {
         try {
+            LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
@@ -125,6 +133,7 @@ public partial class SettingsView2 : UserControl
             ParentWindow.settings.DEFROMPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
     void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();

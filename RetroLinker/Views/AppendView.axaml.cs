@@ -70,30 +70,20 @@ public partial class AppendView : UserControl
 
     // Append Config controls
 
+    private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
+    
     private async void BtnConfigPathBrowse_ClickAsync()
     {
-        try {
+        try 
+        {
+            LockControls(true);
             var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
             if (string.IsNullOrWhiteSpace(loadedFile)) return;
             if (!AppendPaths.Contains(loadedFile))
                 AppendPaths.Add(loadedFile);
         }
-        catch (System.Exception e)
-        {
-            Logger.LogErro(e);
-            MessageBoxStandardParams mbParams = new()
-            {
-                ContentTitle = Translations.resGeneric.genError,
-                ContentHeader = Translations.resGeneric.popUnError_Head0,
-                ContentMessage = $"{Translations.resGeneric.popUnError_Head0}\n{e.Message}",
-                Icon = MsBox.Avalonia.Enums.Icon.Error,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                MaxWidth = 550
-            };
-            if (ParentWindow.Icon is { } icon) mbParams.WindowIcon = icon;
-            var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
-            _ = msBox.ShowWindowDialogAsync(ParentWindow);
-        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
     private void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e) => BtnConfigPathBrowse_ClickAsync();

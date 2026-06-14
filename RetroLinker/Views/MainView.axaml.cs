@@ -413,6 +413,7 @@ public partial class MainView : UserControl
     async void RunExecution()
     {
         try {
+            LockForExecute(true);
             var OutputLink = new Shortcutter(BuildingLink);
             BuildingLink.OutputPaths = new();
 
@@ -596,6 +597,7 @@ public partial class MainView : UserControl
         catch (System.Exception e) {
             _ = this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
         }
+        finally { LockForExecute(false); }
     }
     #endregion
 
@@ -604,12 +606,14 @@ public partial class MainView : UserControl
     async void btnSettings_ClickAsync()
     {
         try {
+            LockForExecute(true);
             var settingWindow = new SettingsWindow(ParentWindow, settings); 
             var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
             settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
             LoadNewSettings();
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     } 
     
     void btnSettings_OnClick(object sender, RoutedEventArgs e) => btnSettings_ClickAsync();
@@ -649,6 +653,7 @@ public partial class MainView : UserControl
     async void btnICONDir_ClickAsync()
     {
         try {
+            LockForExecute(true);
             var opt = DesktopOS ? OpenOpts.WINico : OpenOpts.LINico;
             string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
                 ? (string)comboICONDir.SelectedItem!
@@ -658,6 +663,7 @@ public partial class MainView : UserControl
             ICONDir_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     }
     
     void btnICONDir_OnClick(object sender, RoutedEventArgs e) => btnICONDir_ClickAsync();
@@ -707,6 +713,7 @@ public partial class MainView : UserControl
     async void btnRADir_ClickAsync()
     {
         try {
+            LockForExecute(true);
             OpenOpts opt;
             string currentFile = string.Empty;
             if (DesktopOS) {
@@ -719,6 +726,7 @@ public partial class MainView : UserControl
             RADirSet(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     }
     
     void btnRADir_OnClick(object sender, RoutedEventArgs e) => btnRADir_ClickAsync();
@@ -738,12 +746,14 @@ public partial class MainView : UserControl
     async void btnROMDir_ClickAsync()
     {
         try {
+            LockForExecute(true);
             string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
             string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     }
     
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
@@ -801,12 +811,14 @@ public partial class MainView : UserControl
     async void btnCONFIGDir_ClickAsync()
     {
         try {
+            LockForExecute(true);
             string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAcfg, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     }
     
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
@@ -833,15 +845,9 @@ public partial class MainView : UserControl
 
     async void btnLINKDir_ClickAsync()
     {
-        /*
-         * TODO: Due to recents changes on async buttons clicks, dialogs now don't block the main window,
-         * allowing for more interactivity while the dialog is still open (therefore, code is pending to run)
-         * Solutions are:
-         *      A: lock the thread, returning to the previous way of async buttons clicks
-         *      B: lock the main window with LockForExecute()
-         */
         try
         {
+            LockForExecute(true);
             var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
             string currentFile = (string.IsNullOrEmpty(txtLINKDir.Text)) ? string.Empty : txtLINKDir.Text;
             string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
@@ -870,6 +876,7 @@ public partial class MainView : UserControl
         catch (System.Exception e) {
             _ = this.PopUpGenericError(e);
         }
+        finally { LockForExecute(false); }
     }
     
     void btnLINKDir_OnClick(object sender, RoutedEventArgs e) => btnLINKDir_ClickAsync();
@@ -877,6 +884,7 @@ public partial class MainView : UserControl
     async void BtnLINKRename_ClickAsync()
     {
         try {
+            LockForExecute(true);
             LinkCustomName = false;
             var fullPath = FileOps.CombineMultipleInputs(
                 settings.DEFLinkOutput, 
@@ -890,6 +898,7 @@ public partial class MainView : UserControl
             lblLinkDefinedDir.Text = BuildingLink.OutputPaths[0].FullPath;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockForExecute(false); }
     }
     
     void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e) => BtnLINKRename_ClickAsync();
