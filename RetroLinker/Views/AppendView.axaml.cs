@@ -49,7 +49,7 @@ public partial class AppendView : UserControl
         ParentWindow = mainWindow;
         var appendConfigFiles = new List<string>();
         try {
-            (_, appendConfigFiles) = Commander.ResolveAppendConfigArg(appendArg);
+            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(appendArg);
         }
         catch (System.ArgumentException ex) {
             Logger.LogErro(ex);
@@ -93,7 +93,7 @@ public partial class AppendView : UserControl
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
         var appendArg = (AppendPaths.Count == 0) 
             ? string.Empty 
-            : Commander.CreateAppendConfigArg(new List<string>(AppendPaths));
+            : CommandManager.CreateAppendConfigArg(new List<string>(AppendPaths));
         ParentWindow.ReturnToMainView(this, appendArg);
     }
 

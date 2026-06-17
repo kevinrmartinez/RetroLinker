@@ -51,8 +51,8 @@ public partial class MainView : UserControl
         settings =  new Settings();
 
         PatchArg = "--ups=\"path/to/rom.bin\"";
-        SubsysArg = "--subsystem abc \"path/to/rom.bin\"";
-        CONFappend = "--appendconfig \"/path/to/config1.conf|/path/to/config2.conf|/path/to/config3.conf\"";
+        SubsysArg = "--subsystem=abc \"path/to/rom.bin\"";
+        CONFappend = "--appendconfig=\"/path/to/config1.conf|/path/to/config2.conf|/path/to/config3.conf\"";
     }
     
     public MainView(MainWindow mainWindow)
@@ -101,7 +101,7 @@ public partial class MainView : UserControl
     private bool LinkCustomName;
     private ShortcutterOutput PreviousOutput = new();
 
-    // TODO: This has to be a enum or something, as it needs to include MacOS. (>= 0.8)
+    // TODO: This has to be a enum or something, as it needs to include MacOS. (>=0.10)
     // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
@@ -109,7 +109,7 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void View1_Loaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Evaluate what can be moved from this event function, and move it
+        // TODO: Call everything under 'FormFirstLoad == true' from the constructor (0.8)
         // TODO: Implement an Event for theme handling
         if (FormFirstLoad)
         {
@@ -216,8 +216,8 @@ public partial class MainView : UserControl
         var newValue = string.Empty;
         if (!string.IsNullOrWhiteSpace(value))
         {
-            var (path, patch) = Commander.ResolveSoftPatchingArg(BuildingLink.PatchArg);
-            if (patch.PatchType is Commander.PatchType.ExNoPatch) path = patch.Argument;
+            var (path, patch) = CommandManager.ResolveSoftPatchingArg(BuildingLink.PatchArg);
+            if (patch.PatchType is ROMPatchType.ExNoPatch) path = patch.Option;
             newValue = path;
         }
         noticePatchPresent.Text = newValue;
@@ -227,7 +227,7 @@ public partial class MainView : UserControl
     private string SetSubsysArg(string value)
     {
         noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? Commander.GetArgumentNoOption(value) 
+            ? CommandManager.GetArgumentNoOption(value) 
             : string.Empty;
         BuildingLink.SubsysArg = value;
         return value;
@@ -237,7 +237,7 @@ public partial class MainView : UserControl
     {
         BuildingLink.CONFappend = value;
         noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? Commander.GetArgumentNoOption(value) 
+            ? CommandManager.GetArgumentNoOption(value) 
             : string.Empty;
         return value;
     }
@@ -428,7 +428,7 @@ public partial class MainView : UserControl
             OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
 
             // Validating contentless or not
-            OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? Commander.contentless : OutputLink.ROMdir;
+            OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : OutputLink.ROMdir;
 
             // Validate there's an executable (Linux)
             OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
@@ -487,7 +487,7 @@ public partial class MainView : UserControl
                     if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
                     {
                         string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
-                        if (ROMIcoSavAUX == Commander.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
+                        if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
                         if (settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(OutputLink));
                         var newPath = settings.IcoSavPath switch
                         {
@@ -873,9 +873,7 @@ public partial class MainView : UserControl
             }
 #endif
         }
-        catch (System.Exception e) {
-            _ = this.PopUpGenericError(e);
-        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockForExecute(false); }
     }
     

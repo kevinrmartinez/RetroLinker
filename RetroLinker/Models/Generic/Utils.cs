@@ -30,6 +30,23 @@ namespace RetroLinker.Models.Generic
         private const char LinIllegaChar = '/';
         private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
         
+        [Obsolete] private static bool ContainsUnusualCharacters(string path)
+        {
+            /*
+             * TODO: As paths are user input from ANY locale, this list is not and will never be exhaustive.
+             * Therefore all paths should be enquoted 
+             */ 
+            // Define a list of characters that are considered unusual
+            char[] unusualCharacters = [ ' ', '#', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
+
+            // Check if the path contains any unusual characters
+            foreach (var c in path)
+            {
+                if (Array.IndexOf(unusualCharacters, c) != -1) return true;
+            }
+            return false;
+        }
+        
         public static string FixUnusualPaths(string path)
         {
             // TODO: This 'fix' only puts the path between double quotes
@@ -44,22 +61,9 @@ namespace RetroLinker.Models.Generic
             { path += DQ; }
             return path;
         }
-        
-        private static bool ContainsUnusualCharacters(string path)
-        {
-            // Define a list of characters that are considered unusual
-            char[] unusualCharacters = [ ' ', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
-
-            // Check if the path contains any unusual characters
-            foreach (var c in path)
-            {
-                if (Array.IndexOf(unusualCharacters, c) != -1) return true;
-            }
-            return false;
-        }
 
         public static string ReverseFixUnusualPaths(string path) {
-            if (!HasDoubleQuotes(path)) return path;
+            if (string.IsNullOrWhiteSpace(path) || !HasDoubleQuotes(path)) return path;
             var noDQ = path.Split(DQ);
             return noDQ[1];
         }

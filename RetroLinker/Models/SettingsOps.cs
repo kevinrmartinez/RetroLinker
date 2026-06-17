@@ -23,7 +23,7 @@ namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
-        // TODO: Create a static 'Settings' for the whole program (>= 0.9)
+        // TODO: Create a static 'Settings' for the whole program (>=0.9)
         public const string IcoSavRA = "_RA";
         public const string IcoSavROM = "_ROM";
         private const string InvalidDataMessage = "The setting file could not be serialized.";

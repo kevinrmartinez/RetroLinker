@@ -62,22 +62,22 @@ public partial class PatchesView : UserControl
         ToolTip.SetTip(chkNoPatch, tip);
         rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
 
-        rdoUPSPatch.Tag = Commander.UpsPatch;
-        rdoBPSPatch.Tag = Commander.BpsPatch;
-        rdoIPSPatch.Tag = Commander.IpsPatch;
-        rdoXDPatch.Tag = Commander.XdPatch;
-        rdoNoPatch.Tag = Commander.NoPatch;
-        chkNoPatch.Tag = Commander.ExNoPatch;
+        rdoUPSPatch.Tag = CommandManager.UpsPatch;
+        rdoBPSPatch.Tag = CommandManager.BpsPatch;
+        rdoIPSPatch.Tag = CommandManager.IpsPatch;
+        rdoXDPatch.Tag = CommandManager.XdPatch;
+        rdoNoPatch.Tag = CommandManager.NoPatch;
+        chkNoPatch.Tag = CommandManager.ExNoPatch;
         
         if (string.IsNullOrEmpty(PatchString)) return;
         try
         {
-            (var file, var patchType) = Commander.ResolveSoftPatchingArg(PatchString);
+            (var file, var patchType) = CommandManager.ResolveSoftPatchingArg(PatchString);
             switch (patchType.PatchType)
             {
-                case Commander.PatchType.NoPatch:
+                case ROMPatchType.NoPatch:
                     break;
-                case Commander.PatchType.ExNoPatch:
+                case ROMPatchType.ExNoPatch:
                     chkNoPatch.IsChecked = true;
                     break;
                 default:
@@ -114,10 +114,10 @@ public partial class PatchesView : UserControl
         if (radioButton.Tag is not SoftPatch softPatch) return;
         PatchOpts = softPatch.PatchType switch
         {
-            Commander.PatchType.UPS => PatchOpts.UPS,
-            Commander.PatchType.BPS => PatchOpts.BPS,
-            Commander.PatchType.IPS => PatchOpts.IPS,
-            Commander.PatchType.XDelta => PatchOpts.XD,
+            ROMPatchType.UPS => PatchOpts.UPS,
+            ROMPatchType.BPS => PatchOpts.BPS,
+            ROMPatchType.IPS => PatchOpts.IPS,
+            ROMPatchType.XDelta => PatchOpts.XD,
             _ => PatchOpts.UPS
         };
         
@@ -141,7 +141,7 @@ public partial class PatchesView : UserControl
     private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
     {
         string patchComm;
-        SoftPatch selectedPatch = Commander.NoPatch;
+        SoftPatch selectedPatch = CommandManager.NoPatch;
         foreach (var radioButton in patchRadioButtons)
         {
             if (radioButton.Tag is not SoftPatch softPatch) continue;
@@ -150,8 +150,9 @@ public partial class PatchesView : UserControl
             break;
         }
         
-        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(Commander.NoPatch))
+        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(CommandManager.NoPatch))
         {
+            // TODO: Move to static message box implementation
             var standardParams = new MessageBoxStandardParams()
             {
                 MaxWidth = 550,
@@ -168,11 +169,11 @@ public partial class PatchesView : UserControl
         }
         else
         {
-            if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Commander.ExNoPatch;
-            patchComm = selectedPatch.Equals(Commander.NoPatch) switch
+            if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
+            patchComm = selectedPatch.Equals(CommandManager.NoPatch) switch
             {
-                true => selectedPatch.Argument,
-                _ => Commander.CreateSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
+                true => selectedPatch.Option,
+                _ => CommandManager.CreateSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
             };
         }
         

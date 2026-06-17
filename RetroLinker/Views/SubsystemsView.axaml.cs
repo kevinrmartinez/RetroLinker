@@ -45,7 +45,7 @@ public partial class SubsystemsView : UserControl
         var subsystem = string.Empty;
         var subsystemArgs = new List<string>();
         try {
-            var subsysArgs = Commander.ResolveSubsystemArg(subsystemReq.SubSystemArg);
+            var subsysArgs = CommandManager.ResolveSubsystemArg(subsystemReq.SubSystemArg);
             subsystem = subsysArgs.Item1;
             subsystemArgs = subsysArgs.Item2;
         }
@@ -117,7 +117,7 @@ public partial class SubsystemsView : UserControl
     {
         var subsysArg = (string.IsNullOrEmpty(SubSystem)) 
             ? string.Empty 
-            : Commander.CreateSubsystemArg(SubSystem, Arguments);
+            : CommandManager.CreateSubsystemArg(SubSystem, Arguments);
         ParentWindow.ReturnToMainView(this, subsysArg);
     }
 

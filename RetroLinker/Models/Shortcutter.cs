@@ -25,7 +25,7 @@ namespace RetroLinker.Models
 {
     public class Shortcutter
     {
-        // TODO: Revise the names and setter of the properties (= 0.9)
+        // TODO: Revise the names and setter of the properties (0.9)
         #region Object
         
         public string RAdir
@@ -37,7 +37,7 @@ namespace RetroLinker.Models
         public string RApath
         {
             get => ra_path; 
-            private set { SetRApath(value); }   // TODO: Set later in the workflow (= 0.9)
+            private set { SetRApath(value); }   // TODO: Set later in the workflow (0.9)
         }      // 1
 
         public string ROMdir
@@ -134,7 +134,7 @@ namespace RetroLinker.Models
         // Link Creation - OS selection
         public List<ShortcutterResult> BuildShortcut(bool os) {
             // Building the arguments
-            Command = Commander.CommandBuilder(this);
+            Command = CommandManager.CommandBuilder(this);
             return (os) ? BuildWinShortcut(this) : BuildLinShorcut(this);
         }
         

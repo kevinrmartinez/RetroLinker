@@ -5,7 +5,7 @@ namespace RetroLinker.Models;
 public static class Logger
 {
     /*
-     * TODO: I think this method is too expensive to log, consider alternatives (>= 0.9)
+     * TODO: I think this method is too expensive for logging, consider alternatives (=0.9)
      * https://stackoverflow.com/a/68363461
      */
     
