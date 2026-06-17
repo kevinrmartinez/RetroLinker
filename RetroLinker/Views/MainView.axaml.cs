@@ -530,11 +530,11 @@ public partial class MainView : UserControl
                 // Double quotes for directories that are parameters ->
                 // -> for the ROM file
                 if (!chkContentless.IsChecked.GetValueOrDefault()) 
-                { OutputLink.ROMdir = Utils.FixUnusualPaths(OutputLink.ROMdir); }
+                { OutputLink.ROMdir = Utils.PutPathBetweenQuotes(OutputLink.ROMdir); }
 
                 // -> for the config file
                 if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
-                { OutputLink.CONFfile = Utils.FixUnusualPaths(OutputLink.CONFfile); }
+                { OutputLink.CONFfile = Utils.PutPathBetweenQuotes(OutputLink.CONFfile); }
 
                 // Link Copies handling
                 if (settings.MakeLinkCopy)

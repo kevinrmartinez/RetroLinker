@@ -150,28 +150,15 @@ public partial class PatchesView : UserControl
             break;
         }
         
-        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(CommandManager.NoPatch))
-        {
-            // TODO: Move to static message box implementation
-            var standardParams = new MessageBoxStandardParams()
-            {
-                MaxWidth = 550,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ContentTitle = resMainExtras.popNonSelected_Tittle,
-                ContentMessage = resMainExtras.popNonSelected_Msg,
-                Icon = MsBox.Avalonia.Enums.Icon.Info
-            };
-            if (ParentWindow.Icon is { } icon)  standardParams.WindowIcon = icon;
-            var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
-            _ = msBox.ShowWindowDialogAsync(ParentWindow);
-            
+        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(CommandManager.NoPatch)) {
+            var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
+            _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
             patchComm = string.Empty;
         }
         else
         {
             if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
-            patchComm = selectedPatch.Equals(CommandManager.NoPatch) switch
-            {
+            patchComm = selectedPatch.Equals(CommandManager.NoPatch) switch {
                 true => selectedPatch.Option,
                 _ => CommandManager.CreateSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
             };

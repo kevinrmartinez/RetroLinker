@@ -90,7 +90,7 @@ namespace RetroLinker.Models
             
             
             var optEval = patchOpt + optValueSeparator;
-            var argEval = Utils.ReverseFixUnusualPaths(argument);
+            var argEval = Utils.ReversePutPathBetweenQuotes(argument);
             return optEval switch
             {
                 // `var s when s == evalString` can be truncated to `_ when orgString == evalString` 
@@ -110,7 +110,7 @@ namespace RetroLinker.Models
                 case ROMPatchType.BPS:
                 case ROMPatchType.IPS:
                 case ROMPatchType.XDelta:
-                    var file = Utils.FixUnusualPaths(patchFile);
+                    var file = Utils.PutPathBetweenQuotes(patchFile);
                     return patchType.Option + file;
                 case ROMPatchType.NoPatch:
                 case ROMPatchType.ExNoPatch:
@@ -128,7 +128,7 @@ namespace RetroLinker.Models
                 throw new System.ArgumentException(@"Invalid append config argument: '" + arg + @"'", nameof(arg));
             
             var pathsCombined = GetArgumentNoOption(arg);
-            pathsCombined = Utils.ReverseFixUnusualPaths(pathsCombined);
+            pathsCombined = Utils.ReversePutPathBetweenQuotes(pathsCombined);
             var paths = pathsCombined.Split(appendConfigDeli);
             return (pathsCombined, new List<string>(paths));
         }
@@ -136,10 +136,10 @@ namespace RetroLinker.Models
         public static string CreateAppendConfigArg(List<string> configFiles) {
             string appendConfigArg;
             if (configFiles.Count == 1)
-                appendConfigArg = Utils.FixUnusualPaths(configFiles.First());
+                appendConfigArg = Utils.PutPathBetweenQuotes(configFiles.First());
             else {
                 appendConfigArg = string.Join(appendConfigDeli, configFiles);
-                appendConfigArg = Utils.FixUnusualPaths(appendConfigArg);
+                appendConfigArg = Utils.PutPathBetweenQuotes(appendConfigArg);
             }
             return appendConfig + appendConfigArg;
         }
@@ -162,7 +162,7 @@ namespace RetroLinker.Models
             var arg = subsystem + subsys;
             var fixedArgs = new List<string>();
             foreach (var subsysArg in subsysArgs)
-                fixedArgs.Add(Utils.FixUnusualPaths(subsysArg));
+                fixedArgs.Add(Utils.PutPathBetweenQuotes(subsysArg));
             arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
             return arg;
         }

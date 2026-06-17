@@ -22,6 +22,7 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views
 {
@@ -74,8 +75,8 @@ namespace RetroLinker.Views
 
         async void btnDEFSettings_Click()
         {
-            // TODO: Move to static message box implementation
-            try {
+            try
+            {
                 MessageBoxStandardParams mbParams = new()
                 {
                     ContentTitle = Translations.resSettingsWindow.popDefaults_Title,
@@ -87,33 +88,17 @@ namespace RetroLinker.Views
                     EscDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Cancel,
 
                 };
-                var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
-                var result = await msBox.ShowWindowDialogAsync(this);
+                var result = await this.PopUpMessageBox<MsBox.Avalonia.Enums.ButtonResult>(mbParams);
                 if (result != MsBox.Avalonia.Enums.ButtonResult.Ok) return;
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettings(DEFsettings);
                 CloseWindow(DEFsettings);
             }
-            catch (System.Exception e)
-            {
-                Logger.LogErro(e);
-                MessageBoxStandardParams mbParams = new()
-                {
-                    ContentTitle = Translations.resGeneric.genError,
-                    ContentHeader = Translations.resGeneric.popUnError_Head0,
-                    ContentMessage = $"{Translations.resGeneric.popUnError_Head0}\n{e.Message}",
-                    Icon = MsBox.Avalonia.Enums.Icon.Error,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    MaxWidth = 550
-                };
-                if (this.Icon is { } icon) mbParams.WindowIcon = icon;
-                var msBox = MessageBoxManager.GetMessageBoxStandard(mbParams);
-                _ = msBox.ShowWindowDialogAsync(this);
-            }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
 
-        async void btnDEFSettings_Click(object sender, RoutedEventArgs e) => btnDEFSettings_Click();
+        void btnDEFSettings_Click(object sender, RoutedEventArgs e) => btnDEFSettings_Click();
 
         void btnSAVESettings_OnClick(object sender, RoutedEventArgs e)
         {

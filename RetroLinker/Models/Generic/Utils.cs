@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -29,74 +30,26 @@ namespace RetroLinker.Models.Generic
         private const char DQ = '\"';
         private const char LinIllegaChar = '/';
         private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
-        
-        [Obsolete] private static bool ContainsUnusualCharacters(string path)
-        {
-            /*
-             * TODO: As paths are user input from ANY locale, this list is not and will never be exhaustive.
-             * Therefore all paths should be enquoted 
-             */ 
-            // Define a list of characters that are considered unusual
-            char[] unusualCharacters = [ ' ', '#', '$', '&', '`', '|', '\\', '*', '?', '<', '>', '^', '%'];
 
-            // Check if the path contains any unusual characters
-            foreach (var c in path)
-            {
-                if (Array.IndexOf(unusualCharacters, c) != -1) return true;
-            }
-            return false;
-        }
+        private static bool HasDoubleQuotes(string path) => path.StartsWith(DQ) && path.EndsWith(DQ);
         
-        public static string FixUnusualPaths(string path)
+        public static string PutPathBetweenQuotes(string path)
         {
-            // TODO: This 'fix' only puts the path between double quotes
-            // This deserves a remake
-            if (!ContainsUnusualCharacters(path)) return path;
-            
-            const int firstElement = 0;
-            int lastElement = path.Length - 1;
-            if (path[firstElement] != DQ)
-            { path = path.Insert(firstElement, DQ.ToString()); }
-            if (path[lastElement] != DQ)
-            { path += DQ; }
+            if (string.IsNullOrWhiteSpace(path) || HasDoubleQuotes(path)) return path;
+            path = DQ + path;
+            path += DQ;
             return path;
         }
 
-        public static string ReverseFixUnusualPaths(string path) {
-            if (string.IsNullOrWhiteSpace(path) || !HasDoubleQuotes(path)) return path;
-            var noDQ = path.Split(DQ);
-            return noDQ[1];
-        }
-
-        public static string TwoDoubleQuotes(string text)
+        public static string ReversePutPathBetweenQuotes(string path) 
         {
-            int y = 0;
-            bool notEnded = true;
-            while (notEnded)
-            {
-                if (y >= (text.Length - 1)) 
-                    notEnded = false;
-                for (int i = y; i < text.Length; i++)
-                {
-                    y = i;
-                    if (text[i] != DQ)
-                    {
-                        y++; 
-                        continue;
-                    }
-                    text = text.Insert(y, DQ.ToString());
-                    y += 2;
-                    break;
-                }
-            }
-            
-            return text;
+            if (string.IsNullOrWhiteSpace(path) || !HasDoubleQuotes(path)) return path;
+            path = path.TrimStart(DQ);
+            path = path.TrimEnd(DQ);
+            return path;
         }
 
-        private static bool HasDoubleQuotes(string path) {
-            int lastCharIndex = path.Length - 1;
-            return ((path[0] == DQ) && (path[lastCharIndex] == DQ));
-        }
+        public static string TwoDoubleQuotes(string text) => text.Replace(DQ.ToString(), "\"\"");
 
         public static List<string> ExtractClassProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
         {
