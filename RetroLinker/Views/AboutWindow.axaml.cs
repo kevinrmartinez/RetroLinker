@@ -28,7 +28,7 @@ namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
-    // TODO: Move some things into Bindings
+    // TODO: Move some things into Bindings (0.8)
     private readonly AppInfo? appInfo;
     private readonly Contribs[] Contributors;
     private readonly Dictionary<string, Uri> ThirdPartyCredits = new();

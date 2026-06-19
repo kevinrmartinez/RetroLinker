@@ -96,4 +96,7 @@
     <data name="dlgFilePatch" xml:space="preserve">
         <value>Choose the patch file</value>
     </data>
+    <data name="pckFileTypePatches" xml:space="preserve">
+        <value>Valid patch files</value>
+    </data>
 </root>

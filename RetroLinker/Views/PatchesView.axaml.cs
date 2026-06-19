@@ -43,6 +43,7 @@ public partial class PatchesView : UserControl
         InitializeComponent();
         ParentWindow = mainWindow;
         PatchString = patchString;
+        // TODO: Receive current ROM; bind to a read-only textbox (0.9)
         patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
     }
     
@@ -95,6 +96,21 @@ public partial class PatchesView : UserControl
         }
     }
     
+    // == FUNCTIONS ==
+    private SoftPatch GetPatchTypeByExtension(string filePath)
+    {
+        var fileExtension = FileOps.GetFileExtFromPath(filePath);
+        fileExtension = fileExtension.Trim('.');
+        return fileExtension switch
+        {
+            CommandManager.UpsExt => CommandManager.UpsPatch, 
+            CommandManager.BpsExt => CommandManager.BpsPatch,
+            CommandManager.IpsExt => CommandManager.IpsPatch, 
+            CommandManager.XdExt => CommandManager.XdPatch,
+            _ => CommandManager.UpsPatch
+        };
+    }
+    
     // == PATCHES CONTROLS ==
     
     private void LockControls(bool locked) => gridContent.ShowGridLines = !locked;
@@ -111,14 +127,15 @@ public partial class PatchesView : UserControl
     {
         if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
         if (e.Source is not RadioButton radioButton) return;
-        if (radioButton.Tag is not SoftPatch softPatch) return;
-        PatchOpts = softPatch.PatchType switch
+        // if (radioButton.Tag is not SoftPatch softPatch) return;
+        var softPatch = radioButton.Tag as SoftPatch;
+        PatchOpts = softPatch?.PatchType switch
         {
             ROMPatchType.UPS => PatchOpts.UPS,
             ROMPatchType.BPS => PatchOpts.BPS,
             ROMPatchType.IPS => PatchOpts.IPS,
             ROMPatchType.XDelta => PatchOpts.XD,
-            _ => PatchOpts.UPS
+            _ => PatchOpts.Auto
         };
         
     }
@@ -150,18 +167,17 @@ public partial class PatchesView : UserControl
             break;
         }
         
-        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(CommandManager.NoPatch)) {
-            var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
-            _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
-            patchComm = string.Empty;
-        }
-        else
-        {
-            if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
-            patchComm = selectedPatch.Equals(CommandManager.NoPatch) switch {
-                true => selectedPatch.Option,
-                _ => CommandManager.CreateSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
-            };
+        var patchPath = txtPatchPath.Text ?? string.Empty;
+        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
+        if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
+        patchComm = CommandManager.CreateSoftPatchingArg(patchPath, selectedPatch);
+        
+        if (string.IsNullOrEmpty(patchPath)) {
+            if (!selectedPatch.Equals(CommandManager.NoPatch) && !selectedPatch.Equals(CommandManager.ExNoPatch)) {
+                var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
+                _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
+                patchComm = string.Empty;
+            }
         }
         
         ParentWindow.ReturnToMainView(this, patchComm);

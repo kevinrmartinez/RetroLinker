@@ -34,12 +34,21 @@ namespace RetroLinker.Models
         private const char appendConfigDeli = '|';
         private const string subsystem = "--subsystem=";
         
-        public static SoftPatch UpsPatch = new("ups", "--ups=", ROMPatchType.UPS);
-        public static SoftPatch BpsPatch = new("bps", "--bps=",  ROMPatchType.BPS);
-        public static SoftPatch IpsPatch = new("ips", "--ips=",  ROMPatchType.IPS);
-        public static SoftPatch XdPatch = new("xdelta", "--xdelta=",   ROMPatchType.XDelta);
+        public const string UpsExt = "ups";
+        public const string BpsExt = "bps";
+        public const string IpsExt = "ips";
+        public const string XdExt = "xdelta";
+        private const string UpsOpt = $"--{UpsExt}=";
+        private const string BpsOpt = $"--{BpsExt}=";
+        private const string IpsOpt = $"--{IpsExt}=";
+        private const string XdOpt = $"--{XdExt}=";
+        private const string NpOpt = "--no-patch";
+        public static SoftPatch UpsPatch = new(UpsExt, UpsOpt, ROMPatchType.UPS);
+        public static SoftPatch BpsPatch = new(BpsExt, BpsOpt,  ROMPatchType.BPS);
+        public static SoftPatch IpsPatch = new(IpsExt, IpsOpt,  ROMPatchType.IPS);
+        public static SoftPatch XdPatch = new(XdExt, XdOpt,   ROMPatchType.XDelta);
         public static SoftPatch NoPatch = new("no", string.Empty,  ROMPatchType.NoPatch);
-        public static SoftPatch ExNoPatch = new("explicit-no", "--no-patch", ROMPatchType.ExNoPatch);
+        public static SoftPatch ExNoPatch = new("explicit-no", NpOpt, ROMPatchType.ExNoPatch);
 
         public static string CommandBuilder(Shortcutter shortcut)
         {
@@ -93,11 +102,10 @@ namespace RetroLinker.Models
             var argEval = Utils.ReversePutPathBetweenQuotes(argument);
             return optEval switch
             {
-                // `var s when s == evalString` can be truncated to `_ when orgString == evalString` 
-                _ when optEval == UpsPatch.Option => (argEval, UpsPatch),
-                _ when optEval == BpsPatch.Option => (argEval, BpsPatch),
-                _ when optEval == IpsPatch.Option => (argEval, IpsPatch),
-                _ when optEval == XdPatch.Option => (argEval, XdPatch), 
+                UpsOpt => (argEval, UpsPatch),
+                BpsOpt => (argEval, BpsPatch),
+                IpsOpt => (argEval, IpsPatch),
+                XdExt => (argEval, XdPatch), 
                 _ => throw argException
             };
         }

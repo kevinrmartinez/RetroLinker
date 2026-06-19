@@ -29,9 +29,10 @@
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,0">
                 <Label Content="Patch Type"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <!-- TODO: add Auto (0.8) -->
                     <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
                                  Content="{x:Static lc:resMainExtras.rdoNoPatch}"/>
+                    <RadioButton Name="rdoAutoPatch" GroupName="PatchType" Click="RadioButtonPatch_OnIsCheckedChanged"
+                                 Content="Auto"/>
                     <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                     <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>

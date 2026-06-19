@@ -31,13 +31,15 @@ namespace RetroLinker.Models.Avalonia
         static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
         static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
-        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
+        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };
+        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = [$"*{FileOps.LinLinkExt}"] };
         
-        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
-        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps"] };
-        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
-        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
+        static readonly List<string> PatchesExtensions    = [$"*.{CommandManager.UpsExt}",$"*.{CommandManager.BpsExt}", $"*.{CommandManager.IpsExt}",$"*.{CommandManager.XdExt}"];
+        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = [PatchesExtensions[0]] };
+        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = [PatchesExtensions[1]] };
+        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = [PatchesExtensions[2]] };
+        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = [PatchesExtensions[3]] };
+        static readonly FilePickerFileType all_patch      = new(resAvaloniaOps.pckFileTypePatches) { Patterns = PatchesExtensions };
 
         static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
         static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
@@ -146,20 +148,19 @@ namespace RetroLinker.Models.Avalonia
         
         public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
         {
-            FilePickerFileType fileType = patchType switch
+            var fileType = patchType switch
             {
                 PatchOpts.UPS => ups_patch,
                 PatchOpts.BPS => bps_patch,
                 PatchOpts.IPS => ips_patch,
                 PatchOpts.XD => xd_patch,
-                _ => ups_patch
+                _ => all_patch
             };
             
-            return new FilePickerOpenOptions()
-            {
+            return new FilePickerOpenOptions() {
                 AllowMultiple = false,
                 Title = resAvaloniaOps.dlgFilePatch,
-                FileTypeFilter = new []{fileType, FilePickerFileTypes.All}
+                FileTypeFilter = [fileType, FilePickerFileTypes.All]
             };
         }
     }
@@ -167,5 +168,5 @@ namespace RetroLinker.Models.Avalonia
     public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
     public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy}
     public enum SaveOpts { WINlnk, LINdesktop }
-    public enum PatchOpts { UPS, BPS, IPS, XD }
+    public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
 }

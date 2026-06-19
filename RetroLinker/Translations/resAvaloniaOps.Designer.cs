@@ -200,5 +200,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("dlgFilePatch", resourceCulture);
             }
         }
+        
+        public static string pckFileTypePatches {
+            get {
+                return ResourceManager.GetString("pckFileTypePatches", resourceCulture);
+            }
+        }
     }
 }

@@ -80,4 +80,7 @@
     <data name="dlgFilePatch" xml:space="preserve">
         <value>Eliga el archivo de parche</value>
     </data>
+    <data name="pckFileTypePatches" xml:space="preserve">
+        <value>Archivos de parche validos</value>
+    </data>
 </root>

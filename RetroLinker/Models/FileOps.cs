@@ -32,8 +32,8 @@ namespace RetroLinker.Models
         public const string CoresFile = "cores.txt";
         // public const string tempIco = "temp.ico";
         // public const byte MAX_PATH = 255; // Apply Everywhere?
-        private const string WinLinkExt = ".lnk";
-        private const string LinLinkExt = ".desktop";
+        public const string WinLinkExt = ".lnk";
+        public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
         public const string DotDesktopRAIcon = LinuxRABin;
 
