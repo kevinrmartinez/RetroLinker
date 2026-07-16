@@ -71,4 +71,10 @@
     <data name="btnSubsysArgDis_Tip" xml:space="preserve">
         <value>Descartar Argumento</value>
     </data>
+    <data name="lblPatchContent" xml:space="preserve">
+        <value>Contenido:</value>
+    </data>
+    <data name="lblPatchType" xml:space="preserve">
+        <value>Tipo de parche:</value>
+    </data>
 </root>

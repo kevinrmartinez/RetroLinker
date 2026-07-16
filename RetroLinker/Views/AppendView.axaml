@@ -9,8 +9,7 @@
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.AppendView"
              x:DataType="vw:AppendView"
-             x:CompileBindings="True"
-             DetachedFromVisualTree="Visual_OnDetachedFromVisualTree">
+             x:CompileBindings="True">
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>

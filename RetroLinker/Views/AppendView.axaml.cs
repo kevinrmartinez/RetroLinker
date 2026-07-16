@@ -113,6 +113,6 @@ public partial class AppendView : UserControl
     private void Visual_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         Logger.LogDebg($"{GetType().Name} Detached From Visual Tree");
-        Logger.LogDebg(e.Parent.GetType().Name);
+        Logger.LogDebg((object?)e.AttachmentPoint?.GetType().Name);
     }
 }

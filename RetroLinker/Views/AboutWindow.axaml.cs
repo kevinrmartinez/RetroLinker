@@ -28,26 +28,19 @@ namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
-    // TODO: Move some things into Bindings (0.8)
-    private readonly AppInformation? appInfo;
-    private readonly Contribs[] Contributors;
-    private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
+    public AppInformation AppInfo { get; }
+    public Contribs[] Contributors { get; }
+    public Dictionary<string, Uri> ThirdPartyCredits { get; } = new();
+    
+    private readonly Dictionary<string, Uri> _thirdPartyCredits = new();
     
     public AboutWindow()
     {
         InitializeComponent();
-        appInfo = App.LocalInformation;
+        AppInfo = App.LocalInformation;
         BorderDev.IsVisible = false;
         
-        // About the App
-        var title = (string.IsNullOrWhiteSpace(appInfo?.Name)) ? nameof(AppInformation.Name) : appInfo?.Name;
-        var version = (string.IsNullOrWhiteSpace(appInfo?.Version)) ? nameof(AppInformation.Version) : appInfo?.Version;
-        LabelTitle.Content = $"{title} v{version}";
-
 #if !RELEASE
-        var buildDate = (appInfo?.BuildDate is not null) ? appInfo?.BuildDate.Value.ToString("s") : nameof(AppInformation.BuildDate);
-        var gitCommitHash = (!string.IsNullOrEmpty(appInfo?.GitHash)) ?  appInfo?.GitHash : nameof(AppInformation.GitHash);
-        LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
         BorderDev.IsVisible = true;
 #endif
         
@@ -59,22 +52,24 @@ public partial class AboutWindow : Window
             new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
             new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
         ];
-        ItemsControlContributors.ItemsSource = Contributors;
+        // ItemsControlContributors.ItemsSource = _contributors;
         
         // Attribution
+        // TODO: Move to Binding
         // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
-        ThirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        ThirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
-        foreach (var key in ThirdPartyCredits.Keys)
+        _thirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
+        _thirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
+        foreach (var key in _thirdPartyCredits.Keys)
         {
             var hyperlink = new HyperlinkButton()
             {
-                NavigateUri = ThirdPartyCredits[key],
+                NavigateUri = _thirdPartyCredits[key],
                 Content = key,
                 Padding = new Thickness(0)
             };
             StackPanelCredits.Children.Add(hyperlink);
         }
+        DataContext = this;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();

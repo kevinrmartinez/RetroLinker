@@ -212,5 +212,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("btnSubsysArgDis_Tip", resourceCulture);
             }
         }
+        
+        public static string lblPatchContent {
+            get {
+                return ResourceManager.GetString("lblPatchContent", resourceCulture);
+            }
+        }
+        
+        public static string lblPatchType {
+            get {
+                return ResourceManager.GetString("lblPatchType", resourceCulture);
+            }
+        }
     }
 }

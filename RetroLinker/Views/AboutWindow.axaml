@@ -85,15 +85,33 @@
                 <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Images/NaN.png"/>
                 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
-                    <Label Name="LabelTitle" Content="APP TITTLE, APP VERSION"/>
-                    <Border Name="BorderDev">
-                        <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT HASH"/>
+                    <Label x:Name="LabelTitle">
+                        <Label.Content>
+                            <MultiBinding StringFormat="{}{0} v{1}">
+                                <Binding Path="AppInfo.Name" FallbackValue="[Proyect]"/>
+                                <Binding Path="AppInfo.Version" FallbackValue="[Version]"/>
+                            </MultiBinding>
+                        </Label.Content>
+                    </Label>
+                    
+                    <Border x:Name="BorderDev">
+                        <TextBlock x:Name="LabelBuild">
+                            <TextBlock.Text>
+                                <!-- APP BUILD DATE; GIT COMMIT HASH -->
+                                <MultiBinding StringFormat="{}{0}; {1}">
+                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:s}" TargetNullValue="NoDate"/>
+                                    <!-- Create a custom converter to get the hash in all caps (ToUpper) -->
+                                    <Binding Path="AppInfo.GitHash" TargetNullValue="NoDate"/> 
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
                     </Border>
-                    <TextBlock Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
-                    <Label Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
+                    
+                    <TextBlock x:Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
+                    <Label x:Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
                     <StackPanel Orientation="Horizontal">
-                        <Label Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
-                        <HyperlinkButton Name="LinkLicense" Padding="0" Content="{x:Static lc:resAboutWindow.hypLicense}" 
+                        <Label x:Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
+                        <HyperlinkButton x:Name="LinkLicense" Padding="0" Content="{x:Static lc:resAboutWindow.hypLicense}" 
                                          NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html"/>
                     </StackPanel>
                 </StackPanel>
@@ -107,12 +125,12 @@
                     <Rectangle Height="6"/>
                     <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
                 </StackPanel>
-                <Border Name="BorderContributors" Grid.Row="1" IsVisible="False">
+                <Border x:Name="BorderContributors" Grid.Row="1" IsVisible="False">
                     <ScrollViewer>
-                        <ItemsControl Name="ItemsControlContributors"/>
+                        <ItemsControl x:Name="ItemsControlContributors" ItemsSource="{Binding Contributors}"/>
                     </ScrollViewer>
                 </Border>
-                <StackPanel Name="StackPanelCredits" Grid.Row="2">
+                <StackPanel x:Name="StackPanelCredits" Grid.Row="2">
                     <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
                     <!-- Filled by code behind -->
                 </StackPanel>

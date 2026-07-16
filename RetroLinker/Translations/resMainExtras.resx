@@ -102,4 +102,10 @@
     <data name="btnSubsysArgDis_Tip" xml:space="preserve">
         <value>Discard Argument</value>
     </data>
+    <data name="lblPatchContent" xml:space="preserve">
+        <value>Content:</value>
+    </data>
+    <data name="lblPatchType" xml:space="preserve">
+        <value>Patch type:</value>
+    </data>
 </root>

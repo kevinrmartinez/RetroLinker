@@ -282,8 +282,8 @@ public partial class MainView : UserControl
         
         PrevConfigsCount = (settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
         
-        txtLINKDir.Watermark = "Super Mario Bros";
-        txtLINKDir.Watermark += FileOps.GetOutputExt(DesktopOS);
+        txtLINKDir.PlaceholderText = "Super Mario Bros";
+        txtLINKDir.PlaceholderText += FileOps.GetOutputExt(DesktopOS);
         AllwaysAskOutputLink(settings.AlwaysAskOutput);
     }
 
