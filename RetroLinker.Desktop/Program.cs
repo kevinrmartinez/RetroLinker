@@ -19,8 +19,8 @@
 using System;
 using System.Linq;
 using Avalonia;
-using Projektanker.Icons.Avalonia;
-using Projektanker.Icons.Avalonia.FontAwesome;
+using Optris.Icons.Avalonia;
+using Optris.Icons.Avalonia.FontAwesome7;
 using RetroLinker.Models;
 
 namespace RetroLinker.Desktop;
@@ -63,7 +63,7 @@ class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
-        IconProvider.Current.Register<FontAwesomeIconProvider>();
+        IconProvider.Current.Register<FontAwesome7IconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .AfterSetup(AppCallback)

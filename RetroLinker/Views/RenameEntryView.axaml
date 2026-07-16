@@ -39,11 +39,11 @@
             <Rectangle Grid.Column="1"/>
             
             <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static lc:resGeneric.btnUndo}" Click="BtnClear_OnClick"
-                    i:Attached.Icon="fa-arrow-rotate-left" FontSize="20"/>
+                    i:Attached.Icon="fa7-arrow-rotate-left" FontSize="20"/>
             
             <Button Name="btnNameApply" Grid.Column="3" Click="BtnNameApply_OnClick">
                 <StackPanel Orientation="Horizontal" Spacing="6">
-                    <i:Icon FontSize="20" Value="fa-check" Foreground="Green"/>
+                    <i:Icon FontSize="20" Value="fa7-check" Foreground="Green"/>
                     <TextBlock FontSize="16" Text="{x:Static lc:resGeneric.btnApply}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>

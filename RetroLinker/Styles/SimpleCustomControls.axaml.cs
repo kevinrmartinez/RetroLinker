@@ -27,7 +27,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using RetroLinker.Models;
 
-using ProjektankerIcon = Projektanker.Icons.Avalonia.Icon;
+using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
@@ -54,7 +54,7 @@ public class LinkCopyItemGrid
             
         ProjektankerIcon trashcan = new()
         {
-            Value = "fa-trash",
+            Value = "fa7-trash",
             Foreground = new SolidColorBrush(Colors.Firebrick)
         };
         NewItemTrash = new Button()
@@ -114,7 +114,7 @@ public class ExtraMainControlButton : Button
 {
     // Content Properties
     const string blankText = "blank";
-    const string blankIcon = "fa-question";
+    const string blankIcon = "fa7-question";
     
     // Overrides
     protected override System.Type StyleKeyOverride { get; } = typeof(Button);
@@ -174,11 +174,11 @@ public class ExtraMainControlButton : Button
 
     private void SetButtonFunction(ButtonFunctions function)
     {
-        var yesIcon = "fa-check";
+        var yesIcon = "fa7-check";
         var yesColor = new SolidColorBrush(Colors.Green);
         var yesText = Translations.resGeneric.btnConfirm;
         
-        var noIcon = "fa-x";
+        var noIcon = "fa7-x";
         var noColor = new SolidColorBrush(Colors.Crimson);
         var noText = Translations.resGeneric.btnDiscard;
         

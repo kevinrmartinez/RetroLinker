@@ -21,12 +21,12 @@
 		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
 				<cc:MainWindowHeader.LeftControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
-					        i:Attached.Icon="fa-circle-info" FontSize="22"/>
+					        i:Attached.Icon="fa7-circle-info" FontSize="22"/>
 				</cc:MainWindowHeader.LeftControl>
 				<!-- Grid.Column="0" Already filled by MainWindowHeader -->
 				<cc:MainWindowHeader.RightControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="0,0,5,0" Click="btnSettings_OnClick"
-					        i:Attached.Icon="fa-gear" FontSize="24"/>
+					        i:Attached.Icon="fa7-gear" FontSize="24"/>
 				</cc:MainWindowHeader.RightControl>
 		</cc:MainWindowHeader>
 		
@@ -44,7 +44,7 @@
 				<StackPanel Name="panelRADir" Grid.Row="1">
 					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="retroarch.exe"/>
+						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="retroarch.exe"/>
 						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browse" Click="btnRADir_OnClick"/>
 					</Grid>
 				</StackPanel>
@@ -56,10 +56,10 @@
 						<CheckBox Name="chkContentless" Content="{x:Static lc:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
-						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" Watermark="supermariobros.nes"/>
+						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browse"/>
-							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
+							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa7-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
 					<cc:MainViewExtensionNotice Name="noticePatchPresent" Title="{x:Static lc:resMainView.noticePatch}" 
@@ -74,7 +74,7 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
-									i:Attached.Icon="fa-microchip" Classes="textbox_inline"/>
+									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
 						<cc:MainViewExtensionNotice Name="noticeSubsystemPresent" Title="{x:Static lc:resMainView.noticeSubsystem}"
 						                            IsVisible="{Binding $self.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
@@ -91,7 +91,7 @@
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
 								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browse"/>
 								<Button Name="btnAppendConfig" Click="btnAppendConfig_OnClick" Classes="textbox_inline" 
-								        i:Attached.Icon="fa-plus" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}"/>
+								        i:Attached.Icon="fa7-plus" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}"/>
 							</StackPanel>
 						</Grid>
 						<cc:MainViewExtensionNotice Name="noticeAppendPresent" Title="{x:Static lc:resMainView.noticeAppend}"
@@ -118,15 +118,15 @@
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}" Classes="ReqField"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" Watermark="Super Mario Bros.lnk" />
+						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros.lnk" />
 						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
-						        i:Attached.Icon="fa-pen" FontSize="18"/>
+						        i:Attached.Icon="fa7-pen" FontSize="18"/>
 						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" Classes="textbox_inline browse" Click="btnLINKDir_OnClick"/>
 						<TextBlock Name="lblLinkDefinedDir" Grid.Row="1" Grid.Column="0" Text="{x:Static lc:resMainView.lblLinkDeskDir}" 
 						           FontSize="11" TextWrapping="Wrap" Margin="2 ,0"/>
 					</Grid>
 					<Label Margin="3,0" Content="{x:Static lc:resMainView.lblDesc}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
-					<TextBox Name="txtDesc" Margin="3,0" Watermark="{x:Static lc:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
+					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->
@@ -166,7 +166,7 @@
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"
 										ToolTip.Tip="{x:Static lc:resMainView.tipIconNoImage}">
-								<Label VerticalAlignment="Center" i:Attached.Icon="fa-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
+								<Label VerticalAlignment="Center" i:Attached.Icon="fa7-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
 								<Label VerticalAlignment="Center" Content="{x:Static lc:resMainView.lblIconNoImage}" FontSize="12"/>
 							</StackPanel>
 

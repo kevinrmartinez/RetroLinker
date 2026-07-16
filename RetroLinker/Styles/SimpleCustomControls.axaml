@@ -20,22 +20,22 @@
     </Style>
     
     <Style Selector="Button.check">
-        <Setter Property="i:Attached.Icon" Value="fa-check"/>
+        <Setter Property="i:Attached.Icon" Value="fa7-check"/>
         <Setter Property="Foreground" Value="ForestGreen"/>
     </Style>
     
     <Style Selector="Button.trash">
-        <Setter Property="i:Attached.Icon" Value="fa-trash"/>
+        <Setter Property="i:Attached.Icon" Value="fa7-trash"/>
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
     <Style Selector="Button.clear_text">
-        <Setter Property="i:Attached.Icon" Value="fa-delete-left"/>
+        <Setter Property="i:Attached.Icon" Value="fa7-delete-left"/>
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
     <Style Selector="Button.browse">
-        <Setter Property="i:Attached.Icon" Value="fa-folder-open"/>
+        <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
         <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
     </Style>
 </Styles>

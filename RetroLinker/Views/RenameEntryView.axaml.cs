@@ -106,7 +106,8 @@ public partial class RenameEntryView : UserControl
     }
     
     private void TxtFileName_OnTextChanged(object? sender, TextChangedEventArgs e) {
-        if (!txtFileName.IsReadOnly) LockButton(AreBoxesEmpty());
+        if (sender is not TextBox _txtFileName) return;
+        if (!_txtFileName.IsReadOnly) LockButton(AreBoxesEmpty());
     }
     
     private void ChkCustomFilename_OnIsCheckedChanged(object? sender, RoutedEventArgs e) {

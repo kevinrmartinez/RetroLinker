@@ -160,11 +160,11 @@
                     <Setter Property="CornerRadius" Value="8"/>
                     
                     <Style Selector="^#PART_ButtonClr">
-                        <Setter Property="i:Attached.Icon" Value="fa-eraser"/>
+                        <Setter Property="i:Attached.Icon" Value="fa7-eraser"/>
                         <Setter Property="Foreground" Value="Firebrick"/>
                     </Style>
                     <Style Selector="^#PART_ButtonAdd">
-                        <Setter Property="i:Attached.Icon" Value="fa-plus"/>
+                        <Setter Property="i:Attached.Icon" Value="fa7-plus"/>
                         <Setter Property="Foreground" Value="ForestGreen"/>
                     </Style>
                 </Style>
@@ -177,7 +177,7 @@
                 <DataTemplate>
                     <Border Classes="Item">
                         <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock Grid.Column="0" Text="{Binding .}"/>
+                            <TextBlock Grid.Column="0" Text="{Binding $parent.DataContext}"/>
                             <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash" 
                                     ToolTip.Tip="{x:Static lc:resGeneric.btnDeleteItem}"/>
                         </Grid>
