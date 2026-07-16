@@ -19,8 +19,6 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
@@ -31,9 +29,11 @@ public partial class PatchesView : UserControl
 {
     public PatchesView()
     {
+        
         // Constructor for Designer
         InitializeComponent();
         ParentWindow = new MainWindow(true);
+        CoreContent = "\"path/to/rom.bin\"";
         _patchString = string.Empty;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
@@ -43,8 +43,8 @@ public partial class PatchesView : UserControl
     {
         InitializeComponent();
         ParentWindow = mainWindow;
+        CoreContent = "bbbbbbbba";
         _patchString = patchString;
-        // TODO: Receive current ROM; bind to a read-only textbox
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
     }
@@ -53,7 +53,7 @@ public partial class PatchesView : UserControl
     private MainWindow ParentWindow;
     
     // == Props ==
-    // public string CurrentROM { get; } = string.Empty;
+    public string CoreContent { get; init; }
     
     // == FIELDS ==
     private PatchOpts _patchOpts;
