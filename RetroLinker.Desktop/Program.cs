@@ -135,11 +135,11 @@ class Program
         }
     }
 
-    private static AppInfo GetAppInfo()
+    private static AppInformation GetAppInfo()
     {
         var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();
-        return new AppInfo(fullName, AppName, AppVersion,  buildDate, gitHash);
+        return new AppInformation(fullName, AppName, AppVersion,  buildDate, gitHash);
     }
 }

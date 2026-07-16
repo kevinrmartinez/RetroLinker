@@ -26,7 +26,7 @@ namespace RetroLinker;
 
 public class App : Application
 {
-    public static AppInfo LocalInformation { get; private set; } 
+    public static AppInformation LocalInformation { get; private set; } 
     
     public const string RetroBin = "retroarch";
     
@@ -59,8 +59,8 @@ public class App : Application
     }
 
     // Added
-    public void SetAppInfo(AppInfo appInfo) {
-        LocalInformation = appInfo;
+    public void SetAppInfo(AppInformation appInformation) {
+        LocalInformation = appInformation;
         Logger.LogDebg("'AppInfo' has been set with the following properties:\n" + LocalInformation.ToStringLines());
     }
 }

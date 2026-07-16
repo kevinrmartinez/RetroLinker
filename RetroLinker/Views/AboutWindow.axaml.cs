@@ -29,7 +29,7 @@ namespace RetroLinker.Views;
 public partial class AboutWindow : Window
 {
     // TODO: Move some things into Bindings (0.8)
-    private readonly AppInfo? appInfo;
+    private readonly AppInformation? appInfo;
     private readonly Contribs[] Contributors;
     private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
     
@@ -40,13 +40,13 @@ public partial class AboutWindow : Window
         BorderDev.IsVisible = false;
         
         // About the App
-        var title = (string.IsNullOrWhiteSpace(appInfo?.Name)) ? nameof(AppInfo.Name) : appInfo?.Name;
-        var version = (string.IsNullOrWhiteSpace(appInfo?.Version)) ? nameof(AppInfo.Version) : appInfo?.Version;
+        var title = (string.IsNullOrWhiteSpace(appInfo?.Name)) ? nameof(AppInformation.Name) : appInfo?.Name;
+        var version = (string.IsNullOrWhiteSpace(appInfo?.Version)) ? nameof(AppInformation.Version) : appInfo?.Version;
         LabelTitle.Content = $"{title} v{version}";
 
 #if !RELEASE
-        var buildDate = (appInfo?.BuildDate is not null) ? appInfo?.BuildDate.Value.ToString("s") : nameof(AppInfo.BuildDate);
-        var gitCommitHash = (!string.IsNullOrEmpty(appInfo?.GitHash)) ?  appInfo?.GitHash : nameof(AppInfo.GitHash);
+        var buildDate = (appInfo?.BuildDate is not null) ? appInfo?.BuildDate.Value.ToString("s") : nameof(AppInformation.BuildDate);
+        var gitCommitHash = (!string.IsNullOrEmpty(appInfo?.GitHash)) ?  appInfo?.GitHash : nameof(AppInformation.GitHash);
         LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
         BorderDev.IsVisible = true;
 #endif

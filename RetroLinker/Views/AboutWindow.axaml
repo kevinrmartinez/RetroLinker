@@ -6,7 +6,7 @@
         xmlns:lc="clr-namespace:RetroLinker.Translations"
         mc:Ignorable="d" d:DesignWidth="510" d:DesignHeight="400"
         x:Class="RetroLinker.Views.AboutWindow"
-        x:DataType="vw:AppendView"
+        x:DataType="vw:AboutWindow"
         x:CompileBindings="True"
         MinWidth="450" MinHeight="350" Width="510" Height="400"
         WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">

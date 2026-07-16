@@ -20,7 +20,7 @@ using System;
 
 namespace RetroLinker.Models;
 
-public readonly struct AppInfo(
+public readonly struct AppInformation(
     string fullName,
     string name,
     string version,
