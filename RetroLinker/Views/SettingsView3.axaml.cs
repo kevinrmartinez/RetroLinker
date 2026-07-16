@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views
@@ -68,10 +69,10 @@ namespace RetroLinker.Views
             {
                 if (!DesktopOS)
                 {
-                    candidateCopiesPath.AddRange(SettingsOps.LINLinkPathCandidates);
+                    candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
                     panelWindowsOnlyControls.IsEnabled = false;
                 }
-                else candidateCopiesPath.AddRange(SettingsOps.WINLinkPathCandidates);
+                else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
 
                 foreach (var candidate in candidateCopiesPath)
@@ -187,11 +188,11 @@ namespace RetroLinker.Views
             newItem.Content = gridControl.NewItemGrid;
             return newItem;
         }
-        
+
+        private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
         
         // DEFAULT OUTPUT
-        private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e)
-        {
+        private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e) {
             var chk = chkAlwaysAskOutput.IsChecked.GetValueOrDefault();
             ParentWindow.settings.AlwaysAskOutput = chk;
             panelDEFLinkOutput.IsEnabled = !chk;
@@ -199,56 +200,66 @@ namespace RetroLinker.Views
         
         private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
             ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
-        
-        private async void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
+
+        private async void BtnDefLinkOutput_ClickAsync()
         {
-            string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
-            string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
-            if (string.IsNullOrWhiteSpace(folder)) return;
-            // int customDirIndex = candidatesCount;
-            if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
-            else comboDEFLinkOutput.Items[candidatesCount] = folder;
-            comboDEFLinkOutput.SelectedIndex = candidatesCount;
+            try {
+                LockControls(true);
+                string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
+                string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
+                if (string.IsNullOrWhiteSpace(folder)) return;
+                // int customDirIndex = candidatesCount;
+                if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
+                else comboDEFLinkOutput.Items[candidatesCount] = folder;
+                comboDEFLinkOutput.SelectedIndex = candidatesCount;
+            }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
         }
+
+        private void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) => BtnDefLinkOutput_ClickAsync();
         
-        private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e)
-        {
+        private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) {
             ParentWindow.settings.DEFLinkOutput = ParentWindow.DEFsettings.DEFLinkOutput;
             comboDEFLinkOutput.SelectedIndex = 0;
         }
         
         
         // LINK COPY
-        void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e)
-        {
+        private void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e) {
             var chk = chkMakeLinkCopy.IsChecked.GetValueOrDefault();
             ParentWindow.settings.MakeLinkCopy = chk;
             lsboxLinkCopies.IsEnabled = chk;
         }
 
-        async void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e)
+        private async void BtnAddLinkCopy_ClickAsync()
         {
-            string currentItem = (string)comboaddLinkCopy.SelectedItem!;
-            if (string.IsNullOrWhiteSpace(currentItem)) return;
+            try {
+                LockControls(true);
+                string currentItem = (string)comboaddLinkCopy.SelectedItem!;
+                if (string.IsNullOrWhiteSpace(currentItem)) return;
 
-            if (currentItem == StrAddCustomCopyPath)
-            {
-                string folder = await AvaloniaOps.OpenFolderAsync(template:3, string.Empty, ParentWindow);
-                if (!string.IsNullOrWhiteSpace(folder))
+                if (currentItem == StrAddCustomCopyPath)
                 {
-                    lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
-                    ParentWindow.SetLinkCopyPaths.Add(folder);
+                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, string.Empty, ParentWindow);
+                    if (!string.IsNullOrWhiteSpace(folder)) {
+                        lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
+                        ParentWindow.SetLinkCopyPaths.Add(folder);
+                    }
                 }
+                else if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem)) {
+                    lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
+                    ParentWindow.SetLinkCopyPaths.Add(currentItem);
+                }
+                comboaddLinkCopy.SelectedIndex = 0;
             }
-            else if (!ParentWindow.SetLinkCopyPaths.Contains(currentItem))
-            {
-                lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
-                ParentWindow.SetLinkCopyPaths.Add(currentItem);
-            }
-            comboaddLinkCopy.SelectedIndex = 0;
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally  { LockControls(false); }
         }
+
+        private void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e) => BtnAddLinkCopy_ClickAsync();
         
-        void btnTrashCopyItem(object? sender, RoutedEventArgs e)
+        private void btnTrashCopyItem(object? sender, RoutedEventArgs e)
         {
             if (sender is not Button button) return;
             var parentGrid = button.Parent as Grid;
@@ -265,42 +276,39 @@ namespace RetroLinker.Views
         // ICONS
         
         #region WINDOWS OS ONLY
-        async void btnIcoSavPath_Click(object sender, RoutedEventArgs e)
+
+        private async void btnIcoSavPath_ClickAsync()
         {
-            string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
-            string folder = await AvaloniaOps.OpenFolderAsync(template:2, currentFolder, ParentWindow);
-            if (string.IsNullOrWhiteSpace(folder)) return;
-            txtIcoSavPath.Text = folder; 
-            ParentWindow.settings.IcoSavPath = folder;
+            try {
+                LockControls(true);
+                string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, currentFolder, ParentWindow);
+                if (string.IsNullOrWhiteSpace(folder)) return;
+                txtIcoSavPath.Text = folder; 
+                ParentWindow.settings.IcoSavPath = folder;
+            }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
         }
 
-        void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e)
-        {
+        private void btnIcoSavPath_OnClick(object sender, RoutedEventArgs e) => btnIcoSavPath_ClickAsync();
+
+        private void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e) {
             ParentWindow.settings.IcoSavPath = ParentWindow.DEFsettings.IcoSavPath;
             txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
         }
-
-        void chkUseUserAssets_Checked(object sender, RoutedEventArgs e)
-        {
-            panelWindowsOnlyControls2.IsEnabled = !chkMakeLinkCopy.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.IcoSavPath = ParentWindow.settings.UserAssetsPath;
-            txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
-        }
         
-        private void IcoSavChecks_IsCheckedChanged(object? sender, RoutedEventArgs e)
-        {
+        private void IcoSavChecks_IsCheckedChanged(object? sender, RoutedEventArgs e) {
             ParentWindow.settings.ExtractIco = chkExtractIco.IsChecked.GetValueOrDefault();
             ParentWindow.settings.IcoLinkName = chkIcoLinkName.IsChecked.GetValueOrDefault();
         }
         
-        private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e)
-        {
+        private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e) {
             if (!chkUseDefaultIcoSavPath.IsChecked.GetValueOrDefault()) SetCustomSavIcoPath(string.Empty);
             else SetDefaultSavIcoPath(0);
         }
         
-        private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e)
-        {
+        private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e) {
             if (sender is not ComboBox combo) return;
             SetDefaultSavIcoPath((byte)combo.SelectedIndex);
         }

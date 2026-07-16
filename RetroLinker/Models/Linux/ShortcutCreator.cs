@@ -18,13 +18,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace RetroLinker.Models.LinuxClasses;
+namespace RetroLinker.Models.Linux;
 
-public static class LinShortcutter
+public static class ShortcutCreator
 {
-    private static readonly string CommentLine = $"# Created with {App.AppName} v{App.AppVersion}";
+    // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
+    // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>=0.9) 
+    
+    private static readonly string CommentLine = $"# Created with {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private const string EntryHeader = "[Desktop Entry]";
     // private const string Notify = "StartupNotify=false";
     private const string Category = "Categories=Game";
@@ -72,16 +74,15 @@ public static class LinShortcutter
 
     private static void SetExecPermissions(string filePath)
     {
-        Debug.WriteLine($"SetExecPermissions Thread ID: {Environment.CurrentManagedThreadId}", App.DebgTrace);
-        Trace.WriteLine($"Trying to set executable permissions to \"{filePath}\".", App.InfoTrace);
+        Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
             FileOps.MakeFileExecutable(filePath);
-            Trace.WriteLine($"Executable permissions to \"{filePath}\" were set successfully.", App.InfoTrace);
+            Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {
-            Trace.WriteLine($"Failed to set executable permissions to \"{filePath}\".", App.ErroTrace);
-            Trace.WriteLine($"Error: {e.Message}",  App.ErroTrace);
+            Logger.LogWarn($"Failed to set executable permissions to \"{filePath}\".");
+            Logger.LogErro(e);
         }
     }
 }

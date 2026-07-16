@@ -23,7 +23,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views;
 
@@ -34,10 +37,9 @@ public partial class AppendView : UserControl
     {
         InitializeComponent();
         ParentWindow = new MainWindow(true);
-        List<string> appendConfigFiles = FillListTest();
-        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
-        ItemsControlPaths.ItemsSource = AppendPaths;
-        
+        AppendPaths = FillListTest();
+        ItemsControlPaths.Items = AppendPaths;
+        DataContext =  this;
     }
     
     // Active Constructor
@@ -45,17 +47,16 @@ public partial class AppendView : UserControl
     {
         InitializeComponent();
         ParentWindow = mainWindow;
-        List<string> appendConfigFiles;
+        var appendConfigFiles = new List<string>();
         try {
-            appendConfigFiles = Commander.ResolveAppendConfigArg(appendArg).Item2;
+            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(appendArg);
         }
-        catch (System.ArgumentException argumentException) {
-            System.Diagnostics.Trace.WriteLine(argumentException.Message);
-            appendConfigFiles = new();
+        catch (System.ArgumentException ex) {
+            Logger.LogErro(ex);
         }
 
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);
-        ItemsControlPaths.ItemsSource = AppendPaths;
+        DataContext =  this;
     }
     
     // Window Object
@@ -65,42 +66,53 @@ public partial class AppendView : UserControl
     public ObservableCollection<string> AppendPaths { get; private set; }
     
     // FIELDS
-    private PickerOpt.OpenOpts ConfigOpt = PickerOpt.OpenOpts.RAcfg;
+    private OpenOpts ConfigOpt = OpenOpts.RAcfg;
 
     // Append Config controls
-    private void ButtonTrash_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Button button) return;
-        if (button.Parent!.Parent!.Parent is ContentPresenter { Content: string content })
-            AppendPaths.Remove(content);
-    }
+
+    private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
     
-    private async void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e)
+    private async void BtnConfigPathBrowse_ClickAsync()
     {
-        var loadedFile = await AvaloniaOps.OpenFileAsync(ConfigOpt, ParentWindow);
-        if (string.IsNullOrWhiteSpace(loadedFile)) return;
-        if (!AppendPaths.Contains(loadedFile))
-            AppendPaths.Add(loadedFile);
+        try 
+        {
+            LockControls(true);
+            var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
+            if (string.IsNullOrWhiteSpace(loadedFile)) return;
+            if (!AppendPaths.Contains(loadedFile))
+                AppendPaths.Add(loadedFile);
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
 
-    private void BtnConfigPathClear_OnClick(object? sender, RoutedEventArgs e) => AppendPaths.Clear();
+    private void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e) => BtnConfigPathBrowse_ClickAsync();
     
     
     // View Buttons
-    private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var appendArg = (AppendPaths.Count == 0) ? string.Empty : Commander.GetAppendConfigArg(new List<string>(AppendPaths));
+    private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
+        var appendArg = (AppendPaths.Count == 0) 
+            ? string.Empty 
+            : CommandManager.CreateAppendConfigArg(new List<string>(AppendPaths));
         ParentWindow.ReturnToMainView(this, appendArg);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
 
-    private List<string> FillListTest()
+    private ObservableCollection<string> FillListTest()
     {
-        var _appendPaths = new List<string>();
+        var appendPaths = new ObservableCollection<string>();
+        var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
         for (int i = 0; i < 16; i++) {
-            _appendPaths.Add($"/home/public/testing/retroarch{i}.cfg");
+            var testPath = FileOps.CombineMultipleInputs(pfx, $"retroarch{i}.cfg");
+            appendPaths.Add(testPath);
         }
-        return _appendPaths;
+        return appendPaths;
+    }
+
+    private void Visual_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        Logger.LogDebg($"{GetType().Name} Detached From Visual Tree");
+        Logger.LogDebg((object?)e.AttachmentPoint?.GetType().Name);
     }
 }

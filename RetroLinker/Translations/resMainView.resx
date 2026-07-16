@@ -22,22 +22,22 @@
         <value>RetroLinker</value>
     </data>
     <data name="lblRADir" xml:space="preserve">
-        <value>RetroArch executable*</value>
+        <value>RetroArch executable</value>
     </data>
     <data name="lblROMDir" xml:space="preserve">
-        <value>ROM directory*</value>
+        <value>ROM directory</value>
     </data>
     <data name="chkContentless" xml:space="preserve">
         <value>Contentless</value>
     </data>
     <data name="lblCore" xml:space="preserve">
-        <value>Core*</value>
+        <value>Core</value>
     </data>
     <data name="tipSubSys" xml:space="preserve">
         <value>Subsystem</value>
     </data>
     <data name="lblNoCores" xml:space="preserve">
-        <value>'cores.txt' not found!</value>
+        <value>'cores.txt' is empty</value>
     </data>
     <data name="lblConfig" xml:space="preserve">
         <value>Config</value>
@@ -52,10 +52,10 @@
         <value>Accessibility</value>
     </data>
     <data name="lblLinkDir" xml:space="preserve">
-        <value>Shortcut output directory*</value>
+        <value>Shortcut output directory</value>
     </data>
     <data name="lblLinkName" xml:space="preserve">
-        <value>Output Shortcut name*</value>
+        <value>Output Shortcut name</value>
     </data>
     <data name="lblLinkDeskDir" xml:space="preserve">
         <value>Desktop directory</value>
@@ -138,7 +138,7 @@
     <data name="btnMoreParams" xml:space="preserve">
         <value>More</value>
     </data>
-    <data name="popIconsError_Tittle" xml:space="preserve">
+    <data name="popIconsError_Title" xml:space="preserve">
         <value>Error importing icons</value>
     </data>
     <data name="popIconsError_Mess" xml:space="preserve">
@@ -150,10 +150,19 @@
     <data name="chkMenuOnError" xml:space="preserve">
         <value>Load Menu on Error</value>
     </data>
-    <data name="extxtPatch" xml:space="preserve">
+    <data name="noticePatch" xml:space="preserve">
         <value>Patch: </value>
     </data>
-    <data name="extxtAppend" xml:space="preserve">
+    <data name="noticeAppend" xml:space="preserve">
         <value>Appended: </value>
+    </data>
+    <data name="noticeSubsystem" xml:space="preserve">
+        <value>Subsystem: </value>
+    </data>
+    <data name="popOverwrite_Mess" xml:space="preserve">
+        <value>The file '{0}' already exist, do you wish to overwrite it?</value>
+    </data>
+    <data name="popOverwrite_Title" xml:space="preserve">
+        <value>Overwrite file?</value>
     </data>
 </root>

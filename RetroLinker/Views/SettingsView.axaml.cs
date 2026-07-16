@@ -58,7 +58,6 @@ namespace RetroLinker.Views
         // LOADS
         void View_OnLoaded(object sender, RoutedEventArgs e)
         { 
-            System.Diagnostics.Debug.WriteLine($"SettingView loaded for the fist time? {FirstTimeLoad}", App.DebgTrace);
             if (FirstTimeLoad) FillComboLocale();
             
             // Settings
@@ -69,7 +68,7 @@ namespace RetroLinker.Views
         { 
             chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
             chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
-            LoadTheme(ParentWindow.settings.PreferedTheme);
+            LoadTheme(ParentWindow.settings.ChosenTheme);
             comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
         }
 
@@ -112,12 +111,12 @@ namespace RetroLinker.Views
             if (swtThemeSwitch.IsChecked.GetValueOrDefault())
             {
                 Application.Current!.RequestedThemeVariant = dark_theme;
-                ParentWindow.settings.PreferedTheme = 2;
+                ParentWindow.settings.ChosenTheme = 2;
             }
             else
             {
                 Application.Current!.RequestedThemeVariant = light_theme;
-                ParentWindow.settings.PreferedTheme = 1;
+                ParentWindow.settings.ChosenTheme = 1;
             }
         }
 
@@ -128,7 +127,7 @@ namespace RetroLinker.Views
                 // Avalonia's Designer breaks on this part
                 Application.Current!.RequestedThemeVariant = system_theme;
                 swtThemeSwitch.IsEnabled = false;
-                ParentWindow.settings.PreferedTheme = 0;
+                ParentWindow.settings.ChosenTheme = 0;
             }
             else {
                 swtThemeSwitch.IsEnabled = true; 
@@ -137,14 +136,10 @@ namespace RetroLinker.Views
         }
         
         
-        
-        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e)
-        {
+        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
+            // REWRITE: Rewrite so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
-            try
-            { ParentWindow.settings.SetLanguage(locale); }
-            catch
-            { ParentWindow.settings.SetDefaultLanguage(); }
+            ParentWindow.settings.LanguageLocale = locale.Culture.Name;
         }
 
         // OTHER PREFERENCES

@@ -116,5 +116,59 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("genSucces", resourceCulture);
             }
         }
+        
+        public static string popUnError_Head0 {
+            get {
+                return ResourceManager.GetString("popUnError_Head0", resourceCulture);
+            }
+        }
+        
+        public static string popUnError_Mess0 {
+            get {
+                return ResourceManager.GetString("popUnError_Mess0", resourceCulture);
+            }
+        }
+        
+        public static string btnAuto {
+            get {
+                return ResourceManager.GetString("btnAuto", resourceCulture);
+            }
+        }
+        
+        public static string btnAdd {
+            get {
+                return ResourceManager.GetString("btnAdd", resourceCulture);
+            }
+        }
+        
+        public static string btnClear {
+            get {
+                return ResourceManager.GetString("btnClear", resourceCulture);
+            }
+        }
+        
+        public static string btnDelete {
+            get {
+                return ResourceManager.GetString("btnDelete", resourceCulture);
+            }
+        }
+        
+        public static string btnDeleteItem {
+            get {
+                return ResourceManager.GetString("btnDeleteItem", resourceCulture);
+            }
+        }
+        
+        public static string btnUndo {
+            get {
+                return ResourceManager.GetString("btnUndo", resourceCulture);
+            }
+        }
+        
+        public static string tipBrowse {
+            get {
+                return ResourceManager.GetString("tipBrowse", resourceCulture);
+            }
+        }
     }
 }

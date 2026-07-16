@@ -2,11 +2,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vw="clr-namespace:RetroLinker.Views"
         xmlns:lc="clr-namespace:RetroLinker.Translations"
         mc:Ignorable="d" d:DesignWidth="510" d:DesignHeight="400"
         x:Class="RetroLinker.Views.AboutWindow"
+        x:DataType="vw:AboutWindow"
+        x:CompileBindings="True"
         MinWidth="450" MinHeight="350" Width="510" Height="400"
         WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
+    
     <Window.Styles>
         <Style Selector="Label#LabelTitle">
             <Setter Property="FontSize" Value="22"/>
@@ -35,6 +39,22 @@
             <Setter Property="FontWeight" Value="Light"/>
         </Style>
         
+        <Style Selector="Border#BorderContributors">
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="ItemsControl#ItemsControlContributors">
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="ItemTemplate">
+                <DataTemplate DataType="vw:Contribs"
+                              x:DataType="vw:Contribs">
+                    <HyperlinkButton Padding="2" Content="{Binding DisplayName}" NavigateUri="{Binding OnlinePageUrl}"/>
+                </DataTemplate>
+            </Setter>
+        </Style>
         <Style Selector="StackPanel#StackPanelCredits">
             <Setter Property="Orientation" Value="Vertical"/>
             <Style Selector="^ TextBlock">
@@ -58,40 +78,62 @@
     
     <Grid RowDefinitions="*,Auto" Margin="5">
         <!-- BODY -->
-        <!-- TODO: Add External Libraries -->
+        <!-- TODO: Add External Libraries (0.8) -->
         <Grid Grid.Row="0" RowDefinitions="0.7*,*">
             <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
                 <!-- PENDING: Change image with app logo -->
                 <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Images/NaN.png"/>
                 
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
-                    <Label Name="LabelTitle" Content="APP TITTLE, APP VERSION"/>
-                    <Border Name="BorderDev">
-                        <TextBlock Name="LabelBuild" Text="APP BUILD DATE; GIT COMMIT HASH"/>
+                    <Label x:Name="LabelTitle">
+                        <Label.Content>
+                            <MultiBinding StringFormat="{}{0} v{1}">
+                                <Binding Path="AppInfo.Name" FallbackValue="[Proyect]"/>
+                                <Binding Path="AppInfo.Version" FallbackValue="[Version]"/>
+                            </MultiBinding>
+                        </Label.Content>
+                    </Label>
+                    
+                    <Border x:Name="BorderDev">
+                        <TextBlock x:Name="LabelBuild">
+                            <TextBlock.Text>
+                                <!-- APP BUILD DATE; GIT COMMIT HASH -->
+                                <MultiBinding StringFormat="{}{0}; {1}">
+                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:s}" TargetNullValue="NoDate"/>
+                                    <!-- Create a custom converter to get the hash in all caps (ToUpper) -->
+                                    <Binding Path="AppInfo.GitHash" TargetNullValue="NoDate"/> 
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
                     </Border>
-                    <TextBlock Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
-                    <Label Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
+                    
+                    <TextBlock x:Name="LabelDesc" Text="{x:Static lc:resAboutWindow.lblDesc}"/>
+                    <Label x:Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label x:Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
+                        <HyperlinkButton x:Name="LinkLicense" Padding="0" Content="{x:Static lc:resAboutWindow.hypLicense}" 
+                                         NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html"/>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto">
+            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto" Margin="0,14,0,8">
                 <StackPanel Grid.Row="0" Orientation="Vertical">
-                    <Rectangle Height="6"/>
                     <StackPanel Orientation="Horizontal">
-                        <Label><StackPanel Orientation="Horizontal" Spacing="0">
-                                <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
-                                <Label Content=": "/>
-                            </StackPanel></Label>
+                        <Label Content="{Binding Source={x:Static lc:resAboutWindow.lblMaintainer}, StringFormat='\{0\}: '}"/>
                         <HyperlinkButton Content="kevinrmartinez" NavigateUri="https://github.com/kevinrmartinez" Padding="0"/>
                     </StackPanel>
                     <Rectangle Height="6"/>
                     <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
                 </StackPanel>
-                <ListBox Name="ListBoxContributors" Grid.Row="1" SelectionMode="Single" VerticalAlignment="Stretch" Margin="2" IsVisible="False"/>
-                <StackPanel Name="StackPanelCredits" Grid.Row="2">
+                <Border x:Name="BorderContributors" Grid.Row="1" IsVisible="False">
+                    <ScrollViewer>
+                        <ItemsControl x:Name="ItemsControlContributors" ItemsSource="{Binding Contributors}"/>
+                    </ScrollViewer>
+                </Border>
+                <StackPanel x:Name="StackPanelCredits" Grid.Row="2">
                     <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
                     <!-- Filled by code behind -->
                 </StackPanel>
-                <Rectangle Grid.Row="3" Height="8"/>
             </Grid>
         </Grid>
         

@@ -35,7 +35,7 @@
 								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0,0,2" 
 								          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
 								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Margin="3" Click="BtnLocale_OnClick">
-									<i:Icon Value="fa-check" FontSize="18" Foreground="Green"/>
+									<i:Icon Value="fa7-check" FontSize="18" Foreground="Green"/>
 								</Button>
 							</Grid>
 							

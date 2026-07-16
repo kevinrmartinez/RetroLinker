@@ -18,69 +18,81 @@
 
 using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
+using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
 
 public partial class PatchesView : UserControl
 {
+    // == Props ==
+    public string CoreContent { get; }
+    
     public PatchesView()
     {
         // Constructor for Designer
         InitializeComponent();
+        
         ParentWindow = new MainWindow(true);
-        PatchString = string.Empty;
-        patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CoreContent = "\"path/to/rom.bin\"";
+        _patchString = string.Empty;
+        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CompleteSetup();
+        DataContext = this;
     }
     
     public PatchesView(MainWindow mainWindow, string patchString)
     {
         InitializeComponent();
+        
         ParentWindow = mainWindow;
-        PatchString = patchString;
-        patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CoreContent = "bbbbbbbba";
+        _patchString = patchString;
+        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CompleteSetup();
+        DataContext = this;
     }
     
     // == Window Object ==
     private MainWindow ParentWindow;
     
     // == FIELDS ==
-    private string PatchString;
-    private PickerOpt.PatchOpts PatchOpts;
-    private List<RadioButton> patchRadioButtons = new();
+    private PatchOpts _patchOpts;
+    private readonly string _patchString;
+    private readonly List<RadioButton> _patchRadioButtons = new();
     
     
     // == LOAD EVENTS ==
-    private void PatchView_OnLoaded(object? sender, RoutedEventArgs e)
+    private void CompleteSetup()
     {
         string tip = resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
         ToolTip.SetTip(chkNoPatch, tip);
         rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
 
-        rdoUPSPatch.Tag = Commander.UpsPatch;
-        rdoBPSPatch.Tag = Commander.BpsPatch;
-        rdoIPSPatch.Tag = Commander.IpsPatch;
-        rdoXDPatch.Tag = Commander.XdPatch;
-        rdoNoPatch.Tag = Commander.NoPatch;
-        chkNoPatch.Tag = Commander.ExNoPatch;
+        rdoUPSPatch.Tag = CommandManager.UpsPatch;
+        rdoBPSPatch.Tag = CommandManager.BpsPatch;
+        rdoIPSPatch.Tag = CommandManager.IpsPatch;
+        rdoXDPatch.Tag = CommandManager.XdPatch;
+        rdoNoPatch.Tag = CommandManager.NoPatch;
+        chkNoPatch.Tag = CommandManager.ExNoPatch;
         
-        if (string.IsNullOrEmpty(PatchString)) return;
+        if (string.IsNullOrEmpty(_patchString)) return;
         try
         {
-            (var file, var patchType) = Commander.ResolveSoftPatchingArg(PatchString);
+            var (file, patchType) = CommandManager.ResolveSoftPatchingArg(_patchString);
             switch (patchType.PatchType)
             {
-                case Commander.PatchType.NoPatch:
+                case ROMPatchType.NoPatch:
                     break;
-                case Commander.PatchType.ExNoPatch:
+                case ROMPatchType.ExNoPatch:
                     chkNoPatch.IsChecked = true;
                     break;
                 default:
-                    var rdo = patchRadioButtons.Find(rdo => ReferenceEquals(rdo.Tag, patchType));
+                    var rdo = _patchRadioButtons.Find(rdo => ReferenceEquals(rdo.Tag, patchType));
                     if (rdo is not null) {
                         rdo.IsChecked = true;
                         txtPatchPath.Text = file;
@@ -88,13 +100,31 @@ public partial class PatchesView : UserControl
                     break;
             }
         }
-        catch (System.ArgumentException argumentException) {
-            System.Diagnostics.Trace.WriteLine(argumentException.Message);
+        catch (System.ArgumentException ex) {
+            Logger.LogErro(ex);
             rdoNoPatch.IsChecked = true;
         }
     }
     
+    // == FUNCTIONS ==
+    private SoftPatch GetPatchTypeByExtension(string filePath)
+    {
+        var fileExtension = FileOps.GetFileExtFromPath(filePath);
+        fileExtension = fileExtension.Trim('.');
+        return fileExtension switch
+        {
+            CommandManager.UpsExt => CommandManager.UpsPatch, 
+            CommandManager.BpsExt => CommandManager.BpsPatch,
+            CommandManager.IpsExt => CommandManager.IpsPatch, 
+            CommandManager.XdExt => CommandManager.XdPatch,
+            _ => CommandManager.UpsPatch
+        };
+    }
+    
     // == PATCHES CONTROLS ==
+    
+    private void LockControls(bool locked) => gridContent.ShowGridLines = !locked;
+    
     private void ControlsEnabled(bool enable)
     {
         txtPatchPath.IsEnabled = enable;
@@ -107,31 +137,39 @@ public partial class PatchesView : UserControl
     {
         if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
         if (e.Source is not RadioButton radioButton) return;
-        if (radioButton.Tag is not SoftPatch softPatch) return;
-        PatchOpts = softPatch.PatchType switch
+        // if (radioButton.Tag is not SoftPatch softPatch) return;
+        var softPatch = radioButton.Tag as SoftPatch;
+        _patchOpts = softPatch?.PatchType switch
         {
-            Commander.PatchType.UPS => PickerOpt.PatchOpts.UPS,
-            Commander.PatchType.BPS => PickerOpt.PatchOpts.BPS,
-            Commander.PatchType.IPS => PickerOpt.PatchOpts.IPS,
-            Commander.PatchType.XDelta => PickerOpt.PatchOpts.XD,
-            _ => PickerOpt.PatchOpts.UPS
+            ROMPatchType.UPS => PatchOpts.UPS,
+            ROMPatchType.BPS => PatchOpts.BPS,
+            ROMPatchType.IPS => PatchOpts.IPS,
+            ROMPatchType.XDelta => PatchOpts.XD,
+            _ => PatchOpts.Auto
         };
         
     }
 
-    private async void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e)
+    private async void BtnPatchPath_ClickAsycn()
     {
-        var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
-        string file = await AvaloniaOps.OpenFileAsync(openOptions, ParentWindow);
-        if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
+        try {
+            LockControls(true);
+            var openOptions = PickerOpt.PatchOpenOptions(_patchOpts);
+            string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
+            if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
+
+    private void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e) => BtnPatchPath_ClickAsycn();
 
     // == VIEW CONTROLS ==
     private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
     {
         string patchComm;
-        SoftPatch selectedPatch = Commander.NoPatch;
-        foreach (var radioButton in patchRadioButtons)
+        SoftPatch selectedPatch = CommandManager.NoPatch;
+        foreach (var radioButton in _patchRadioButtons)
         {
             if (radioButton.Tag is not SoftPatch softPatch) continue;
             if (!radioButton.IsChecked.GetValueOrDefault()) continue;
@@ -139,33 +177,19 @@ public partial class PatchesView : UserControl
             break;
         }
         
-        if (string.IsNullOrEmpty(txtPatchPath.Text) && !selectedPatch.Equals(Commander.NoPatch))
-        {
-            var standardParams = new MessageBoxStandardParams()
-            {
-                MaxWidth = 550,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                ContentTitle = resMainExtras.popNonSelected_Tittle,
-                ContentMessage = resMainExtras.popNonSelected_Msg,
-                Icon = MsBox.Avalonia.Enums.Icon.Info
-            };
-            if (ParentWindow.Icon is { } icon)  standardParams.WindowIcon = icon;
-            var msBox = MessageBoxManager.GetMessageBoxStandard(standardParams);
-            msBox.ShowWindowDialogAsync(ParentWindow);
-            
-            patchComm = string.Empty;
+        var patchPath = txtPatchPath.Text ?? string.Empty;
+        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
+        if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
+        patchComm = CommandManager.CreateSoftPatchingArg(patchPath, selectedPatch);
+        
+        if (string.IsNullOrEmpty(patchPath)) {
+            if (!selectedPatch.Equals(CommandManager.NoPatch) && !selectedPatch.Equals(CommandManager.ExNoPatch)) {
+                var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
+                _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
+                patchComm = string.Empty;
+            }
         }
-        else
-        {
-            if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Commander.ExNoPatch;
-            patchComm = selectedPatch.Equals(Commander.NoPatch) switch
-            {
-                true => selectedPatch.Argument,
-                _ => Commander.GetSoftPatchingArg(txtPatchPath.Text!, selectedPatch)
-            };
-        }
-
-        // ParentWindow.BuildingLink.PatchArg = patchComm;
+        
         ParentWindow.ReturnToMainView(this, patchComm);
     }
 

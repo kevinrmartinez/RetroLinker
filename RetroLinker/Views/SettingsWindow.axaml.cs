@@ -22,6 +22,7 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views
 {
@@ -70,33 +71,36 @@ namespace RetroLinker.Views
 
         
         #region Window/Dialog Controls
-        void btnDISSettings_Click(object sender, RoutedEventArgs e) => CloseWindow(null);
+        void btnDISSettings_OnClick(object sender, RoutedEventArgs e) => CloseWindow(null);
 
-        async void btnDEFSettings_Click(object sender, RoutedEventArgs e)
+        async void btnDEFSettings_Click()
         {
-            MessageBoxStandardParams msparams = new()
+            try
             {
-                ContentTitle = Translations.resSettingsWindow.popDefaults_Title,
-                ContentMessage = Translations.resSettingsWindow.popDefaults_Mess,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
-                EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,
-                EscDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Cancel,
+                MessageBoxStandardParams mbParams = new()
+                {
+                    ContentTitle = Translations.resSettingsWindow.popDefaults_Title,
+                    ContentMessage = Translations.resSettingsWindow.popDefaults_Mess,
+                    Icon = MsBox.Avalonia.Enums.Icon.Question,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.OkCancel,
+                    EnterDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Ok,
+                    EscDefaultButton = MsBox.Avalonia.Enums.ClickEnum.Cancel,
 
-            };
-            var msbox = MessageBoxManager.GetMessageBoxStandard(msparams);
-            var result = await msbox.ShowWindowDialogAsync(this);
-            if (result == MsBox.Avalonia.Enums.ButtonResult.Ok)
-            {
+                };
+                var result = await this.PopUpMessageBox<MsBox.Avalonia.Enums.ButtonResult>(mbParams);
+                if (result != MsBox.Avalonia.Enums.ButtonResult.Ok) return;
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
                 SettingsOps.WriteSettings(DEFsettings);
                 CloseWindow(DEFsettings);
             }
-                
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
 
-        void btnSAVESettings_Click(object sender, RoutedEventArgs e)
+        void btnDEFSettings_Click(object sender, RoutedEventArgs e) => btnDEFSettings_Click();
+
+        void btnSAVESettings_OnClick(object sender, RoutedEventArgs e)
         {
             if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
             if (!settings.AlwaysAskOutput) settings.AlwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);

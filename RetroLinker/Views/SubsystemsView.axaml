@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
+             xmlns:pc="clr-namespace:RetroLinker.Styles"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
+             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
+             x:Class="RetroLinker.Views.SubsystemsView"
+             x:DataType="vw:SubsystemsView"
+             x:CompileBindings="True">
+    <UserControl.Styles>
+        <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
+    </UserControl.Styles>
+    
+    <Grid x:Name="gridContent" RowDefinitions="Auto, *, Auto">
+        <!--Top-->
+        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.titleSubsystems}" Classes="Header"/>
+        <!-- Header -->
+    
+        <!--Body-->
+        <Grid x:Name="gridBody" Grid.Row="1" RowDefinitions="Auto, *, Auto, Auto">
+    
+            <!-- ROW0 - Spacing -->
+            <Rectangle Grid.Row="0" Height="8"/>
+    
+            <!-- ROW1 - Subsystem Controls -->
+            <Grid x:Name="gridControls" Grid.Row="1" ColumnDefinitions="*,4*" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="10,0">
+                
+                <Label Grid.Column="0" Grid.Row="0" Content="{x:Static lc:resMainExtras.lblSubsysCore}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtCore" Grid.Column="1" Grid.Row="0" IsEnabled="False" Margin="0,3" Text="{Binding Core}"/>
+                    
+                <Label Grid.Column="0" Grid.Row="1" Content="{x:Static lc:resMainExtras.lblSubsysContent}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtContent" Grid.Column="1" Grid.Row="1" IsEnabled="False" Margin="0,3" Text="{Binding CoreContent}"/>
+                    
+                <Label Grid.Column="0" Grid.Row="2" Content="{x:Static lc:resMainExtras.lblSubsysBase}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox x:Name="txtSubsys" Grid.Column="1" Grid.Row="2" Margin="0,3" Text="{Binding SubSystem}"/>
+                    
+                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static lc:resMainExtras.lblSubsysArgs}" 
+                       HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
+                <Border Grid.Column="1" Grid.Row="3" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                    <pc:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
+                                       IsEnabled="{Binding #txtSubsys.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                </Border>
+                
+                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="4" IsVisible="False"
+                        BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="{x:Static lc:resMainExtras.lblSubsysNewArg}"/>
+                        <Grid ColumnDefinitions="*,Auto" Margin="2">
+                            <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Content="⏏" Classes="textbox_inline browse" Click="ButtonNewArgBrowse_OnClick"/>
+                                <Button Content="⌫" Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
+                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgDis_Tip}"/>
+                                <Button Content="✓" Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
+                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgAdd_Tip}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- ROW2 - Spacing -->
+            <Rectangle Grid.Row="2" Height="10"/>
+            
+            <!-- ROW3 - Return Controls -->
+            <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
+                <pc:ExtraMainControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
+                <pc:ExtraMainControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
+            </Grid>
+            
+        </Grid>
+    
+        <!--Bottom-->
+        <!-- <Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray"> -->
+        <!--      -->
+        <!-- </Grid> -->
+    </Grid>
+</UserControl>

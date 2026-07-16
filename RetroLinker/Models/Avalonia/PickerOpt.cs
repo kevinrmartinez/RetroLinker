@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Platform.Storage;
 using RetroLinker.Translations;
 
-namespace RetroLinker.Models
+namespace RetroLinker.Models.Avalonia
 {
     public static class PickerOpt
     {
@@ -31,17 +31,15 @@ namespace RetroLinker.Models
         static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
         static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
         static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = ["*.lnk"] };
-        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = ["*.desktop"] };
+        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };
+        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = [$"*{FileOps.LinLinkExt}"] };
         
-        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = ["*.ups"] };
-        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = ["*.bps"] };
-        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = ["*.ips"] };
-        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = ["*.xdelta"] };
-
-        public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico } 
-        public enum SaveOpts { WINlnk, LINdesktop }
-        public enum PatchOpts { UPS, BPS, IPS, XD }
+        static readonly List<string> PatchesExtensions    = [$"*.{CommandManager.UpsExt}",$"*.{CommandManager.BpsExt}", $"*.{CommandManager.IpsExt}",$"*.{CommandManager.XdExt}"];
+        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = [PatchesExtensions[0]] };
+        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = [PatchesExtensions[1]] };
+        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = [PatchesExtensions[2]] };
+        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = [PatchesExtensions[3]] };
+        static readonly FilePickerFileType all_patch      = new(resAvaloniaOps.pckFileTypePatches) { Patterns = PatchesExtensions };
 
         static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
         static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
@@ -70,11 +68,10 @@ namespace RetroLinker.Models
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (AvaloniaOps.ROMTopDir is not null)
-                    { options.SuggestedStartLocation = AvaloniaOps.ROMTopDir; }
+                    if (Operations.ROMTopDir is not null)
+                    { options.SuggestedStartLocation = Operations.ROMTopDir; }
                     /*
                      * From the XDG Portal Docs:
-                     * 
                      * "Suggested folder from which the files should be opened.
                      * The portal implementation is free to ignore this option."
                      *
@@ -113,7 +110,6 @@ namespace RetroLinker.Models
 
                 // This part should never happen...
                 default:
-                    System.Diagnostics.Debug.WriteLine("This part should never happen...", App.DebgTrace);
                     options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileInFallback;
                     break;
@@ -126,7 +122,7 @@ namespace RetroLinker.Models
             var options = new FilePickerSaveOptions();
             options.ShowOverwritePrompt = true;
             options.Title = resAvaloniaOps.dlgFileLINKDir;
-            options.SuggestedStartLocation = AvaloniaOps.DesktopFolder;
+            options.SuggestedStartLocation = Operations.DesktopFolder;
             switch (template) 
             {
                 // Windows .lnk
@@ -143,7 +139,6 @@ namespace RetroLinker.Models
                 
                 // This part should never happen...
                 default:
-                    System.Diagnostics.Debug.WriteLine("This part should never happen...", App.DebgTrace);
                     options.Title = resAvaloniaOps.dlgFileOutFallback;
                     break;
             }
@@ -153,21 +148,25 @@ namespace RetroLinker.Models
         
         public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
         {
-            FilePickerFileType fileType = patchType switch
+            var fileType = patchType switch
             {
                 PatchOpts.UPS => ups_patch,
                 PatchOpts.BPS => bps_patch,
                 PatchOpts.IPS => ips_patch,
                 PatchOpts.XD => xd_patch,
-                _ => ups_patch
+                _ => all_patch
             };
             
-            return new FilePickerOpenOptions()
-            {
+            return new FilePickerOpenOptions() {
                 AllowMultiple = false,
                 Title = resAvaloniaOps.dlgFilePatch,
-                FileTypeFilter = new []{fileType, FilePickerFileTypes.All}
+                FileTypeFilter = [fileType, FilePickerFileTypes.All]
             };
         }
     }
+    
+    public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
+    public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy}
+    public enum SaveOpts { WINlnk, LINdesktop }
+    public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
 }

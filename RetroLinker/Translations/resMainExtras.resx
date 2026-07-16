@@ -18,7 +18,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="tittleEntryName" xml:space="preserve">
+    <data name="titleEntryName" xml:space="preserve">
         <value>Name the Desktop Entry</value>
     </data>
     <data name="lblFriendlyName" xml:space="preserve">
@@ -39,10 +39,7 @@
     <data name="chkCustomFilename" xml:space="preserve">
         <value>Custom Filename</value>
     </data>
-    <data name="btnClear_Tip" xml:space="preserve">
-        <value>Undo changes</value>
-    </data>
-    <data name="tittleSoftPatching" xml:space="preserve">
+    <data name="titleSoftPatching" xml:space="preserve">
         <value>Soft Patching</value>
     </data>
     <data name="rdoNoPatch" xml:space="preserve">
@@ -75,10 +72,40 @@
     <data name="popNonSelected_Msg" xml:space="preserve">
         <value>No patch file selected. Using implicit No Patch.</value>
     </data>
-    <data name="tittleAppendConfig" xml:space="preserve">
+    <data name="titleAppendConfig" xml:space="preserve">
         <value>Append Config</value>
     </data>
     <data name="lblAppendPath" xml:space="preserve">
         <value>Paths of Configs to Append</value>
+    </data>
+    <data name="titleSubsystems" xml:space="preserve">
+        <value>Subsystem</value>
+    </data>
+    <data name="lblSubsysCore" xml:space="preserve">
+        <value>Core: </value>
+    </data>
+    <data name="lblSubsysContent" xml:space="preserve">
+        <value>Content: </value>
+    </data>
+    <data name="lblSubsysBase" xml:space="preserve">
+        <value>Subsystem: </value>
+    </data>
+    <data name="lblSubsysArgs" xml:space="preserve">
+        <value>Arguments: </value>
+    </data>
+    <data name="lblSubsysNewArg" xml:space="preserve">
+        <value>New Argument:</value>
+    </data>
+    <data name="btnSubsysArgAdd_Tip" xml:space="preserve">
+        <value>Add Argument</value>
+    </data>
+    <data name="btnSubsysArgDis_Tip" xml:space="preserve">
+        <value>Discard Argument</value>
+    </data>
+    <data name="lblPatchContent" xml:space="preserve">
+        <value>Content:</value>
+    </data>
+    <data name="lblPatchType" xml:space="preserve">
+        <value>Patch type:</value>
     </data>
 </root>

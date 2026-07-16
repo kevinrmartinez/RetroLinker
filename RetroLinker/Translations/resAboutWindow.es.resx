@@ -26,4 +26,7 @@
     <data name="lblAttributions" xml:space="preserve">
         <value>Atribuciones</value>
     </data>
+    <data name="lblLicense" xml:space="preserve">
+        <value>Licencia: </value>
+    </data>
 </root>

@@ -17,187 +17,73 @@
 */
 
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
 {
     public static class SettingsOps
     {
-        private const string StartMark = "[START]";
-        private const string EndMark = "[END]";
-        private const string GeneralHeader = "[GENERAL]";
-        private const string PrevConfigsHeader = "[PrevConfigs]";
-        private const string LinkCopyPathsHeader = "[LinkCopyPaths]";
-        private const string InvalidDataMessage = "Invalid settings file!";
+        // TODO: Create a static 'Settings' for the whole program (>=0.9)
+        public const string IcoSavRA = "_RA";
+        public const string IcoSavROM = "_ROM";
+        private const string InvalidDataMessage = "The setting file could not be serialized.";
         private static Settings CachedSettings = new();
         
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
-
-        public static string[] WINLinkPathCandidates { get; } = new[]
-        {
+        
+        public static string[] WinLinkPathCandidates { get; } =
+        [
             FileOps.UserDesktop,
             FileOps.WINPublicDesktop,
-            FileOps.UserProfile + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs",
-            "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs"
-        };  // Source: https://en.wikipedia.org/wiki/Start_menu
+            FileOps.CombineMultipleInputs(FileOps.UserProfile, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs"),
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu) // TODO: test
+        ];  // Source: https://en.wikipedia.org/wiki/Start_menu
         
-        public static string[] LINLinkPathCandidates { get; } = new[]
-        {
+        public static string[] LinLinkPathCandidates { get; } =
+        [
             FileOps.UserDesktop,
-            FileOps.UserProfile + "/.local/share/applications",
-            "/usr/local/share/applications",
-            "/usr/share/applications"
-        };  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
-
-        public const string IcoSavROM = "_ROM";
-        public const string IcoSavRA = "_RA";
+            FileOps.CombineMultipleInputs(FileOps.UserProfile, ".local", "share", "applications"),
+            FileOps.CombineMultipleInputs("/", "usr", "local", "share", "applications"),
+            FileOps.CombineMultipleInputs("/", "usr", "share", "applications")
+        ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
         
-        private static bool GeneralInPlace(string[] settingFile, int headerIndex, int generalCount)
-        {
-            bool startCorrect = (settingFile[headerIndex + 1] == StartMark);
-            bool endCorrect = (settingFile[headerIndex + generalCount + 2] == EndMark);
-            
-            return startCorrect && endCorrect;
-        }
-
-        private static string[] GetSubSectionsValues(string[] settingFile, int sectIndex)
-        {
-            var valueList = new List<string>();
-            int valueCount = SubSectionCount(settingFile, sectIndex);
-            if (valueCount > 0)
-            {
-                for (int i = 0; i < valueCount; i++)
-                {
-                    int offset = sectIndex + 2 + i;
-                    valueList.Add(settingFile[offset]);
-                }
-            }
-            
-            return valueList.ToArray();
-        }
-
-        private static int SubSectionCount(string[] settingFile, int sectIndex)
-        {
-            int configsCount = 0;
-            bool validSection = false;
-            for (int i = sectIndex + 2; i < settingFile.Length; i++)
-            {
-                configsCount++;
-                if (settingFile[i] != EndMark) continue;
-                validSection = true;
-                break;
-            }
-            configsCount -= 1;
-            
-            if ((settingFile[sectIndex + 1] != StartMark) || !validSection) throw new System.IO.InvalidDataException(InvalidDataMessage);
-            return configsCount;
-        }
-
-        private static bool ResolveBool(string value)
-        {
-            _ = int.TryParse(value, out var valueInt);
-            return valueInt switch
-            {
-                0 => false,
-                1 => true,
-                _ => throw new System.IO.InvalidDataException(InvalidDataMessage)
-            };
-        }
-
-        private static int ResolveNumber(string value)
-        {
-            bool parsed = int.TryParse(value, out var valueInt);
-            if (!parsed) throw new System.IO.InvalidDataException(InvalidDataMessage);
-            return valueInt;
-        }
-
+        public static Settings GetCachedSettings() => CachedSettings;
+        
+        // Load & Save
         public static Settings LoadSettings()
         {
-            Settings settings = new();
-            int generalCount = Utils.ExtractClassProperties(typeof(Settings)).Count;
-
-            // TODO: Explain this mess...
-            if (FileOps.ExistSettingsBinFile())
+            Settings? settings = new();
+            if (FileOps.ExistSettingsJsonFile())
             {
                 try
                 {
-                    var settingFile = FileOps.ReadSettingsFile();
-                    int headerIndex;
-                    for (headerIndex = 0; headerIndex < settingFile.Length; headerIndex++)
-                    { if (settingFile[headerIndex] == GeneralHeader) break; }
-                    if (GeneralInPlace(settingFile, headerIndex, generalCount))
-                    {
-                        int i = headerIndex + 1;
-                        settings.UserAssetsPath = FileOps.ResolveSettingUA(settingFile[++i]);
-                        settings.DEFRADir = settingFile[++i];
-                        settings.DEFROMPath = settingFile[++i];
-                        // TODO: Save all bools as a single 8-bit number (byte) (0.8)
-                        settings.PrevConfig = ResolveBool(settingFile[++i]);
-                        settings.AlwaysAskOutput = ResolveBool(settingFile[++i]);
-                        settings.DEFLinkOutput = settingFile[++i];
-                        settings.MakeLinkCopy = ResolveBool(settingFile[++i]);
-                        settings.CpyUserIcon = ResolveBool(settingFile[++i]);
-                        settings.IcoSavPath = settingFile[++i];
-                        settings.ExtractIco = ResolveBool(settingFile[++i]);
-                        settings.IcoLinkName = ResolveBool(settingFile[++i]);
-                        settings.PreferedTheme = (byte)ResolveNumber(settingFile[++i]);
-                        settings.SetLanguage(LanguageManager.ResolveLocale(settingFile[++i]));
-                        settings.LinDesktopPopUp = ResolveBool(settingFile[++i]);
-                    }
-                    else
-                    { throw new System.IO.InvalidDataException(InvalidDataMessage); }
-                    CachedSettings = settings;
-                    
-                    int prevIndex;
-                    for (prevIndex = headerIndex + generalCount; prevIndex < settingFile.Length; prevIndex++)
-                    { if (settingFile[prevIndex] == PrevConfigsHeader) break; }
-                    PrevConfigs.AddRange(GetSubSectionsValues(settingFile, prevIndex));
-
-                    int linkCopyIndex;
-                    for (linkCopyIndex = prevIndex + PrevConfigs.Count; linkCopyIndex < settingFile.Length; linkCopyIndex++)
-                    { if (settingFile[linkCopyIndex] == LinkCopyPathsHeader) break; }
-                    LinkCopyPaths.AddRange(GetSubSectionsValues(settingFile, linkCopyIndex));
-                    
+                    settings = JsonHelper.Deserialize<Settings>(FileOps.ReadSettingsFile());
+                    CachedSettings = settings ?? throw new System.IO.InvalidDataException(InvalidDataMessage);
+                    PrevConfigs.AddRange(settings.SavedConfigs);
+                    LinkCopyPaths.AddRange(settings.SavedCopyPaths);
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"There was a error while loading \"{FileOps.SettingFileBin}\"", App.ErroTrace);
-                    System.Diagnostics.Trace.WriteLine($"{e}\n{e.Message}", App.ErroTrace);
+                    Logger.LogWarn($"There was a error while loading \"{FileOps.SettingFileJson}\"");
+                    Logger.LogErro(e);
                     settings = new();
-                    System.Diagnostics.Trace.WriteLine($"Creating/Overwriting \"{FileOps.SettingFileBin}\"...", App.InfoTrace);
+                    Logger.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
                     WriteSettings(settings);
                 }  
             }
-            else
-            { WriteSettings(settings); }
+            else WriteSettings(settings);
             return settings;
         }
 
-        public static Settings GetCachedSettings() => CachedSettings;
-
         public static void WriteSettings(Settings savingSettings)
         {
-            // TODO: Explain this mess...
-            string fileString = GeneralHeader + "\n";
-            fileString += StartMark + "\n";
-            fileString += savingSettings.GetSavingString();
-            fileString += EndMark + "\n";
-
-            fileString += "\n" + PrevConfigsHeader + "\n";
-            fileString += StartMark + "\n";
-            if (!savingSettings.PrevConfig) PrevConfigs = new List<string>();
-            fileString += Utils.GetStringFromList(PrevConfigs);
-            fileString += EndMark + "\n";
-            
-            fileString += "\n" + LinkCopyPathsHeader + "\n";
-            fileString += StartMark + "\n";
-            if (!savingSettings.MakeLinkCopy) LinkCopyPaths = new List<string>();
-            fileString += Utils.GetStringFromList(LinkCopyPaths);
-            fileString += EndMark + "\n";
-
+            if (!savingSettings.PrevConfig) PrevConfigs = new();
+            if (!savingSettings.MakeLinkCopy) LinkCopyPaths = new(); 
+            savingSettings.SavedConfigs = PrevConfigs;
+            savingSettings.SavedCopyPaths =  LinkCopyPaths;
             CachedSettings = savingSettings;
+            var fileString = JsonHelper.Serialize(savingSettings);
             FileOps.WriteSettingsFile(fileString);
         }
     }
@@ -216,60 +102,23 @@ namespace RetroLinker.Models
         public string IcoSavPath { get; set; }
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
-        public byte PreferedTheme { get; set; } = 0;
-        public CultureInfo LanguageCulture { get; private set; } = DEFLanguage;
-        public bool LinDesktopPopUp { get; set; } = true;
-
-
-        private static readonly CultureInfo DEFLanguage = LanguageManager.ENLocale;
-        public Settings()
-        { IcoSavPath = UserAssetsPath; }
+        public byte ChosenTheme { get; set; } = 0;
+        public string LanguageLocale { get; set; } = DefaultLanguage;
+        public List<string> SavedConfigs { get; set; } = new();
+        public List<string> SavedCopyPaths { get; set; } = new();
         
-        public void SetLanguage(CultureInfo availableLocale)
-        { LanguageCulture = availableLocale; }
-        
-        public void SetLanguage(LanguageItem languageItem)
-        { LanguageCulture = LanguageManager.ResolveLocale(languageItem); }
+        private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
-        public void SetDefaultLanguage()
-        { LanguageCulture = DEFLanguage; }
-        
-        //public void Dispose() => this.Dispose();
+        public Settings() {
+            IcoSavPath = UserAssetsPath; 
+        }
+
+        public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
         
         public string GetBase64()
         {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
-            var objectString = GetString();
-            var object64 = GenerateBase64(objectString);
-            return object64;
-        }
-
-        public string GetSavingString() => GetString();
-        
-        private string GetString()
-        {
-            // TODO: There should be a better way... like JSON (0.8)
-            string objectString = 
-                $"{UserAssetsPath}\n" +
-                $"{DEFRADir}\n" +
-                $"{DEFROMPath}\n";
-            objectString += (PrevConfig)       ? "1\n" : "0\n";
-            objectString += (AlwaysAskOutput) ? "1\n" : "0\n";
-            objectString += $"{DEFLinkOutput}\n";
-            objectString += (MakeLinkCopy)     ? "1\n" : "0\n"; 
-            objectString += (CpyUserIcon)      ? "1\n" : "0\n";
-            objectString += $"{IcoSavPath}\n";
-            objectString += (ExtractIco)       ? "1\n" : "0\n";
-            objectString += (IcoLinkName)      ? "1\n" : "0\n";
-            objectString += $"{PreferedTheme.ToString()}\n";
-            objectString += $"{LanguageCulture.Name}\n";
-            objectString += (LinDesktopPopUp)  ? "1\n" : "0\n";
-            return objectString;
-        }
-        
-        private string GenerateBase64(string objectString)
-        {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
-            var objectBytes = Encoding.UTF8.GetBytes(objectString);
-            var object64 = System.Convert.ToBase64String(objectBytes);
+            var jsonString = JsonHelper.Serialize(this);
+            var object64 = Utils.GenerateBase64(jsonString);
             return object64;
         }
     }

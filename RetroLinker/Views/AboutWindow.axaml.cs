@@ -22,52 +22,57 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using RetroLinker.Models;
 
 namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
-    private readonly string[] Contributors;
-    private readonly Dictionary<string, Uri> ThirdPartyCredits = new();
+    public AppInformation AppInfo { get; }
+    public Contribs[] Contributors { get; }
+    public Dictionary<string, Uri> ThirdPartyCredits { get; } = new();
+    
+    private readonly Dictionary<string, Uri> _thirdPartyCredits = new();
     
     public AboutWindow()
     {
         InitializeComponent();
+        AppInfo = App.LocalInformation;
         BorderDev.IsVisible = false;
         
-        // About the App
-        var title = (string.IsNullOrWhiteSpace(App.AppName)) ? nameof(App.AppName) : App.AppName;
-        var version = (string.IsNullOrWhiteSpace(App.AppVersion)) ? nameof(App.AppVersion) : App.AppVersion;
-        LabelTitle.Content = $"{title} v{version}";
-
 #if !RELEASE
-        
-        var buildDate = (App.AppBuildDate.HasValue) ? App.AppBuildDate.Value.ToString("s") : "BuildDate";
-        var gitCommitHash = (!string.IsNullOrEmpty(App.AppCommitHash)) ?  App.AppCommitHash : "GitCommitHash";
-        LabelBuild.Text = $"{buildDate}; {gitCommitHash}";
         BorderDev.IsVisible = true;
 #endif
         
         // Contributors (In order of arrival)
-        // TODO: Replace with HyperlinkButtons pointing to the github account. Maybe using Records (>= 0.8)
-        Contributors = [ "" ];
-        ListBoxContributors.ItemsSource = Contributors;
+        // Contributors feel free to add their names and social media/contact/GitHub in this record array
+        Contributors = [ 
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        ];
+        // ItemsControlContributors.ItemsSource = _contributors;
         
         // Attribution
+        // TODO: Move to Binding
         // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
-        ThirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        ThirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("http://www.iconbeast.com"));
-        foreach (var key in ThirdPartyCredits.Keys)
+        _thirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
+        _thirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
+        foreach (var key in _thirdPartyCredits.Keys)
         {
             var hyperlink = new HyperlinkButton()
             {
-                NavigateUri = ThirdPartyCredits[key],
+                NavigateUri = _thirdPartyCredits[key],
                 Content = key,
                 Padding = new Thickness(0)
             };
             StackPanelCredits.Children.Add(hyperlink);
         }
+        DataContext = this;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
 }
+
+public record Contribs(string DisplayName, Uri? OnlinePageUrl);

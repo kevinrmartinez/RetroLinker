@@ -45,9 +45,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tittleEntryName {
+        public static string titleEntryName {
             get {
-                return ResourceManager.GetString("tittleEntryName", resourceCulture);
+                return ResourceManager.GetString("titleEntryName", resourceCulture);
             }
         }
         
@@ -87,15 +87,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string btnClear_Tip {
+        public static string titleSoftPatching {
             get {
-                return ResourceManager.GetString("btnClear_Tip", resourceCulture);
-            }
-        }
-        
-        public static string tittleSoftPatching {
-            get {
-                return ResourceManager.GetString("tittleSoftPatching", resourceCulture);
+                return ResourceManager.GetString("titleSoftPatching", resourceCulture);
             }
         }
         
@@ -159,15 +153,75 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tittleAppendConfig {
+        public static string titleAppendConfig {
             get {
-                return ResourceManager.GetString("tittleAppendConfig", resourceCulture);
+                return ResourceManager.GetString("titleAppendConfig", resourceCulture);
             }
         }
         
         public static string lblAppendPath {
             get {
                 return ResourceManager.GetString("lblAppendPath", resourceCulture);
+            }
+        }
+        
+        public static string titleSubsystems {
+            get {
+                return ResourceManager.GetString("titleSubsystems", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysCore {
+            get {
+                return ResourceManager.GetString("lblSubsysCore", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysContent {
+            get {
+                return ResourceManager.GetString("lblSubsysContent", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysBase {
+            get {
+                return ResourceManager.GetString("lblSubsysBase", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysArgs {
+            get {
+                return ResourceManager.GetString("lblSubsysArgs", resourceCulture);
+            }
+        }
+        
+        public static string lblSubsysNewArg {
+            get {
+                return ResourceManager.GetString("lblSubsysNewArg", resourceCulture);
+            }
+        }
+        
+        public static string btnSubsysArgAdd_Tip {
+            get {
+                return ResourceManager.GetString("btnSubsysArgAdd_Tip", resourceCulture);
+            }
+        }
+        
+        public static string btnSubsysArgDis_Tip {
+            get {
+                return ResourceManager.GetString("btnSubsysArgDis_Tip", resourceCulture);
+            }
+        }
+        
+        public static string lblPatchContent {
+            get {
+                return ResourceManager.GetString("lblPatchContent", resourceCulture);
+            }
+        }
+        
+        public static string lblPatchType {
+            get {
+                return ResourceManager.GetString("lblPatchType", resourceCulture);
             }
         }
     }

@@ -11,7 +11,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="tittleEntryName" xml:space="preserve">
+    <data name="titleEntryName" xml:space="preserve">
         <value>Nombre el Desktop Entry</value>
     </data>
     <data name="lblFriendlyName" xml:space="preserve">
@@ -29,14 +29,11 @@
     <data name="lblExt_Tip" xml:space="preserve">
         <value>La extensión .desktop is añadida automaticamente.</value>
     </data>
-    <data name="btnClear_Tip" xml:space="preserve">
-        <value>Deshacer cambios</value>
-    </data>
     <data name="chkCustomFilename" xml:space="preserve">
         <value>Personalizar nombre de archivo</value>
     </data>
     <data name="rdoNoPatch" xml:space="preserve">
-        <value>Sin Parcher</value>
+        <value>Sin Parche</value>
     </data>
     <data name="chkNoPatch_Tip2" xml:space="preserve">
         <value>Deshabilita todas los metodos de parches.</value>
@@ -50,10 +47,34 @@
     <data name="chkNoPatch" xml:space="preserve">
         <value>Explicitamente Sin Parche</value>
     </data>
-    <data name="tittleAppendConfig" xml:space="preserve">
+    <data name="titleAppendConfig" xml:space="preserve">
         <value>Anexar Config</value>
     </data>
     <data name="lblAppendPath" xml:space="preserve">
         <value>Rutas de las Configs a Anexar</value>
+    </data>
+    <data name="titleSubsystems" xml:space="preserve">
+        <value>Subsistema (Subsystem)</value>
+    </data>
+    <data name="lblSubsysNewArg" xml:space="preserve">
+        <value>Nuevo Argumento:</value>
+    </data>
+    <data name="lblSubsysArgs" xml:space="preserve">
+        <value>Argumentos: </value>
+    </data>
+    <data name="lblSubsysContent" xml:space="preserve">
+        <value>Contenido: </value>
+    </data>
+    <data name="btnSubsysArgAdd_Tip" xml:space="preserve">
+        <value>Añadir Arguemento</value>
+    </data>
+    <data name="btnSubsysArgDis_Tip" xml:space="preserve">
+        <value>Descartar Argumento</value>
+    </data>
+    <data name="lblPatchContent" xml:space="preserve">
+        <value>Contenido:</value>
+    </data>
+    <data name="lblPatchType" xml:space="preserve">
+        <value>Tipo de parche:</value>
     </data>
 </root>

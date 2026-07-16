@@ -19,6 +19,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views;
 
@@ -64,61 +65,80 @@ public partial class SettingsView2 : UserControl
     }
     
     // USER ASSETS
-    async void btnUserAssets_Click(object sender, RoutedEventArgs e)
-    {
-        string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
-        string folder = await AvaloniaOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
-        if (!string.IsNullOrWhiteSpace(folder))
-        { txtUserAssets.Text = folder; ParentWindow.settings.UserAssetsPath = folder; }
-    }
     
-    void btnclrUserAssets_Click(object sender, RoutedEventArgs e)
+    void LockControls(bool locked) => gridConfigAll2.IsEnabled = !locked;
+    
+    async void btnUserAssets_ClickAsync()
     {
+        try
+        {
+            LockControls(true);
+            string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
+            string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
+            if (string.IsNullOrWhiteSpace(folder)) return;
+            txtUserAssets.Text = folder;
+            ParentWindow.settings.UserAssetsPath = folder;
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
+    }
+
+    void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
+    
+    void btnclrUserAssets_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.settings.UserAssetsPath = ParentWindow.DEFsettings.UserAssetsPath;
         txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
-        
     }
     
     // RA EXECUTABLE
-    private void BtnApplyUserAssets_Click(object? sender, RoutedEventArgs e)
+    private void BtnApplyUserAssets_OnClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not Control control) return;
         if (control.Parent is not Grid grid) return;
         if (grid.Children[0] is not TextBox txtBox) return;
         if (!string.IsNullOrWhiteSpace(txtBox.Text)) ParentWindow.settings.DEFRADir = txtBox.Text;
     }
-    
-    async void btnDefRADir_Click(object sender, RoutedEventArgs e)
+
+    async void btnDefRADir_ClickAsync()
     {
-        PickerOpt.OpenOpts opt;
-        opt = DesktopOS ? PickerOpt.OpenOpts.RAexe : PickerOpt.OpenOpts.RAbin;
-        string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
-        string file = await AvaloniaOps.OpenFileAsync(opt, ParentWindow, currentFile);
-        if (string.IsNullOrWhiteSpace(file)) return;
-        txtDefRADir.Text = file; 
-        ParentWindow.settings.DEFRADir = file;
+        try {
+            LockControls(true);
+            var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
+            string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
+            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            if (string.IsNullOrWhiteSpace(file)) return;
+            txtDefRADir.Text = file; 
+            ParentWindow.settings.DEFRADir = file;
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
+
+    void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
     
-    void btnclrDefRADir_Click(object sender, RoutedEventArgs e)
-    {
+    void btnclrDefRADir_Click(object sender, RoutedEventArgs e) {
         ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
         txtDefRADir.Text = ParentWindow.settings.DEFRADir;
     }
     
     // DEFAULT ROM PATH
-    async void btnDefROMPath_Click(object sender, RoutedEventArgs e)
+    async void btnDefROMPath_ClickAsync()
     {
-        string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
-        string folder = await AvaloniaOps.OpenFolderAsync(template:1, currentFolder, ParentWindow);
-        if (!string.IsNullOrWhiteSpace(folder))
-        { 
+        try {
+            LockControls(true);
+            string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
+            if (string.IsNullOrWhiteSpace(folder)) return;
             txtDefROMPath.Text = folder; 
-            ParentWindow.settings.DEFROMPath = folder; 
+            ParentWindow.settings.DEFROMPath = folder;
         }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
+
+    void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();
     
-    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e)
-    {
+    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
         txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }

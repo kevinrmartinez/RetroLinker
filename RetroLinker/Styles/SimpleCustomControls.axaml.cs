@@ -1,6 +1,6 @@
 ﻿/*
     A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -28,14 +27,14 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using RetroLinker.Models;
 
-using ProjektankerIcon = Projektanker.Icons.Avalonia.Icon;
+using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
 // All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
-    // TODO: Reimplement using DataTemplates
+    // TODO: Reimplement using DataTemplates (>=0.9)
     
     // Link Copy ListItem
     public Grid NewItemGrid { get; private set; }
@@ -55,7 +54,7 @@ public class LinkCopyItemGrid
             
         ProjektankerIcon trashcan = new()
         {
-            Value = "fa-trash",
+            Value = "fa7-trash",
             Foreground = new SolidColorBrush(Colors.Firebrick)
         };
         NewItemTrash = new Button()
@@ -74,7 +73,7 @@ public class LinkCopyItemGrid
 
 public static class LocaleComboItem
 {
-    // TODO: Reimplement using DataTemplates
+    // TODO: Reimplement using DataTemplates (>=0.9)
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
         var item = new ComboBoxItem()
@@ -111,67 +110,14 @@ public static class LocaleComboItem
 }
 
 
-public class MainWindowHeader : Grid
-{
-    // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(Grid);
-
-    // Avalonia Properties
-    public static readonly DirectProperty<MainWindowHeader, string> TitleProperty = 
-        AvaloniaProperty.RegisterDirect<MainWindowHeader, string>(
-            nameof(Title), 
-            h => h.Title, 
-            (h,  v) => h.Title = v);
-    
-    private string _title = string.Empty;
-    public string Title
-    {
-        get => _title;
-        set => SetAndRaise(TitleProperty, ref _title, value);
-    }
-    
-    public MainWindowHeader()
-    {
-        SetDimmensions();
-        var child = PopulateChildren();
-        SetColumn(child,1);
-        Children.Add(child);
-    }
-    
-    public MainWindowHeader(string title) : this() {
-        Title = title;
-    }
-
-    private void SetDimmensions() {
-        Height = 45;
-        ColumnDefinitions =  new ColumnDefinitions("Auto,*,Auto");
-    }
-
-    private StackPanel PopulateChildren()
-    {
-        return new StackPanel()
-        {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Children = { new Label()
-            {
-                DataContext = this,
-                [!ContentControl.ContentProperty] = new Binding(nameof(Title))
-            } }
-        };
-    }
-}
-
-
 public class ExtraMainControlButton : Button
 {
     // Content Properties
     const string blankText = "blank";
-    const string blankIcon = "fa-question";
+    const string blankIcon = "fa7-question";
     
     // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(Button);
+    protected override System.Type StyleKeyOverride { get; } = typeof(Button);
     
     
     // Avalonia Properties
@@ -228,11 +174,11 @@ public class ExtraMainControlButton : Button
 
     private void SetButtonFunction(ButtonFunctions function)
     {
-        var yesIcon = "fa-check";
+        var yesIcon = "fa7-check";
         var yesColor = new SolidColorBrush(Colors.Green);
         var yesText = Translations.resGeneric.btnConfirm;
         
-        var noIcon = "fa-x";
+        var noIcon = "fa7-x";
         var noColor = new SolidColorBrush(Colors.Crimson);
         var noText = Translations.resGeneric.btnDiscard;
         
@@ -257,60 +203,5 @@ public class ExtraMainControlButton : Button
         }
         SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
         RefreshContent();
-    }
-}
-
-
-public class MainViewExtensionText : ScrollViewer
-{
-    // Overrides
-    protected override Type StyleKeyOverride { get; } = typeof(ScrollViewer);
-    
-    // Avalonia Properties
-    // - TextHeader
-    public static readonly DirectProperty<MainViewExtensionText, string> HeaderProperty = 
-        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
-            nameof(Header), 
-            h => h.Header, 
-            (h,  v) => h.Header = v);
-    
-    private string _header = string.Empty;
-    public string Header
-    {
-        get => _header;
-        set => SetAndRaise(HeaderProperty, ref _header, value);
-    }
-    
-    // - Text
-    public static readonly DirectProperty<MainViewExtensionText, string> TextProperty = 
-        AvaloniaProperty.RegisterDirect<MainViewExtensionText, string>(
-            nameof(Text), 
-            h => h.Text, 
-            (h,  v) => h.Text = v);
-    
-    private string _text = string.Empty;
-    public string Text
-    {
-        get => _text;
-        set => SetAndRaise(TextProperty, ref _text, value);
-    }
-
-    public MainViewExtensionText()
-    {
-        // Building
-        var header = new TextBlock() {
-            DataContext = this,
-            [!TextBlock.TextProperty] = new Binding(nameof(Header))
-        };
-        var text = new TextBlock() {
-            DataContext = this,
-            [!TextBlock.TextProperty] = new Binding(nameof(Text))
-        };
-        var stackPanel = new StackPanel();
-        stackPanel.Children.Add(header);
-        stackPanel.Children.Add(text);
-
-        // Result
-        Content = stackPanel;
     }
 }

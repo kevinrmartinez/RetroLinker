@@ -32,7 +32,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace RetroLinker.Models.WinClasses
+namespace RetroLinker.Models.Windows
 {
     public class IconExtractor
     {

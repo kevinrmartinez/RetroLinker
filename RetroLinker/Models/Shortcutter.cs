@@ -17,14 +17,15 @@
 */
 
 using System.Collections.Generic;
-using RetroLinker.Models.LinuxClasses;
+using RetroLinker.Models.Generic;
 using RetroLinker.Translations;
+using ShortcutCreator = RetroLinker.Models.Windows.ShortcutCreator;
 
 namespace RetroLinker.Models
 {
     public class Shortcutter
     {
-        // TODO: Revise the names and setter of the properties
+        // TODO: Revise the names and setter of the properties (0.9)
         #region Object
         
         public string RAdir
@@ -36,7 +37,7 @@ namespace RetroLinker.Models
         public string RApath
         {
             get => ra_path; 
-            private set { SetRApath(value); }
+            private set { SetRApath(value); }   // TODO: Set later in the workflow (0.9)
         }      // 1
 
         public string ROMdir
@@ -62,6 +63,7 @@ namespace RetroLinker.Models
         public bool MenuOnErrorB { get; set; }  // 13
         public string PatchArg { get; set; }    // 14
         public string CONFappend { get; set; }  // 15
+        public string SubsysArg { get; set; }      // 16
 
         private string ra_dir   = string.Empty;
         private string ra_path  = string.Empty;
@@ -84,26 +86,28 @@ namespace RetroLinker.Models
             MenuOnErrorB = false;
             PatchArg = string.Empty;
             CONFappend = string.Empty;
+            SubsysArg = string.Empty;
         }
 
-        public Shortcutter(Shortcutter ObjToClone)
+        public Shortcutter(Shortcutter objToClone)
         {
-            RAdir = ObjToClone.RAdir;
-            RApath = ObjToClone.RApath;
-            ROMdir = ObjToClone.ROMdir;
-            ROMname = ObjToClone.ROMname;
-            ROMcore = ObjToClone.ROMcore;
-            CONFfile = ObjToClone.CONFfile;
-            ICONfile = ObjToClone.ICONfile;
-            Command = ObjToClone.Command;
-            Desc = ObjToClone.Desc;
-            OutputPaths = ObjToClone.OutputPaths;
-            VerboseB = ObjToClone.VerboseB;
-            FullscreenB = ObjToClone.FullscreenB;
-            AccessibilityB = ObjToClone.AccessibilityB;
-            MenuOnErrorB = ObjToClone.MenuOnErrorB;
-            PatchArg = ObjToClone.PatchArg;
-            CONFappend = ObjToClone.CONFappend;
+            RAdir = objToClone.RAdir;
+            RApath = objToClone.RApath;
+            ROMdir = objToClone.ROMdir;
+            ROMname = objToClone.ROMname;
+            ROMcore = objToClone.ROMcore;
+            CONFfile = objToClone.CONFfile;
+            ICONfile = objToClone.ICONfile;
+            Command = objToClone.Command;
+            Desc = objToClone.Desc;
+            OutputPaths = objToClone.OutputPaths;
+            VerboseB = objToClone.VerboseB;
+            FullscreenB = objToClone.FullscreenB;
+            AccessibilityB = objToClone.AccessibilityB;
+            MenuOnErrorB = objToClone.MenuOnErrorB;
+            PatchArg = objToClone.PatchArg;
+            CONFappend = objToClone.CONFappend;
+            SubsysArg = objToClone.SubsysArg;
         }
 
         private void SetRAdir(string value) {
@@ -127,13 +131,11 @@ namespace RetroLinker.Models
         #endregion
 
         #region Link Output
-
-        // Link Creatinon - OS selection
-        public static List<ShortcutterResult> BuildShortcut(Shortcutter link, bool os)
-        {
+        // Link Creation - OS selection
+        public List<ShortcutterResult> BuildShortcut(bool os) {
             // Building the arguments
-            link = Commander.CommandBuilder(link);
-            return (os) ? BuildWinShortcut(link) : BuildLinShorcut(link);
+            Command = CommandManager.CommandBuilder(this);
+            return (os) ? BuildWinShortcut(this) : BuildLinShorcut(this);
         }
         
         // Windows
@@ -151,15 +153,16 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                System.Diagnostics.Trace.WriteLine($"Creating \"{outputFile}\"...", App.InfoTrace);
+                Logger.LogInfo($"Creating \"{outputFile}\"...");
                 try 
                 { 
-                    WinClasses.WinShortcutter.CreateShortcut(link, outputFile);
+                    ShortcutCreator.CreateShortcut(link, outputFile);
                     LinkResult.Messeage = LinkResult.Success1; 
                 }
                 catch (System.Exception e)
                 {
-                    System.Diagnostics.Trace.WriteLine($"\"{outputFile}\" could not be created!", App.ErroTrace);
+                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
+                    Logger.LogErro(e);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -182,14 +185,16 @@ namespace RetroLinker.Models
                 var outputFile = output.FullPath;
                 var LinkResult = new ShortcutterResult(outputFile);
                 ResultList.Add(LinkResult);
-                System.Diagnostics.Trace.WriteLine($"Creating \"{outputFile}\"...", App.InfoTrace);
+                Logger.LogInfo($"Creating \"{outputFile}\"...");
                 
-                try { LinShortcutter.CreateShortcut(link, output);
-                    LinkResult.Messeage = LinkResult.Success1; }
+                try { 
+                    Linux.ShortcutCreator.CreateShortcut(link, output);
+                    LinkResult.Messeage = LinkResult.Success1;
+                }
                 catch (System.Exception e)
                 {
-                    // TODO: Handle specific Exceptions 
-                    System.Diagnostics.Trace.WriteLine($"\"{outputFile}\" could not be created!", App.ErroTrace);
+                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
+                    Logger.LogErro(e);
                     LinkResult.Messeage = LinkResult.Failure1;
                     LinkResult.Error = true;
                     LinkResult.eMesseage = e.Message;
@@ -197,7 +202,6 @@ namespace RetroLinker.Models
             }
             return ResultList;
         }
-
         #endregion
     }
 
@@ -252,7 +256,7 @@ namespace RetroLinker.Models
         {
             FriendlyName = primeOutput.FriendlyName;
             FileName = primeOutput.FileName;
-            FullPath = FileOps.CombineDirAndFile(copyOutput, primeOutput.FileName);
+            FullPath = FileOps.CombineMultipleInputs(copyOutput, primeOutput.FileName);
             ValidOutput = true;
         }
         
@@ -266,10 +270,11 @@ namespace RetroLinker.Models
 
         public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
         {
+            // REWRITE: reorganize constructors along with this method
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
             var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
-            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName))
-                    : new ShortcutterOutput(FileOps.CombineDirAndFile(originalDir, newFileName), romCore);
+            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))
+                    : new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
         }
 
         public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore, ShortcutterOutput? baseOutput)

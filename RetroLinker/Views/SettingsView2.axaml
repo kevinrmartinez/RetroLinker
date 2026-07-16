@@ -25,10 +25,9 @@
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnUserAssets" Height="30" Click="btnUserAssets_Click"
-							        i:Attached.Icon="fa-folder-open"/>
-							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_Click">
-								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+							<Button Name="btnUserAssets" Height="30" Classes="browse" Click="btnUserAssets_OnClick"/>
+							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_OnClick">
+								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>
 						</StackPanel>
 					</Grid>
@@ -42,14 +41,13 @@
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
-						<Button Name="btnApplyUserAssets" Grid.Column="1" Height="30" CornerRadius="7" Margin="0,0,2,3" Click="BtnApplyUserAssets_Click">
-							<i:Icon Value="fa-check" Foreground="ForestGreen"/>
+						<Button Name="btnApplyUserAssets" Grid.Column="1" Height="30" CornerRadius="7" Margin="0,0,2,3" Click="BtnApplyUserAssets_OnClick">
+							<i:Icon Value="fa7-check" Foreground="ForestGreen"/>
 						</Button>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefRADir" Height="30" Click="btnDefRADir_Click"
-							        i:Attached.Icon="fa-folder-open"/>
+							<Button Name="btnDefRADir" Height="30" Classes="browse" Click="btnDefRADir_OnClick"/>
 							<Button Name="btnclrDefRADir" Height="30" Classes="SettingCatg" Click="btnclrDefRADir_Click">
-								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>
 						</StackPanel>
 					</Grid>
@@ -64,10 +62,9 @@
 					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
 						<TextBox Name="txtDefROMPath" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefROMPath" Height="30" Click="btnDefROMPath_Click"
-							        i:Attached.Icon="fa-folder-open"/>
+							<Button Name="btnDefROMPath" Height="30" Classes="browse" Click="btnDefROMPath_OnClick"/>
 							<Button Name="btnclrDefROMPath" Height="30" Classes="SettingCatg" Click="btnclrDefROMPath_Click">
-								<i:Icon Value="fa-arrow-rotate-left" Foreground="Crimson"/>
+								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
 							</Button>
 						</StackPanel>
 					</Grid>

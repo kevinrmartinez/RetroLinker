@@ -8,10 +8,16 @@
         Icon="/Assets/avalonia-logo.ico"
 		WindowStartupLocation="CenterScreen">
 	
-	<!-- TODO: One ContentControl in CrossFade, to refresh the view; another one (child of the first) in PageSilde to change views  -->
-	<TransitioningContentControl Name="MainCC1">
+	<TransitioningContentControl Name="ContTop">
+		<!-- Props -->
 		<TransitioningContentControl.PageTransition>
-			<CrossFade Duration="0:00:00.280"/>
+			<CrossFade Duration="0:00:00.30"/>
 		</TransitioningContentControl.PageTransition>
+		<!-- Content -->
+		<TransitioningContentControl Name="ContBotton" IsTransitionReversed="False">
+			<TransitioningContentControl.PageTransition>
+				<PageSlide Duration="0:00:00.340" Orientation="Horizontal" SlideInEasing="QuadraticEaseOut" SlideOutEasing="QuadraticEaseOut"/>
+			</TransitioningContentControl.PageTransition>
+		</TransitioningContentControl>
 	</TransitioningContentControl>
 </Window>

@@ -17,20 +17,16 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using RetroLinker.Translations;
-using RetroLinker.Views;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
 
-namespace RetroLinker.Models;
+namespace RetroLinker.Models.Avalonia;
 
-public static class AvaloniaOps
+public static class Operations
 {
     // private static bool FirstLoad = true;
     private static string[] Cores = [];
@@ -38,19 +34,20 @@ public static class AvaloniaOps
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
-    // TODO: these two are set to many times on runtime
+    // TODO: these two are set to many times on runtime...
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 
     
-    #region FUNCTIONS
     public static string[] GetCoresArray()
     {
         if (Cores.Length >= 1) return Cores;
         if (!FileOps.GetCoreFile(out string coresFile))
         {
+            Logger.LogWarn("'cores.txt' was not found, extracting internal core asset...");
             var assetStream = AssetLoader.Open(GetDefaultCores());
-            coresFile = FileOps.DumpStreamToFile(assetStream);
+            FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
+            Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
         Cores = FileOps.LoadCores(coresFile);
         return Cores;
@@ -66,7 +63,7 @@ public static class AvaloniaOps
 
     public static AvaloniaBitmap GetBitmap(Stream imgStream) => new(imgStream);
 
-    private static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
+    public static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
 
     public static async void SetDesktopStorageFolder(TopLevel topLevel)
@@ -75,7 +72,7 @@ public static class AvaloniaOps
         var dbgOut = (DesktopFolder is null) 
             ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
             : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
-        Debug.WriteLine(dbgOut, App.DebgTrace);
+        Logger.LogDebg(dbgOut);
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
@@ -85,65 +82,6 @@ public static class AvaloniaOps
         var dbgOut = (ROMTopDir is null)
             ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
             : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
-        Debug.WriteLine(dbgOut, App.DebgTrace);
+        Logger.LogDebg(dbgOut);
     }
-    #endregion
-    
-    #region FileDialogs
-    public static async Task<string> OpenFileAsync(PickerOpt.OpenOpts template, TopLevel topLevel, string? currentFile = null)
-    {
-        var opt = PickerOpt.OpenPickerOpt(template);
-        if (!string.IsNullOrEmpty(currentFile))
-        {
-            currentFile = FileOps.GetDirFromPath(currentFile)!;
-            opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
-        }
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-        string dir = (file.Count > 0) ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
-        return dir;
-    }
-
-    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel)
-    {
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
-        string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
-        return dir;
-    }
-
-    public static async Task<string> OpenFolderAsync(byte template, string currentFolder, TopLevel topLevel)
-    {
-        FolderPickerOpenOptions opt = new()
-        {
-            AllowMultiple = false,
-            Title = template switch
-            {
-                0 => resAvaloniaOps.dlgFolderUserAssets,
-                1 => resAvaloniaOps.dlgFolderROMParent,
-                2 => resAvaloniaOps.dlgFolderIcoOutput,
-                3 => resAvaloniaOps.dlgFolderLinkCopy,
-                // This option shouldn't happen
-                _ => resAvaloniaOps.dlgFolderFallback
-            },
-        };
-        if (!string.IsNullOrEmpty(currentFolder))
-            opt.SuggestedStartLocation = await GetStorageFolder(currentFolder, topLevel);
-        
-        var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-        string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
-        return dir;
-    }
-
-    public static async Task<string> SaveFileAsync(PickerOpt.SaveOpts template, string currentFile, TopLevel topLevel)
-    {
-        var opt = PickerOpt.SavePickerOpt(template);
-        if (!string.IsNullOrEmpty(currentFile))
-        {
-            currentFile = FileOps.GetDirFromPath(currentFile)!;
-            opt.SuggestedStartLocation = await GetStorageFolder(currentFile, topLevel);
-        }
-        var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
-        string dir = (file != null) ? file.Path.LocalPath : string.Empty;
-        return dir;
-    }
-    #endregion
 }

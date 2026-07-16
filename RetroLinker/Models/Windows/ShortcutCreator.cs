@@ -17,25 +17,25 @@
 */
 
 using System;
-using System.Diagnostics;
 using Microsoft.ClearScript.Windows.Core;
 
-namespace RetroLinker.Models.WinClasses;
+namespace RetroLinker.Models.Windows;
 
-public static class WinShortcutter
+public static class ShortcutCreator
 {
     private const string objShell = "shell";
     private const string objLink = "link";
     private const string objArray = "valueArray";
     private const string createLink = "CreateLink";
     private const string readLink = "ReadLink";
-    private static readonly string scriptTitle = $"{App.AppName} Script Runner";
+    private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
+    private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
     
     public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
     {
         var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
         var scriptStrings = $"""
-                          ' {App.AppName} v{App.AppVersion}
+                          {commentLine}
                           Function {createLink}()
                             Set {objShell} = CreateObject("WScript.Shell")
                             Set {objLink} = {objShell}.CreateShortcut("{_outputPath}")
@@ -50,15 +50,15 @@ public static class WinShortcutter
                           """;
         
         RunLinkWriteScript(scriptStrings);
-        Trace.WriteLine($"\"{_outputPath}\" file created successfully.", App.InfoTrace);
+        Logger.LogInfo($"\"{_outputPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
     public static string?[] ReadShortcut(string linkPath)
     {
-        // Why does creating a Array(4) is VBS results in a 5 positions array?
+        // Why does creating a Array(4) is VBS results in an array with 5 positions?
         var scriptStrings = $"""
-                            ' {App.AppName} v{App.AppVersion}
+                            {commentLine}
                             Function {readLink}()
                                 Dim {objArray}(4)
                                 Set {objShell} = CreateObject("WScript.Shell")
@@ -73,7 +73,7 @@ public static class WinShortcutter
                             """;
         
         var linkContent = RunLinkReadScript(scriptStrings);
-        Trace.WriteLine($"\"{linkPath}\" file read successfully.", App.InfoTrace);
+        Logger.LogInfo($"\"{linkPath}\" file read successfully.");
         var linkStrings = new string?[linkContent.Length];
         for (int i = 0; i < linkContent.Length; i++)
             linkStrings[i] = linkContent[i].ToString();
@@ -94,8 +94,8 @@ public static class WinShortcutter
         var result = (short)engine.Invoke($"{createLink}");
         
         if (result == 0) return;
-        var err = "The LinkWrite script was not executed properly!";
-        Trace.WriteLine(err, App.ErroTrace);
+        var err = $"The LinkWrite script was not executed properly! Error code {result}.";
+        Logger.LogErro(err);
         throw new ApplicationException(err);
     }
     

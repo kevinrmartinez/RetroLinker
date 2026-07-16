@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace RetroLinker.Models.WinClasses
+namespace RetroLinker.Models.Windows
 {
     internal static class IENativeMethods
     {

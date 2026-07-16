@@ -17,11 +17,10 @@
 */
 
 using System;
-using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using Avalonia;
-using Projektanker.Icons.Avalonia;
-using Projektanker.Icons.Avalonia.FontAwesome;
+using Optris.Icons.Avalonia;
+using Optris.Icons.Avalonia.FontAwesome7;
 using RetroLinker.Models;
 
 namespace RetroLinker.Desktop;
@@ -34,11 +33,10 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        StartStopLogging(true);
-        Trace.WriteLine($"{AppName} v{AppVersion}", "[Info]");
-        Debug.WriteLine($"Launch Time: {DateTime.Now:HH:mm:ss.fff}", "[Time]");
+        Logger.LogInfo($"{AppName} v{AppVersion}");
+        // Logger.LogDebg($"Launch Time: {DateTime.Now:HH:mm:ss.fff}");
         
-        Debug.WriteLine("Starting AvaloniaApp", "[Debg]");
+        Logger.LogDebg("Starting AvaloniaApp");
         #if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
@@ -53,18 +51,19 @@ class Program
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e) {
-            Trace.WriteLine(e, "[Erro]");
+            Logger.LogErro($"{AppName} has crashed to desktop with the following error:");
+            Logger.LogError(e);
         }
         #endif
         
         // App Closing
-        StartStopLogging(false);
+        Logger.Close();
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
-        IconProvider.Current.Register<FontAwesomeIconProvider>();
+        IconProvider.Current.Register<FontAwesome7IconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .AfterSetup(AppCallback)
@@ -77,63 +76,44 @@ class Program
     private static void AppCallback(AppBuilder obj)
     {
         var instance = (App?)obj.Instance;
+        // The 'LocalInformation' prop of the 'App' class should be filled before using FileOps from here
         instance?.SetAppInfo(GetAppInfo());
+        SetUpLogger();
     }
 
     // Parameters
-    private static readonly System.Reflection.Assembly AppAssembly1 = typeof(Program).Assembly;
-    private static readonly System.Reflection.AssemblyName AppAssembly2 = AppAssembly1.GetName();
-    private static readonly string AppName = AppAssembly2.Name!;
-    private static readonly string AppVersion = AppAssembly2.Version!.ToString(3);
+    private static readonly System.Reflection.Assembly AppAssembly = typeof(Program).Assembly;
+    private static readonly System.Reflection.AssemblyName AppAssemblyName = AppAssembly.GetName();
+    private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
+    private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
     
     // Logging
-    private static ConsoleTraceListener ConsoleTracer = new();
-    private static TextWriterTraceListener TextfileTracer = new();
     private static readonly string LogFileName = $"{AppName}.log";
-    private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
+    // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
+    private static readonly string LogFileBak = $"{LogFileName}.bak";
 
-    private static void StartStopLogging(bool mode)
+    private static void SetUpLogger()
     {
-        if (mode)
-        {
-            try {
-                File.Delete(LogFile);
-            }
-            catch {
-                // TODO: extend the catch to posible exceptions by 'File.Delete'
-                Trace.WriteLine($"{LogFile} could not be deleted!", "[Erro]");
-            }
-            
-            ConsoleTracer = new() {
-                Name = "mainConsoleTracer", 
-                TraceOutputOptions = TraceOptions.Timestamp 
-            };
-            TextfileTracer = new(LogFile, "mainTextTracer") {
-                TraceOutputOptions = TraceOptions.DateTime,
-            };
+        Logger.SetLogFile(LogFileName);
+        var bakFullName = FileOps.CombineMultipleInputs(FileOps.GetDirFromPath(Logger.LogFile) ?? FileOps.BaseDir, LogFileBak);
+        if (FileOps.PathAlreadyExists(Logger.LogFile)) {
+            if (FileOps.PathAlreadyExists(bakFullName)) FileOps.FileDeletion(bakFullName);
+            FileOps.FileMoving(Logger.LogFile, bakFullName);
+        }
 
-            Trace.Listeners.Add(ConsoleTracer);
-            Trace.Listeners.Add(TextfileTracer);
-        }
-        else
-        {
-            Trace.Listeners.Remove(ConsoleTracer);
-            Trace.Listeners.Remove(TextfileTracer);
-            ConsoleTracer.Close();
-            TextfileTracer.Close();
-        }
+        Logger.AutoFlush = true;
     }
-
+    
     private static DateTime? GetBuildDateOfAssembly()
     {
         try
         {
-            var assemblyFile = new FileInfo(AppAssembly1.Location);
+            var assemblyFile = FileOps.GetFileInfo(AppAssembly.Location);
             return assemblyFile.LastWriteTime;
         }
         catch (Exception e) {
-            // TODO: Redirect to log
-            Console.WriteLine(e);
+            Logger.LogWarn("App Build Date was requested, but it could not be accessed");
+            Logger.LogErro(e);
             return null;
         }
     }
@@ -144,27 +124,22 @@ class Program
         const int sha1Length = 40;
         try
         {
-            var result = ResourceLoader.GetTextFromResource(AppAssembly1, resourceName);
-            string hash = string.Empty;
-            foreach (var line in result) {
-                if (line.Length != sha1Length) continue;
-                hash = line;
-                break;
-            }
+            var result = ResourceLoader.GetTextLinesFromResource(AppAssembly, resourceName);
+            var hash = result.First(line => line.Length == sha1Length);
             return hash;
         }
         catch (Exception e) {
-            // TODO: Redirect to log
-            Console.WriteLine(e);
+            Logger.LogWarn("The hash of the git repo this build is based on was requested, but it could not be accessed");
+            Logger.LogErro(e);
             return null;
         }
     }
 
-    private static AppInfo GetAppInfo()
+    private static AppInformation GetAppInfo()
     {
-        var fullName = AppAssembly2.FullName;
+        var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();
-        return new AppInfo(fullName, AppName, AppVersion,  buildDate, gitHash);
+        return new AppInformation(fullName, AppName, AppVersion,  buildDate, gitHash);
     }
 }

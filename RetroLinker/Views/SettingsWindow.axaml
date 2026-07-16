@@ -22,7 +22,6 @@
 		
 		<!-- BODIES TAB CONTROL -->
 		<TabControl Grid.Row="1">
-			<!--TODO: Create or implement a Style for the tabs header-->
 			<TabItem Header="{x:Static lc:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
@@ -45,19 +44,19 @@
 
 			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-arrow-rotate-left"/>
+					<i:Icon Value="fa7-arrow-rotate-left"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnDefault}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnDISSettings" Click="btnDISSettings_Click" VerticalAlignment="Stretch">
+			<Button Name="btnDISSettings" Click="btnDISSettings_OnClick" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-x" Foreground="Crimson"/>
+					<i:Icon Value="fa7-x" Foreground="Crimson"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnCONSettings" Click="btnSAVESettings_Click" VerticalAlignment="Stretch">
+			<Button Name="btnCONSettings" Click="btnSAVESettings_OnClick" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
-					<i:Icon Value="fa-check" Foreground="Green"/>
+					<i:Icon Value="fa7-check" Foreground="Green"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnConfirm}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>

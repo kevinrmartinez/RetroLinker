@@ -285,9 +285,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string popIconsError_Tittle {
+        public static string popIconsError_Title {
             get {
-                return ResourceManager.GetString("popIconsError_Tittle", resourceCulture);
+                return ResourceManager.GetString("popIconsError_Title", resourceCulture);
             }
         }
         
@@ -309,15 +309,33 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string extxtPatch {
+        public static string noticePatch {
             get {
-                return ResourceManager.GetString("extxtPatch", resourceCulture);
+                return ResourceManager.GetString("noticePatch", resourceCulture);
             }
         }
         
-        public static string extxtAppend {
+        public static string noticeAppend {
             get {
-                return ResourceManager.GetString("extxtAppend", resourceCulture);
+                return ResourceManager.GetString("noticeAppend", resourceCulture);
+            }
+        }
+        
+        public static string noticeSubsystem {
+            get {
+                return ResourceManager.GetString("noticeSubsystem", resourceCulture);
+            }
+        }
+        
+        public static string popOverwrite_Mess {
+            get {
+                return ResourceManager.GetString("popOverwrite_Mess", resourceCulture);
+            }
+        }
+        
+        public static string popOverwrite_Title {
+            get {
+                return ResourceManager.GetString("popOverwrite_Title", resourceCulture);
             }
         }
     }
