@@ -34,30 +34,35 @@ public partial class PatchesView : UserControl
         // Constructor for Designer
         InitializeComponent();
         ParentWindow = new MainWindow(true);
-        PatchString = string.Empty;
-        patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        _patchString = string.Empty;
+        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CompleteSetup();
     }
     
     public PatchesView(MainWindow mainWindow, string patchString)
     {
         InitializeComponent();
         ParentWindow = mainWindow;
-        PatchString = patchString;
-        // TODO: Receive current ROM; bind to a read-only textbox (0.9)
-        patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        _patchString = patchString;
+        // TODO: Receive current ROM; bind to a read-only textbox
+        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
+        CompleteSetup();
     }
     
     // == Window Object ==
     private MainWindow ParentWindow;
     
+    // == Props ==
+    // public string CurrentROM { get; } = string.Empty;
+    
     // == FIELDS ==
-    private string PatchString;
-    private PatchOpts PatchOpts;
-    private List<RadioButton> patchRadioButtons = new();
+    private PatchOpts _patchOpts;
+    private readonly string _patchString;
+    private readonly List<RadioButton> _patchRadioButtons = new();
     
     
     // == LOAD EVENTS ==
-    private void PatchView_OnLoaded(object? sender, RoutedEventArgs e)
+    private void CompleteSetup()
     {
         string tip = resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
         ToolTip.SetTip(chkNoPatch, tip);
@@ -70,10 +75,10 @@ public partial class PatchesView : UserControl
         rdoNoPatch.Tag = CommandManager.NoPatch;
         chkNoPatch.Tag = CommandManager.ExNoPatch;
         
-        if (string.IsNullOrEmpty(PatchString)) return;
+        if (string.IsNullOrEmpty(_patchString)) return;
         try
         {
-            (var file, var patchType) = CommandManager.ResolveSoftPatchingArg(PatchString);
+            var (file, patchType) = CommandManager.ResolveSoftPatchingArg(_patchString);
             switch (patchType.PatchType)
             {
                 case ROMPatchType.NoPatch:
@@ -82,7 +87,7 @@ public partial class PatchesView : UserControl
                     chkNoPatch.IsChecked = true;
                     break;
                 default:
-                    var rdo = patchRadioButtons.Find(rdo => ReferenceEquals(rdo.Tag, patchType));
+                    var rdo = _patchRadioButtons.Find(rdo => ReferenceEquals(rdo.Tag, patchType));
                     if (rdo is not null) {
                         rdo.IsChecked = true;
                         txtPatchPath.Text = file;
@@ -129,7 +134,7 @@ public partial class PatchesView : UserControl
         if (e.Source is not RadioButton radioButton) return;
         // if (radioButton.Tag is not SoftPatch softPatch) return;
         var softPatch = radioButton.Tag as SoftPatch;
-        PatchOpts = softPatch?.PatchType switch
+        _patchOpts = softPatch?.PatchType switch
         {
             ROMPatchType.UPS => PatchOpts.UPS,
             ROMPatchType.BPS => PatchOpts.BPS,
@@ -144,7 +149,7 @@ public partial class PatchesView : UserControl
     {
         try {
             LockControls(true);
-            var openOptions = PickerOpt.PatchOpenOptions(PatchOpts);
+            var openOptions = PickerOpt.PatchOpenOptions(_patchOpts);
             string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
             if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
         }
@@ -159,7 +164,7 @@ public partial class PatchesView : UserControl
     {
         string patchComm;
         SoftPatch selectedPatch = CommandManager.NoPatch;
-        foreach (var radioButton in patchRadioButtons)
+        foreach (var radioButton in _patchRadioButtons)
         {
             if (radioButton.Tag is not SoftPatch softPatch) continue;
             if (!radioButton.IsChecked.GetValueOrDefault()) continue;

@@ -7,8 +7,8 @@
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
              x:Class="RetroLinker.Views.RenameEntryView"
              Name="RenameEntry" Unloaded="View_OnUnloaded">
+    
     <Grid Margin="6,10" RowDefinitions="Auto, *, Auto">
-        <!-- TODO: Get rid of the OnLoaded Event -->
         <!-- ROW0 - Name Controls -->
         <StackPanel Grid.Row="0">
             <Grid ColumnDefinitions="0.25*, *">

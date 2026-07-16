@@ -10,7 +10,7 @@
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
              x:CompileBindings="True"
-			 Name="View1" Loaded="View1_Loaded" Unloaded="View1_Unloaded">
+			 Name="View1" Unloaded="View1_Unloaded">
 	
 	<UserControl.Styles>
 		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>

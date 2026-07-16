@@ -6,15 +6,13 @@
              xmlns:pc="clr-namespace:RetroLinker.Styles"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
-             x:Class="RetroLinker.Views.PatchesView"
-             Name="ViewPatch" Loaded="PatchView_OnLoaded">
+             x:Class="RetroLinker.Views.PatchesView">
     
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
     
     <Grid Name="gridContent" RowDefinitions="Auto, *, Auto">
-        <!-- TODO: Get rid of the OnLoaded Event -->
         <!--Top-->
         <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.titleSoftPatching}" Classes="Header"/>
         <!-- Header -->

@@ -49,6 +49,7 @@ public partial class MainView : UserControl
         ParentWindow = new MainWindow(this);
         IsDesingner = true;
         settings =  new Settings();
+        CompleteSetup();
 
         PatchArg = "--ups=\"path/to/rom.bin\"";
         SubsysArg = "--subsystem=abc \"path/to/rom.bin\"";
@@ -61,6 +62,7 @@ public partial class MainView : UserControl
         DataContext = this;
         ParentWindow = mainWindow;
         settings = mainWindow.Settings;
+        CompleteSetup();
     }
     
     // Debug
@@ -107,46 +109,36 @@ public partial class MainView : UserControl
     
     
     #region LOAD EVENTS
-    void View1_Loaded(object sender, RoutedEventArgs e)
+    void CompleteSetup()
     {
-        // TODO: Call everything under 'FormFirstLoad == true' from the constructor (0.8)
         // TODO: Implement an Event for theme handling
-        if (FormFirstLoad)
-        {
-            // AvaloniaOps.MainViewLoad();
-
 #if DEBUG
-            try {
-                ParentWindow.RequestedThemeVariant = LoadThemeVariant();
-            }
-            catch (System.Exception ex) {
-                Logger.LogDebg(ex);
-                TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
-            }
+        try {
+            ParentWindow.RequestedThemeVariant = LoadThemeVariant();
+        }
+        catch (System.Exception ex) {
+            Logger.LogDebg(ex);
+            TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
+        }
 #else
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
 #endif
-        
             
-            SetViewPreSettings();
+        SetViewPreSettings();
 
-            BuildingLink = new Shortcutter();
-            txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
-            ApplyDragDropEvents();
-            ApplySettingsToControls();
+        BuildingLink = new Shortcutter();
+        txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
+        ApplyDragDropEvents();
+        ApplySettingsToControls();
             
-            comboCore_Loaded(ParentWindow.CoresList);
-            comboConfig_Loaded();
-            comboICONDir_Loaded(ParentWindow.IconsListEx);
+        comboCore_Loaded(ParentWindow.CoresList);
+        comboConfig_Loaded();
+        comboICONDir_Loaded(ParentWindow.IconsListEx);
             
-            // Arguments should only load when above controls are ready
-            ApplyArgs();
+        // Arguments should only load when above controls are ready
+        ApplyArgs();
             
-            // TODO_MAYBE: Tutorial event for new users
-            
-            FormFirstLoad = false;
-        }
-        else LoadNewSettings();
+        // TODO_MAYBE: Tutorial event for new users
     }
 
     void comboCore_Loaded(string[] cores)
