@@ -32,16 +32,16 @@
     <PackageReference Include="Avalonia" Version="12.1.0" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.18" />
-    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Any CPU'">
-      <Version>11.3.18</Version>
-    </PackageReference>
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.15.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
     <PackageReference Include="Microsoft.ClearScript.Windows" Version="7.5.1" />
     <PackageReference Include="Optris.Icons.Avalonia.FontAwesome7" Version="12.0.7" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageReference Include="Zeronia.Diagnostics" Version="12.1.0">
+      <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

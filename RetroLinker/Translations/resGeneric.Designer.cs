@@ -170,5 +170,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("tipBrowse", resourceCulture);
             }
         }
+        
+        public static string btnClose {
+            get {
+                return ResourceManager.GetString("btnClose", resourceCulture);
+            }
+        }
     }
 }

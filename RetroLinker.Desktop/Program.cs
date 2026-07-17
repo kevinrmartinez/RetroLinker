@@ -86,6 +86,7 @@ class Program
     private static readonly System.Reflection.AssemblyName AppAssemblyName = AppAssembly.GetName();
     private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
     private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
+    // private static readonly string AppVersion2 = AppAssembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
     
     // Logging
     private static readonly string LogFileName = $"{AppName}.log";
@@ -106,8 +107,12 @@ class Program
     
     private static DateTime? GetBuildDateOfAssembly()
     {
-        try
+        try 
         {
+            /*
+             * TODO: the LastWriteTime of a file can be changed simply copying it, and running the copy
+             * replace with an approach like GetGitHashOfRepo: dump the date/time into a file before compiling  
+             */
             var assemblyFile = FileOps.GetFileInfo(AppAssembly.Location);
             return assemblyFile.LastWriteTime;
         }
@@ -122,8 +127,7 @@ class Program
     {
         const string resourceName = "RetroLinker.Desktop.git-hash";
         const int sha1Length = 40;
-        try
-        {
+        try {
             var result = ResourceLoader.GetTextLinesFromResource(AppAssembly, resourceName);
             var hash = result.First(line => line.Length == sha1Length);
             return hash;

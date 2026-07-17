@@ -28,16 +28,13 @@
         <value>© Kevin R. Martinez J. 2023-2026</value>
     </data>
     <data name="lblMaintainer" xml:space="preserve">
-        <value>Founder &amp; Maintainer</value>
+        <value>Founder &amp; Maintainer:</value>
     </data>
     <data name="lblContributors" xml:space="preserve">
-        <value>Contributors</value>
+        <value>Contributors:</value>
     </data>
     <data name="lblAttributions" xml:space="preserve">
         <value>Attributions</value>
-    </data>
-    <data name="btnClose" xml:space="preserve">
-        <value>Ok</value>
     </data>
     <data name="lblLicense" xml:space="preserve">
         <value>License: </value>

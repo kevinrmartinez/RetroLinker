@@ -29,8 +29,10 @@ namespace RetroLinker.Views;
 public partial class AboutWindow : Window
 {
     public AppInformation AppInfo { get; }
-    public Contribs[] Contributors { get; }
-    public Dictionary<string, Uri> ThirdPartyCredits { get; } = new();
+    public Contributor[] Contributors { get; }
+    public ThirdParty[] ThirdPartyLibs { get; }
+    public ThirdParty[] ThirdPartyRes { get; }
+    public ThirdParty[] ThirdPartyThanks { get; }
     
     private readonly Dictionary<string, Uri> _thirdPartyCredits = new();
     
@@ -47,32 +49,45 @@ public partial class AboutWindow : Window
         // Contributors (In order of arrival)
         // Contributors feel free to add their names and social media/contact/GitHub in this record array
         Contributors = [ 
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
         ];
-        // ItemsControlContributors.ItemsSource = _contributors;
+        
+        // Used Libraries
+        ThirdPartyLibs =
+        [
+            new ThirdParty("AvaloniaUI", new Uri("https://avaloniaui.net/"), "Cross-platform UI framework"),
+            new ThirdParty("Magick.NET", new Uri("https://github.com/dlemstra/Magick.NET"), "Powerful image manipulation library"),
+            new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
+            new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
+            new ThirdParty("Microsoft.ClearScript.Windows", new Uri("https://github.com/ClearFoundry/ClearScript")),
+            new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App")
+        ];
         
         // Attribution
-        // TODO: Move to Binding
-        // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
-        _thirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        _thirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
-        foreach (var key in _thirdPartyCredits.Keys)
-        {
-            var hyperlink = new HyperlinkButton()
-            {
-                NavigateUri = _thirdPartyCredits[key],
-                Content = key,
-                Padding = new Thickness(0)
-            };
-            StackPanelCredits.Children.Add(hyperlink);
-        }
+        ThirdPartyRes = [
+            // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")),
+            new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
+            new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"))
+        ];
+        
+        // Special Thanks
+        ThirdPartyThanks = [
+            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "DevTool for Avalonia v12"),
+        ];
+        
+        // =Update Bindings=
         DataContext = this;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
 }
 
-public record Contribs(string DisplayName, Uri? OnlinePageUrl);
+public record Contributor(string DisplayName, Uri? OnlinePageUrl);
+public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);
