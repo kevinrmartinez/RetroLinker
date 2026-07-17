@@ -81,4 +81,7 @@
     <data name="tipBrowse" xml:space="preserve">
         <value>Browse for a file</value>
     </data>
+    <data name="btnClose" xml:space="preserve">
+        <value>Close</value>
+    </data>
 </root>

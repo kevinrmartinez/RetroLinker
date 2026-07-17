@@ -18,10 +18,10 @@
         <value>Una aplicación gráfica para crear enlaces para escritorio de juegos que corren con RetroArch.</value>
     </data>
     <data name="lblMaintainer" xml:space="preserve">
-        <value>Fundador y Maintainer</value>
+        <value>Fundador y Maintainer:</value>
     </data>
     <data name="lblContributors" xml:space="preserve">
-        <value>Contribuidores</value>
+        <value>Contribuidores:</value>
     </data>
     <data name="lblAttributions" xml:space="preserve">
         <value>Atribuciones</value>

@@ -65,4 +65,7 @@
     <data name="tipBrowse" xml:space="preserve">
         <value>Buscar un archivo</value>
     </data>
+    <data name="btnClose" xml:space="preserve">
+        <value>Cerrar</value>
+    </data>
 </root>
