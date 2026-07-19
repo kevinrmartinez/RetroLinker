@@ -84,4 +84,7 @@
     <data name="btnClose" xml:space="preserve">
         <value>Close</value>
     </data>
+    <data name="genDotnet_A" xml:space="preserve">
+        <value>.NET 10</value>
+    </data>
 </root>

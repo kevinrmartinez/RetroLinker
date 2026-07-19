@@ -82,6 +82,7 @@ class Program
     }
 
     // Parameters
+    // TODO: Replace 'Version.ToString(3)' with 'GetCustomAttribute<AssemblyInformationalVersionAttribute>()'
     private static readonly System.Reflection.Assembly AppAssembly = typeof(Program).Assembly;
     private static readonly System.Reflection.AssemblyName AppAssemblyName = AppAssembly.GetName();
     private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
