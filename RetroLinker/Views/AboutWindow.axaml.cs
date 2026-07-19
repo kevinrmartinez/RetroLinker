@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -34,8 +33,6 @@ public partial class AboutWindow : Window
     public ThirdParty[] ThirdPartyRes { get; }
     public ThirdParty[] ThirdPartyThanks { get; }
     
-    private readonly Dictionary<string, Uri> _thirdPartyCredits = new();
-    
     public AboutWindow()
     {
         InitializeComponent();
@@ -49,6 +46,7 @@ public partial class AboutWindow : Window
         // Contributors (In order of arrival)
         // Contributors feel free to add their names and social media/contact/GitHub in this record array
         Contributors = [ 
+#if DEBUG
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
@@ -57,6 +55,7 @@ public partial class AboutWindow : Window
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
             new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+#endif
         ];
         
         // Used Libraries
@@ -72,14 +71,14 @@ public partial class AboutWindow : Window
         
         // Attribution
         ThirdPartyRes = [
-            // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")),
+            // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
             new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
             new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"))
         ];
         
         // Special Thanks
         ThirdPartyThanks = [
-            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "DevTool for Avalonia v12"),
+            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "DevTool for AvaloniaUI v12"),
         ];
         
         // =Update Bindings=

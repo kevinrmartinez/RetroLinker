@@ -92,5 +92,29 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("hypLicense", resourceCulture);
             }
         }
+        
+        public static string hypBackend {
+            get {
+                return ResourceManager.GetString("hypBackend", resourceCulture);
+            }
+        }
+        
+        public static string lblLibraries {
+            get {
+                return ResourceManager.GetString("lblLibraries", resourceCulture);
+            }
+        }
+        
+        public static string lblResources {
+            get {
+                return ResourceManager.GetString("lblResources", resourceCulture);
+            }
+        }
+        
+        public static string lblThanksSp {
+            get {
+                return ResourceManager.GetString("lblThanksSp", resourceCulture);
+            }
+        }
     }
 }

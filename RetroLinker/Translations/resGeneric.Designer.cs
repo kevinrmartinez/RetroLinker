@@ -176,5 +176,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("btnClose", resourceCulture);
             }
         }
+        
+        public static string genDotnet_A {
+            get {
+                return ResourceManager.GetString("genDotnet_A", resourceCulture);
+            }
+        }
     }
 }

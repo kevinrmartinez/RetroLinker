@@ -31,7 +31,7 @@
         <value>Founder &amp; Maintainer:</value>
     </data>
     <data name="lblContributors" xml:space="preserve">
-        <value>Contributors:</value>
+        <value>Contributors</value>
     </data>
     <data name="lblAttributions" xml:space="preserve">
         <value>Attributions</value>
@@ -41,5 +41,17 @@
     </data>
     <data name="hypLicense" xml:space="preserve">
         <value>GNU General Public License v3</value>
+    </data>
+    <data name="hypBackend" xml:space="preserve">
+        <value>Backend:</value>
+    </data>
+    <data name="lblLibraries" xml:space="preserve">
+        <value>Libraries</value>
+    </data>
+    <data name="lblResources" xml:space="preserve">
+        <value>Resources</value>
+    </data>
+    <data name="lblThanksSp" xml:space="preserve">
+        <value>Special Thanks</value>
     </data>
 </root>

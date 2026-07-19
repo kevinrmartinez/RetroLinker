@@ -34,6 +34,7 @@
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
+    <!-- TODO: Separate file browsing from folder browsing -->
     <Style Selector="Button.browse">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
         <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
