@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:RetroLinker.Styles"
              x:Class="RetroLinker.App"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -16,5 +17,9 @@
         <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
         <x:String x:Key="FounderName">kevinrmartinez</x:String>
         <x:Uri x:Key="FounderUrl">https://github.com/kevinrmartinez</x:Uri>
+        
+        <!-- Converters -->
+        <cc:TextToUpper x:Key="TextToUpperConverter"/>
+        <cc:TextToLower x:Key="TextToLowerConverter"/>
     </Application.Resources>
 </Application>
