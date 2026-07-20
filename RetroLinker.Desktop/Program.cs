@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using Avalonia;
 using Optris.Icons.Avalonia;
 using Optris.Icons.Avalonia.FontAwesome7;
@@ -82,12 +83,16 @@ class Program
     }
 
     // Parameters
-    // TODO: Replace 'Version.ToString(3)' with 'GetCustomAttribute<AssemblyInformationalVersionAttribute>()'
-    private static readonly System.Reflection.Assembly AppAssembly = typeof(Program).Assembly;
-    private static readonly System.Reflection.AssemblyName AppAssemblyName = AppAssembly.GetName();
+    private static readonly Assembly AppAssembly = typeof(Program).Assembly;
+    private static readonly AssemblyName AppAssemblyName = AppAssembly.GetName();
     private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
-    private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
-    // private static readonly string AppVersion2 = AppAssembly.GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
+    // private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
+    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
+    private static readonly string[] AppVersionSplit = AppVersionFull.Split('+');
+    private static readonly string AppVersion = (AppVersionSplit.Length > 1)
+                                                ? AppVersionSplit[Index.Start]
+                                                : AppAssemblyName.Version?.ToString(3) ?? "N/A";
+    
     
     // Logging
     private static readonly string LogFileName = $"{AppName}.log";
@@ -108,36 +113,25 @@ class Program
     
     private static DateTime? GetBuildDateOfAssembly()
     {
-        try 
-        {
-            /*
-             * TODO: the LastWriteTime of a file can be changed simply copying it, and running the copy
-             * replace with an approach like GetGitHashOfRepo: dump the date/time into a file before compiling  
-             */
-            var assemblyFile = FileOps.GetFileInfo(AppAssembly.Location);
-            return assemblyFile.LastWriteTime;
+        /* Solution thanks to Gérald Barré (aka. meziantou)
+         * https://www.meziantou.net/getting-the-date-of-build-of-a-dotnet-assembly-at-runtime.htm
+         */
+        var BuildDateAtt = AppAssembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .First(a => a.Key == "BuildDateUTC").Value;
+        if (long.TryParse(BuildDateAtt, out var buildDateTicks)) {
+            return DateTime.FromBinary(buildDateTicks);     // Date is set in UTC
         }
-        catch (Exception e) {
-            Logger.LogWarn("App Build Date was requested, but it could not be accessed");
-            Logger.LogErro(e);
-            return null;
-        }
+        
+        Logger.LogWarn("App build bate was requested, but it could not be accessed");
+        return null;
     }
 
-    private static string? GetGitHashOfRepo()
-    {
-        const string resourceName = "RetroLinker.Desktop.git-hash";
-        const int sha1Length = 40;
-        try {
-            var result = ResourceLoader.GetTextLinesFromResource(AppAssembly, resourceName);
-            var hash = result.First(line => line.Length == sha1Length);
-            return hash;
-        }
-        catch (Exception e) {
-            Logger.LogWarn("The hash of the git repo this build is based on was requested, but it could not be accessed");
-            Logger.LogErro(e);
-            return null;
-        }
+    private static string? GetGitHashOfRepo() {
+        if (AppVersionSplit.Length > 1) return AppVersionSplit[1];
+        
+        Logger.LogWarn("Hash of git repo was requested, but it could not be accessed");
+        return null;
     }
 
     private static AppInformation GetAppInfo()
@@ -145,6 +139,6 @@ class Program
         var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();
-        return new AppInformation(fullName, AppName, AppVersion,  buildDate, gitHash);
+        return new AppInformation(fullName, AppName, AppVersion, buildDate, gitHash);
     }
 }

@@ -39,7 +39,7 @@ public readonly struct AppInformation(
     public string ToStringLines()
     {
         const string noData = "No Data";
-        var finalDate = BuildDate?.ToString("u") ?? noData;
+        var finalDate = BuildDate?.ToString("O") ?? noData;
         var finalGitHash = GitHash ?? noData;
         return $"""
                 FullName  {FullName}
