@@ -21,5 +21,6 @@
         <!-- Converters -->
         <cc:TextToUpper x:Key="TextToUpperConverter"/>
         <cc:TextToLower x:Key="TextToLowerConverter"/>
+        <cc:DateToLocal x:Key="DateToLocalConverter"/>
     </Application.Resources>
 </Application>
