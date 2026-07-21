@@ -12,6 +12,10 @@
     </Application.Styles>
              
     <Application.Resources>
+        <!-- TODO: Try adding here the resources declared on FileOps -->
+        <!-- Fonts -->
+        <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
+        
         <!-- TODO: Add globally fixed colors (Resources) (>= 0.9) -->
         <!-- https://docs.avaloniaui.net/docs/app-development/resources -->
         <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>

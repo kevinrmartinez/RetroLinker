@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2024  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
