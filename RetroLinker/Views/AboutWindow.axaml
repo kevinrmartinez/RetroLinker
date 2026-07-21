@@ -30,6 +30,8 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
         <Style Selector="TextBlock#LabelBuild">
+            <Setter Property="FontFamily" Value="{StaticResource LiberationMonoFont}"/>
+            <!-- <Setter Property="FontWeight" Value="DemiBold"/> -->
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>

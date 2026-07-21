@@ -45,15 +45,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="UserAssets\cores.txt">
+    <Content Include="UserAssets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UserAssets\icon_dark.ico">
+    </Content>
+    <Content Include="Licenses\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="UserAssets\icon_light.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   
   <ItemGroup>

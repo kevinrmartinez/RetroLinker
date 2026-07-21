@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -66,14 +66,16 @@ public partial class AboutWindow : Window
             new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
             new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
             new ThirdParty("Microsoft.ClearScript.Windows", new Uri("https://github.com/ClearFoundry/ClearScript")),
-            new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App")
+            new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App"),
         ];
         
         // Attribution
         ThirdPartyRes = [
             // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
             new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
-            new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"))
+            new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
+            // new ThirdParty("Liberation Mono Fonts", new Uri(FileOps.CombineMultipleInputs(FileOps.DefLicensesDir, "LiberationMono-License.txt")))
+            new ThirdParty("Liberation Mono Fonts", new Uri("https://github.com/liberationfonts/liberation-fonts"))
         ];
         
         // Special Thanks
