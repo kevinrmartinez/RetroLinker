@@ -12,7 +12,7 @@
     </Application.Styles>
              
     <Application.Resources>
-        <!-- TODO: Try adding here the resources declared on FileOps -->
+        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's not use in the current implementation-->
         <!-- Fonts -->
         <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
         

@@ -31,7 +31,7 @@
 		</cc:MainWindowHeader>
 		
 		<!--Body-->
-		<!-- TODO: Standardize margins and padding -->
+		<!-- TODO: Standardize margins and padding (oh god...) -->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
 			
 			<!--Main Operations-->
@@ -115,6 +115,7 @@
 						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" IsEnabled="False"
 						        Content="{x:Static lc:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
 					</Grid>
+					
 					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
 					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}" Classes="ReqField"/>
 					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
@@ -204,5 +205,4 @@
 		</Grid>
 		<!--BODY END-->
 	</Grid>
-	<!--https://stackify.com/cross-platform-net-core-apps/-->
 </UserControl>

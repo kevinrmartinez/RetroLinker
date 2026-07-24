@@ -17,8 +17,8 @@
 */
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
@@ -61,7 +61,7 @@ public static class Operations
     
     public static AvaloniaBitmap GetBitmap(string path) => new(path);
 
-    public static AvaloniaBitmap GetBitmap(Stream imgStream) => new(imgStream);
+    public static AvaloniaBitmap GetBitmap(System.IO.Stream imgStream) => new(imgStream);
 
     public static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
