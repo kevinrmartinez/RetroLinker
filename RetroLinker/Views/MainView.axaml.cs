@@ -678,7 +678,7 @@ public partial class MainView : UserControl
             }
             else {
                 try {
-                    FillIconBoxes(BuildingLink.ICONfile); 
+                    FillIconBoxes(BuildingLink.ICONfile);
                     panelIconNoImage.IsVisible = false;
                 }
                 catch {
