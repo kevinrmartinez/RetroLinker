@@ -103,7 +103,7 @@ public partial class MainView : UserControl
     private bool LinkCustomName;
     private ShortcutterOutput PreviousOutput = new();
 
-    // TODO: This has to be a enum or something, as it needs to include MacOS. (>=0.10)
+    // TODO: This has to be a enum or something, as it needs to include MacOS. And move to App. (>=0.10)
     // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     

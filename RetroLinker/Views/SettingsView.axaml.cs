@@ -27,26 +27,28 @@ namespace RetroLinker.Views
 {
     public partial class SettingsView : UserControl
     {
+        // Window Obj
+        // private MainWindow MainAppWindow;
+        public SettingsWindow ParentWindow { get; }
+        
         public SettingsView()
         {
             InitializeComponent();
             ParentWindow = new SettingsWindow(true);
+            // settings = ParentWindow.settings;
+            FillComboLocale();
+            LoadTheme(ParentWindow.settings.ChosenTheme);
+            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
+            DataContext = this;
         }
 
-        public SettingsView(SettingsWindow parentWindow, bool desktopOs)
-        {
-            InitializeComponent();
+        public SettingsView(SettingsWindow parentWindow, bool desktopOs) : this() {
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
-            // settings = ParentWindow.settings;
+            // DataContext = this;
         }
-        
-        // Window Obj
-        // private MainWindow MainAppWindow;
-        private SettingsWindow ParentWindow;
 
         // PROPS/STATICS
-        private bool FirstTimeLoad = true;
         private bool DesktopOS;
         // Consider using independent Settings references
         // private Settings settings; 
@@ -54,24 +56,7 @@ namespace RetroLinker.Views
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
 
-        #region Loads
-        // LOADS
-        void View_OnLoaded(object sender, RoutedEventArgs e)
-        { 
-            if (FirstTimeLoad) FillComboLocale();
-            
-            // Settings
-            ApplySettingsToControls();
-        }
-
-        void ApplySettingsToControls()
-        { 
-            chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
-            chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
-            LoadTheme(ParentWindow.settings.ChosenTheme);
-            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
-        }
-
+        #region Loading
         void FillComboLocale()
         {
             int index = (comboLocale.SelectedIndex >= 0) ? comboLocale.SelectedIndex : 0;
@@ -82,10 +67,9 @@ namespace RetroLinker.Views
                 comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
                 index++;
             }
-            FirstTimeLoad = false;
         }
         #endregion
-
+        
         // Appearance
         // TODO: Refactorize using an event, possibly based in the 'ThemeCode' byte; or maybe a Bind
         void LoadTheme(byte ThemeCode)
@@ -140,14 +124,6 @@ namespace RetroLinker.Views
             // REWRITE: Rewrite so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
             ParentWindow.settings.LanguageLocale = locale.Culture.Name;
-        }
-
-        // OTHER PREFERENCES
-        void View1ChecksHandle(object? sender, RoutedEventArgs e)
-        {
-            if (sender is not CheckBox) return;
-            ParentWindow.settings.PrevConfig = chkPrevCONFIG.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.CpyUserIcon = chkCpyUserIcon.IsChecked.GetValueOrDefault();
         }
     }
 }

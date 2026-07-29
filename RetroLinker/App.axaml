@@ -12,7 +12,7 @@
     </Application.Styles>
              
     <Application.Resources>
-        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's not use in the current implementation-->
+        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's of no use in the current implementation-->
         <!-- Fonts -->
         <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
         
@@ -25,6 +25,7 @@
         <!-- Converters -->
         <cc:TextToUpper x:Key="TextToUpperConverter"/>
         <cc:TextToLower x:Key="TextToLowerConverter"/>
+        <cc:TextToFullPath x:Key="TextToFullPathConverter"/>
         <cc:DateToLocal x:Key="DateToLocalConverter"/>
     </Application.Resources>
 </Application>

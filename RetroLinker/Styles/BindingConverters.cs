@@ -20,6 +20,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
+using RetroLinker.Models;
 
 namespace RetroLinker.Styles;
 
@@ -57,6 +58,19 @@ public class TextToLower : IValueConverter
         // throw new NotSupportedException();
         return value;
     }
+}
+
+public class TextToFullPath : IValueConverter
+{
+    public static readonly TextToFullPath Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string str && targetType.IsInstanceOfType(str)) return FileOps.GetAbsolutePath(str);
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => value;
 }
 
 public class DateToLocal : IValueConverter
