@@ -3,10 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="using:RetroLinker.Views"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView"
-			 Name="SettingsView1" Loaded="View_OnLoaded">
+             x:DataType="vw:SettingsView"
+             x:CompileBindings="True">
   
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -23,15 +25,17 @@
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid ColumnDefinitions="*, Auto, *">
 						<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0, 2">
+							<!-- TODO: Use Binding somehow -->
 							<ToggleSwitch Name="swtThemeSwitch" Content="{x:Static lc:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged" Margin="3,0,0,0"
 							              OnContent="{x:Static lc:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static lc:resSettingsWindow.swtThemeSwitch_Off}"/>
 							<Rectangle Width="18"/>
 							<CheckBox Name="chkThemeDefault" Content="{x:Static lc:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
 						</StackPanel>
-						<Rectangle Grid.Column="1" Stroke="Gray" StrokeThickness="2" StrokeDashArray="1"/>
+						<Rectangle Grid.Column="1"/>
 						<StackPanel Grid.Column="2">
 							<Label Margin="3,0,0,0" Content="{x:Static lc:resSettingsWindow.lblLocale}"/>
 							<Grid ColumnDefinitions="*, Auto">
+								<!-- TODO: Show comboLocale content with a DataTemplate -->
 								<ComboBox Name="comboLocale" Grid.Column="0" Margin="3,0,0,2" 
 								          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
 								<Button Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Margin="3" Click="BtnLocale_OnClick">
@@ -49,8 +53,8 @@
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_IconsGeneral}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkCpyUserIcon}" IsCheckedChanged="View1ChecksHandle"
-					          ToolTip.Tip="{x:Static lc:resSettingsWindow.tipCpyUserIcon}"/>
+					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkCpyUserIcon}"
+					          IsChecked="{Binding ParentWindow.settings.CpyUserIcon}" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipCpyUserIcon}"/>
 				</StackPanel>
 			</Border>
 			
@@ -61,7 +65,8 @@
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
 						<StackPanel Grid.Column="0" Orientation="Vertical">
-							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkPrevCONFIG}" IsCheckedChanged="View1ChecksHandle"/>
+							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkPrevCONFIG}" 
+							          IsChecked="{Binding ParentWindow.settings.PrevConfig}"/>
 						</StackPanel>
 						<!--<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->

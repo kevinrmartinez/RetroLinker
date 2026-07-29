@@ -3,29 +3,33 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="using:RetroLinker.Views"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
              x:Class="RetroLinker.Views.SettingsView3"
-			 Name="SettingsView3_1" Loaded="View_OnLoaded">
+             x:DataType="vw:SettingsView3"
+             x:CompileBindings="True"
+			 Loaded="View_OnLoaded">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
 	</UserControl.Styles>
 
-	<Grid x:Name="gridContent" RowDefinitions="Auto, Auto, Auto, *">
+	<StackPanel x:Name="panelContent" Orientation="Vertical">
+		
 		<!-- DEFAULT OUTPUT -->
-		<Border Grid.Row="0" Classes="SettingCatg">
+		<Border Classes="SettingCatg">
 			<StackPanel>
 				<Label Content="{x:Static lc:resSettingsWindow.lblCat_DEFLinkOutput}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}" 
-				          Click="ChkAlwaysAskOutput_OnClick"/>
+				<CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}" 
+				          IsChecked="{Binding ParentWindow.settings.AlwaysAskOutput}"/>
 				<Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}"/>
-				<Grid Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="False">
-					<ComboBox Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" 
+				<Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto, Auto" IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
+					<ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" 
 					          SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
-					<Button Name="btnDefLinkOutput" Grid.Column="1" Height="30" Classes="browse" Click="BtnDefLinkOutput_OnClick"/>
-					<Button Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">
+					<Button x:Name="btnDefLinkOutput" Grid.Column="1" Height="30" Classes="browse" Click="BtnDefLinkOutput_OnClick"/>
+					<Button x:Name="btnclrDefLinkOutput" Grid.Column="2" Height="30" Classes="SettingCatg" Click="BtnclrDefLinkOutput_OnClick">
 						<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
 					</Button>
 				</Grid>
@@ -33,18 +37,19 @@
 		</Border>
 		
 		<!-- OUTPUT COPIES -->
-		<Border Grid.Row="1" Classes="SettingCatg">
+		<Border Classes="SettingCatg">
 			<StackPanel>
 				<Label Content="{x:Static lc:resSettingsWindow.lblCat_MakeLinkCopy}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox Name="chkMakeLinkCopy" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkMakeLinkCopy}" IsCheckedChanged="ChkMakeLinkCopy_IsCheckedChanged"/>
+				<CheckBox x:Name="chkMakeLinkCopy" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkMakeLinkCopy}" 
+				          IsChecked="{Binding ParentWindow.settings.MakeLinkCopy}"/>
 				<Border Classes="SettingCatg">
 					<StackPanel>
-						<ListBox Name="lsboxLinkCopies" CornerRadius="9">
-							<ListBoxItem Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
+						<ListBox x:Name="lsboxLinkCopies" CornerRadius="9" IsEnabled="{Binding #chkMakeLinkCopy.IsChecked}">
+							<ListBoxItem x:Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
 								<Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
-									<ComboBox Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
-									<Button Name="btnaddLinkCopy" Grid.Column="1" Height="30" Click="BtnAddLinkCopy_OnClick"
+									<ComboBox x:Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
+									<Button x:Name="btnaddLinkCopy" Grid.Column="1" Height="30" Click="BtnAddLinkCopy_OnClick"
 									        i:Attached.Icon="fa7-plus"/>
 								</Grid>
 							</ListBoxItem>
@@ -55,8 +60,9 @@
 		</Border>
 		
 		<!-- WINDOWS ONLY -->
-		<Border Grid.Row="2" Classes="SettingCatg">
-			<StackPanel Name="panelWindowsOnlyControls">
+		<!-- Window .ico -->
+		<Border Classes="SettingCatg">
+			<StackPanel x:Name="panelWindowsOnlyControls">
 				<Label Content="{x:Static lc:resSettingsWindow.lblCat_IcoOutput}"/>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Rectangle Height="4"/>
@@ -65,32 +71,32 @@
 				<!-- SAVE ICO CONTROLS -->
 				<TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
 				           Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}"/>
-				<Grid Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
-					<TextBox Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
+				<Grid x:Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
+					<TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Classes="SettingCatg"/>
 			        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-				        <Button Name="btnIcoSavPath" Height="30" Classes="browse" Click="btnIcoSavPath_OnClick"/>
-				        <Button Name="btnclrIcoSavPath" Height="30" Classes="SettingCatg" Click="btnclrIcoSavPath_Click">
+				        <Button x:Name="btnIcoSavPath" Height="30" Classes="browse" Click="btnIcoSavPath_OnClick"/>
+				        <Button x:Name="btnclrIcoSavPath" Height="30" Classes="SettingCatg" Click="btnclrIcoSavPath_Click">
 					            <i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
 				        </Button>
 			        </StackPanel>
 				</Grid>
 				<Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
 					<Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
-						<CheckBox Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center" IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
+						<CheckBox x:Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"  VerticalAlignment="Center" IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
 						          ToolTip.Tip="{x:Static lc:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
-						<ComboBox Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"
+						<ComboBox x:Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="-5,0,5,0"
 						          DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
 					</Grid>
-					<CheckBox Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkExtractIco}" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"
-					          ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}"/>
-					<CheckBox Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkIcoLinkName}" IsCheckedChanged="IcoSavChecks_IsCheckedChanged"/>
+					<CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkExtractIco}" 
+					          IsChecked="{Binding ParentWindow.settings.ExtractIco}" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}"/>
+					<CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkIcoLinkName}" 
+					          IsChecked="{Binding ParentWindow.settings.IcoLinkName}"/>
 				</Grid>
 			</StackPanel>
 		</Border>
-		<!-- <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="2"/> -->
 		
-		<!-- SPACING -->
-		<Rectangle Grid.Row="3"/>
+		<!-- Windows Menu tile icon -->
+		<!-- <Border Classes="SettingCatg"></Border> -->
 		
-	</Grid>
+	</StackPanel>
 </UserControl>

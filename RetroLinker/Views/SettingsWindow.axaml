@@ -10,7 +10,8 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="{x:Static lc:resSettingsWindow.wndTitle}"
         WindowStartupLocation="CenterScreen"
-		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+        Loaded="Window_OnLoaded" Unloaded="Window_OnUnloaded">
 	
 	<Window.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>

@@ -17,6 +17,7 @@
 */
 
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -25,47 +26,41 @@ namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
+    // Window Obj
+    // private MainWindow MainAppWindow;
+    public SettingsWindow ParentWindow { get; }
+    
+    // PROPS/STATICS
+    public bool DesktopOS { get; }
+
     public SettingsView2()
     {
         // Constructor for Designer
         InitializeComponent();
+        TextBox[] textBoxes = [txtUserAssets, txtDefRADir, txtDefROMPath];
+        foreach (var textBox in textBoxes) {
+            textBox.GotFocus += TxtBox_OnGotFocus;
+            textBox.LostFocus += TxtBox_OnLostFocus;
+        }
+        
         ParentWindow = new SettingsWindow(true);
+        DataContext = this;
     }
     
-    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs)
-    {
-        InitializeComponent();
+    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs) : this() {
         ParentWindow = settingsWindow;
         DesktopOS = desktopOs;
+        // DataContext = this;
     }
     
-    // Window Obj
-    // private MainWindow MainAppWindow;
-    private SettingsWindow ParentWindow;
-    
-    // PROPS/STATICS
-    // private bool FirstTimeLoad = true;
-    private bool DesktopOS;
-    
-    // LOAD
-    void View_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        // Settings
-        ApplySettingsToControls();
-    }
-    
-    void ApplySettingsToControls()
-    { 
-        // Absolute path
-        txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
-        txtDefRADir.IsReadOnly = DesktopOS;
-        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
-        btnApplyUserAssets.IsVisible = !DesktopOS;
-        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+    // GENERIC
+    private void TxtBox_OnGotFocus(object? sender, FocusChangedEventArgs e) => ParentWindow.BindTimer?.Stop();
+    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) {
+        ParentWindow.UpdateContextFromOutside();
+        ParentWindow.BindTimer?.Start();
     }
     
     // USER ASSETS
-    
     void LockControls(bool locked) => gridConfigAll2.IsEnabled = !locked;
     
     async void btnUserAssets_ClickAsync()
@@ -76,7 +71,7 @@ public partial class SettingsView2 : UserControl
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
             string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtUserAssets.Text = folder;
+            // txtUserAssets.Text = folder;
             ParentWindow.settings.UserAssetsPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -87,18 +82,10 @@ public partial class SettingsView2 : UserControl
     
     void btnclrUserAssets_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.settings.UserAssetsPath = ParentWindow.DEFsettings.UserAssetsPath;
-        txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
+        // txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
     }
     
     // RA EXECUTABLE
-    private void BtnApplyUserAssets_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Control control) return;
-        if (control.Parent is not Grid grid) return;
-        if (grid.Children[0] is not TextBox txtBox) return;
-        if (!string.IsNullOrWhiteSpace(txtBox.Text)) ParentWindow.settings.DEFRADir = txtBox.Text;
-    }
-
     async void btnDefRADir_ClickAsync()
     {
         try {
@@ -107,7 +94,7 @@ public partial class SettingsView2 : UserControl
             string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrWhiteSpace(file)) return;
-            txtDefRADir.Text = file; 
+            // txtDefRADir.Text = file;
             ParentWindow.settings.DEFRADir = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -118,7 +105,7 @@ public partial class SettingsView2 : UserControl
     
     void btnclrDefRADir_Click(object sender, RoutedEventArgs e) {
         ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
-        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+        // txtDefRADir.Text = ParentWindow.settings.DEFRADir;
     }
     
     // DEFAULT ROM PATH
@@ -129,7 +116,7 @@ public partial class SettingsView2 : UserControl
             string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtDefROMPath.Text = folder; 
+            // txtDefROMPath.Text = folder;
             ParentWindow.settings.DEFROMPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -140,6 +127,6 @@ public partial class SettingsView2 : UserControl
     
     void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
         ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
-        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+        // txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
 }

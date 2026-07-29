@@ -17,7 +17,7 @@
         </Border>
     </Design.PreviewWith>
 
-    <StyleInclude Source="SimpleCustomControls.axaml"/>
+    <!-- <StyleInclude Source="SimpleCustomControls.axaml"/> -->
     <StyleInclude Source="ComplexCustomControls.axaml"/>
     
     <!-- Add Styles Here -->
