@@ -4,7 +4,7 @@
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
           <StackPanel>
-              <Rectangle Height="2" StrokeThickness="1" Fill="Gray"/>
+              <Rectangle Height="2" StrokeThickness="1" Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
               <Border Classes="SettingCatg">
                   <StackPanel>
                       <Label Content="MUESTRA"/>
@@ -12,7 +12,7 @@
                       <CheckBox Classes="SettingCatg" Content="CHECKBOX"/>
                   </StackPanel>
               </Border>
-              <Rectangle Height="2" StrokeThickness="1" Fill="Gray"/>
+              <Rectangle Height="2" StrokeThickness="1" Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
           </StackPanel> 
         </Border>
     </Design.PreviewWith>
@@ -24,7 +24,7 @@
     <Style Selector="Border.SettingCatg">
         <Setter Property="Padding" Value="1"/>
         <Setter Property="Margin" Value="4,3"/>
-        <Setter Property="BorderBrush" Value="Gray"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="CornerRadius" Value="9"/>
     </Style>

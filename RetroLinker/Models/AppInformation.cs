@@ -16,21 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-
 namespace RetroLinker.Models;
 
 public readonly struct AppInformation(
     string fullName,
     string name,
     string version,
-    DateTime? buildDate = null,
+    System.DateTime? buildDate = null,
     string? gitHash = null)
 {
     public string FullName { get; } = fullName;
     public string Name { get; } = name;
     public string Version { get; } = version;
-    public DateTime? BuildDate { get; } = buildDate;
+    public System.DateTime? BuildDate { get; } = buildDate;
     public string? GitHash { get; } = gitHash;
 
 

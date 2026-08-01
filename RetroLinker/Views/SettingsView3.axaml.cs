@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
@@ -30,9 +31,11 @@ namespace RetroLinker.Views
         // Window Obj
         // private MainWindow appMainWindow;
         public SettingsWindow ParentWindow { get; }
-        public bool DesktopOS { get; }
         
         // PROPS/STATICS
+        public bool DesktopOS { get; }
+        public string SelectedDirectory { get; set; } // TODO: Add prop to settings 
+        
         private bool IsDesigner;
         private bool FirstTimeLoad = true;
         private int candidatesCount;
@@ -45,11 +48,19 @@ namespace RetroLinker.Views
             resSettingsWindow.strDefIcoSavPathItem2,
         };
         
+        // Previous Values
+        private string? _tileIcoPath;
+        // private bool _tileIcoNameVisible;
+        // private bool _tileIcoNameDark;
+        
         public SettingsView3()
         {
             // Constructor for Designer
             InitializeComponent();
             ParentWindow = new SettingsWindow(true);
+            // TileIconDirectories = new();
+            SelectedDirectory = ParentWindow.settings.UserAssetsPath;
+            StorePrevValues();
             IsDesigner = true;
             DataContext = this;
         }
@@ -58,7 +69,13 @@ namespace RetroLinker.Views
             IsDesigner = false;
             ParentWindow = settingsWindow;
             DesktopOS = OS;
+            StorePrevValues();
             // DataContext = this;
+        }
+
+        private void StorePrevValues() {
+            var oldSettings = SettingsOps.GetCachedSettings();
+            _tileIcoPath = oldSettings.TileIcoPath;
         }
         
         // LOAD
@@ -70,7 +87,7 @@ namespace RetroLinker.Views
             {
                 if (!DesktopOS) {
                     candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
-                    panelWindowsOnlyControls.IsEnabled = false;
+                    panelIcoOutputControls.IsEnabled = false;
                 }
                 else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
@@ -104,7 +121,7 @@ namespace RetroLinker.Views
             else comboDEFLinkOutput.SelectedIndex = 0;
 
             // if (!DesktopOS) return;
-            if (!panelWindowsOnlyControls.IsEnabled) return;
+            if (!panelIcoOutputControls.IsEnabled) return;
             ValidateSavIcoPath(ParentWindow.settings.IcoSavPath);
         }
 
@@ -178,10 +195,14 @@ namespace RetroLinker.Views
             return newItem;
         }
 
-        private void LockControls(bool locked) => panelContent.IsEnabled = !locked;
+        private void LockControls(bool locked) {
+            panelContent.IsEnabled = !locked;
+            DataContext = null;
+            DataContext = this;
+        }
+        
         
         // DEFAULT OUTPUT
-        
         private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
             ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
 
@@ -190,7 +211,7 @@ namespace RetroLinker.Views
             try {
                 LockControls(true);
                 string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
-                string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
                 if (string.IsNullOrWhiteSpace(folder)) return;
                 // int customDirIndex = candidatesCount;
                 if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
@@ -208,7 +229,6 @@ namespace RetroLinker.Views
             comboDEFLinkOutput.SelectedIndex = 0;
         }
         
-        
         // LINK COPY
         private async void BtnAddLinkCopy_ClickAsync()
         {
@@ -219,7 +239,7 @@ namespace RetroLinker.Views
 
                 if (currentItem == StrAddCustomCopyPath)
                 {
-                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, string.Empty, ParentWindow);
+                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, ParentWindow);
                     if (!string.IsNullOrWhiteSpace(folder)) {
                         lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
                         ParentWindow.SetLinkCopyPaths.Add(folder);
@@ -229,6 +249,7 @@ namespace RetroLinker.Views
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
                     ParentWindow.SetLinkCopyPaths.Add(currentItem);
                 }
+                // If the element already exist in the list, make the existing element light up, or shake or something 
                 comboaddLinkCopy.SelectedIndex = 0;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -251,16 +272,15 @@ namespace RetroLinker.Views
         }
 
         
-        // ICONS
-        
         #region WINDOWS OS ONLY
 
+        // ICONS
         private async void btnIcoSavPath_ClickAsync()
         {
             try {
                 LockControls(true);
                 string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
-                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, currentFolder, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, ParentWindow, currentFolder);
                 if (string.IsNullOrWhiteSpace(folder)) return;
                 txtIcoSavPath.Text = folder; 
                 ParentWindow.settings.IcoSavPath = folder;
@@ -284,6 +304,39 @@ namespace RetroLinker.Views
         private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e) {
             if (sender is not ComboBox combo) return;
             SetDefaultSavIcoPath((byte)combo.SelectedIndex);
+        }
+        
+        // TILE ICON
+        // TODO: This uses Bindings, so this DataContext needs to be updated
+        private async void btnTileIcoBrowse_OnClickAsync(TextBox textBox)
+        {
+            try
+            {
+                LockControls(true);
+                var dialogTitle = "Pick the 'tileico' executable";
+                string currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+                string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAexe, ParentWindow, currentFile, dialogTitle);
+                if (string.IsNullOrWhiteSpace(file)) return;
+                // txtUserAssets.Text = folder;
+                ParentWindow.settings.TileIcoPath = file;
+            }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
+        }
+        
+        private void btnTileIcoBrowse_OnClick(object? sender, RoutedEventArgs e) {
+            if (sender is not Button button) return;
+            if (button.CommandParameter is TextBox textBox) btnTileIcoBrowse_OnClickAsync(textBox);
+        }
+
+        private void btnTileIcoRestore_OnClick(object? sender, RoutedEventArgs e) {
+            if (sender is not Button button) return;
+            if (button.CommandParameter is TextBox textBox) textBox.Text = _tileIcoPath;
+        }
+
+        private void btnTileIcoClear_OnClick(object? sender, RoutedEventArgs e) {
+            if (sender is not Button button) return;
+            if (button.CommandParameter is TextBox textBox) textBox.Text = null;
         }
         #endregion
     }

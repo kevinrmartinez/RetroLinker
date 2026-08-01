@@ -8,6 +8,7 @@
                 <Button Classes="check"/>
                 <Button Classes="trash"/>
                 <Button Classes="clear_text"/>
+                <Button Classes="restore"/>
                 <Button Classes="textbox_inline browse"/>
             </StackPanel>
         </Border>
@@ -31,6 +32,11 @@
     
     <Style Selector="Button.clear_text">
         <Setter Property="i:Attached.Icon" Value="fa7-delete-left"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
+    <Style Selector="Button.restore">
+        <Setter Property="i:Attached.Icon" Value="fa7-arrow-rotate-left"/>
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
