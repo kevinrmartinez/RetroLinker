@@ -56,7 +56,7 @@ public static class ShortcutCreator
     // Return a Shortcutter type
     public static string?[] ReadShortcut(string linkPath)
     {
-        // Why does creating a Array(4) is VBS results in an array with 5 positions?
+        // Why does creating an Array(4) is VBS results in an array with 5 positions?
         var scriptStrings = $"""
                             {commentLine}
                             Function {readLink}()

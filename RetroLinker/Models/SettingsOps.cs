@@ -102,6 +102,9 @@ namespace RetroLinker.Models
         public string IcoSavPath { get; set; }
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
+        public string? TileIcoPath { get; set; }
+        public bool TileIcoNameVisible { get; set; } = false;
+        public bool TileIcoNameDark { get; set; } = false;
         public byte ChosenTheme { get; set; } = 0;
         public string LanguageLocale { get; set; } = DefaultLanguage;
         public List<string> SavedConfigs { get; set; } = new();

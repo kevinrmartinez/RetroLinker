@@ -59,7 +59,7 @@ namespace RetroLinker.Models.Avalonia
                 // Windows exe
                 case OpenOpts.RAexe:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
+                    options.Title = resAvaloniaOps.dlgFileRAexe; // TODO: change with more generic tile
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
@@ -166,7 +166,7 @@ namespace RetroLinker.Models.Avalonia
     }
     
     public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
-    public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy}
+    public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy, DefOutput}
     public enum SaveOpts { WINlnk, LINdesktop }
     public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
 }

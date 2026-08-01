@@ -21,6 +21,7 @@
         <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
         <x:String x:Key="FounderName">kevinrmartinez</x:String>
         <x:Uri x:Key="FounderUrl">https://github.com/kevinrmartinez</x:Uri>
+        <x:Uri x:Key="TileIconifierNetUrl">https://github.com/kevinrmartinez/TileIconifier.Net</x:Uri>
         
         <!-- Converters -->
         <cc:TextToUpper x:Key="TextToUpperConverter"/>

@@ -31,9 +31,10 @@ namespace RetroLinker.Models.Avalonia;
 
 public static class FileDialogOps
 {
-    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null)
+    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null, string? newDialogTitle = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
+        opt.Title = newDialogTitle ?? opt.Title;
         if (!string.IsNullOrEmpty(currentFile)) {
             currentFile = FileOps.GetDirFromPath(currentFile)!;
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
@@ -43,14 +44,13 @@ public static class FileDialogOps
         return dir;
     }
 
-    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel)
-    {
+    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel) {
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
         string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
-    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, string currentFolder, TopLevel topLevel)
+    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, TopLevel topLevel, string? currentFolder = null)
     {
         FolderPickerOpenOptions opt = new()
         {
@@ -61,6 +61,7 @@ public static class FileDialogOps
                 OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
                 OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
                 OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
+                OpenFolderOpts.DefOutput => "Pick a directory where shortcuts will be created", // TODO: Localize
                 // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
             },
@@ -86,6 +87,7 @@ public static class FileDialogOps
         return dir;
     }
 }
+
 
 public static class PopUpDialogOps
 {

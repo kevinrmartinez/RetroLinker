@@ -54,6 +54,8 @@ public partial class SettingsView2 : UserControl
     }
     
     // GENERIC
+    // wtf was I thinking
+    // TODO: no
     private void TxtBox_OnGotFocus(object? sender, FocusChangedEventArgs e) => ParentWindow.BindTimer?.Stop();
     private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) {
         ParentWindow.UpdateContextFromOutside();
@@ -69,7 +71,7 @@ public partial class SettingsView2 : UserControl
         {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // txtUserAssets.Text = folder;
             ParentWindow.settings.UserAssetsPath = folder;
@@ -114,7 +116,7 @@ public partial class SettingsView2 : UserControl
         try {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // txtDefROMPath.Text = folder;
             ParentWindow.settings.DEFROMPath = folder;

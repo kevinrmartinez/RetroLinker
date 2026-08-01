@@ -468,8 +468,7 @@ public partial class MainView : UserControl
                 IconItemSET?.FilePath =  newPath;
             }
             
-            // RA binary icon (Default)
-            if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty;
+            if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty; // RA binary icon (Default)
             else
             {
                 // If it's Windows OS, the images may need to be converted to .ico
