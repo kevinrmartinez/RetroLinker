@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
@@ -58,7 +59,7 @@ namespace RetroLinker.Models
             {
                 try
                 {
-                    settings = JsonHelper.Deserialize<Settings>(FileOps.ReadSettingsFile());
+                    settings = JsonHelper.DeserializeProxy<Settings>(FileOps.ReadSettingsFile());
                     CachedSettings = settings ?? throw new System.IO.InvalidDataException(InvalidDataMessage);
                     PrevConfigs.AddRange(settings.SavedConfigs);
                     LinkCopyPaths.AddRange(settings.SavedCopyPaths);
@@ -83,13 +84,14 @@ namespace RetroLinker.Models
             savingSettings.SavedConfigs = PrevConfigs;
             savingSettings.SavedCopyPaths =  LinkCopyPaths;
             CachedSettings = savingSettings;
-            var fileString = JsonHelper.Serialize(savingSettings);
-            FileOps.WriteSettingsFile(fileString);
+            var serializedSettings = JsonHelper.SerializeProxy(savingSettings);
+            if (!string.IsNullOrEmpty(serializedSettings)) FileOps.WriteSettingsFile(serializedSettings);
+            else Logger.LogErro("Settings could not be serialized into a file");
         }
     }
-
-
-    public class Settings
+    
+    
+    public class Settings : LocalSerializable
     {
         public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
         public string DEFRADir { get; set; } = string.Empty;
@@ -118,11 +120,17 @@ namespace RetroLinker.Models
 
         public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
         
-        public string GetBase64()
+        public string? GetBase64()
         {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
-            var jsonString = JsonHelper.Serialize(this);
+            var jsonString = JsonHelper.SerializeProxy(this);
+            if (string.IsNullOrEmpty(jsonString)) return null;
             var object64 = Utils.GenerateBase64(jsonString);
             return object64;
         }
+    }
+    
+    [JsonSerializable(typeof(Settings))]
+    internal partial class SettingsSerializerContext : JsonSerializerContext {
+        // I believe this can be left empty only because Settings uses primitives as properties
     }
 }
