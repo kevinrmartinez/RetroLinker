@@ -33,37 +33,31 @@ public partial class SettingsView2 : UserControl
     // PROPS/STATICS
     public bool DesktopOS { get; }
 
-    public SettingsView2()
-    {
+    public SettingsView2() {
         // Constructor for Designer
         InitializeComponent();
-        TextBox[] textBoxes = [txtUserAssets, txtDefRADir, txtDefROMPath];
-        foreach (var textBox in textBoxes) {
-            textBox.GotFocus += TxtBox_OnGotFocus;
-            textBox.LostFocus += TxtBox_OnLostFocus;
-        }
-        
         ParentWindow = new SettingsWindow(true);
-        DataContext = this;
     }
     
-    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs) : this() {
+    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs) {
+        InitializeComponent();
         ParentWindow = settingsWindow;
         DesktopOS = desktopOs;
-        // DataContext = this;
     }
     
     // GENERIC
-    // wtf was I thinking
-    // TODO: no
-    private void TxtBox_OnGotFocus(object? sender, FocusChangedEventArgs e) => ParentWindow.BindTimer?.Stop();
-    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) {
-        ParentWindow.UpdateContextFromOutside();
-        ParentWindow.BindTimer?.Start();
+    private void UpdateContext() {
+        DataContext = null;
+        DataContext = this;
     }
     
+    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();
+    
     // USER ASSETS
-    void LockControls(bool locked) => gridConfigAll2.IsEnabled = !locked;
+    void LockControls(bool locked) {
+        gridConfigAll2.IsEnabled = !locked;
+        UpdateContext();
+    }
     
     async void btnUserAssets_ClickAsync()
     {
@@ -74,7 +68,7 @@ public partial class SettingsView2 : UserControl
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // txtUserAssets.Text = folder;
-            ParentWindow.settings.UserAssetsPath = folder;
+            ParentWindow.NewSettings.UserAssetsPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -83,7 +77,7 @@ public partial class SettingsView2 : UserControl
     void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
     
     void btnclrUserAssets_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.UserAssetsPath = ParentWindow.DEFsettings.UserAssetsPath;
+        ParentWindow.NewSettings.UserAssetsPath = ParentWindow.GetDefSettings().UserAssetsPath;
         // txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
     }
     
@@ -97,7 +91,7 @@ public partial class SettingsView2 : UserControl
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrWhiteSpace(file)) return;
             // txtDefRADir.Text = file;
-            ParentWindow.settings.DEFRADir = file;
+            ParentWindow.NewSettings.DEFRADir = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -106,7 +100,7 @@ public partial class SettingsView2 : UserControl
     void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
     
     void btnclrDefRADir_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
+        ParentWindow.NewSettings.DEFRADir = (DesktopOS) ? ParentWindow.GetDefSettings().DEFRADir : FileOps.LinuxRABin;
         // txtDefRADir.Text = ParentWindow.settings.DEFRADir;
     }
     
@@ -119,7 +113,7 @@ public partial class SettingsView2 : UserControl
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
             // txtDefROMPath.Text = folder;
-            ParentWindow.settings.DEFROMPath = folder;
+            ParentWindow.NewSettings.DEFROMPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -128,7 +122,7 @@ public partial class SettingsView2 : UserControl
     void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();
     
     void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
+        ParentWindow.NewSettings.DEFROMPath = ParentWindow.GetDefSettings().DEFROMPath;
         // txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
     }
 }

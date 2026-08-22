@@ -31,21 +31,26 @@ namespace RetroLinker.Views
         // private MainWindow MainAppWindow;
         public SettingsWindow ParentWindow { get; }
         
-        public SettingsView()
-        {
+        public SettingsView() {
             InitializeComponent();
             ParentWindow = new SettingsWindow(true);
-            // settings = ParentWindow.settings;
-            FillComboLocale();
-            LoadTheme(ParentWindow.settings.ChosenTheme);
-            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
-            DataContext = this;
+            CompleteConstructor();
         }
 
-        public SettingsView(SettingsWindow parentWindow, bool desktopOs) : this() {
+        public SettingsView(SettingsWindow parentWindow, bool desktopOs) 
+        {
+            InitializeComponent();
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
-            // DataContext = this;
+            CompleteConstructor();
+        }
+
+        private void CompleteConstructor()
+        {
+            FillComboLocale();
+            LoadTheme(ParentWindow.NewSettings.ChosenTheme);
+            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
+            DataContext = this;
         }
 
         // PROPS/STATICS
@@ -95,12 +100,12 @@ namespace RetroLinker.Views
             if (swtThemeSwitch.IsChecked.GetValueOrDefault())
             {
                 Application.Current!.RequestedThemeVariant = dark_theme;
-                ParentWindow.settings.ChosenTheme = 2;
+                ParentWindow.NewSettings.ChosenTheme = 2;
             }
             else
             {
                 Application.Current!.RequestedThemeVariant = light_theme;
-                ParentWindow.settings.ChosenTheme = 1;
+                ParentWindow.NewSettings.ChosenTheme = 1;
             }
         }
 
@@ -111,7 +116,7 @@ namespace RetroLinker.Views
                 // Avalonia's Designer breaks on this part
                 Application.Current!.RequestedThemeVariant = system_theme;
                 swtThemeSwitch.IsEnabled = false;
-                ParentWindow.settings.ChosenTheme = 0;
+                ParentWindow.NewSettings.ChosenTheme = 0;
             }
             else {
                 swtThemeSwitch.IsEnabled = true; 
@@ -123,7 +128,7 @@ namespace RetroLinker.Views
         private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
             // REWRITE: Rewrite so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
-            ParentWindow.settings.LanguageLocale = locale.Culture.Name;
+            ParentWindow.NewSettings.LanguageLocale = locale.Culture.Name;
         }
     }
 }
