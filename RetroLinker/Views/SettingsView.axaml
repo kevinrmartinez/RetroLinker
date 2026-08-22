@@ -54,7 +54,7 @@
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_IconsGeneral}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<CheckBox Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkCpyUserIcon}"
-					          IsChecked="{Binding ParentWindow.settings.CpyUserIcon}" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipCpyUserIcon}"/>
+					          IsChecked="{Binding ParentWindow.NewSettings.CpyUserIcon}" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipCpyUserIcon}"/>
 				</StackPanel>
 			</Border>
 			
@@ -66,7 +66,7 @@
 					<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
 						<StackPanel Grid.Column="0" Orientation="Vertical">
 							<CheckBox Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkPrevCONFIG}" 
-							          IsChecked="{Binding ParentWindow.settings.PrevConfig}"/>
+							          IsChecked="{Binding ParentWindow.NewSettings.PrevConfig}"/>
 						</StackPanel>
 						<!--<Rectangle Grid.Column="1" Stroke="Gray"
 							   StrokeThickness="0.5" StrokeLineCap="Round" StrokeDashArray="6"/>-->

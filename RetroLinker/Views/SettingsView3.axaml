@@ -24,7 +24,7 @@
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
                 <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
                           Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
-                          IsChecked="{Binding ParentWindow.settings.AlwaysAskOutput}" />
+                          IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}" />
                 <Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}" />
                 <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto"
                       IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
@@ -48,7 +48,7 @@
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
                 <CheckBox x:Name="chkMakeLinkCopy" Classes="SettingCatg"
                           Content="{x:Static lc:resSettingsWindow.chkMakeLinkCopy}"
-                          IsChecked="{Binding ParentWindow.settings.MakeLinkCopy}" />
+                          IsChecked="{Binding ParentWindow.NewSettings.MakeLinkCopy}" />
                 <Border Classes="SettingCatg">
                     <StackPanel>
                         <ListBox x:Name="lsboxLinkCopies" CornerRadius="9"
@@ -80,12 +80,11 @@
                 <!-- SAVE ICO CONTROLS -->
                 <TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
                            Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}" />
-                <Grid x:Name="panelWindowsOnlyControls2" Margin="0,4" ColumnDefinitions="*,Auto">
-                    <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
-                             Classes="SettingCatg" />
+                <Grid x:Name="panelWindowsOnlyControls2" Margin="1,4" ColumnDefinitions="*,Auto">
+                    <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="btnIcoSavPath" Classes="browse textbox_inline" Click="btnIcoSavPath_OnClick" />
-                        <Button x:Name="btnclrIcoSavPath" Classes="restore textbox_inline SettingCatg"
+                        <Button x:Name="btnclrIcoSavPath" Classes="restore textbox_inline"
                                 Click="btnclrIcoSavPath_Click"/>
                     </StackPanel>
                 </Grid>
@@ -101,11 +100,11 @@
                     </Grid>
                     <CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg"
                               Content="{x:Static lc:resSettingsWindow.chkExtractIco}"
-                              IsChecked="{Binding ParentWindow.settings.ExtractIco}"
+                              IsChecked="{Binding ParentWindow.NewSettings.ExtractIco}"
                               ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}" />
                     <CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg"
                               Content="{x:Static lc:resSettingsWindow.chkIcoLinkName}"
-                              IsChecked="{Binding ParentWindow.settings.IcoLinkName}" />
+                              IsChecked="{Binding ParentWindow.NewSettings.IcoLinkName}" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -140,18 +139,20 @@
                 
                 <StackPanel x:Name="panelTileIconifierSelect">
                     <TextBlock FontSize="12" Margin="3,0" Text="Path to TileIconifier.CLI executable (leave empty to disable)"/>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.settings.TileIcoPath}"/>
+                    <Grid ColumnDefinitions="*,Auto" Margin="3,2">
+                        <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.NewSettings.TileIcoPath}"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <!-- TODO: Add click events -->
-                            <Button Classes="textbox_inline browse" CommandParameter="{Binding #txtTileIco}" Click="btnTileIcoBrowse_OnClick"/>
-                            <Button Classes="textbox_inline restore" CommandParameter="{Binding #txtTileIco}" Click="btnTileIcoRestore_OnClick"/>
-                            <Button Classes="textbox_inline clear_text" CommandParameter="{Binding #txtTileIco}" Click="btnTileIcoClear_OnClick"/>
+                            <Button Classes="textbox_inline browse" CommandParameter="{Binding #txtTileIco}" 
+                                    Click="btnTileIco_OnClick"/>
+                           <Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
+                                    Click="btnTileIco_OnClick"/>
+                            <Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}" 
+                                    Click="btnTileIco_OnClick"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox x:Name="chkTextOnTile" IsChecked="{Binding ParentWindow.settings.TileIcoNameVisible}">
+                <StackPanel Orientation="Horizontal" Margin="3,0">
+                    <CheckBox x:Name="chkTextOnTile" IsChecked="{Binding ParentWindow.NewSettings.TileIcoNameVisible}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Name on medium sized tile"/>
                             <Rectangle Width="3"/>
@@ -164,8 +165,8 @@
                         </StackPanel>
                     </CheckBox>
                     <Rectangle Width="12"/>
-                    <ToggleSwitch x:Name="swtTextOnTileColor" OffContent="Dark Text" OnContent="Light Text" 
-                                  IsChecked="{Binding !ParentWindow.settings.TileIcoNameDark}" 
+                    <ToggleSwitch x:Name="swtTextOnTileColor" OffContent="Dark Text" OnContent="Light Text"
+                                  IsChecked="{Binding !ParentWindow.NewSettings.TileIcoNameDark}"
                                   IsEnabled="{Binding #chkTextOnTile.IsChecked}"/>
                 </StackPanel>
                 <!-- COMING SOON: Background color -->

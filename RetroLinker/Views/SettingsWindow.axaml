@@ -10,32 +10,36 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="{x:Static lc:resSettingsWindow.wndTitle}"
         WindowStartupLocation="CenterScreen"
-		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
-        Loaded="Window_OnLoaded" Unloaded="Window_OnUnloaded">
+		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
 	
 	<Window.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
 	</Window.Styles>
 	
-	<Grid Name="gridConfigWindows" RowDefinitions="Auto, *, Auto, Auto">
+	<Grid x:Name="gridConfigWindows" RowDefinitions="Auto, *, Auto, Auto">
 		<!--TOP-->
 		<!-- <Rectangle Grid.Row="0" Fill="Gray" Height="15"/> -->
 		
 		<!-- BODIES TAB CONTROL -->
+		<!-- The views 'DataContext' should be refreshed: -->
+		<!--	- On tab selection (controlled by 'AttachedToVisualTree' of CCTabs) -->
+		<!--	- On 'LostFocus' of the TextBoxes (when ReadOnly == false) -->
+		<!--	- On the 'LockControls()' functions-->
+		<!--	- On Buttons modifying content on TextBoxes -->
 		<TabControl Grid.Row="1">
 			<TabItem Header="{x:Static lc:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
-					<ContentControl Name="CCTab1" Margin="0,0,8,0"/>
+					<ContentControl x:Name="CCTab1" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="{x:Static lc:resSettingsWindow.tabPaths}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
-					<ContentControl Name="CCTab2" Margin="0,0,8,0"/>
+					<ContentControl x:Name="CCTab2" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="{x:Static lc:resSettingsWindow.tabOutput}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
-					<ContentControl Name="CCTab3" Margin="0,0,8,0"/>
+					<ContentControl x:Name="CCTab3" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
 			</TabItem>
 		</TabControl>
@@ -43,19 +47,19 @@
 		<!-- CONTROLS -->
 		<StackPanel Grid.Row="2" Height="48" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 
-			<Button Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
+			<Button x:Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa7-arrow-rotate-left"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnDefault}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnDISSettings" Click="btnDISSettings_OnClick" VerticalAlignment="Stretch">
+			<Button x:Name="btnDISSettings" Click="btnDISSettings_OnClick" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa7-x" Foreground="Crimson"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnDiscard}" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Button>
-			<Button Name="btnCONSettings" Click="btnSAVESettings_OnClick" VerticalAlignment="Stretch">
+			<Button x:Name="btnCONSettings" Click="btnSAVESettings_OnClick" VerticalAlignment="Stretch">
 				<StackPanel Orientation="Horizontal" Spacing="6">
 					<i:Icon Value="fa7-check" Foreground="Green"/>
 					<TextBlock Text="{x:Static lc:resGeneric.btnConfirm}" VerticalAlignment="Center"/>

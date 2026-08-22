@@ -91,7 +91,7 @@ namespace RetroLinker.Models
     }
     
     
-    public class Settings : LocalSerializable
+    public class Settings : LocalSerializable, System.ICloneable
     {
         public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
         public string DEFRADir { get; set; } = string.Empty;
@@ -117,6 +117,8 @@ namespace RetroLinker.Models
         public Settings() {
             IcoSavPath = UserAssetsPath; 
         }
+
+        public object Clone() => this.MemberwiseClone();
 
         public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
         

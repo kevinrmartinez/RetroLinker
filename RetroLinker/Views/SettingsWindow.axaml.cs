@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -33,10 +32,11 @@ namespace RetroLinker.Views
         // private MainWindow mainWindow;
 
         // PROPS/STATICS
-        public Settings settings { get; set; }
-        public Settings DEFsettings { get; set; } = new();
-        public DispatcherTimer? BindTimer { get; private set; }
-        
+        public Settings NewSettings { get; }
+        // public DispatcherTimer? BindTimer { get; private set; }
+
+        private readonly Settings _oldSettings;
+        private readonly Settings _defSettings = new();
         ContentControl[] _tabs;
         private bool DesktopOS = System.OperatingSystem.IsWindows();
         public List<string> SetLinkCopyPaths;
@@ -45,7 +45,8 @@ namespace RetroLinker.Views
         {
             // Constructor for Designer
             InitializeComponent();
-            settings = new Settings();
+            _oldSettings = new Settings();
+            NewSettings = new Settings();
             _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
             CCTab1.Content = new SettingsView(this, DesktopOS);
@@ -56,50 +57,39 @@ namespace RetroLinker.Views
         public SettingsWindow(bool isDesigner)
         {
             InitializeComponent();
-            settings = new Settings();
+            _oldSettings = new Settings();
+            NewSettings = new Settings();
             _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
         }
         
-        public SettingsWindow(MainWindow mainWindow, Settings _settings)
+        public SettingsWindow(MainWindow mainWindow, in Settings settings)
         {
             InitializeComponent();
             // this.mainWindow = mainWindow;
-            settings = _settings;
+            _oldSettings = settings;
+            var newSettings = settings.Clone() as Settings;
+            NewSettings = newSettings ?? new Settings();
             _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
             CCTab1.Content = new SettingsView(this, DesktopOS);
             CCTab2.Content = new SettingsView2(this, DesktopOS);
             CCTab3.Content = new SettingsView3(this, DesktopOS);
         }
+
+        #region GeneralFunctions
+        public Settings GetOldSettings() => _oldSettings;
+        public Settings GetDefSettings() => _defSettings;
         
-        
-        private void UpdateContext(object? sender, System.EventArgs? e)
+        private void CCTab_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
         {
-            foreach (var tab in _tabs) {
-                if (tab.Content is not UserControl view) continue;
-                view.DataContext = null;
-                view.DataContext = view;
-            }
-        }
-        
-        public void UpdateContextFromOutside() => UpdateContext(null, null);
-        
-        private void Window_OnLoaded(object? sender, RoutedEventArgs e)
-        {
-            BindTimer = new() {
-                Interval = System.TimeSpan.FromMilliseconds(300)
-            };
-            BindTimer.Tick += UpdateContext;
-            BindTimer.Start();
+            if (sender is not ContentControl cc) return;
+            if (cc.Content is not UserControl view) return;
+            view.DataContext = null;
+            view.DataContext = view;
         }
 
-        private void Window_OnUnloaded(object? sender, RoutedEventArgs e)
-        {
-            if (BindTimer is null) return;
-            BindTimer.Stop();
-            BindTimer = null;
-        }
+        #endregion
         
         #region Window/Dialog Controls
         void btnDISSettings_OnClick(object sender, RoutedEventArgs e) => CloseWindow(null);
@@ -123,8 +113,8 @@ namespace RetroLinker.Views
                 if (result != MsBox.Avalonia.Enums.ButtonResult.Ok) return;
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
-                SettingsOps.WriteSettings(DEFsettings);
-                CloseWindow(DEFsettings);
+                SettingsOps.WriteSettings(GetDefSettings());
+                CloseWindow(GetDefSettings());
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
@@ -133,11 +123,11 @@ namespace RetroLinker.Views
 
         void btnSAVESettings_OnClick(object sender, RoutedEventArgs e)
         {
-            if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
-            if (!settings.AlwaysAskOutput) settings.AlwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
+            if (SetLinkCopyPaths.Count < 1) NewSettings.MakeLinkCopy = false;
+            if (!NewSettings.AlwaysAskOutput) NewSettings.AlwaysAskOutput = string.IsNullOrEmpty(NewSettings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
-            SettingsOps.WriteSettings(settings);
-            CloseWindow(settings);
+            SettingsOps.WriteSettings(NewSettings);
+            CloseWindow(NewSettings);
         }
 
         void CloseWindow(Settings? retSettings) => Close(retSettings);

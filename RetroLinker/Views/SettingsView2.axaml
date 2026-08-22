@@ -14,7 +14,7 @@
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
 	</UserControl.Styles>
     
-	<Grid Name="gridConfigAll2" RowDefinitions="Auto, *">
+	<Grid x:Name="gridConfigAll2" RowDefinitions="Auto, *">
         <!-- CONTENT -->
         <Grid Grid.Row="0" RowDefinitions="Auto, Auto, Auto, Auto">
             <!-- USER ASSETS -->
@@ -24,14 +24,14 @@
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
 					           Text="{x:Static lc:resSettingsWindow.blcUserAssets}"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"
-						         Text="{Binding ParentWindow.settings.UserAssetsPath, Converter={StaticResource TextToFullPathConverter}}"/>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
+						<TextBox x:Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						         Text="{Binding ParentWindow.NewSettings.UserAssetsPath, 
+						         Converter={StaticResource TextToFullPathConverter}}"
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnUserAssets" Height="30" Classes="browse" Click="btnUserAssets_OnClick"/>
-							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_OnClick">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button x:Name="btnUserAssets" Classes="textbox_inline browse" Click="btnUserAssets_OnClick"/>
+							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnclrUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -42,14 +42,14 @@
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefRADir}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" Classes="SettingCatg" HorizontalAlignment="Stretch" 
-						         Text="{Binding ParentWindow.settings.DEFRADir}" IsReadOnly="{Binding DesktopOS}"/>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
+						<TextBox x:Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+						         Text="{Binding ParentWindow.NewSettings.DEFRADir}"
+						         IsReadOnly="{Binding DesktopOS}"
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefRADir" Height="30" Classes="browse" Click="btnDefRADir_OnClick"/>
-							<Button Name="btnclrDefRADir" Height="30" Classes="SettingCatg" Click="btnclrDefRADir_Click">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button x:Name="btnDefRADir" Classes="textbox_inline browse" Click="btnDefRADir_OnClick"/>
+							<Button x:Name="btnclrDefRADir" Classes="textbox_inline restore" Click="btnclrDefRADir_Click"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -60,23 +60,19 @@
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
-						<TextBox Name="txtDefROMPath" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"
-						         Text="{Binding ParentWindow.settings.DEFROMPath}"/>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto">
+						<TextBox x:Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefROMPath" Height="30" Classes="browse" Click="btnDefROMPath_OnClick"/>
-							<Button Name="btnclrDefROMPath" Height="30" Classes="SettingCatg" Click="btnclrDefROMPath_Click">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button x:Name="btnDefROMPath" Classes="textbox_inline browse" Click="btnDefROMPath_OnClick"/>
+							<Button x:Name="btnclrDefROMPath" Classes="textbox_inline restore" Click="btnclrDefROMPath_Click"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
 			</Border>
             
         </Grid>
-        
-        <!--SPACING-->
-        <Rectangle Grid.Row="1"/>
         
     </Grid>
 </UserControl>
