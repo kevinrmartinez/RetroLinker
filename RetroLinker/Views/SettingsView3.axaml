@@ -26,15 +26,14 @@
                           Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
                           IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}" />
                 <Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}" />
-                <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto"
+                <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto" Margin="3,0,3,2"
                       IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
-                    <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" Classes="SettingCatg"
-                              HorizontalAlignment="Stretch"
+                    <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" HorizontalAlignment="Stretch"
                               SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button x:Name="btnDefLinkOutput" Classes="browse textbox_inline"
+                        <Button x:Name="btnDefLinkOutput" Classes="textbox_inline browse"
                                 Click="BtnDefLinkOutput_OnClick" />
-                        <Button x:Name="btnclrDefLinkOutput" Classes="restore textbox_inline SettingCatg"
+                        <Button x:Name="btnclrDefLinkOutput" Classes="textbox_inline restore"
                                 Click="BtnclrDefLinkOutput_OnClick"/>
                     </StackPanel>
                 </Grid>
@@ -68,10 +67,9 @@
         </Border>
 
         <!-- WINDOWS ONLY -->
-        <!-- Window .ico -->
-        <Border Classes="SettingCatg">
-            <StackPanel x:Name="panelIcoOutputControls">
-                <!-- TODO: Remove the 'Windows Only' part of the title -->
+        <!-- Windows .ico -->
+        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
+            <StackPanel x:Name="panelIcoOutputControls" IsEnabled="{Binding $parent.IsVisible}">
                 <Label Content="{x:Static lc:resSettingsWindow.lblCat_IcoOutput}" /> 
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
                 <Rectangle Height="4" />
@@ -80,7 +78,7 @@
                 <!-- SAVE ICO CONTROLS -->
                 <TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
                            Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}" />
-                <Grid x:Name="panelWindowsOnlyControls2" Margin="1,4" ColumnDefinitions="*,Auto">
+                <Grid x:Name="panelWindowsOnlyControls2" Margin="3,4" ColumnDefinitions="*,Auto">
                     <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="btnIcoSavPath" Classes="browse textbox_inline" Click="btnIcoSavPath_OnClick" />
@@ -110,36 +108,37 @@
         </Border>
 
         <!-- Windows Menu tile icon -->
-        <Border Classes="SettingCatg">
-            <!-- TODO: Localize -->
-            <StackPanel x:Name="panelTileIcon">
-                <Label Content="Tile Icons (with TileIconifier)" />
+        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
+            <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
+                <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}" />
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
                 <!-- <CheckBox x:Name="chkTileIcons" Classes="SettingCatg" Content="Enable" IsChecked="True"/> -->
                 
-                <TextBlock TextWrapping="Wrap" Margin="3,0"
-                           Text="Create a dedicated tile icon of the generated shortcut for the Windows 8/10 Start Menu.">
+                <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static lc:resSettingsWindow.blcTileIco1}">
                     <Rectangle Width="2" />
                     <i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-                        <ToolTip.Tip>
-                            <!-- TODO: replace with an example of a tile icon -->
-                            <Image Source="../Assets/Images/NaN.png" />
-                        </ToolTip.Tip>
+                        <!-- TODO: replace with an example of a tile icon -->
+                        <ToolTip.Tip><Image Source="../Assets/Images/NaN.png" /></ToolTip.Tip>
                     </i:Icon>
                 </TextBlock>
                 <TextBlock TextWrapping="Wrap" Margin="3,0">
-                    <Run Text="For this, you will need"/>
+                    <Run Text="{x:Static lc:resSettingsWindow.blcTileIco2_A}"/>
                     <InlineUIContainer BaselineAlignment="Bottom" FontFamily="{Binding $parent.FontFamily}" 
                                        FontSize="{Binding $parent.FontSize}" FontWeight="Bold">
-                        <HyperlinkButton Margin="0" Padding="0" Content="TileIconifier.CLI" NavigateUri="{StaticResource TileIconifierNetUrl}"/>
+                        <HyperlinkButton Margin="0" Padding="0" Content="{StaticResource TileIconifierCli}" NavigateUri="{StaticResource TileIconifierNetUrl}"/>
                     </InlineUIContainer>
-                    <Run Text="from my fork of TileIconifier to create the tile icons. Do note that the generated files will be handled by TileIconifier, and will be created directly to the Start Menu."/>
+                    <Run Text="{x:Static lc:resSettingsWindow.blcTileIco2_B}"/>
                 </TextBlock>
-                <Rectangle Height="12"/>
+                <Rectangle Height="14"/>
                 
                 <StackPanel x:Name="panelTileIconifierSelect">
-                    <TextBlock FontSize="12" Margin="3,0" Text="Path to TileIconifier.CLI executable (leave empty to disable)"/>
+                    <TextBlock Margin="3,0">
+                        <Run Text="{x:Static lc:resSettingsWindow.txtTileIco_A}"/>
+                        <Run Text="{StaticResource TileIconifierCli}"/>
+                        <Run Text="{x:Static lc:resSettingsWindow.txtTileIco_B}"/>
+                    </TextBlock>
                     <Grid ColumnDefinitions="*,Auto" Margin="3,2">
+                        <!-- TODO: If found, set during program execution -->
                         <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.NewSettings.TileIcoPath}"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                             <Button Classes="textbox_inline browse" CommandParameter="{Binding #txtTileIco}" 
@@ -154,20 +153,19 @@
                 <StackPanel Orientation="Horizontal" Margin="3,0">
                     <CheckBox x:Name="chkTextOnTile" IsChecked="{Binding ParentWindow.NewSettings.TileIcoNameVisible}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Name on medium sized tile"/>
+                            <TextBlock Text="{x:Static lc:resSettingsWindow.chkTextOnTile}"/>
                             <Rectangle Width="3"/>
                             <i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-                                <ToolTip.Tip>
-                                    <!-- TODO: replace with an example of a tile icon -->
-                                    <Image Source="../Assets/Images/NaN.png" />
-                                </ToolTip.Tip>
+                                <!-- TODO: replace with an example of a tile icon with and without a name -->
+                                <ToolTip.Tip><Image Source="../Assets/Images/NaN.png"/></ToolTip.Tip>
                             </i:Icon>
                         </StackPanel>
                     </CheckBox>
                     <Rectangle Width="12"/>
-                    <ToggleSwitch x:Name="swtTextOnTileColor" OffContent="Dark Text" OnContent="Light Text"
-                                  IsChecked="{Binding !ParentWindow.NewSettings.TileIcoNameDark}"
-                                  IsEnabled="{Binding #chkTextOnTile.IsChecked}"/>
+                    <ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
+                                  OnContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_On}" 
+                                  OffContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_Off}"
+                                  IsChecked="{Binding !ParentWindow.NewSettings.TileIcoNameDark}"/>
                 </StackPanel>
                 <!-- COMING SOON: Background color -->
             </StackPanel>

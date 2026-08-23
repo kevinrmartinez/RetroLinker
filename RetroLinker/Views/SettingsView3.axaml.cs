@@ -67,10 +67,7 @@ namespace RetroLinker.Views
             if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
-                if (!DesktopOS) {
-                    candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
-                    panelIcoOutputControls.IsEnabled = false;
-                }
+                if (!DesktopOS) candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
                 else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
 
@@ -102,8 +99,7 @@ namespace RetroLinker.Views
             }
             else comboDEFLinkOutput.SelectedIndex = 0;
 
-            // if (!DesktopOS) return;
-            if (!panelIcoOutputControls.IsEnabled) return;
+            if (!DesktopOS) return;
             ValidateSavIcoPath(ParentWindow.NewSettings.IcoSavPath);
         }
 
@@ -295,7 +291,7 @@ namespace RetroLinker.Views
             try
             {
                 LockControls(true);
-                var dialogTitle = "Pick the 'tileico' executable"; // TODO: Localize
+                var dialogTitle = resAvaloniaOps.dlgFileTileCliexe;
                 string currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
                 string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAexe, ParentWindow, currentFile, dialogTitle);
                 if (string.IsNullOrWhiteSpace(file)) return;

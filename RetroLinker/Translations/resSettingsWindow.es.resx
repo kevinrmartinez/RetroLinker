@@ -81,7 +81,7 @@
         <value>Hacer copias en:</value>
     </data>
     <data name="lblCat_IcoOutput" xml:space="preserve">
-        <value>Salida de archivos .ico (Solo para Windows)</value>
+        <value>Guardado de Archivos .ico</value>
     </data>
     <data name="chkExtractIco" xml:space="preserve">
         <value>Extraer el icono del '.exe' antes de utilizarlo</value>
@@ -124,5 +124,32 @@
     </data>
     <data name="wndTitle" xml:space="preserve">
         <value>Preferencias de RetroLinker</value>
+    </data>
+    <data name="lblCat_TileIcon" xml:space="preserve">
+        <value>Iconos en Mosaicos (con TileIconifier)</value>
+    </data>
+    <data name="blcTileIco2_A" xml:space="preserve">
+        <value>Para esto, necesitaras</value>
+    </data>
+    <data name="blcTileIco1" xml:space="preserve">
+        <value>Crea un icono en mosaico del acceso directo generado dedicado al menú Start de Windows 8/10.</value>
+    </data>
+    <data name="blcTileIco2_B" xml:space="preserve">
+        <value>de mi 'fork' de TileIconifier para crear iconos en mosaicos. Toma en cuenta los archivos generados van a ser manejados por TileIconifier, y serán creados directamente en el menú Start.</value>
+    </data>
+    <data name="txtTileIco_A" xml:space="preserve">
+        <value>Ruta del ejecutable de</value>
+    </data>
+    <data name="txtTileIco_B" xml:space="preserve">
+        <value>(dejar en blanco para deshabilitar)</value>
+    </data>
+    <data name="chkTextOnTile" xml:space="preserve">
+        <value>Nombre en el mosaico mediano</value>
+    </data>
+    <data name="swtTextOnTileColor_Off" xml:space="preserve">
+        <value>Texto Oscuro</value>
+    </data>
+    <data name="swtTextOnTileColor_On" xml:space="preserve">
+        <value>Texto Claro</value>
     </data>
 </root>

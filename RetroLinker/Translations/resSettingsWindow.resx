@@ -91,7 +91,7 @@
         <value>Link Copies</value>
     </data>
     <data name="lblCat_IcoOutput" xml:space="preserve">
-        <value>.ico files output (Windows only)</value>
+        <value>.ico Files Output</value>
     </data>
     <data name="chkExtractIco" xml:space="preserve">
         <value>Extract the icon from the '.exe' before using it</value>
@@ -134,5 +134,32 @@
     </data>
     <data name="wndTitle" xml:space="preserve">
         <value>RetroLinker Settings</value>
+    </data>
+    <data name="lblCat_TileIcon" xml:space="preserve">
+        <value>Tile Icons (with TileIconifier)</value>
+    </data>
+    <data name="blcTileIco1" xml:space="preserve">
+        <value>Create a dedicated tile icon of the generated shortcut for the Windows 8/10 Start Menu.</value>
+    </data>
+    <data name="blcTileIco2_A" xml:space="preserve">
+        <value>For this, you will need</value>
+    </data>
+    <data name="txtTileIco_A" xml:space="preserve">
+        <value>Path to</value>
+    </data>
+    <data name="blcTileIco2_B" xml:space="preserve">
+        <value>from my fork of TileIconifier to create the tile icons. Do note that the generated files will be handled by TileIconifier, and will be created directly to the Start Menu.</value>
+    </data>
+    <data name="txtTileIco_B" xml:space="preserve">
+        <value>executable (leave empty to disable)</value>
+    </data>
+    <data name="chkTextOnTile" xml:space="preserve">
+        <value>Name on medium sized tile</value>
+    </data>
+    <data name="swtTextOnTileColor_On" xml:space="preserve">
+        <value>Light Text</value>
+    </data>
+    <data name="swtTextOnTileColor_Off" xml:space="preserve">
+        <value>Dark Text</value>
     </data>
 </root>

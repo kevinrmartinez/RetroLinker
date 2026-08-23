@@ -278,5 +278,59 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("wndTitle", resourceCulture);
             }
         }
+        
+        public static string lblCat_TileIcon {
+            get {
+                return ResourceManager.GetString("lblCat_TileIcon", resourceCulture);
+            }
+        }
+        
+        public static string blcTileIco1 {
+            get {
+                return ResourceManager.GetString("blcTileIco1", resourceCulture);
+            }
+        }
+        
+        public static string blcTileIco2_A {
+            get {
+                return ResourceManager.GetString("blcTileIco2_A", resourceCulture);
+            }
+        }
+        
+        public static string txtTileIco_A {
+            get {
+                return ResourceManager.GetString("txtTileIco_A", resourceCulture);
+            }
+        }
+        
+        public static string blcTileIco2_B {
+            get {
+                return ResourceManager.GetString("blcTileIco2_B", resourceCulture);
+            }
+        }
+        
+        public static string txtTileIco_B {
+            get {
+                return ResourceManager.GetString("txtTileIco_B", resourceCulture);
+            }
+        }
+        
+        public static string chkTextOnTile {
+            get {
+                return ResourceManager.GetString("chkTextOnTile", resourceCulture);
+            }
+        }
+        
+        public static string swtTextOnTileColor_On {
+            get {
+                return ResourceManager.GetString("swtTextOnTileColor_On", resourceCulture);
+            }
+        }
+        
+        public static string swtTextOnTileColor_Off {
+            get {
+                return ResourceManager.GetString("swtTextOnTileColor_Off", resourceCulture);
+            }
+        }
     }
 }

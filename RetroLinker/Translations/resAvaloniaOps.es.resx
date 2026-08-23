@@ -83,4 +83,10 @@
     <data name="pckFileTypePatches" xml:space="preserve">
         <value>Archivos de parche validos</value>
     </data>
+    <data name="dlgFolderDefOutput" xml:space="preserve">
+        <value>Eliga el directorio donde se crearan los accesos directos </value>
+    </data>
+    <data name="dlgFileTileCliexe" xml:space="preserve">
+        <value>Eliga el ejecutable de 'tileico'</value>
+    </data>
 </root>

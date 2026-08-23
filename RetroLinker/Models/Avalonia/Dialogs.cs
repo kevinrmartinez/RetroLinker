@@ -61,7 +61,7 @@ public static class FileDialogOps
                 OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
                 OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
                 OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
-                OpenFolderOpts.DefOutput => "Pick a directory where shortcuts will be created", // TODO: Localize
+                OpenFolderOpts.DefOutput => resAvaloniaOps.dlgFolderDefOutput,
                 // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
             },
