@@ -91,7 +91,7 @@ public partial class MainView : UserControl
     } = string.Empty;
 
     // Fields
-    private bool FormFirstLoad = true;
+    // private bool FormFirstLoad = true;
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
@@ -302,7 +302,6 @@ public partial class MainView : UserControl
     }
 
     void LoadLocalization() {
-        if (FormFirstLoad) return;
         ParentWindow.LocaleReload(settings.LanguageLocale);
     }
 
