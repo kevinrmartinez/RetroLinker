@@ -206,5 +206,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("pckFileTypePatches", resourceCulture);
             }
         }
+        
+        public static string dlgFolderDefOutput {
+            get {
+                return ResourceManager.GetString("dlgFolderDefOutput", resourceCulture);
+            }
+        }
+        
+        public static string dlgFileTileCliexe {
+            get {
+                return ResourceManager.GetString("dlgFileTileCliexe", resourceCulture);
+            }
+        }
     }
 }

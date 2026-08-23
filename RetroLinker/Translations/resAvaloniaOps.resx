@@ -99,4 +99,10 @@
     <data name="pckFileTypePatches" xml:space="preserve">
         <value>Valid patch files</value>
     </data>
+    <data name="dlgFolderDefOutput" xml:space="preserve">
+        <value>Pick a directory where shortcuts will be created</value>
+    </data>
+    <data name="dlgFileTileCliexe" xml:space="preserve">
+        <value>Pick the 'tileico' executable</value>
+    </data>
 </root>
