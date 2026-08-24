@@ -19,24 +19,34 @@
 
         <!-- DEFAULT OUTPUT -->
         <Border Classes="SettingCatg">
-            <StackPanel>
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_DEFLinkOutput}" />
-                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
-                <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
-                          Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
-                          IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}" />
-                <Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}" />
-                <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto" Margin="3,0,3,2"
-                      IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
-                    <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" HorizontalAlignment="Stretch"
-                              SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged" />
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button x:Name="btnDefLinkOutput" Classes="textbox_inline browse"
-                                Click="BtnDefLinkOutput_OnClick" />
-                        <Button x:Name="btnclrDefLinkOutput" Classes="textbox_inline restore"
-                                Click="BtnclrDefLinkOutput_OnClick"/>
-                    </StackPanel>
-                </Grid>
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{x:Static lc:resSettingsWindow.lblCat_DEFLinkOutput}"/>
+                    <Panel x:Name="tipDisableBeacuseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBeacuseTileIco}" Background="Transparent"
+                           IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
+                           Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0">
+                        <!-- The ToolTip misbehaves with a null background -->
+                        <i:Icon Value="fa7-ban"/>
+                    </Panel>
+                </StackPanel>
+                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+                <StackPanel IsEnabled="{Binding !#tipDisableBeacuseTileIco.IsVisible}">
+                    <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
+                              Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
+                              IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}"/>
+                    <Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}"/>
+                    <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto" Margin="3,0,3,2"
+                          IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
+                        <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" HorizontalAlignment="Stretch"
+                                  SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button x:Name="btnDefLinkOutput" Classes="textbox_inline browse"
+                                    Click="BtnDefLinkOutput_OnClick"/>
+                            <Button x:Name="btnclrDefLinkOutput" Classes="textbox_inline restore"
+                                    Click="BtnclrDefLinkOutput_OnClick"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
             </StackPanel>
         </Border>
 
@@ -108,7 +118,8 @@
         </Border>
 
         <!-- Windows Menu tile icon -->
-        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
+        <Border Classes="SettingCatg" >
+            <!-- IsVisible="{Binding DesktopOS}" -->
             <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
                 <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}" />
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
@@ -138,7 +149,6 @@
                         <Run Text="{x:Static lc:resSettingsWindow.txtTileIco_B}"/>
                     </TextBlock>
                     <Grid ColumnDefinitions="*,Auto" Margin="3,2">
-                        <!-- TODO: If found, set during program execution -->
                         <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.NewSettings.TileIcoPath}"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                             <Button Classes="textbox_inline browse" CommandParameter="{Binding #txtTileIco}" 
@@ -150,6 +160,7 @@
                         </StackPanel>
                     </Grid>
                 </StackPanel>
+                <!-- TODO: Move to MainView, these properties are per shortcut -->
                 <StackPanel Orientation="Horizontal" Margin="3,0">
                     <CheckBox x:Name="chkTextOnTile" IsChecked="{Binding ParentWindow.NewSettings.TileIcoNameVisible}">
                         <StackPanel Orientation="Horizontal">

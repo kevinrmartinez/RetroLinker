@@ -292,8 +292,8 @@ namespace RetroLinker.Views
             {
                 LockControls(true);
                 var dialogTitle = resAvaloniaOps.dlgFileTileCliexe;
-                string currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
-                string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAexe, ParentWindow, currentFile, dialogTitle);
+                var currentFile = (string.IsNullOrWhiteSpace(textBox.Text)) ? FileOps.BaseDir : textBox.Text;
+                var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAexe, ParentWindow, currentFile, dialogTitle);
                 if (string.IsNullOrWhiteSpace(file)) return;
                 // txtUserAssets.Text = folder;
                 ParentWindow.NewSettings.TileIcoPath = file;

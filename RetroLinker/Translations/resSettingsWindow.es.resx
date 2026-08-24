@@ -152,4 +152,7 @@
     <data name="swtTextOnTileColor_On" xml:space="preserve">
         <value>Texto Claro</value>
     </data>
+    <data name="tipDisableBeacuseTileIco" xml:space="preserve">
+        <value>Esto esta deshabilitado mientras TileIconifier esta en uso</value>
+    </data>
 </root>

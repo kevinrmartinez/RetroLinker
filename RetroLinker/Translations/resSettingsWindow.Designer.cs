@@ -332,5 +332,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("swtTextOnTileColor_Off", resourceCulture);
             }
         }
+        
+        public static string tipDisableBeacuseTileIco {
+            get {
+                return ResourceManager.GetString("tipDisableBeacuseTileIco", resourceCulture);
+            }
+        }
     }
 }

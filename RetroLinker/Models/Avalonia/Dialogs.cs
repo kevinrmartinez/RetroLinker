@@ -36,8 +36,9 @@ public static class FileDialogOps
         var opt = PickerOpt.OpenPickerOpt(template);
         opt.Title = newDialogTitle ?? opt.Title;
         if (!string.IsNullOrEmpty(currentFile)) {
-            currentFile = FileOps.GetDirFromPath(currentFile)!;
-            opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
+            var currentDir = FileOps.GetDirFromPath(currentFile);
+            if (!string.IsNullOrEmpty(currentDir)) 
+                opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentDir, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
         string dir = (file.Count > 0) ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
