@@ -45,12 +45,6 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string lblTITLE {
-            get {
-                return ResourceManager.GetString("lblTITLE", resourceCulture);
-            }
-        }
-        
         public static string lblRADir {
             get {
                 return ResourceManager.GetString("lblRADir", resourceCulture);

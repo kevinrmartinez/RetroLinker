@@ -77,7 +77,7 @@ public static class ShortcutCreator
         Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
-            FileOps.MakeFileExecutable(filePath);
+            FileOps.MakeLinuxFileExecutable(filePath);
             Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {

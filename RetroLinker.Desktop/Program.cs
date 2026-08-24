@@ -28,22 +28,40 @@ namespace RetroLinker.Desktop;
 
 class Program
 {
+    // Fields
+    private const string KeyBuildDate = "BuildDateUTC";
+    private static readonly Assembly AppAssembly = typeof(Program).Assembly;
+    private static readonly AssemblyName AppAssemblyName = AppAssembly.GetName();
+    private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
+    // private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
+    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
+    private static readonly string[] AppVersionSplit = AppVersionFull.Split('+');
+    private static readonly string AppVersion = (AppVersionSplit.Length > 1)
+        ? AppVersionSplit[Index.Start]
+        : AppAssemblyName.Version?.ToString(3) ?? "N/A";
+    
+    private static readonly string LogFileName = $"{AppName}.log";
+    // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
+    private static readonly string LogFileBak = $"{LogFileName}.bak";
+
+    #region APP
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args)
     {
+        SetUpLogger();
         Logger.LogInfo($"{AppName} v{AppVersion}");
-        // Logger.LogDebg($"Launch Time: {DateTime.Now:HH:mm:ss.fff}");
         
         Logger.LogDebg("Starting AvaloniaApp");
-        #if DEBUG
+#if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
-        #else
+#else
         // Try-Catch is used to print the Exception to log, and then close the log.
         try {
             // I think that every exception that happens while the app is running can be capture here, thrusting that 
@@ -55,7 +73,7 @@ class Program
             Logger.LogErro($"{AppName} has crashed to desktop with the following error:");
             Logger.LogErro(e);
         }
-        #endif
+#endif
         
         // App Closing
         Logger.Close();
@@ -74,31 +92,14 @@ class Program
             .WithInterFont();
     }
 
-    private static void AppCallback(AppBuilder obj)
-    {
+    private static void AppCallback(AppBuilder obj) {
         var instance = (App?)obj.Instance;
-        // The 'LocalInformation' prop of the 'App' class should be filled before using FileOps from here
         instance?.SetAppInfo(GetAppInfo());
-        SetUpLogger();
     }
 
-    // Parameters
-    private static readonly Assembly AppAssembly = typeof(Program).Assembly;
-    private static readonly AssemblyName AppAssemblyName = AppAssembly.GetName();
-    private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
-    // private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
-    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
-    private static readonly string[] AppVersionSplit = AppVersionFull.Split('+');
-    private static readonly string AppVersion = (AppVersionSplit.Length > 1)
-                                                ? AppVersionSplit[Index.Start]
-                                                : AppAssemblyName.Version?.ToString(3) ?? "N/A";
-    
+    #endregion
     
     // Logging
-    private static readonly string LogFileName = $"{AppName}.log";
-    // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
-    private static readonly string LogFileBak = $"{LogFileName}.bak";
-
     private static void SetUpLogger()
     {
         Logger.SetLogFile(LogFileName);
@@ -111,6 +112,7 @@ class Program
         Logger.AutoFlush = true;
     }
     
+    // AppInfo
     private static DateTime? GetBuildDateOfAssembly()
     {
         /* Solution thanks to Gérald Barré (aka. meziantou)
@@ -118,7 +120,7 @@ class Program
          */
         var BuildDateAtt = AppAssembly
             .GetCustomAttributes<AssemblyMetadataAttribute>()
-            .First(a => a.Key == "BuildDateUTC").Value;
+            .First(a => a.Key == KeyBuildDate).Value;
         if (long.TryParse(BuildDateAtt, out var buildDateTicks)) {
             return DateTime.FromBinary(buildDateTicks);     // Date is set in UTC
         }

@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using RetroLinker.Models.Linux;
 
@@ -54,7 +53,7 @@ namespace RetroLinker.Models
         public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), App.LocalInformation.Name);
+        public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), Translations.resGeneric.GenAppName);
         // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
         
         public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
@@ -420,10 +419,9 @@ namespace RetroLinker.Models
         
         public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
 
-        [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-        public static void MakeFileExecutable(string filePath)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+        public static void MakeLinuxFileExecutable(string filePath)
         {
-            
             // Freaking bit magic: https://aaronbos.dev/posts/csharp-flags-enum
             // |= Adds file mode to existing ones
             // &= idk, it cleared all file modes and only left added one
