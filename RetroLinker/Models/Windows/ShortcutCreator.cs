@@ -17,7 +17,9 @@
 */
 
 using System;
+#if WINDOWS
 using Microsoft.ClearScript.Windows.Core;
+#endif
 
 namespace RetroLinker.Models.Windows;
 
@@ -30,6 +32,7 @@ public static class ShortcutCreator
     private const string readLink = "ReadLink";
     private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
+    private const string osNotSupported = "This operation is only supported on Windows.";
     
     public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
     {
@@ -80,12 +83,14 @@ public static class ShortcutCreator
         return linkStrings;
     }
     
+#if WINDOWS
     private static VBScriptEngine RunScriptEngine(string script)
     {
         var engine = new VBScriptEngine($"{scriptTitle}", NullSyncInvoker.Instance);
         engine.Execute(script);
         return engine;
     }
+
     
     private static void RunLinkWriteScript(string script)
     {
@@ -105,4 +110,8 @@ public static class ShortcutCreator
         var values = (object[])engine.Invoke($"{readLink}");
         return values;
     }
+#else
+    private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
+    private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
+#endif
 }

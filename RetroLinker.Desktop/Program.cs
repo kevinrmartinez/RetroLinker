@@ -30,7 +30,6 @@ class Program
 {
     // https://anthonysimmon.com/programmatically-elevate-dotnet-app-on-any-platform/
     // pkexec
-    // https://docs.avaloniaui.net/docs/deployment/native-aot
     // Fields
     private const string KeyBuildDate = "BuildDateUTC";
     private static readonly Assembly AppAssembly = typeof(Program).Assembly;
