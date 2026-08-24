@@ -162,4 +162,7 @@
     <data name="swtTextOnTileColor_Off" xml:space="preserve">
         <value>Dark Text</value>
     </data>
+    <data name="tipDisableBeacuseTileIco" xml:space="preserve">
+        <value>This is disable while TileIconifier is in use</value>
+    </data>
 </root>

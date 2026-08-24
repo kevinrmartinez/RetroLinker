@@ -27,6 +27,10 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="CornerRadius" Value="9"/>
+        
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Vertical"/>
+        </Style>
     </Style>
     <Style Selector="CheckBox.SettingCatg">
         <Setter Property="Margin" Value="3"/>
