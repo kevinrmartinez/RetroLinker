@@ -182,5 +182,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("genDotnet_A", resourceCulture);
             }
         }
+        
+        public static string GenAppName {
+            get {
+                return ResourceManager.GetString("GenAppName", resourceCulture);
+            }
+        }
     }
 }

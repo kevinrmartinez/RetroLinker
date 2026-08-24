@@ -17,8 +17,8 @@
 	</UserControl.Styles>
 	
 	<Grid RowDefinitions="Auto, *">
-		<!--Top-->
-		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
+		<!-- Top/Header -->
+		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resGeneric.GenAppName}" Classes="Header">
 				<cc:MainWindowHeader.LeftControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
 					        i:Attached.Icon="fa7-circle-info" FontSize="22"/>
@@ -30,11 +30,11 @@
 				</cc:MainWindowHeader.RightControl>
 		</cc:MainWindowHeader>
 		
-		<!--Body-->
+		<!-- Body -->
 		<!-- TODO: Standardize margins and padding (oh god...) -->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
 			
-			<!--Main Operations-->
+			<!-- Main Operations -->
 			<Grid Name="gridOPS" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto">
 
 				<!-- ROW0 - Spacing -->
@@ -144,10 +144,10 @@
 				</Panel>
 			</Grid>
 
-			<!--Spacing-->
+			<!-- Spacing -->
 			<Rectangle Grid.Column="1" Margin="2,0"/>
 			
-			<!--Icon Selection-->
+			<!-- Icon Selection -->
 			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" Margin="2,0">
 				<Rectangle Grid.Row="0" Height="15"/>
 				<StackPanel Grid.Row="1">
@@ -203,6 +203,6 @@
 				</StackPanel>
 			</Grid>
 		</Grid>
-		<!--BODY END-->
+		<!-- BODY END -->
 	</Grid>
 </UserControl>
