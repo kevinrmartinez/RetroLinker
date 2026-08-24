@@ -9,5 +9,5 @@
     <assembly fullname="ClearScript.Windows.Core" preserve="all" />
     
     <!-- Keep System.Text.Json assembly -->
-    <assembly fullname="System.Text.Json" preserve="all" />
+<!--    <assembly fullname="System.Text.Json" preserve="all"/>-->
 </linker>

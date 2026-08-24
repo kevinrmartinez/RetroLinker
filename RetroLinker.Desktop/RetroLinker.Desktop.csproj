@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
     One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -17,6 +17,12 @@
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+
+  <PropertyGroup>
+    <!-- https://docs.avaloniaui.net/docs/deployment/native-aot -->
+    <!-- Add to all projects/libraries in use, to ensure AOT compatibility -->
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
@@ -24,13 +30,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RetroLinker\RetroLinker.csproj" />
+    <TrimmerRootAssembly Include="RetroLinker" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Include must be the fully qualified .NET type name of the Attribute to create. -->
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <!-- _Parameter1, _Parameter2, etc. correspond to the
-          matching parameter of a constructor of that .NET attribute type -->
+      <!-- _Parameter1, _Parameter2, etc. correspond to the matching parameter of a constructor of that .NET attribute type -->
       <_Parameter1>BuildDateUTC</_Parameter1>
       <_Parameter2>$([System.DateTime]::UtcNow.ToBinary().ToString())</_Parameter2>
     </AssemblyAttribute>
