@@ -22,6 +22,7 @@ public readonly struct AppInformation(
     string fullName,
     string name,
     string version,
+    bool isRunningAdmin,
     System.DateTime? buildDate = null,
     string? gitHash = null)
 {
@@ -30,6 +31,7 @@ public readonly struct AppInformation(
     public string Version { get; } = version;
     public System.DateTime? BuildDate { get; } = buildDate;
     public string? GitHash { get; } = gitHash;
+    public bool IsRunningAdmin { get; } = isRunningAdmin;
 
 
     public override string ToString() => $"{Name} v{Version}";

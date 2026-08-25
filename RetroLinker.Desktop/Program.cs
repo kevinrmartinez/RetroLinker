@@ -120,10 +120,10 @@ class Program
         /* Solution thanks to Gérald Barré (aka. meziantou)
          * https://www.meziantou.net/getting-the-date-of-build-of-a-dotnet-assembly-at-runtime.htm
          */
-        var BuildDateAtt = AppAssembly
+        var buildDateAtt = AppAssembly
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .First(a => a.Key == KeyBuildDate).Value;
-        if (long.TryParse(BuildDateAtt, out var buildDateTicks)) {
+        if (long.TryParse(buildDateAtt, out var buildDateTicks)) {
             return DateTime.FromBinary(buildDateTicks);     // Date is set in UTC
         }
         
@@ -140,9 +140,14 @@ class Program
 
     private static AppInformation GetAppInfo()
     {
+#if WINDOWS
+        var isRunningAdmin = Models.Windows.NativeAccess.IsWindowsProcessElevated();
+#else
+        var isRunningAdmin = Models.Linux.NativeAccess.IsUnixProcessElevated();
+#endif
         var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();
-        return new AppInformation(fullName, AppName, AppVersion, buildDate, gitHash);
+        return new AppInformation(fullName, AppName, AppVersion, isRunningAdmin, buildDate, gitHash);
     }
 }
