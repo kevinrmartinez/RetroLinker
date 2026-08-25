@@ -34,6 +34,7 @@ using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
+#if WINDOWS
     public class IconExtractor
     {
         ////////////////////////////////////////////////////////////////////////
@@ -123,7 +124,7 @@ namespace RetroLinker.Models.Windows
             IntPtr hModule = IntPtr.Zero;
             try
             {
-                hModule = IENativeMethods.LoadLibraryEx(fileName, IntPtr.Zero, LOAD_LIBRARY_AS_DATAFILE);
+                hModule = NativeMethods.LoadLibraryEx(fileName, IntPtr.Zero, LOAD_LIBRARY_AS_DATAFILE);
                 if (hModule == IntPtr.Zero)
                     throw new Win32Exception();
 
@@ -183,14 +184,14 @@ namespace RetroLinker.Models.Windows
 
                     return true;
                 };
-                IENativeMethods.EnumResourceNames(hModule, RT_GROUP_ICON, callback, IntPtr.Zero);
+                NativeMethods.EnumResourceNames(hModule, RT_GROUP_ICON, callback, IntPtr.Zero);
 
                 iconData = tmpData.ToArray();
             }
             finally
             {
                 if (hModule != IntPtr.Zero)
-                    IENativeMethods.FreeLibrary(hModule);
+                    NativeMethods.FreeLibrary(hModule);
             }
         }
 
@@ -198,19 +199,19 @@ namespace RetroLinker.Models.Windows
         {
             // Load the binary data from the specified resource.
 
-            IntPtr hResInfo = IENativeMethods.FindResource(hModule, name, type);
+            IntPtr hResInfo = NativeMethods.FindResource(hModule, name, type);
             if (hResInfo == IntPtr.Zero)
                 throw new Win32Exception();
 
-            IntPtr hResData = IENativeMethods.LoadResource(hModule, hResInfo);
+            IntPtr hResData = NativeMethods.LoadResource(hModule, hResInfo);
             if (hResData == IntPtr.Zero)
                 throw new Win32Exception();
 
-            IntPtr pResData = IENativeMethods.LockResource(hResData);
+            IntPtr pResData = NativeMethods.LockResource(hResData);
             if (pResData == IntPtr.Zero)
                 throw new Win32Exception();
 
-            uint size = IENativeMethods.SizeofResource(hModule, hResInfo);
+            uint size = NativeMethods.SizeofResource(hModule, hResInfo);
             if (size == 0)
                 throw new Win32Exception();
 
@@ -231,8 +232,8 @@ namespace RetroLinker.Models.Windows
             string fileName;
             {
                 var buf = new StringBuilder(MAX_PATH);
-                int len = IENativeMethods.GetMappedFileName(
-                    IENativeMethods.GetCurrentProcess(), hModule, buf, buf.Capacity);
+                int len = NativeMethods.GetMappedFileName(
+                    NativeMethods.GetCurrentProcess(), hModule, buf, buf.Capacity);
                 if (len == 0)
                     throw new Win32Exception();
 
@@ -246,7 +247,7 @@ namespace RetroLinker.Models.Windows
             {
                 var drive = c + ":";
                 var buf = new StringBuilder(MAX_PATH);
-                int len = IENativeMethods.QueryDosDevice(drive, buf, buf.Capacity);
+                int len = NativeMethods.QueryDosDevice(drive, buf, buf.Capacity);
                 if (len == 0)
                     continue;
 
@@ -258,4 +259,17 @@ namespace RetroLinker.Models.Windows
             return fileName;
         }
     }
+#else
+    public class IconExtractor
+    {
+        public string FileName { get; private set; }
+        public int Count { get; } = 0;
+        
+        // It's actually possible to extract the icon from PEs on Linux
+        public IconExtractor(string fileName) => throw new NotImplementedException();
+        public MemoryStream GetIcon(int index) => throw new NotImplementedException();
+        public MemoryStream[] GetAllIcons() => throw new NotImplementedException();
+    }
+#endif
+    
 }

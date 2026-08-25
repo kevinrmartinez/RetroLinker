@@ -9,6 +9,8 @@
     <AssemblyName>RetroLinkerLib</AssemblyName>
     <VersionPrefix>0.8.0</VersionPrefix>
     <VersionSuffix>dev</VersionSuffix>
+    <!-- Required to use the LibraryImport attribute -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
