@@ -25,9 +25,13 @@
         <x:Uri x:Key="TileIconifierNetUrl">https://github.com/kevinrmartinez/TileIconifier.Net</x:Uri>
         
         <!-- Converters -->
+        <!-- Strings -->
         <cc:TextToUpper x:Key="TextToUpperConverter"/>
         <cc:TextToLower x:Key="TextToLowerConverter"/>
         <cc:TextToFullPath x:Key="TextToFullPathConverter"/>
+        <!-- Numbers -->
+        <cc:NumberGreaterThan x:Key="NumberGreaterThanConverter"/>
+        <!-- Dates -->
         <cc:DateToLocal x:Key="DateToLocalConverter"/>
     </Application.Resources>
 </Application>

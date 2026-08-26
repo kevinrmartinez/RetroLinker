@@ -12,6 +12,9 @@
              x:CompileBindings="True"
 			 Name="View1" Unloaded="View1_Unloaded">
 	
+	<UserControl.Resources>
+		<x:Double x:Key="MinHeightForLargePic">699</x:Double>
+	</UserControl.Resources>
 	<UserControl.Styles>
 		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
 	</UserControl.Styles>
@@ -158,7 +161,7 @@
 								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnDefault}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnCustom}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 							</StackPanel>
-							<!--Icon Control-->
+							<!-- Icon Control -->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged"/>
@@ -171,13 +174,22 @@
 								<Label VerticalAlignment="Center" Content="{x:Static lc:resMainView.lblIconNoImage}" FontSize="12"/>
 							</StackPanel>
 
-							<!--pic128-->
+							<!-- pic256 -->
+							<Viewbox Height="258" Width="258" HorizontalAlignment="Left" Margin="0,4" 
+							         IsVisible="{Binding ParentWindow.Height, 
+							         Converter={StaticResource NumberGreaterThanConverter},
+							         ConverterParameter={StaticResource MinHeightForLargePic}}">
+								<Border BorderThickness="2" BorderBrush="Gray">
+									<Image Name="pic256"/>
+								</Border>
+							</Viewbox>
+							<!-- pic128 -->
 							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
 								<Image Name="pic128"/>
 								</Border>
 							</Viewbox>
-							<!--pic64-->
+							<!-- pic64 -->
 							<Viewbox Height="66" Width="66" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
 								<Image Name="pic64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -185,14 +197,20 @@
 							</Viewbox>
 
 							<StackPanel Orientation="Horizontal">
-								<!--pic32-->
-								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="0,4">
+								<!-- pic32 -->
+								<Viewbox Height="50" Width="50" HorizontalAlignment="Left" Margin="0,4">
+									<Border BorderThickness="2" BorderBrush="Gray">
+										<Image Name="pic48" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+									</Border>
+								</Viewbox>
+								<!-- pic32 -->
+								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
 										<Image Name="pic32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
-								<!--pic16-->
-								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="4,0">
+								<!-- pic16 -->
+								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
 										<Image Name="pic16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>

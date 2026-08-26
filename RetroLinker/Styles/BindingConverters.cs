@@ -1,6 +1,6 @@
 /*
     RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
 */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using RetroLinker.Models;
 
 namespace RetroLinker.Styles;
+
+#region Strings
 
 public class TextToUpper : IValueConverter
 {
@@ -73,6 +76,43 @@ public class TextToFullPath : IValueConverter
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => value;
 }
 
+#endregion
+
+#region Numbers
+
+public class NumberGreaterThan : IValueConverter
+{
+    public static readonly NumberGreaterThan Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (targetType == typeof(bool))
+        {
+            var valueParsed = Models.Generic.Utils.GetNumberFromObject<double>(value, culture, out var realValue);
+            var paramParsed = Models.Generic.Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+        
+            if (valueParsed && paramParsed) return realValue > realParam;
+        }
+        
+        // converter used for the wrong type
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (Models.Generic.Utils.IsNumericType(targetType)) {
+            var paramParsed = Models.Generic.Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+            if (paramParsed) return realParam;
+        }
+        if (targetType.IsAssignableTo(typeof(string))) return value?.ToString();
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+}
+
+#endregion
+
+#region Dates
+
 public class DateToLocal : IValueConverter
 {
     public static readonly DateToLocal Instance = new();
@@ -101,3 +141,5 @@ public class DateToLocal : IValueConverter
         return value;
     }
 }
+
+#endregion

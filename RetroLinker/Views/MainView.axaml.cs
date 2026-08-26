@@ -69,7 +69,7 @@ public partial class MainView : UserControl
     private bool IsDesingner;
     
     // Window Object
-    private MainWindow ParentWindow;
+    public MainWindow ParentWindow { get; }
     
     // Props
     public string PatchArg
@@ -137,6 +137,8 @@ public partial class MainView : UserControl
             
         // Arguments should only load when above controls are ready
         ApplyArgs();
+        
+        UpdateContext();
             
         // TODO_MAYBE: Tutorial event for new users
     }
@@ -327,13 +329,20 @@ public partial class MainView : UserControl
         return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
     }
 
+    void UpdateContext() {
+        DataContext = null;
+        DataContext = this;
+    }
+
     // Icon Boxes
     void FillIconSource(IImage memImage)
     {
         pic16.Source = memImage;
         pic32.Source = memImage;
+        pic48.Source = memImage;
         pic64.Source = memImage;
         pic128.Source = memImage;
+        pic256.Source = memImage;
     }
     
     void FillIconBoxes(string path) {
@@ -388,7 +397,10 @@ public partial class MainView : UserControl
     }
     
     // Execution
-    void LockForExecute(bool lockControls) => gridBODY.IsEnabled = !lockControls;
+    void LockForExecute(bool lockControls) {
+        gridBODY.IsEnabled = !lockControls;
+        UpdateContext();
+    }
 
     void ResetAfterExecute()
     {
