@@ -18,8 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -51,16 +50,16 @@ namespace RetroLinker.Models.Generic
 
         public static string TwoDoubleQuotes(string text) => text.Replace(DQ.ToString(), "\"\"");
 
-        public static List<string> ExtractClassProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
-        {
-            var props = type.GetProperties();
-            var members = new List<string>();
-
-            foreach (var member in props)
-                members.Add(member.Name);
-            
-            return members;
-        }
+        // public static List<string> ExtractClassProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+        // {
+        //     var props = type.GetProperties();
+        //     var members = new List<string>();
+        //
+        //     foreach (var member in props)
+        //         members.Add(member.Name);
+        //     
+        //     return members;
+        // }
         
         public static string GetSingleLineStringFromList(IEnumerable<string> list, char separator = ' ') {
             var result = string.Empty;
@@ -98,11 +97,48 @@ namespace RetroLinker.Models.Generic
             var matches = Regex.Matches(args, pattern, RegexOptions.IgnorePatternWhitespace);
 
             foreach (Match match in matches) {
+                // TODO: Try another foreach
                 if (match.Groups[1].Success) results.Add(match.Groups[1].Value);        // Group 1: Double quoted
                 else if (match.Groups[2].Success) results.Add(match.Groups[2].Value);   // Group 2: Single quoted
                 else if (match.Groups[3].Success) results.Add(match.Groups[3].Value);   // Group 3: Unquoted
             }
             return results;
+        }
+        
+        // Source - https://stackoverflow.com/a/33776103
+        // Posted by arviman, modified by community.
+        // Retrieved 2026-08-26, License - CC BY-SA 4.0
+        private static readonly HashSet<Type> NumericTypes =
+        [
+            typeof(int), typeof(long), typeof(Int128),
+            typeof(short), typeof(sbyte), typeof(double), 
+            typeof(decimal), typeof(float), typeof(Half), 
+            typeof(uint), typeof(ulong), typeof(ushort), 
+            typeof(byte), typeof(UInt128)
+        ];
+        
+        public static bool IsNumericType(Type type) => NumericTypes.Contains(Nullable.GetUnderlyingType(type) ?? type);
+
+        public static bool GetNumberFromObject<T>(object? obj, IFormatProvider? parserFormat, out T? numberOrDefault) where T : INumber<T?>
+        {
+            if (obj is not null)
+            {
+                if (obj is T number) {
+                    numberOrDefault = number;
+                    return true;
+                }
+                if (IsNumericType(obj.GetType())) {
+                    numberOrDefault = (T?)obj;
+                    return true;
+                }
+                if (obj.ToString() is { } str)
+                    if (T.TryParse(str, parserFormat, out var result)) {
+                        numberOrDefault = result;
+                        return true;
+                    } 
+            }
+            numberOrDefault = default;
+            return false;
         }
     }
 }
