@@ -50,15 +50,16 @@ namespace RetroLinker.Models
 
         private static MemoryStream GetStream(string path)
         {
+            // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
             // Set the background transparent before reading the image.
             // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
-            var IMG = new MagickImage() {BackgroundColor = MagickColors.Transparent};
+            var img = new MagickImage() {BackgroundColor = MagickColors.Transparent};
             
-            IMG.Read(path);
-            IMG.Format = MagickFormat.Png32;
-            var ImgStream = new MemoryStream();
-            IMG.Write(ImgStream);
-            return ImgStream;
+            img.Read(path);
+            img.Format = MagickFormat.Png32;
+            var imgStream = new MemoryStream();
+            img.Write(imgStream);
+            return imgStream;
         }
 
         public static void BuildIconItem(string filePath, int newIndex, bool OS)

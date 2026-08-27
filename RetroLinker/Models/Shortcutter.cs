@@ -56,15 +56,18 @@ namespace RetroLinker.Models
         public string? ICONfile { get; set; }   // 6
         public string Command { get; set; }     // 7
         public string? Desc { get; set; }       // 8
-        public List<ShortcutterOutput> OutputPaths { get; set; }      // 9
+        public List<ShortcutterOutput> OutputPaths { get; set; }    // 9
         public bool VerboseB { get; set; }      // 10
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
         public bool MenuOnErrorB { get; set; }  // 13
         public string PatchArg { get; set; }    // 14
         public string CONFappend { get; set; }  // 15
-        public string SubsysArg { get; set; }      // 16
-
+        public string SubsysArg { get; set; }   // 16
+        public bool TileIcoNameVisible { get; set; }    // 17
+        public bool TileIcoNameDark { get; set; }       // 18
+        public bool TileIcoAllUsers { get; set; }       // 19
+        
         private string ra_dir   = string.Empty;
         private string ra_path  = string.Empty;
         private string rom_dir  = string.Empty;
@@ -91,6 +94,7 @@ namespace RetroLinker.Models
 
         public Shortcutter(Shortcutter objToClone)
         {
+            // TODO: Inherit the class from IClonable, and replace this
             RAdir = objToClone.RAdir;
             RApath = objToClone.RApath;
             ROMdir = objToClone.ROMdir;

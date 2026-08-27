@@ -32,6 +32,8 @@ namespace RetroLinker.Models
         public const string CoresFile = "cores.txt";
         // public const string tempIco = "temp.ico";
         // public const byte MAX_PATH = 255; // Apply Everywhere?
+        public const string WinPeExt1 = ".exe";
+        public const string WinPeExt2 = ".dll";
         public const string WinLinkExt = ".lnk";
         public const string LinLinkExt = ".desktop";
         public const string LinuxRABin = "retroarch";
@@ -39,12 +41,13 @@ namespace RetroLinker.Models
 
 
         public static List<string> ConfigDir { get; private set; } = new();
-
+        
+        public static readonly char OsDirSeparator = Path.DirectorySeparatorChar;
         public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
         // private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
-        private static string PathToSettingFileJson = Path.Combine(BaseDir, SettingFileJson);
-        public static string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
-        public static string DefLicensesDir = Path.Combine(BaseDir, DefLicenses);
+        private static readonly string PathToSettingFileJson = Path.Combine(BaseDir, SettingFileJson);
+        public static readonly string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
+        public static readonly string DefLicensesDir = Path.Combine(BaseDir, DefLicenses);
         
         
         public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
@@ -59,6 +62,27 @@ namespace RetroLinker.Models
         public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         
+        public static string[] WinLinkPathCandidates { get; } =
+        [
+            UserDesktop,
+            WINPublicDesktop,
+            CombineMultipleInputs(UserProfile, "AppData", "Microsoft", "Windows", "Start Menu", "Programs"),
+            CombineMultipleInputs("C:", "ProgramData", "Microsoft", "Windows", "Start Menu", "Programs")
+        ];  // Source: https://en.wikipedia.org/wiki/Start_menu
+        
+        public static string[] LinLinkPathCandidates { get; } =
+        [
+            UserDesktop,
+            CombineMultipleInputs(UserProfile, ".local", "share", "applications"),
+            CombineMultipleInputs("/", "usr", "local", "share", "applications"),
+            CombineMultipleInputs("/", "usr", "share", "applications")
+        ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
+        
+        public static Dictionary<bool, string> TileIconOutDirs { get; } = new() {
+            [false] = WinLinkPathCandidates[2],
+            [true] = WinLinkPathCandidates[3]
+        };
+        
         private static Settings LoadedSettings = new();
 
 
@@ -69,7 +93,7 @@ namespace RetroLinker.Models
         public static Settings LoadSettingsFO()
         {
             LoadedSettings = SettingsOps.LoadSettings();
-            Logger.LogDebg("Settings loaded for FileOps.");
+            Logger.LogDebg($"Settings loaded for {nameof(FileOps)}");
             BuildConfigDir(LoadedSettings);
             return LoadedSettings;
         }
@@ -326,13 +350,13 @@ namespace RetroLinker.Models
 
         #region Windows Only Ops
 
-        public static bool IsExtWinPE(string ext) => ext is ".exe" or ".dll";
+        public static bool IsExtWinPE(string ext) => ext is WinPeExt1 or WinPeExt2;
         
         public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
         public static string SaveWinIco(IconsItems selectedIconItem)
         {
-            string icoExt = GetFileExtFromPath(selectedIconItem.FileName);
+            string icoExt = GetFileExtFromPath(selectedIconItem.FileName).ToLower();
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : LoadedSettings.UserAssetsPath;
             string newPath = Path.Combine(newDir, icoName);
@@ -341,23 +365,18 @@ namespace RetroLinker.Models
 
             switch (icoExt)
             {
-                case ".svg" or ".svgz":
-                    iconImage = IconProc.ImageConvert(selectedIconItem.IconStream!);
-                    iconImage.Write(newPath);
-                    //new_dir = CpyIconToUsrSet(new_dir);
-                    break;
-                case ".exe" or ".dll":
-                    if (LoadedSettings.ExtractIco)
-                    {
+                case var _ when IsExtWinPE(icoExt):
+                    if (LoadedSettings.ExtractIco) {
                         iconImage = IconProc.ImageConvert(selectedIconItem.IconStream!);
                         iconImage.Write(newPath);
                     }
                     else newPath = selectedIconItem.FilePath;
                     break;
                 default: // .jpg, .png, etc
-                    iconImage = IconProc.ImageConvert(selectedIconItem.FilePath);
+                    iconImage = (icoExt is ".svg" or ".svgz") 
+                        ? IconProc.ImageConvert(selectedIconItem.IconStream!)   // process IconStream for svg 
+                        : IconProc.ImageConvert(selectedIconItem.FilePath);     // process image file 
                     iconImage.Write(newPath);
-                    //new_dir = CpyIconToUsrSet(new_dir);
                     break;
             }
             return newPath;

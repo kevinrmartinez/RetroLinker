@@ -31,6 +31,7 @@ public partial class MainWindow : Window
     public (List<string>, string?) IconsListEx { get; }
     
     // Fields
+    public static readonly string OsDirSeparator = FileOps.OsDirSeparator.ToString();
     private UserControl PermaView;
     public bool IsDesigner = true;
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
