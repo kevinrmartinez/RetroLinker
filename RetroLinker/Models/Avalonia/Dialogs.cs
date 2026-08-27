@@ -71,8 +71,8 @@ public static class FileDialogOps
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFolder, topLevel);
         
         var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-        string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
-        return dir;
+        var dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
+        return dir.TrimEnd(FileOps.OsDirSeparator);
     }
 
     public static async Task<string> SaveFileAsync(SaveOpts template, string currentFile, TopLevel topLevel)

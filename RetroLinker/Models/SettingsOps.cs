@@ -33,22 +33,6 @@ namespace RetroLinker.Models
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
         
-        public static string[] WinLinkPathCandidates { get; } =
-        [
-            FileOps.UserDesktop,
-            FileOps.WINPublicDesktop,
-            FileOps.CombineMultipleInputs(FileOps.UserProfile, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs"),
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu) // TODO: test
-        ];  // Source: https://en.wikipedia.org/wiki/Start_menu
-        
-        public static string[] LinLinkPathCandidates { get; } =
-        [
-            FileOps.UserDesktop,
-            FileOps.CombineMultipleInputs(FileOps.UserProfile, ".local", "share", "applications"),
-            FileOps.CombineMultipleInputs("/", "usr", "local", "share", "applications"),
-            FileOps.CombineMultipleInputs("/", "usr", "share", "applications")
-        ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
-        
         public static Settings GetCachedSettings() => CachedSettings;
         
         // Load & Save
@@ -105,8 +89,6 @@ namespace RetroLinker.Models
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
         public string? TileIcoPath { get; set; }
-        public bool TileIcoNameVisible { get; set; } = false;
-        public bool TileIcoNameDark { get; set; } = false;
         public byte ChosenTheme { get; set; } = 0;
         public string LanguageLocale { get; set; } = DefaultLanguage;
         public List<string> SavedConfigs { get; set; } = new();

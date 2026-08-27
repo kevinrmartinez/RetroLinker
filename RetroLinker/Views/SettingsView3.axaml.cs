@@ -67,8 +67,8 @@ namespace RetroLinker.Views
             if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
-                if (!DesktopOS) candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
-                else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
+                if (!DesktopOS) candidateCopiesPath.AddRange(FileOps.LinLinkPathCandidates);
+                else candidateCopiesPath.AddRange(FileOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
 
                 foreach (var candidate in candidateCopiesPath)

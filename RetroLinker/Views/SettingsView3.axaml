@@ -5,7 +5,7 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:vw="using:RetroLinker.Views"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
-             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="750"
+             mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="700"
              x:Class="RetroLinker.Views.SettingsView3"
              x:DataType="vw:SettingsView3"
              x:CompileBindings="True"
@@ -160,25 +160,6 @@
                         </StackPanel>
                     </Grid>
                 </StackPanel>
-                <!-- TODO: Move to MainView, these properties are per shortcut -->
-                <StackPanel Orientation="Horizontal" Margin="3,0">
-                    <CheckBox x:Name="chkTextOnTile" IsChecked="{Binding ParentWindow.NewSettings.TileIcoNameVisible}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{x:Static lc:resSettingsWindow.chkTextOnTile}"/>
-                            <Rectangle Width="3"/>
-                            <i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-                                <!-- TODO: replace with an example of a tile icon with and without a name -->
-                                <ToolTip.Tip><Image Source="../Assets/Images/NaN.png"/></ToolTip.Tip>
-                            </i:Icon>
-                        </StackPanel>
-                    </CheckBox>
-                    <Rectangle Width="12"/>
-                    <ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
-                                  OnContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_On}" 
-                                  OffContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_Off}"
-                                  IsChecked="{Binding !ParentWindow.NewSettings.TileIcoNameDark}"/>
-                </StackPanel>
-                <!-- COMING SOON: Background color -->
             </StackPanel>
         </Border>
 
