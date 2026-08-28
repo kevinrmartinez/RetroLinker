@@ -13,7 +13,6 @@
              Unloaded="View1_Unloaded">
 	
 	<UserControl.Resources>
-		<x:String x:Key="kadabra">pipipi</x:String>
 		<x:Double x:Key="MinHeightForLargePic">699</x:Double>
 	</UserControl.Resources>
 	<UserControl.Styles>
@@ -156,7 +155,7 @@
 							<StackPanel Orientation="Horizontal">
 								<CheckBox x:Name="chkTextOnTile" IsChecked="{Binding BuildingLink.TileIcoNameVisible}">
 									<StackPanel Orientation="Horizontal">
-										<TextBlock Text="{x:Static lc:resSettingsWindow.chkTextOnTile}"/>
+										<TextBlock Text="{x:Static lc:resMainView.chkTextOnTile}"/>
 										<Rectangle Width="3"/>
 										<i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
 											<!-- TODO: replace with an example of a tile icon with and without a name -->
@@ -167,17 +166,18 @@
 								
 								<Rectangle Width="12"/>
 								<ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
-								              OnContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_On}" 
-								              OffContent="{x:Static lc:resSettingsWindow.swtTextOnTileColor_Off}"
+								              OnContent="{x:Static lc:resMainView.swtTextOnTileColor_On}" 
+								              OffContent="{x:Static lc:resMainView.swtTextOnTileColor_Off}"
 								              IsChecked="{Binding !BuildingLink.TileIcoNameDark}"/>
 								
 								<Rectangle Width="6"/>
 								<Rectangle VerticalAlignment="Stretch" StrokeThickness="1" 
 								           Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-								
+								<!-- TODO: Localize -->
 								<Rectangle Width="6"/>
 								<ToggleSwitch OffContent="For This User" OnContent="For All Users"
-								              IsChecked="{Binding BuildingLink.TileIcoAllUsers}"/>
+								              IsChecked="{Binding TileIconAllUsers}"
+								              Click="swtTileIcoAllUsers_OnClick"/>
 							</StackPanel>
 						</Border>
 					</StackPanel>

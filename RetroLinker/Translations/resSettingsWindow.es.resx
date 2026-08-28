@@ -143,16 +143,7 @@
     <data name="txtTileIco_B" xml:space="preserve">
         <value>(dejar en blanco para deshabilitar)</value>
     </data>
-    <data name="chkTextOnTile" xml:space="preserve">
-        <value>Nombre en el mosaico mediano</value>
-    </data>
-    <data name="swtTextOnTileColor_Off" xml:space="preserve">
-        <value>Texto Oscuro</value>
-    </data>
-    <data name="swtTextOnTileColor_On" xml:space="preserve">
-        <value>Texto Claro</value>
-    </data>
-    <data name="tipDisableBeacuseTileIco" xml:space="preserve">
+    <data name="tipDisableBecauseTileIco" xml:space="preserve">
         <value>Esto esta deshabilitado mientras TileIconifier esta en uso</value>
     </data>
 </root>

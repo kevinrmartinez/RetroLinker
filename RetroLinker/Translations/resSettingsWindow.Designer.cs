@@ -315,27 +315,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string chkTextOnTile {
+        public static string tipDisableBecauseTileIco {
             get {
-                return ResourceManager.GetString("chkTextOnTile", resourceCulture);
-            }
-        }
-        
-        public static string swtTextOnTileColor_On {
-            get {
-                return ResourceManager.GetString("swtTextOnTileColor_On", resourceCulture);
-            }
-        }
-        
-        public static string swtTextOnTileColor_Off {
-            get {
-                return ResourceManager.GetString("swtTextOnTileColor_Off", resourceCulture);
-            }
-        }
-        
-        public static string tipDisableBeacuseTileIco {
-            get {
-                return ResourceManager.GetString("tipDisableBeacuseTileIco", resourceCulture);
+                return ResourceManager.GetString("tipDisableBecauseTileIco", resourceCulture);
             }
         }
     }

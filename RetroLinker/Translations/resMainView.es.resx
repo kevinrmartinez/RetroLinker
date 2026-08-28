@@ -125,4 +125,13 @@
     <data name="noticeSubsystem" xml:space="preserve">
         <value>Subsistema: </value>
     </data>
+    <data name="swtTextOnTileColor_Off" xml:space="preserve">
+        <value>Texto Oscuro</value>
+    </data>
+    <data name="swtTextOnTileColor_On" xml:space="preserve">
+        <value>Texto Claro</value>
+    </data>
+    <data name="chkTextOnTile" xml:space="preserve">
+        <value>Nombre en el mosaico mediano</value>
+    </data>
 </root>

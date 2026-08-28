@@ -73,21 +73,22 @@ public partial class MainView : UserControl
     // Props
     public Settings Settings { get; private set; }
     public Shortcutter BuildingLink { get; } = new();
-    public string PatchArg
-    {
+    public string PatchArg {
         get;
         private set => field = SetPatchArg(value);
     } = string.Empty;
-    public string SubsysArg
-    {
+    public string SubsysArg {
         get;
         set => field = SetSubsysArg(value);
     } = string.Empty;
-    public string CONFappend
-    {
+    public string CONFappend {
         get;
         set => field = SetCONFappend(value);
     } = string.Empty;
+    public bool TileIconAllUsers {
+        get; 
+        set => field = SetTileIconAllUsers(value);
+    }
     
     public string? FixedOutputDir { get; private set; }
     public string? FixedOutputName { get; private set; }
@@ -236,6 +237,12 @@ public partial class MainView : UserControl
         return value;
     }
 
+    private bool SetTileIconAllUsers(bool value) {
+        BuildingLink.TileIcoAllUsers = value;
+        FixedOutputDir = FileOps.TileIconOutDirs[value];
+        return value;
+    }
+
     // Controls Modifiers
     void SetViewPreSettings()
     {
@@ -318,16 +325,6 @@ public partial class MainView : UserControl
         FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
     }
 
-    string UpdateFixedLinkName(string fileNameNoExt, string? core) {
-        var ext = FileOps.GetOutputExt(DesktopOS);
-        return (DesktopOS) ? fileNameNoExt + ext : LinuxDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + ext;
-    }
-    
-    string ValidateLINBin(string RAPath) {
-        if (RAPath == txtRADir.Text) return RAPath;
-        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
-    }
-
     void UpdateContext() {
         DataContext = null;
         DataContext = this;
@@ -395,8 +392,21 @@ public partial class MainView : UserControl
         }
     }
     
+    // Other Functions
+    string UpdateFixedLinkName(string fileNameNoExt, string? core) {
+        var ext = FileOps.GetOutputExt(DesktopOS);
+        return (DesktopOS) ? fileNameNoExt + ext : LinuxDesktopEntry.StdDesktopEntry(fileNameNoExt, core) + ext;
+    }
+    
+    string ValidateLINBin(string RAPath) {
+        if (RAPath == txtRADir.Text) return RAPath;
+        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
+    }
+
+    bool IsRenameInactive() => Settings is { AlwaysAskOutput: true, TileIcoPath: null };
+    
     // Execution
-    void LockForExecute(bool lockControls) {
+    void LockControls(bool lockControls) {
         gridBODY.IsEnabled = !lockControls;
         UpdateContext();
     }
@@ -409,18 +419,18 @@ public partial class MainView : UserControl
                     DesktopOS, 
                     string.Empty));
         
-        LockForExecute(false);
+        LockControls(false);
     }
 
     async void RunExecution()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             var OutputLink = new Shortcutter(BuildingLink);
             BuildingLink.OutputPaths = new();
 
             // Controls Lock
-            LockForExecute(true);
+            LockControls(true);
             // Avalonia.Threading.Dispatcher.UIThread.Invoke(() => LockForExecute(true), DispatcherPriority.Normal);
             
             // Checkboxes!
@@ -439,66 +449,90 @@ public partial class MainView : UserControl
             OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
             // Link handling
-            if (!string.IsNullOrWhiteSpace(txtLINKDir.Text))
+            var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
+            if (!string.IsNullOrWhiteSpace(linkDir))
             {
                 ShortcutterOutput outputPath;
                 if (DesktopOS)
                 {
-                    var outputPathStr = (!Settings.AlwaysAskOutput) 
-                        ? FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS), Settings.DEFLinkOutput) 
-                        : txtLINKDir.Text;
+                    var outDirectory = (Settings.TileIcoPath is null)
+                        ? Settings.DEFLinkOutput
+                        : FileOps.TileIconOutDirs[OutputLink.TileIcoAllUsers];
+                    var outputPathStr = (IsRenameInactive())
+                        ? linkDir
+                        : FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS), outDirectory);
                     outputPath = new ShortcutterOutput(outputPathStr);
                 }
                 else
                 {
-                    if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths[0].CustomEntryName)
-                        outputPath = OutputLink.OutputPaths[0];
+                    if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths.First().CustomEntryName) {
+                        outputPath = OutputLink.OutputPaths.First();
+                    }
                     else
                     {
-                        if (!Settings.AlwaysAskOutput)
-                        {
-                            var outputPathStr = FileOps.GetDefinedLinkPath(txtLINKDir.Text + FileOps.GetOutputExt(DesktopOS),
+                        if (!Settings.AlwaysAskOutput) {
+                            var outputPathStr = FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS),
                                 Settings.DEFLinkOutput);
                             outputPath = new ShortcutterOutput(outputPathStr, OutputLink.ROMcore);
                         }
-                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths[0], DesktopOS, OutputLink.ROMcore);
+                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths.First(), DesktopOS, OutputLink.ROMcore);
                     }
                 }
 
                 if (OutputLink.OutputPaths.Count == 0) OutputLink.OutputPaths.Add(outputPath);
-                else if (OutputLink.OutputPaths[0].FullPath != outputPath.FullPath) OutputLink.OutputPaths[0] = outputPath;
+                else if (OutputLink.OutputPaths.First().FullPath != outputPath.FullPath)
+                {
+                    // This is just to not use fixed array positions...
+                    // Alternative: OutputLink.OutputPaths[0] = outputPath;
+                    var oldOutputIndex = OutputLink.OutputPaths.IndexOf(OutputLink.OutputPaths.First());
+                    OutputLink.OutputPaths[oldOutputIndex] = outputPath;
+                }
             }
             
             // Include a link description, if any
-            OutputLink.Desc = (string.IsNullOrWhiteSpace(txtDesc.Text)) ? string.Empty : txtDesc.Text;
+            OutputLink.Desc = txtDesc.Text;
 
             // Icons handling
             void UpdateUserIcon(string newPath) {
                 OutputLink.ICONfile = newPath;
-                IconItemSET?.FilePath =  newPath;
+                if (IconItemSET is not null && IconItemSET.ConversionRequired && IconItemSET.comboIconIndex is { } index)
+                {
+                    // This is for the sake of compatibility with my old code; it will be tighter when Binding is implemented 
+                    var newIconItem = new IconsItems(newPath, index);
+                    comboICONDir.SelectedIndex = 0;
+                    IconProc.IconItemsList[IconProc.IconItemsList.IndexOf(IconItemSET)] = newIconItem;
+                    comboICONDir.Items.RemoveAt(index);
+                    comboICONDir.Items.Insert(index, newIconItem.FilePath);
+                    comboICONDir.SelectedIndex = index;
+                }
             }
             
             if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty; // RA binary icon (Default)
             else
             {
-                // If it's Windows OS, the images may need to be converted to .ico
-                if ((IconItemSET is not null) && (IconItemSET.ConversionRequired))
+                if (DesktopOS)
                 {
-                    OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                    if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
+                    // If it's Windows, the images may need to be converted to .ico
+                    if ((IconItemSET is not null) && (IconItemSET.ConversionRequired))
                     {
-                        string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
-                        if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
-                        if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(OutputLink));
-                        var newPath = Settings.IcoSavPath switch
+                        OutputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
+                        OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
+                        if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
                         {
-                            SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
-                            SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
-                            _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
-                        };
-                        UpdateUserIcon(newPath);
+                            string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
+                            if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
+                            if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(OutputLink));
+                            var newPath = Settings.IcoSavPath switch
+                            {
+                                SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
+                                SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
+                                _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
+                            };
+                            UpdateUserIcon(newPath);
+                        }
                     }
                 }
+                // If it's Linux, no conversion is required
 
                 // In case of 'CpyUserIcon = true'
                 if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(OutputLink.ICONfile));
@@ -510,7 +544,7 @@ public partial class MainView : UserControl
             GenericPopUpType popUpType;
             var outputIsValid = false;
             if (OutputLink.OutputPaths.Count > 0)
-                if (OutputLink.OutputPaths[0].ValidOutput) outputIsValid = true;
+                if (OutputLink.OutputPaths.First().ValidOutput) outputIsValid = true;
             if ((!string.IsNullOrEmpty(OutputLink.RAdir))
                 && (!string.IsNullOrEmpty(OutputLink.ROMdir))
                 && (!string.IsNullOrEmpty(OutputLink.ROMcore))
@@ -519,9 +553,9 @@ public partial class MainView : UserControl
                 Logger.LogDebg("All fields for link creation have been accepted.");
                 
                 // Check for overwriting
-                if (!Settings.AlwaysAskOutput) {
-                    // If the user selects no, the execution process is canceled
-                    var overwriteResult = await OverwriteFilePopUp(OutputLink.OutputPaths[0].FullPath);
+                if (!IsRenameInactive()) {
+                    // If the user selects no, the execution is canceled
+                    var overwriteResult = await OverwriteFilePopUp(OutputLink.OutputPaths.First().FullPath);
                     if (!overwriteResult) {
                         ResetAfterExecute();
                         return;
@@ -539,8 +573,8 @@ public partial class MainView : UserControl
 
                 // Link Copies handling
                 if (Settings.MakeLinkCopy)
-                    OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths[0]));
-                PreviousOutput = OutputLink.OutputPaths[0];
+                    OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths.First()));
+                PreviousOutput = OutputLink.OutputPaths.First();
                 
                 // Create Shortcuts
                 List<ShortcutterResult> opResult = OutputLink.BuildShortcut(DesktopOS);
@@ -549,7 +583,7 @@ public partial class MainView : UserControl
                 {
                     (popUpContent, popUpType) = (!opResult.First().Error) 
                         ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
-                        : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{opResult[0].eMesseage}",
+                        : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{opResult.First().ExMessage}",
                             resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
                 }
                 // Multiple Shortcuts created
@@ -573,11 +607,11 @@ public partial class MainView : UserControl
                         {
                             string output = R.OutputPath + ": ";
                             content = string.Concat(content, output);
-                            content = string.Concat(content, R.Messeage);
+                            content = string.Concat(content, R.Message);
                             content = string.Concat(content, "\n");
                             if (R.Error)
                             {
-                                content = string.Concat(content, $"=> \"{R.eMesseage}\" <=");
+                                content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
                                 content = string.Concat(content, "\n");
                             }
                             else successCount++;
@@ -598,7 +632,7 @@ public partial class MainView : UserControl
         catch (System.Exception e) {
             _ = this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
         }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
     #endregion
 
@@ -607,14 +641,14 @@ public partial class MainView : UserControl
     async void btnSettings_ClickAsync()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             var settingWindow = new SettingsWindow(ParentWindow, Settings); 
             var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
             Settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
             LoadNewSettings();
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     } 
     
     void btnSettings_OnClick(object sender, RoutedEventArgs e) => btnSettings_ClickAsync();
@@ -654,7 +688,7 @@ public partial class MainView : UserControl
     async void btnICONDir_ClickAsync()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             var opt = DesktopOS ? OpenOpts.WINico : OpenOpts.LINico;
             string currentFile = (comboICONDir.SelectedIndex >= PreloadedIconsCount)
                 ? (string)comboICONDir.SelectedItem!
@@ -664,7 +698,7 @@ public partial class MainView : UserControl
             ICONDir_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
     
     void btnICONDir_OnClick(object sender, RoutedEventArgs e) => btnICONDir_ClickAsync();
@@ -714,7 +748,7 @@ public partial class MainView : UserControl
     async void btnRADir_ClickAsync()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             OpenOpts opt;
             string currentFile = string.Empty;
             if (DesktopOS) {
@@ -727,7 +761,7 @@ public partial class MainView : UserControl
             RADirSet(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
     
     void btnRADir_OnClick(object sender, RoutedEventArgs e) => btnRADir_ClickAsync();
@@ -747,14 +781,14 @@ public partial class MainView : UserControl
     async void btnROMDir_ClickAsync()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
             string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
     
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
@@ -773,10 +807,10 @@ public partial class MainView : UserControl
         
         string newFile;
         string? outputDir;
-        if (Settings.AlwaysAskOutput)
+        if (IsRenameInactive())
         {
-            newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths[0].FriendlyName + FileOps.GetOutputExt(false), combo.Text);
-            outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths[0].FullPath);
+            newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths.First().FriendlyName + FileOps.GetOutputExt(false), combo.Text);
+            outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths.First().FullPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
@@ -811,14 +845,14 @@ public partial class MainView : UserControl
     async void btnCONFIGDir_ClickAsync()
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAcfg, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
     
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
@@ -847,7 +881,7 @@ public partial class MainView : UserControl
     {
         try
         {
-            LockForExecute(true);
+            LockControls(true);
             var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
             string currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
@@ -857,8 +891,8 @@ public partial class MainView : UserControl
                 if (!DesktopOS)
                 {
                     BuildingLink.OutputPaths = await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
-                    LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
-                    file = BuildingLink.OutputPaths[0].FullPath;
+                    LinkCustomName = BuildingLink.OutputPaths.First().CustomEntryName;
+                    file = BuildingLink.OutputPaths.First().FullPath;
                 }
 
                 textBox.Text = file;
@@ -874,7 +908,7 @@ public partial class MainView : UserControl
 #endif
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
 
     void btnLINKDir_OnClick(object sender, RoutedEventArgs e) {
@@ -886,7 +920,7 @@ public partial class MainView : UserControl
     async void BtnLINKRename_ClickAsync(TextBox textBox)
     {
         try {
-            LockForExecute(true);
+            LockControls(true);
             LinkCustomName = false;
             var fullPath = FileOps.CombineMultipleInputs(
                 Settings.DEFLinkOutput, 
@@ -896,12 +930,12 @@ public partial class MainView : UserControl
             BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
             if (BuildingLink.OutputPaths.Count == 0) return;
         
-            LinkCustomName = BuildingLink.OutputPaths[0].CustomEntryName;
-            textBox.Text = BuildingLink.OutputPaths[0].FriendlyName;
-            FixedOutputName = BuildingLink.OutputPaths[0].FileName;
+            LinkCustomName = BuildingLink.OutputPaths.First().CustomEntryName;
+            textBox.Text = BuildingLink.OutputPaths.First().FriendlyName;
+            FixedOutputName = BuildingLink.OutputPaths.First().FileName;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
-        finally { LockForExecute(false); }
+        finally { LockControls(false); }
     }
 
     void BtnLINKRename_OnClick(object? sender, RoutedEventArgs e) {
@@ -913,7 +947,7 @@ public partial class MainView : UserControl
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox textBox) return;
-        if (Settings.AlwaysAskOutput) return;
+        if (IsRenameInactive()) return;
         if (BuildingLink.OutputPaths.Count > 0)
             if (BuildingLink.OutputPaths.First().CustomEntryName) return;
         FixedOutputName = (!string.IsNullOrWhiteSpace(textBox.Text)) 
@@ -925,6 +959,9 @@ public partial class MainView : UserControl
         if (sender is not TextBox textBox) return;
         if (e.Property.Name == "IsReadOnly") textBox.Text = string.Empty;
     }
+    
+    private void swtTileIcoAllUsers_OnClick(object? sender, RoutedEventArgs e) => UpdateContext();
+    
     #endregion
 
     
@@ -951,14 +988,12 @@ public partial class MainView : UserControl
         if (sender is not AvaloniaTemplatedControl tc) return;
         var filesEnum = e.DataTransfer.TryGetFiles();
         var text = e.DataTransfer.TryGetText();
-        if (filesEnum is not null)
-        {
+        if (filesEnum is not null && filesEnum.Any()) {
             var files = new List<IStorageItem>(filesEnum);
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandleDrop(tc, files[0].Path.LocalPath), tc));
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandleDrop(tc, files.First().Path.LocalPath), tc));
             return;
         }
-        if (!string.IsNullOrWhiteSpace(text))
-        {
+        if (!string.IsNullOrWhiteSpace(text)) {
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc));
             return;
         }
