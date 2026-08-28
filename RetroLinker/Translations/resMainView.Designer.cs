@@ -332,5 +332,23 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("popOverwrite_Title", resourceCulture);
             }
         }
+        
+        public static string swtTextOnTileColor_Off {
+            get {
+                return ResourceManager.GetString("swtTextOnTileColor_Off", resourceCulture);
+            }
+        }
+        
+        public static string swtTextOnTileColor_On {
+            get {
+                return ResourceManager.GetString("swtTextOnTileColor_On", resourceCulture);
+            }
+        }
+        
+        public static string chkTextOnTile {
+            get {
+                return ResourceManager.GetString("chkTextOnTile", resourceCulture);
+            }
+        }
     }
 }

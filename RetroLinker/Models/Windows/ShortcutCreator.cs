@@ -34,14 +34,14 @@ public static class ShortcutCreator
     private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
     private const string osNotSupported = "This operation is only supported on Windows.";
     
-    public static void CreateShortcut(Shortcutter _shortcut, string _outputPath)
+    public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
     {
         var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
         var scriptStrings = $"""
                           {commentLine}
                           Function {createLink}()
                             Set {objShell} = CreateObject("WScript.Shell")
-                            Set {objLink} = {objShell}.CreateShortcut("{_outputPath}")
+                            Set {objLink} = {objShell}.CreateShortcut("{_output.FullPath}")
                             {objLink}.TargetPath = "{_shortcut.RAdir}"
                             {objLink}.WorkingDirectory = "{_shortcut.RApath}"
                             {objLink}.Arguments = "{_shortcut.Command}"
@@ -53,7 +53,7 @@ public static class ShortcutCreator
                           """;
         
         RunLinkWriteScript(scriptStrings);
-        Logger.LogInfo($"\"{_outputPath}\" file created successfully.");
+        Logger.LogInfo($"\"{_output.FullPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
@@ -114,4 +114,9 @@ public static class ShortcutCreator
     private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
     private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
 #endif
+
+    public static void CreateTileIcoShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
+    {
+        // TODO: test the workflow up to here
+    }
 }

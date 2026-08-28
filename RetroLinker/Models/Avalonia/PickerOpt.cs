@@ -59,7 +59,7 @@ namespace RetroLinker.Models.Avalonia
                 // Windows exe
                 case OpenOpts.RAexe:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe; // TODO: change with more generic tile
+                    options.Title = resAvaloniaOps.dlgFileRAexe; // TODO: change with more generic title
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 

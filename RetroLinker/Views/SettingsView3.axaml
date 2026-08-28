@@ -22,7 +22,7 @@
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="{x:Static lc:resSettingsWindow.lblCat_DEFLinkOutput}"/>
-                    <Panel x:Name="tipDisableBeacuseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBeacuseTileIco}" Background="Transparent"
+                    <Panel x:Name="tipDisableBecauseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBecauseTileIco}" Background="Transparent"
                            IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
                            Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0">
                         <!-- The ToolTip misbehaves with a null background -->
@@ -30,7 +30,7 @@
                     </Panel>
                 </StackPanel>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-                <StackPanel IsEnabled="{Binding !#tipDisableBeacuseTileIco.IsVisible}">
+                <StackPanel IsEnabled="{Binding !#tipDisableBecauseTileIco.IsVisible}">
                     <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
                               Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
                               IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}"/>

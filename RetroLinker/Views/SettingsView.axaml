@@ -52,7 +52,7 @@
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_IconsGeneral}"/>
-					<Panel x:Name="tipDisableBeacuseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBeacuseTileIco}" Background="Transparent"
+					<Panel x:Name="tipDisableBecauseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBecauseTileIco}" Background="Transparent"
 					       IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
                            Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0">
 						<!-- The ToolTip misbehaves with a null background -->
@@ -63,7 +63,7 @@
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<CheckBox x:Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkCpyUserIcon}"
 				          IsChecked="{Binding ParentWindow.NewSettings.CpyUserIcon}" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipCpyUserIcon}"
-				          IsEnabled="{Binding !#tipDisableBeacuseTileIco.IsVisible}"/>
+				          IsEnabled="{Binding !#tipDisableBecauseTileIco.IsVisible}"/>
 			</StackPanel>
 		</Border>
 		

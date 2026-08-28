@@ -153,16 +153,7 @@
     <data name="txtTileIco_B" xml:space="preserve">
         <value>executable (leave empty to disable)</value>
     </data>
-    <data name="chkTextOnTile" xml:space="preserve">
-        <value>Name on medium sized tile</value>
-    </data>
-    <data name="swtTextOnTileColor_On" xml:space="preserve">
-        <value>Light Text</value>
-    </data>
-    <data name="swtTextOnTileColor_Off" xml:space="preserve">
-        <value>Dark Text</value>
-    </data>
-    <data name="tipDisableBeacuseTileIco" xml:space="preserve">
+    <data name="tipDisableBecauseTileIco" xml:space="preserve">
         <value>This is disable while TileIconifier is in use</value>
     </data>
 </root>
