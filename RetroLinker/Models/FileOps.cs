@@ -384,7 +384,7 @@ namespace RetroLinker.Models
 
         public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
         {
-            var iconFilePath = linkObj.ICONfile!;
+            var iconFilePath = linkObj.ICONfile;
             string iconPath = GetDirFromPath(iconFilePath)!;
             string linkName = Path.ChangeExtension(linkObj.OutputPaths[0].FileName, ".ico");
             string newIconPath = Path.Combine(iconPath, linkName);
@@ -429,6 +429,7 @@ namespace RetroLinker.Models
         
         public static string[] DesktopEntryArray(string LinkDir, string? core)
         {
+            // TODO: Return a struct
             var EntryName = SeparateFileNameFromPath(LinkDir);
             EntryName[2] = DesktopEntry.StdDesktopEntry(EntryName[1], core);
             EntryName[2] += EntryName[3];

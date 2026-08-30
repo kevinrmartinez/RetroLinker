@@ -23,7 +23,7 @@ using Microsoft.ClearScript.Windows.Core;
 
 namespace RetroLinker.Models.Windows;
 
-public static class ShortcutCreator
+public static class ShortcutManager
 {
     private const string objShell = "shell";
     private const string objLink = "link";
@@ -32,28 +32,27 @@ public static class ShortcutCreator
     private const string readLink = "ReadLink";
     private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
-    private const string osNotSupported = "This operation is only supported on Windows.";
+    private const string osNotSupported = "This operation is only supported on Windows."; // TODO: Localize
     
-    public static void CreateShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
+    public static void CreateShortcut(LinkParameters link)
     {
-        var iconPath = (string.IsNullOrEmpty(_shortcut.ICONfile)) ? _shortcut.RAdir : _shortcut.ICONfile;
         var scriptStrings = $"""
-                          {commentLine}
-                          Function {createLink}()
-                            Set {objShell} = CreateObject("WScript.Shell")
-                            Set {objLink} = {objShell}.CreateShortcut("{_output.FullPath}")
-                            {objLink}.TargetPath = "{_shortcut.RAdir}"
-                            {objLink}.WorkingDirectory = "{_shortcut.RApath}"
-                            {objLink}.Arguments = "{_shortcut.Command}"
-                            {objLink}.Description = "{_shortcut.Desc}"
-                            {objLink}.IconLocation = "{iconPath}"
-                            {objLink}.Save
-                          	{createLink} = 0
-                          End Function
-                          """;
+                             {commentLine}
+                             Function {createLink}()
+                               Set {objShell} = CreateObject("WScript.Shell")
+                               Set {objLink} = {objShell}.CreateShortcut("{link.OutputPath}")
+                               {objLink}.TargetPath = "{link.RaExecutable}"
+                               {objLink}.WorkingDirectory = "{link.RaWorkDir}"
+                               {objLink}.Arguments = "{link.RaArguments}"
+                               {objLink}.Description = "{link.Description}"
+                               {objLink}.IconLocation = "{link.IconPath}"
+                               {objLink}.Save
+                               {createLink} = 0
+                             End Function
+                             """;
         
         RunLinkWriteScript(scriptStrings);
-        Logger.LogInfo($"\"{_output.FullPath}\" file created successfully.");
+        Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
@@ -115,7 +114,7 @@ public static class ShortcutCreator
     private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
 #endif
 
-    public static void CreateTileIcoShortcut(Shortcutter _shortcut, ShortcutterOutput _output)
+    public static void CreateTileIcoShortcut(LinkParameters link)
     {
         // TODO: test the workflow up to here
     }

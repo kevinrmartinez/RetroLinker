@@ -21,7 +21,7 @@ using System.Collections.Generic;
 
 namespace RetroLinker.Models.Linux;
 
-public static class ShortcutCreator
+public static class ShortcutManager
 {
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>=0.9) 
@@ -32,7 +32,7 @@ public static class ShortcutCreator
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
-    public static void CreateShortcut(Shortcutter link, ShortcutterOutput linkOutput)
+    public static void CreateShortcut(LinkParameters link)
     {
         List<string> shortcut = new()
         {
@@ -41,22 +41,20 @@ public static class ShortcutCreator
             Category
         };
 
-        shortcut.Add($"Comment={link.Desc}");
+        shortcut.Add($"Comment={link.Description}");
 
-        shortcut.Add($"Exec={link.RAdir} {link.Command}");
+        shortcut.Add($"Exec={link.RaExecutable} {link.RaArguments}");
+        
+        shortcut.Add($"Icon={link.IconPath}");
 
-        string _iconFile = (string.IsNullOrEmpty(link.ICONfile)) ? FileOps.DotDesktopRAIcon : link.ICONfile;
-        shortcut.Add($"Icon={_iconFile}");
-
-        shortcut.Add("Name=" + linkOutput.FriendlyName);
+        shortcut.Add("Name=" + link.FriendlyName);
         // shortcut.Add(notify);
-
-        string _terminal = (link.VerboseB) ? "true" : "false";
-        shortcut.Add($"Terminal={_terminal}");
+        
+        shortcut.Add($"Terminal={link.Verbose.ToString().ToLower()}");
 
         shortcut.Add(LinkType);
 
-        string outputFile = linkOutput.FullPath;
+        string outputFile = link.OutputPath;
 
         for (int i = 0; i < shortcut.Count; i++)
         {
