@@ -161,7 +161,7 @@ namespace RetroLinker.Models
             
             // Building the arguments
             Command = CommandManager.CommandBuilder(this);
-            return (os) ? BuildWinShortcut(winBuilderOpt) : BuildLinShorcut();
+            return (os) ? BuildWinShortcut(winBuilderOpt) : BuildLinShorcut(); // TODO: Should be async, it always writes to disk
         }
 
         private ShortcutterResult CreateShortcut(ShortcutterOutput output,
