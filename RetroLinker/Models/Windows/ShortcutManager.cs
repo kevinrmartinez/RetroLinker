@@ -17,6 +17,10 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 #if WINDOWS
 using Microsoft.ClearScript.Windows.Core;
 #endif
@@ -113,9 +117,122 @@ public static class ShortcutManager
     private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
     private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
 #endif
+    
+    private enum TileIcoOptions
+    {
+        name, 
+        target, 
+        arguments,
+        all_users,
+        icon,
+        image,
+        name_on_tile_light,
+        name_on_tile_dark
+    }
 
     public static void CreateTileIcoShortcut(LinkParameters link)
     {
         // TODO: test the workflow up to here
+        const string TileIcoCreate = "create";
+        const string tileIcoCustom = "custom";
+        const string tileIcoCustomTest = "custom-test";
+        
+        var tileIcoArguments = new TileicoArgmentList();
+        TileIcoOptions? tileIcoNameOpt = null;
+        if (link.TileIcoNameVisible) {
+            tileIcoNameOpt = link.TileIcoNameDark ? TileIcoOptions.name_on_tile_dark : TileIcoOptions.name_on_tile_light;
+        }
+        tileIcoArguments.AddRange([
+            CreateTileicoArgument(TileIcoOptions.name, link.FriendlyName),
+            CreateTileicoArgument(TileIcoOptions.target, link.RaExecutable),
+            CreateTileicoArgument(TileIcoOptions.arguments, link.RaArguments),
+            CreateTileicoArgument(TileIcoOptions.icon, link.IconPath),
+            CreateTileicoArgument(TileIcoOptions.image, link.TileIcoImagePath)  // TODO: If TileIcoImagePath can reach here being empty 
+        ]);
+        if (tileIcoNameOpt is { } opt) tileIcoArguments.Add(CreateTileicoArgument(opt, true));
+        
+        var tileIcoPath = SettingsOps.GetCachedSettings().TileIcoPath;
+        ArgumentException.ThrowIfNullOrEmpty(tileIcoPath);
+        var pi = new ProcessStartInfo(tileIcoPath)
+        {
+            UseShellExecute = false,
+            RedirectStandardError = true,
+#if DEBUG
+            CreateNoWindow = false,
+#else
+            CreateNoWindow = true,
+#endif
+        };
+        pi.ArgumentList.Add(TileIcoCreate);
+        // pi.ArgumentList.Add(tileIcoCustom);
+        pi.ArgumentList.Add(tileIcoCustomTest); // For debugging
+        foreach (var argument in tileIcoArguments) {
+            pi.ArgumentList.Add(argument.Option);
+            pi.ArgumentList.Add(argument.Value);
+        }
+        using var proc = Process.Start(pi);
+        
+        if (proc is null) throw new ApplicationException($"'{pi.FileName}' failed to start");
+        // var errorsTask = proc.StandardError.ReadToEndAsync();
+        proc.WaitForExit(); // TODO: Should be async, but the whole workflow up to here has to change
+        
+        if (proc.ExitCode == 0) return;
+        
+        var errors = proc.StandardError.ReadToEnd();
+        throw new ApplicationException(errors);
+    }
+
+    private static TileicoArgument CreateTileicoArgument(TileIcoOptions option, object value)
+    {
+        var valueToString = string.Empty;
+        switch (option)
+        {
+            case TileIcoOptions.all_users:
+            case TileIcoOptions.name_on_tile_light:
+            case TileIcoOptions.name_on_tile_dark:
+                if (value is bool boolValue) valueToString = boolValue.ToString().ToLower();
+                break;
+            default:
+                if (value is string stringValue) valueToString = stringValue;
+                break;
+        }
+        ArgumentException.ThrowIfNullOrEmpty(valueToString, nameof(value));
+        
+        return new TileicoArgument($"--{option.ToString("G").Replace('_', '-')}", valueToString);
+    }
+}
+
+internal struct TileicoArgument(string option,  string value) {
+    public readonly string Option = option;
+    public readonly string Value = value;
+
+    public override string ToString() => $"{Option} {Value}";
+    
+    public bool SameArgument(TileicoArgument other) => (Option == other.Option);
+}
+
+internal class TileicoArgmentList : List<TileicoArgument>
+{
+    /// <summary>Adds an object to the end of the <see cref="List{TileicoArgument}" />.</summary>
+    /// <param name="item">The <see cref="TileicoArgument"/> to be added to the end of the <see cref="List{TileicoArgument}" />. If an element with the same '<see cref="TileicoArgument.Option"/>' member already exist, then <paramref name="item"/> is not added.</param>
+    public new void Add(TileicoArgument item) {
+        if (!this.Any(i => i.SameArgument(item))) base.Add(item);
+    }
+
+    /// <summary>Adds the elements of the specified collection to the end of the <see cref="List{TileicoArgument}" />.</summary>
+    /// <param name="collection">The collection whose elements should be added to the end of the <see cref="List{TileicoArgument}" />.</param>
+    /// <remarks>The object to add is conditioned, see <see cref="Add"/></remarks>
+    public new void AddRange(IEnumerable<TileicoArgument> collection) {
+        foreach (var item in collection) Add(item);
+    }
+
+    // Unrequited
+    public string ToStringSingleLine()
+    {
+        var result = string.Empty;
+        foreach (var item in this) {
+            result += item + " ";
+        }
+        return result.TrimEnd();
     }
 }

@@ -765,6 +765,7 @@ public partial class MainView : UserControl
     }
     
     void btnRADir_OnClick(object sender, RoutedEventArgs e) => btnRADir_ClickAsync();
+    
     #endregion
 
     #region ROM Controls
@@ -901,8 +902,8 @@ public partial class MainView : UserControl
             else
             {
                 Logger.LogDebg("Running on debug...");
-                var imposible = 1684 / (comboConfig.Items.Count - 1);
-                Logger.LogDebg(imposible);
+                // var imposible = 1684 / (comboConfig.Items.Count - 1);
+                // Logger.LogDebg(imposible);
                 // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
             }
 #endif

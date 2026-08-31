@@ -15,6 +15,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
+  <PropertyGroup>
+    <!-- https://docs.avaloniaui.net/docs/deployment/native-aot -->
+    <!-- Add to all projects/libraries in use, to ensure AOT compatibility -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
+  </PropertyGroup>
   
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -54,11 +60,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <PropertyGroup>
-    <IsAotCompatible>true</IsAotCompatible>
-    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
-  </PropertyGroup>
   
   <ItemGroup>
     <EmbeddedResource Update="Translations\resMainView.resx">
