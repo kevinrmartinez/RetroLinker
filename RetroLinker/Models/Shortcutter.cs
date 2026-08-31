@@ -82,6 +82,7 @@ namespace RetroLinker.Models
             RApath = string.Empty;
             ROMdir = string.Empty;
             ROMcore = string.Empty;
+            ICONfile = string.Empty;
             Command = string.Empty;
             OutputPaths = new List<ShortcutterOutput>();
             VerboseB = false;
