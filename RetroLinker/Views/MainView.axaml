@@ -267,6 +267,23 @@
 									</Border>
 								</Viewbox>
 							</StackPanel>
+							
+							<Border Name="biiiii" HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
+							        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+								<Border.IsVisible>
+									<MultiBinding Converter="{x:Static BoolConverters.And}">
+										<Binding Path="#rdoIconDef.IsChecked"/>
+										<Binding Path="Settings.TileIcoPath" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+									</MultiBinding>
+								</Border.IsVisible>
+								
+								<DockPanel HorizontalSpacing="6" Margin="3,0">
+									<i:Icon Value="fa7-triangle-exclamation" FontSize="18" DockPanel.Dock="Left" Foreground="Goldenrod"/>
+									<!-- TODO: Localize -->
+									<TextBlock TextWrapping="Wrap" FontSize="12" DockPanel.Dock="Right"
+									           Text="When using tileico, you should use a custom image, otherwise the Start Menu icon will appear empty"/>
+								</DockPanel>
+							</Border>
 						</StackPanel>
 					</Border>
 				</StackPanel>

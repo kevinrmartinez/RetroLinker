@@ -32,6 +32,8 @@ namespace RetroLinker.Models
         public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
 
         public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
+        
+        public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
 
         private static MagickImage ResizeToIco(MagickImage ico)
         {
@@ -48,6 +50,13 @@ namespace RetroLinker.Models
             return ico;
         }
 
+        private static MemoryStream GetStream(MagickImage img) {
+            var imgStream = new MemoryStream();
+            img.Write(imgStream);
+            imgStream.Position = 0;
+            return imgStream;
+        }
+
         private static MemoryStream GetStream(string path)
         {
             // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
@@ -57,9 +66,7 @@ namespace RetroLinker.Models
             
             img.Read(path);
             img.Format = MagickFormat.Png32;
-            var imgStream = new MemoryStream();
-            img.Write(imgStream);
-            return imgStream;
+            return GetStream(img);
         }
 
         public static void BuildIconItem(string filePath, int newIndex, bool OS)
@@ -71,7 +78,8 @@ namespace RetroLinker.Models
             if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
             if (OS)
             {
-                if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, 0);
+                const int defaultIndex = 0;
+                if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, defaultIndex);
                 if (FileOps.WinExtraIconsExt.Contains($"*{fileExt}") || (FileOps.IsExtWinPE(fileExt))) 
                     icoItem.ConversionRequired = true;
             }

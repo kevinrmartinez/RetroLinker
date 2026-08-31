@@ -27,6 +27,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
+using MsBox.Avalonia.Enums;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Generic;
@@ -448,6 +449,7 @@ public partial class MainView : UserControl
             // Validate there is a core
             OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
+            // TODO: Move to a separated method
             // Link handling
             var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
             if (!string.IsNullOrWhiteSpace(linkDir))
@@ -492,10 +494,12 @@ public partial class MainView : UserControl
             // Include a link description, if any
             OutputLink.Desc = txtDesc.Text;
 
+            // TODO: Move to a separated method
             // Icons handling
             void UpdateUserIcon(string newPath) {
                 OutputLink.ICONfile = newPath;
-                if (IconItemSET is not null && IconItemSET.ConversionRequired && IconItemSET.comboIconIndex is { } index)
+                
+                if (IconItemSET is { ConversionRequired: true, comboIconIndex: { } index })
                 {
                     // This is for the sake of compatibility with my old code; it will be tighter when Binding is implemented 
                     var newIconItem = new IconsItems(newPath, index);
@@ -513,7 +517,7 @@ public partial class MainView : UserControl
                 if (DesktopOS)
                 {
                     // If it's Windows, the images may need to be converted to .ico
-                    if ((IconItemSET is not null) && (IconItemSET.ConversionRequired))
+                    if (IconItemSET is { ConversionRequired: true })
                     {
                         OutputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
                         OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
@@ -530,6 +534,23 @@ public partial class MainView : UserControl
                             };
                             UpdateUserIcon(newPath);
                         }
+                    }
+                    else if (IconItemSET is { ConversionRequired: false } && Settings.TileIcoPath is not null)
+                    {
+                        var imageFromIco = string.Empty;
+                        try {
+                            var image = IconProc.ReverseImageConvert(IconItemSET.FilePath);
+                            imageFromIco = FileOps.WriteImageToTemp(image, IconItemSET.FileName);
+                        }
+                        catch (System.Exception ex) {
+                            var content =
+                                new PopUpGenericContent("Could not convert the selected .ico to an image for tileico"
+                                    ,null, "Image conversion failed");
+                            var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
+                            Logger.LogDebg(ms.ToString("G"));
+                            Logger.LogErro(ex);
+                        }
+                        finally { OutputLink.TileIcoImage = imageFromIco; }
                     }
                 }
                 // If it's Linux, no conversion is required
@@ -578,6 +599,7 @@ public partial class MainView : UserControl
                 
                 // Create Shortcuts
                 List<ShortcutterResult> opResult = OutputLink.BuildShortcut(DesktopOS);
+                // TODO: Move to a separated method, maybe
                 // Single Shortcut created
                 if (opResult.Count == 1)
                 {
@@ -925,7 +947,7 @@ public partial class MainView : UserControl
             LinkCustomName = false;
             var fullPath = FileOps.CombineMultipleInputs(
                 Settings.DEFLinkOutput, 
-                (string.IsNullOrWhiteSpace(textBox.Text) ? LinuxDesktopEntry.NamePlaceHolder : textBox.Text)
+                (string.IsNullOrWhiteSpace(textBox.Text)) ? LinuxDesktopEntry.NamePlaceHolder : textBox.Text
             );
             // TODO: If pop-up gets discarded, the output returns without extension
             BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);

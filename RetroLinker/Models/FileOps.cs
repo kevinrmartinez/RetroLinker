@@ -360,23 +360,24 @@ namespace RetroLinker.Models
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
             string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : LoadedSettings.UserAssetsPath;
             string newPath = Path.Combine(newDir, icoName);
-            ImageMagick.MagickImage iconImage;
-            if (selectedIconItem.IconStream != null) selectedIconItem.IconStream.Position = 0;
+            selectedIconItem.IconStream?.Position = 0;
 
             switch (icoExt)
             {
-                case var _ when IsExtWinPE(icoExt):
+                case WinPeExt1 or WinPeExt2:
                     if (LoadedSettings.ExtractIco) {
-                        iconImage = IconProc.ImageConvert(selectedIconItem.IconStream!);
-                        iconImage.Write(newPath);
+                        var extractedIco = IconProc.ImageConvert(selectedIconItem.IconStream!);
+                        extractedIco.Write(newPath);
+                        extractedIco.Dispose();
                     }
                     else newPath = selectedIconItem.FilePath;
                     break;
                 default: // .jpg, .png, etc
-                    iconImage = (icoExt is ".svg" or ".svgz") 
+                    var iconImage = (icoExt is ".svg" or ".svgz") 
                         ? IconProc.ImageConvert(selectedIconItem.IconStream!)   // process IconStream for svg 
                         : IconProc.ImageConvert(selectedIconItem.FilePath);     // process image file 
                     iconImage.Write(newPath);
+                    iconImage.Dispose();
                     break;
             }
             return newPath;
@@ -393,6 +394,18 @@ namespace RetroLinker.Models
             File.Delete(iconFilePath);
             
             return newIconPath;
+        }
+
+        public static string WriteImageToTemp(ImageMagick.MagickImage image, string? fileName = null)
+        {
+            if (string.IsNullOrEmpty(fileName)) fileName = DateTime.Now.ToString("yyyyMMddHHmmss");
+            fileName = GetFileNameNoExtFromPath(fileName) + ".";
+            fileName += image.Format.ToString("G").ToLower();
+            var newDir = CombineMultipleInputs(UserTemp, fileName);
+            if (File.Exists(newDir)) File.Delete(newDir);
+            image.Write(newDir);    // TODO: should be async
+            image.Dispose();
+            return newDir;
         }
         
         public static string WriteIcoToFile(MemoryStream icoStream, string outputPath)
