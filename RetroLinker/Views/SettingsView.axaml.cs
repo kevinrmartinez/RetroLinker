@@ -76,7 +76,6 @@ namespace RetroLinker.Views
         #endregion
         
         // Appearance
-        // TODO: Refactorize using an event, possibly based in the 'ThemeCode' byte; or maybe a Bind
         void LoadTheme(byte ThemeCode)
         {
             // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code

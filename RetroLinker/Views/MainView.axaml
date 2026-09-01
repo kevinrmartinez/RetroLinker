@@ -173,16 +173,23 @@
 								<Rectangle Width="6"/>
 								<Rectangle VerticalAlignment="Stretch" StrokeThickness="1" 
 								           Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-								<!-- TODO: Localize -->
 								<Rectangle Width="6"/>
-								<ToggleSwitch OffContent="For This User" OnContent="For All Users"
+								<ToggleSwitch OffContent="{x:Static lc:resMainView.swtTileIcoAllUsers_Off}" 
+								              OnContent="{x:Static lc:resMainView.swtTileIcoAllUsers_On}"
 								              IsChecked="{Binding TileIconAllUsers}"
 								              Click="swtTileIcoAllUsers_OnClick"/>
 							</StackPanel>
 						</Border>
 					</StackPanel>
-					<Label Margin="3,10,3,0" Content="{x:Static lc:resMainView.lblDesc}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
-					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
+					<Rectangle Height="10"/>
+					<StackPanel Orientation="Horizontal" Margin="3,0">
+						<Label Content="{x:Static lc:resMainView.lblDesc}"/>
+						<cc:IconFontWithTip IconValue="fa7-circle-info" Tip="{x:Static lc:resMainView.tipDescTileIco}"
+						                    IsVisible="{Binding Settings.TileIcoPath, 
+						                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					</StackPanel>
+					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" 
+					         ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->
@@ -268,7 +275,7 @@
 								</Viewbox>
 							</StackPanel>
 							
-							<Border Name="biiiii" HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
+							<Border HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
 							        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
 								<Border.IsVisible>
 									<MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -279,9 +286,8 @@
 								
 								<DockPanel HorizontalSpacing="6" Margin="3,0">
 									<i:Icon Value="fa7-triangle-exclamation" FontSize="18" DockPanel.Dock="Left" Foreground="Goldenrod"/>
-									<!-- TODO: Localize -->
 									<TextBlock TextWrapping="Wrap" FontSize="12" DockPanel.Dock="Right"
-									           Text="When using tileico, you should use a custom image, otherwise the Start Menu icon will appear empty"/>
+									           Text="{x:Static lc:resMainView.lblDefIconOnTileIco}"/>
 								</DockPanel>
 							</Border>
 						</StackPanel>

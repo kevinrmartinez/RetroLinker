@@ -38,20 +38,14 @@
     <data name="txtDesc_mark" xml:space="preserve">
         <value>Juega Super Mario Bros. en RetroArch</value>
     </data>
-    <data name="txtDesc_tip" xml:space="preserve">
-        <value>Agrega una descripcion al shortcut que se creara</value>
+    <data name="tipDesc" xml:space="preserve">
+        <value>Agrega una descripcion al shortcut que se creará</value>
     </data>
     <data name="lblICON" xml:space="preserve">
         <value>Seleccion de Icono</value>
     </data>
-    <data name="rdoIconCus" xml:space="preserve">
-        <value>Personalizar</value>
-    </data>
     <data name="lblIconNoImage" xml:space="preserve">
         <value>No se puede visualizar este elemento</value>
-    </data>
-    <data name="tipBrowse" xml:space="preserve">
-        <value>Explorar</value>
     </data>
     <data name="tipPatches" xml:space="preserve">
         <value>Parches</value>
@@ -61,15 +55,6 @@
     </data>
     <data name="tipIconNoImage" xml:space="preserve">
         <value>El programa no puede visualizar el icono seleccionado. Sin embargo, el archivo será usado al crear el shortcut.</value>
-    </data>
-    <data name="LinPopUp_Title" xml:space="preserve">
-        <value>Observacion</value>
-    </data>
-    <data name="LinPopUp_Head" xml:space="preserve">
-        <value>El nombre utilizado aqui sera utilizado como el nombre visible del link, y como nombre del archivo en si.</value>
-    </data>
-    <data name="LinPopUp_Mess" xml:space="preserve">
-        <value>Sin embargo los espacios en blanco seran reemplazados por '_' en el nombre de archivo, por razones de estandares y comodidad.</value>
     </data>
     <data name="popMissReq_Title" xml:space="preserve">
         <value>Faltan Campos</value>
@@ -97,9 +82,6 @@
     </data>
     <data name="popLinkFailure" xml:space="preserve">
         <value>La creación del Link ha fracasado</value>
-    </data>
-    <data name="LinPopUp_Mess2" xml:space="preserve">
-        <value>Presione Cancelar para no volver a mostrar este mensaje.</value>
     </data>
     <data name="btnMoreParams" xml:space="preserve">
         <value>Más</value>
@@ -133,5 +115,32 @@
     </data>
     <data name="chkTextOnTile" xml:space="preserve">
         <value>Nombre en el mosaico mediano</value>
+    </data>
+    <data name="swtTileIcoAllUsers_Off" xml:space="preserve">
+        <value>Este Usuario</value>
+    </data>
+    <data name="swtTileIcoAllUsers_On" xml:space="preserve">
+        <value>Todos los Usuarios</value>
+    </data>
+    <data name="popOverwrite_Mess" xml:space="preserve">
+        <value>El archivo '{0}' ya existe, desea sobre-escribirlo?</value>
+    </data>
+    <data name="popOverwrite_Title" xml:space="preserve">
+        <value>Sobre-escribir archivo?</value>
+    </data>
+    <data name="tipSubSys" xml:space="preserve">
+        <value>Subsistema</value>
+    </data>
+    <data name="lblDefIconOnTileIco" xml:space="preserve">
+        <value>Cuando tileico esta en uso, debería una imagen personalizada, sino el icono en el Menú Start aparecerá vacío</value>
+    </data>
+    <data name="tipDescTileIco" xml:space="preserve">
+        <value>Las descripciones no estan disponibles para los iconos en mosaicos, pero si será usada si realiza copias del acceso directo</value>
+    </data>
+    <data name="wrnIcoToImage_mess" xml:space="preserve">
+        <value>No se pudo convertir el .ico seleccionado a una imagen para tileico, procediendo sin ella</value>
+    </data>
+    <data name="wrnIcoToImage_header" xml:space="preserve">
+        <value>Falló la conversión de imagen</value>
     </data>
 </root>

@@ -27,7 +27,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
-using MsBox.Avalonia.Enums;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Generic;
@@ -49,7 +48,6 @@ public partial class MainView : UserControl
         ParentWindow = new MainWindow(this);
         IsDesingner = true;
         Settings =  new Settings();
-        // Settings.TileIcoPath = "b";
         CompleteSetup();
 
         PatchArg = "--ups=\"path/to/rom.bin\"";
@@ -114,7 +112,7 @@ public partial class MainView : UserControl
     #region LOAD EVENTS
     void CompleteSetup()
     {
-        // TODO: Implement an Event for theme handling
+        // Implement an Event for theme handling
 #if DEBUG
         try {
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
@@ -543,9 +541,8 @@ public partial class MainView : UserControl
                             imageFromIco = FileOps.WriteImageToTemp(image, IconItemSET.FileName);
                         }
                         catch (System.Exception ex) {
-                            var content =
-                                new PopUpGenericContent("Could not convert the selected .ico to an image for tileico"
-                                    ,null, "Image conversion failed");
+                            var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
+                                null, resMainView.wrnIcoToImage_header);
                             var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
                             Logger.LogDebg(ms.ToString("G"));
                             Logger.LogErro(ex);

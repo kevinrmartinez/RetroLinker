@@ -135,9 +135,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string txtDesc_tip {
+        public static string tipDesc {
             get {
-                return ResourceManager.GetString("txtDesc_tip", resourceCulture);
+                return ResourceManager.GetString("tipDesc", resourceCulture);
             }
         }
         
@@ -147,27 +147,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string rdoIconDef {
-            get {
-                return ResourceManager.GetString("rdoIconDef", resourceCulture);
-            }
-        }
-        
-        public static string rdoIconCus {
-            get {
-                return ResourceManager.GetString("rdoIconCus", resourceCulture);
-            }
-        }
-        
         public static string lblIconNoImage {
             get {
                 return ResourceManager.GetString("lblIconNoImage", resourceCulture);
-            }
-        }
-        
-        public static string tipBrowse {
-            get {
-                return ResourceManager.GetString("tipBrowse", resourceCulture);
             }
         }
         
@@ -192,24 +174,6 @@ namespace RetroLinker.Translations {
         public static string comboDefItem {
             get {
                 return ResourceManager.GetString("comboDefItem", resourceCulture);
-            }
-        }
-        
-        public static string LinPopUp_Title {
-            get {
-                return ResourceManager.GetString("LinPopUp_Title", resourceCulture);
-            }
-        }
-        
-        public static string LinPopUp_Head {
-            get {
-                return ResourceManager.GetString("LinPopUp_Head", resourceCulture);
-            }
-        }
-        
-        public static string LinPopUp_Mess {
-            get {
-                return ResourceManager.GetString("LinPopUp_Mess", resourceCulture);
             }
         }
         
@@ -264,12 +228,6 @@ namespace RetroLinker.Translations {
         public static string popLinkFailure {
             get {
                 return ResourceManager.GetString("popLinkFailure", resourceCulture);
-            }
-        }
-        
-        public static string LinPopUp_Mess2 {
-            get {
-                return ResourceManager.GetString("LinPopUp_Mess2", resourceCulture);
             }
         }
         
@@ -348,6 +306,42 @@ namespace RetroLinker.Translations {
         public static string chkTextOnTile {
             get {
                 return ResourceManager.GetString("chkTextOnTile", resourceCulture);
+            }
+        }
+        
+        public static string swtTileIcoAllUsers_Off {
+            get {
+                return ResourceManager.GetString("swtTileIcoAllUsers_Off", resourceCulture);
+            }
+        }
+        
+        public static string swtTileIcoAllUsers_On {
+            get {
+                return ResourceManager.GetString("swtTileIcoAllUsers_On", resourceCulture);
+            }
+        }
+        
+        public static string lblDefIconOnTileIco {
+            get {
+                return ResourceManager.GetString("lblDefIconOnTileIco", resourceCulture);
+            }
+        }
+        
+        public static string tipDescTileIco {
+            get {
+                return ResourceManager.GetString("tipDescTileIco", resourceCulture);
+            }
+        }
+        
+        public static string wrnIcoToImage_header {
+            get {
+                return ResourceManager.GetString("wrnIcoToImage_header", resourceCulture);
+            }
+        }
+        
+        public static string wrnIcoToImage_mess {
+            get {
+                return ResourceManager.GetString("wrnIcoToImage_mess", resourceCulture);
             }
         }
     }
