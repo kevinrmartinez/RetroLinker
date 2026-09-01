@@ -53,21 +53,24 @@ namespace RetroLinker.Models
         public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
         public static readonly List<string> LinIconsExt = ["*.ico", "*.png", "*.xpm", "*.svg", "*.svgz"];
         
-        public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-
+        public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        public static readonly string UserData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), Translations.resGeneric.GenAppName);
         // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
         
         public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
+        public static readonly string WINUserStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+        public static readonly string WINSystemStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
         
         public static string[] WinLinkPathCandidates { get; } =
         [
             UserDesktop,
             WINPublicDesktop,
-            CombineMultipleInputs(UserProfile, "AppData", "Microsoft", "Windows", "Start Menu", "Programs"),
-            CombineMultipleInputs("C:", "ProgramData", "Microsoft", "Windows", "Start Menu", "Programs")
+            WINUserStartMenu,
+            WINSystemStartMenu
+            
         ];  // Source: https://en.wikipedia.org/wiki/Start_menu
         
         public static string[] LinLinkPathCandidates { get; } =
@@ -79,8 +82,8 @@ namespace RetroLinker.Models
         ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
         
         public static Dictionary<bool, string> TileIconOutDirs { get; } = new() {
-            [false] = WinLinkPathCandidates[2],
-            [true] = WinLinkPathCandidates[3]
+            [false] = WINUserStartMenu,
+            [true] = WINSystemStartMenu
         };
         
         private static Settings LoadedSettings = new();
@@ -303,10 +306,13 @@ namespace RetroLinker.Models
 
         public static string CpyIconToUsrSet(string? ogPath)
         {
-            if (string.IsNullOrEmpty(ogPath)) return string.Empty;
+            if (string.IsNullOrEmpty(ogPath)) return string.Empty;  // If we analyze this in a vacuum, this should throw
             string name = Path.GetFileName(ogPath);
             string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
             CheckUsrSetDir(LoadedSettings.IcoSavPath);
+            // TODO: This line below is problematic, it doesn't let the user replace an existing item (0.9)
+            //  Solution 1: Delete old, and copy (or overwrite)
+            //  Solution 2: Resolve the naming conflict (add a number at the end of the file name)
             if (File.Exists(newPath)) return GetAbsolutePath(newPath);
             
             File.Copy(ogPath, newPath);
@@ -403,7 +409,7 @@ namespace RetroLinker.Models
             fileName += image.Format.ToString("G").ToLower();
             var newDir = CombineMultipleInputs(UserTemp, fileName);
             if (File.Exists(newDir)) File.Delete(newDir);
-            image.Write(newDir);    // TODO: should be async
+            image.Write(newDir);
             image.Dispose();
             return newDir;
         }

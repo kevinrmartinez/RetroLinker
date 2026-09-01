@@ -41,7 +41,7 @@ public static class JsonHelper
                 case Settings settings:
                     return Serialize(settings);
                 default:
-                    throw new System.NotImplementedException("Serializer not implemented");
+                    throw new System.NotSupportedException("Serializer not implemented");
             }
         }
         catch (System.NotSupportedException ex) {
@@ -59,7 +59,7 @@ public static class JsonHelper
                 case nameof(Settings):
                     return Deserialize(json) as T;
                 default:
-                    throw new System.NotImplementedException("Deserializer not implemented");
+                    throw new System.NotSupportedException("Deserializer not implemented");
             }
         }
         catch (System.Exception ex) when  (ex is System.NotSupportedException or JsonException) {

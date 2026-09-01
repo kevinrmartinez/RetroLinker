@@ -140,8 +140,7 @@ public class UserStringList : TemplatedControl
         AvaloniaProperty.RegisterDirect<UserStringList, Button?>(
             nameof(ClearButton),
             l => l.ClearButton);
-    public Button? ClearButton
-    {
+    public Button? ClearButton {
         get;
         set => SetAndRaise(ClearButtonProperty, ref field, value);
     }
@@ -151,8 +150,7 @@ public class UserStringList : TemplatedControl
     public static readonly RoutedEvent<RoutedEventArgs> AddItemEvent =
         RoutedEvent.Register<UserStringList, RoutedEventArgs>(nameof(AddItemClick), RoutingStrategies.Direct);
     
-    public event System.EventHandler<RoutedEventArgs> AddItemClick
-    {
+    public event System.EventHandler<RoutedEventArgs> AddItemClick {
         add => AddHandler(AddItemEvent, value);
         remove => RemoveHandler(AddItemEvent, value);
     }

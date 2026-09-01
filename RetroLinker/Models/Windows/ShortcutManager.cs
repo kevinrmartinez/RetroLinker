@@ -36,7 +36,6 @@ public static class ShortcutManager
     private const string readLink = "ReadLink";
     private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
-    private const string osNotSupported = "This operation is only supported on Windows."; // TODO: Localize
     
     public static void CreateShortcut(LinkParameters link)
     {
@@ -114,8 +113,8 @@ public static class ShortcutManager
         return values;
     }
 #else
-    private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
-    private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException(osNotSupported);
+    private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException();
+    private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException();
 #endif
 
     public static void CreateTileIcoShortcut(LinkParameters link)
@@ -163,7 +162,7 @@ public static class ShortcutManager
         
         if (proc is null) throw new ApplicationException($"'{pi.FileName}' failed to start");
         // var errorsTask = proc.StandardError.ReadToEndAsync();
-        proc.WaitForExit(); // TODO: Should be async, but the whole workflow up to here has to change
+        proc.WaitForExit(); // Should be async, but the whole workflow up to here has to change
         
         if (proc.ExitCode == 0) return;
         

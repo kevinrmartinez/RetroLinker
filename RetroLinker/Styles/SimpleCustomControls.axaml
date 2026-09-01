@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:ctrl="clr-namespace:RetroLinker.Styles"
         xmlns:lc="clr-namespace:RetroLinker.Translations">
     <Design.PreviewWith>
         <Border Padding="20">
@@ -10,6 +11,7 @@
                 <Button Classes="clear_text"/>
                 <Button Classes="restore"/>
                 <Button Classes="textbox_inline browse"/>
+                <ctrl:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -44,5 +46,16 @@
     <Style Selector="Button.browse">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
         <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
+    </Style>
+    
+    <Style Selector="ctrl|IconFontWithTip">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Margin="0" Background="Transparent" ToolTip.Tip="{TemplateBinding Tip}">
+                    <!-- The ToolTip misbehaves with a null background -->
+                    <i:Icon Name="PART_Icon" Value="{TemplateBinding IconValue}"/>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
     </Style>
 </Styles>

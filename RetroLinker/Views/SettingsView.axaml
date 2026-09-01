@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:vw="using:RetroLinker.Views"
+             xmlns:cc="using:RetroLinker.Styles"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView"
@@ -24,7 +25,7 @@
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<Grid ColumnDefinitions="*, Auto, *">
 					<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0, 2">
-						<!-- TODO: Use Binding somehow -->
+						<!-- REWRITE: Use Binding somehow -->
 						<ToggleSwitch x:Name="swtThemeSwitch" Content="{x:Static lc:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged" Margin="3,0,0,0"
 						              OnContent="{x:Static lc:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static lc:resSettingsWindow.swtThemeSwitch_Off}"/>
 						<Rectangle Width="18"/>
@@ -52,13 +53,10 @@
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_IconsGeneral}"/>
-					<Panel x:Name="tipDisableBecauseTileIco" ToolTip.Tip="{x:Static lc:resSettingsWindow.tipDisableBecauseTileIco}" Background="Transparent"
-					       IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
-                           Converter={x:Static ObjectConverters.IsNotNull}}" Margin="0">
-						<!-- The ToolTip misbehaves with a null background -->
-						<!-- TODO: Move to simple controls -->
-						<i:Icon Value="fa7-ban"/>
-					</Panel>
+					<cc:IconFontWithTip x:Name="tipDisableBecauseTileIco" IconValue="fa7-ban" 
+					                    Tip="{x:Static lc:resSettingsWindow.tipDisableBecauseTileIco}"
+					                    IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
+					                    Converter={x:Static ObjectConverters.IsNotNull}}"/>
 				</StackPanel>
 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 				<CheckBox x:Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static lc:resSettingsWindow.chkCpyUserIcon}"

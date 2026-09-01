@@ -266,9 +266,9 @@ namespace RetroLinker.Models.Windows
         public int Count { get; } = 0;
         
         // It's actually possible to extract the icon from PEs on Linux
-        public IconExtractor(string fileName) => throw new NotImplementedException();
-        public MemoryStream GetIcon(int index) => throw new NotImplementedException();
-        public MemoryStream[] GetAllIcons() => throw new NotImplementedException();
+        public IconExtractor(string fileName) => throw new PlatformNotSupportedException();
+        public MemoryStream GetIcon(int index) => throw new PlatformNotSupportedException();
+        public MemoryStream[] GetAllIcons() => throw new PlatformNotSupportedException();
     }
 #endif
     

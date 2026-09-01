@@ -173,10 +173,14 @@ namespace RetroLinker.Views
             return newItem;
         }
 
-        private void LockControls(bool locked) {
-            panelContent.IsEnabled = !locked;
+        private void UpdateContext() {
             DataContext = null;
             DataContext = this;
+        }
+
+        private void LockControls(bool locked) {
+            panelContent.IsEnabled = !locked;
+            UpdateContext();
         }
         
         
@@ -302,7 +306,7 @@ namespace RetroLinker.Views
             finally { LockControls(false); }
         }
         
-        // TODO: This is brilliant, now reimplement it across the settings :)
+        // REWRITE: This is brilliant, now reimplement it across the settings :)
         private void btnTileIco_OnClick(object? sender, RoutedEventArgs e) {
             if (sender is not Button button) return;
             switch (button.CommandParameter)
@@ -317,9 +321,7 @@ namespace RetroLinker.Views
                     };
                     break;
             }
-
-            DataContext = null;
-            DataContext = this;
+            UpdateContext();
         }
         #endregion
     }

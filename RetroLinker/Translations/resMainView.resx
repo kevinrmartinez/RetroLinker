@@ -63,23 +63,14 @@
     <data name="txtDesc_mark" xml:space="preserve">
         <value>Play Super Mario Bros. on RetroArch</value>
     </data>
-    <data name="txtDesc_tip" xml:space="preserve">
+    <data name="tipDesc" xml:space="preserve">
         <value>Adds a description to the new shortcut</value>
     </data>
     <data name="lblICON" xml:space="preserve">
         <value>Icon selection</value>
     </data>
-    <data name="rdoIconDef" xml:space="preserve">
-        <value>Default</value>
-    </data>
-    <data name="rdoIconCus" xml:space="preserve">
-        <value>Custom</value>
-    </data>
     <data name="lblIconNoImage" xml:space="preserve">
         <value>This item cannot be displayed</value>
-    </data>
-    <data name="tipBrowse" xml:space="preserve">
-        <value>Browse</value>
     </data>
     <data name="tipPatches" xml:space="preserve">
         <value>Patches</value>
@@ -92,15 +83,6 @@
     </data>
     <data name="comboDefItem" xml:space="preserve">
         <value>Default</value>
-    </data>
-    <data name="LinPopUp_Title" xml:space="preserve">
-        <value>Notice</value>
-    </data>
-    <data name="LinPopUp_Head" xml:space="preserve">
-        <value>The name used here will be used as the visible name of the link, and as the name of the file itself.</value>
-    </data>
-    <data name="LinPopUp_Mess" xml:space="preserve">
-        <value>However, blank spaces will be replaced by '_' in the file name, for standard and convenience reasons.</value>
     </data>
     <data name="popMissReq_Mess" xml:space="preserve">
         <value>Required fields are missing</value>
@@ -128,9 +110,6 @@
     </data>
     <data name="popLinkFailure" xml:space="preserve">
         <value>Link creation has failed</value>
-    </data>
-    <data name="LinPopUp_Mess2" xml:space="preserve">
-        <value>Press Cancel to no longer display this message.</value>
     </data>
     <data name="btnMoreParams" xml:space="preserve">
         <value>More</value>
@@ -170,5 +149,23 @@
     </data>
     <data name="chkTextOnTile" xml:space="preserve">
         <value>Name on medium sized tile</value>
+    </data>
+    <data name="swtTileIcoAllUsers_Off" xml:space="preserve">
+        <value>For This User</value>
+    </data>
+    <data name="swtTileIcoAllUsers_On" xml:space="preserve">
+        <value>For All Users</value>
+    </data>
+    <data name="lblDefIconOnTileIco" xml:space="preserve">
+        <value>When using tileico, you should use a custom image, otherwise the Start Menu icon will appear empty</value>
+    </data>
+    <data name="tipDescTileIco" xml:space="preserve">
+        <value>Descriptions are not available for Tile Icons, but it will be used if you do copies of the shortcut</value>
+    </data>
+    <data name="wrnIcoToImage_header" xml:space="preserve">
+        <value>Image conversion failed</value>
+    </data>
+    <data name="wrnIcoToImage_mess" xml:space="preserve">
+        <value>Could not convert the selected .ico to an image for tileico, proceeding without one</value>
     </data>
 </root>
