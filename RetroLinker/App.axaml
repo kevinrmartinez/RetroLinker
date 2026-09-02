@@ -7,24 +7,24 @@
 
     <Application.Styles>
         <FluentTheme />
-        <!-- TODO: Customize accent colors (>= 0.9) -->
+        <!-- TODO: Customize accent colors (0.9) -->
         <!-- https://docs.avaloniaui.net/docs/basics/user-interface/styling/themes/fluent -->
     </Application.Styles>
              
     <Application.Resources>
-        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's of no use in the current implementation-->
+        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's of no use in the current implementation -->
         <!-- Fonts -->
         <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
         
-        <!-- TODO: Add globally fixed colors (Resources) (>= 0.9) -->
+        <!-- TODO: Add globally fixed colors (Resources) (0.9) -->
         <!-- https://docs.avaloniaui.net/docs/app-development/resources -->
-        <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
         <x:String x:Key="FounderName">kevinrmartinez</x:String>
+        <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
         <x:Uri x:Key="FounderUrl">https://github.com/kevinrmartinez</x:Uri>
         <x:String x:Key="TileIconifierCli">TileIconifier.CLI</x:String>
         <x:Uri x:Key="TileIconifierNetUrl">https://github.com/kevinrmartinez/TileIconifier.Net</x:Uri>
         
-        <!-- Converters -->
+        <!-- Binding Converters -->
         <!-- Strings -->
         <cc:TextToUpper x:Key="TextToUpperConverter"/>
         <cc:TextToLower x:Key="TextToLowerConverter"/>

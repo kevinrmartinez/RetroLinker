@@ -26,7 +26,7 @@ namespace RetroLinker.Views;
 public partial class MainWindow : Window
 {
     // Props
-    public Settings Settings { get; }
+    public Settings Settings { get; private set; }
     public string[] CoresList { get; }
     public (List<string>, string?) IconsListEx { get; }
     
@@ -71,6 +71,8 @@ public partial class MainWindow : Window
         CoresList = Operations.GetCoresArray();
         IconsListEx = FileOps.LoadIcons(DesktopOS);
     }
+
+    public void SetSettings(Settings settings) => Settings = settings;
     
     public void ChangeOut(MainViewTypes views, object currentValue)
     {

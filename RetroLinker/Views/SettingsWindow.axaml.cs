@@ -33,7 +33,6 @@ namespace RetroLinker.Views
 
         // PROPS/STATICS
         public Settings NewSettings { get; }
-        // public DispatcherTimer? BindTimer { get; private set; }
 
         private readonly Settings _oldSettings;
         private readonly Settings _defSettings = new();

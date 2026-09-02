@@ -204,6 +204,12 @@ public partial class MainView : UserControl
     #region Functions
     
     // Props Function
+    private void SetSettings(Settings settings) {
+        // TODO: This is a temporal workaround, this should be eliminated when a global Settings is implemented
+        Settings = settings;
+        ParentWindow.SetSettings(settings);
+    }
+    
     private string SetPatchArg(string value)
     {
         BuildingLink.PatchArg = value;
@@ -663,7 +669,7 @@ public partial class MainView : UserControl
             LockControls(true);
             var settingWindow = new SettingsWindow(ParentWindow, Settings); 
             var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
-            Settings = (settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO();
+            SetSettings((settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO());
             LoadNewSettings();
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }

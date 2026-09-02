@@ -165,9 +165,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tipBrowse {
+        public static string tipBrowseFile {
             get {
-                return ResourceManager.GetString("tipBrowse", resourceCulture);
+                return ResourceManager.GetString("tipBrowseFile", resourceCulture);
             }
         }
         
@@ -186,6 +186,12 @@ namespace RetroLinker.Translations {
         public static string GenAppName {
             get {
                 return ResourceManager.GetString("GenAppName", resourceCulture);
+            }
+        }
+        
+        public static string tipBrowseFolder {
+            get {
+                return ResourceManager.GetString("tipBrowseFolder", resourceCulture);
             }
         }
     }

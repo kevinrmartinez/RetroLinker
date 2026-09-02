@@ -113,8 +113,8 @@
     <data name="swtTextOnTileColor_On" xml:space="preserve">
         <value>Texto Claro</value>
     </data>
-    <data name="chkTextOnTile" xml:space="preserve">
-        <value>Nombre en el mosaico mediano</value>
+    <data name="chkNameOnTile" xml:space="preserve">
+        <value>Nombre en el mosaico</value>
     </data>
     <data name="swtTileIcoAllUsers_Off" xml:space="preserve">
         <value>Este Usuario</value>

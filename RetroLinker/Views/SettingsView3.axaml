@@ -39,7 +39,7 @@
                         <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" HorizontalAlignment="Stretch"
                                   SelectionChanged="ComboDEFLinkOutpu_OnSelectionChanged"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button x:Name="btnDefLinkOutput" Classes="textbox_inline browse"
+                            <Button x:Name="btnDefLinkOutput" Classes="textbox_inline browseFolder"
                                     Click="BtnDefLinkOutput_OnClick"/>
                             <Button x:Name="btnclrDefLinkOutput" Classes="textbox_inline restore"
                                     Click="BtnclrDefLinkOutput_OnClick"/>
@@ -90,7 +90,7 @@
                 <Grid x:Name="panelWindowsOnlyControls2" Margin="3,4" ColumnDefinitions="*,Auto">
                     <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button x:Name="btnIcoSavPath" Classes="browse textbox_inline" Click="btnIcoSavPath_OnClick" />
+                        <Button x:Name="btnIcoSavPath" Classes="textbox_inline browseFolder" Click="btnIcoSavPath_OnClick" />
                         <Button x:Name="btnclrIcoSavPath" Classes="restore textbox_inline"
                                 Click="btnclrIcoSavPath_Click"/>
                     </StackPanel>
@@ -127,8 +127,7 @@
                 <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static lc:resSettingsWindow.blcTileIco1}">
                     <Rectangle Width="2" />
                     <i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-                        <!-- TODO: replace with an example of a tile icon -->
-                        <ToolTip.Tip><Image Source="../Assets/Images/NaN.png" /></ToolTip.Tip>
+                        <ToolTip.Tip><Image Source="../Assets/Images/TileIcon_OFF_ON_x1.5.png" /></ToolTip.Tip>
                     </i:Icon>
                 </TextBlock>
                 <TextBlock TextWrapping="Wrap" Margin="3,0">
@@ -150,7 +149,7 @@
                     <Grid ColumnDefinitions="*,Auto" Margin="3,2">
                         <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.NewSettings.TileIcoPath}"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Classes="textbox_inline browse" CommandParameter="{Binding #txtTileIco}" 
+                            <Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtTileIco}" 
                                     Click="btnTileIco_OnClick"/>
                            <Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
                                     Click="btnTileIco_OnClick"/>
