@@ -10,7 +10,8 @@
                 <Button Classes="trash"/>
                 <Button Classes="clear_text"/>
                 <Button Classes="restore"/>
-                <Button Classes="textbox_inline browse"/>
+                <Button Classes="browseFolder"/>
+                <Button Classes="browseFile"/>
                 <ctrl:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
             </StackPanel>
         </Border>
@@ -42,10 +43,14 @@
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
-    <!-- TODO: Separate file browsing from folder browsing -->
-    <Style Selector="Button.browse">
+    <Style Selector="Button.browseFolder">
+        <Setter Property="i:Attached.Icon" Value="fa7-folder-closed"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFolder}"/>
+    </Style>
+    
+    <Style Selector="Button.browseFile">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFile}"/>
     </Style>
     
     <Style Selector="ctrl|IconFontWithTip">

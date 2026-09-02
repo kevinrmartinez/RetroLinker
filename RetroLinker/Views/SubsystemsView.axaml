@@ -9,6 +9,7 @@
              x:Class="RetroLinker.Views.SubsystemsView"
              x:DataType="vw:SubsystemsView"
              x:CompileBindings="True">
+    
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>

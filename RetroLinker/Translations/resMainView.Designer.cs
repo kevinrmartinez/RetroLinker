@@ -303,9 +303,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string chkTextOnTile {
+        public static string chkNameOnTile {
             get {
-                return ResourceManager.GetString("chkTextOnTile", resourceCulture);
+                return ResourceManager.GetString("chkNameOnTile", resourceCulture);
             }
         }
         

@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:vw="using:RetroLinker.Views"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
@@ -30,7 +29,7 @@
 						         Converter={StaticResource TextToFullPathConverter}}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnUserAssets" Classes="textbox_inline browse" Click="btnUserAssets_OnClick"/>
+							<Button x:Name="btnUserAssets" Classes="textbox_inline browseFolder" Click="btnUserAssets_OnClick"/>
 							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnclrUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
@@ -48,7 +47,7 @@
 						         IsReadOnly="{Binding DesktopOS}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnDefRADir" Classes="textbox_inline browse" Click="btnDefRADir_OnClick"/>
+							<Button x:Name="btnDefRADir" Classes="textbox_inline browseFile" Click="btnDefRADir_OnClick"/>
 							<Button x:Name="btnclrDefRADir" Classes="textbox_inline restore" Click="btnclrDefRADir_Click"/>
 						</StackPanel>
 					</Grid>
@@ -65,7 +64,7 @@
 						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnDefROMPath" Classes="textbox_inline browse" Click="btnDefROMPath_OnClick"/>
+							<Button x:Name="btnDefROMPath" Classes="textbox_inline browseFolder" Click="btnDefROMPath_OnClick"/>
 							<Button x:Name="btnclrDefROMPath" Classes="textbox_inline restore" Click="btnclrDefROMPath_Click"/>
 						</StackPanel>
 					</Grid>

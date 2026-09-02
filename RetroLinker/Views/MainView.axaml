@@ -48,7 +48,7 @@
 					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="retroarch.exe"/>
-						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browse" Click="btnRADir_OnClick"/>
+						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnRADir_OnClick"/>
 					</Grid>
 				</StackPanel>
 
@@ -61,7 +61,7 @@
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
-							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browse"/>
+							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browseFile"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa7-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
@@ -92,7 +92,7 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
-								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browse"/>
+								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browseFile"/>
 								<Button Name="btnAppendConfig" Click="btnAppendConfig_OnClick" Classes="textbox_inline" 
 								        i:Attached.Icon="fa7-plus" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}"/>
 							</StackPanel>
@@ -125,7 +125,7 @@
 							<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
 							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
 								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros.lnk"/>
-								<Button Name="btnLINKDir" Grid.Column="1" Classes="textbox_inline browse" 
+								<Button Name="btnLINKDir" Grid.Column="1" Classes="textbox_inline browseFile" 
 								        CommandParameter="{Binding #txtLINKDir}" Click="btnLINKDir_OnClick"/>
 							</Grid>
 						</StackPanel>
@@ -155,11 +155,10 @@
 							<StackPanel Orientation="Horizontal">
 								<CheckBox x:Name="chkTextOnTile" IsChecked="{Binding BuildingLink.TileIcoNameVisible}">
 									<StackPanel Orientation="Horizontal">
-										<TextBlock Text="{x:Static lc:resMainView.chkTextOnTile}"/>
+										<TextBlock Text="{x:Static lc:resMainView.chkNameOnTile}"/>
 										<Rectangle Width="3"/>
 										<i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-											<!-- TODO: replace with an example of a tile icon with and without a name -->
-											<ToolTip.Tip><Image Source="../Assets/Images/NaN.png"/></ToolTip.Tip>
+											<ToolTip.Tip><Image Source="../Assets/Images/TileIcon_NameOFF_NameON_x1.5.png"/></ToolTip.Tip>
 										</i:Icon>
 									</StackPanel>
 								</CheckBox>
@@ -223,7 +222,7 @@
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged"/>
-								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browse" Click="btnICONDir_OnClick"/>
+								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"

@@ -78,7 +78,7 @@
     <data name="btnUndo" xml:space="preserve">
         <value>Undo changes</value>
     </data>
-    <data name="tipBrowse" xml:space="preserve">
+    <data name="tipBrowseFile" xml:space="preserve">
         <value>Browse for a file</value>
     </data>
     <data name="btnClose" xml:space="preserve">
@@ -89,5 +89,8 @@
     </data>
     <data name="GenAppName" xml:space="preserve">
         <value>RetroLinker</value>
+    </data>
+    <data name="tipBrowseFolder" xml:space="preserve">
+        <value>Browse fo a folder</value>
     </data>
 </root>
