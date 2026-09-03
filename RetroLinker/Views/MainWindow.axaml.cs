@@ -26,13 +26,13 @@ namespace RetroLinker.Views;
 public partial class MainWindow : Window
 {
     // Props
+    public MainView? PermaView { get; private set; }
     public Settings Settings { get; private set; }
     public string[] CoresList { get; }
     public (List<string>, string?) IconsListEx { get; }
     
     // Fields
     public static readonly string OsDirSeparator = FileOps.OsDirSeparator.ToString();
-    private UserControl PermaView;
     public bool IsDesigner = true;
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
     
@@ -56,7 +56,7 @@ public partial class MainWindow : Window
         IconsListEx = (new List<string>(), null);
         // Settings = FileOps.LoadDesignerSettingsFO(true);
         Settings = new Settings();
-        PermaView = new RenameEntryView();
+        PermaView = null;
         if (isDesigner) return;
         
         // This is needed because of an edge case with the designer (can't remember witch)
@@ -74,15 +74,15 @@ public partial class MainWindow : Window
 
     public void SetSettings(Settings settings) => Settings = settings;
     
-    public void ChangeOut(MainViewTypes views, object currentValue)
+    public void ChangeOut(MainViewTypes views)
     {
         ContBotton.IsTransitionReversed = false;
         try
         {
             ContBotton.Content = views switch {
-                MainViewTypes.AppendView => new AppendView(this,  (string)currentValue),
-                MainViewTypes.PatchesView => new PatchesView(this, (string)currentValue),
-                MainViewTypes.SubsysView => new SubsystemsView(this, (SubsystemReq)currentValue),
+                MainViewTypes.AppendView => new AppendView(this),
+                MainViewTypes.PatchesView => new PatchesView(this),
+                MainViewTypes.SubsysView => new SubsystemsView(this),
                 _ => PermaView
             };
         }
@@ -107,7 +107,8 @@ public partial class MainWindow : Window
     }
     
     private void GoBackToMainView() {
-        // Disposal of views only required if the view has native resources: https://github.com/AvaloniaUI/Avalonia/discussions/6556
+        // Disposal of views only required if the view has native resources
+        // https://github.com/AvaloniaUI/Avalonia/discussions/6556
         ContBotton.IsTransitionReversed = true;
         ContBotton.Content = PermaView;
     }
@@ -116,16 +117,26 @@ public partial class MainWindow : Window
 
     public void ReturnToMainView(UserControl view, string args)
     {
-        var viewType = view switch {
-            AppendView => MainViewTypes.AppendView,
-            PatchesView => MainViewTypes.PatchesView,
-            SubsystemsView => MainViewTypes.SubsysView,
-            _ => MainViewTypes.MainView
-        };
-        if (PermaView is not MainView permaView) return;
+        if (PermaView is not { } mainView) return;
         
         GoBackToMainView();
-        permaView.UpdateLinkFromOutside(viewType, args);
+        switch (view)
+        {
+            case AppendView:
+                mainView.BuildingLink.CONFappend = args;
+                break;
+            case PatchesView:
+                mainView.BuildingLink.PatchArg = args;
+                break;
+            case SubsystemsView:
+                mainView.BuildingLink.SubsysArg = args;
+                break;
+            default:
+                // Should not happen
+                var viewType = view.GetType();
+                Logger.LogWarn($"A view of type '{viewType}' tried to update arguments");
+                break;
+        }
     }
 }
 

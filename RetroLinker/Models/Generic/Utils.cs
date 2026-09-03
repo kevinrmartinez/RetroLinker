@@ -93,14 +93,19 @@ namespace RetroLinker.Models.Generic
              * '([^']*)'    : Matches content inside single quotes
              * [^\s'"]+     : Matches sequences of characters that aren't spaces or quotes
              */
-            var pattern = @" ""([^""]*)"" | '([^']*)' | ([^\s'"" ]+) ";
+            const string pattern = @" ""([^""]*)"" | '([^']*)' | ([^\s'"" ]+) ";
             var matches = Regex.Matches(args, pattern, RegexOptions.IgnorePatternWhitespace);
 
             foreach (Match match in matches) {
-                // TODO: Try another foreach
-                if (match.Groups[1].Success) results.Add(match.Groups[1].Value);        // Group 1: Double quoted
-                else if (match.Groups[2].Success) results.Add(match.Groups[2].Value);   // Group 2: Single quoted
-                else if (match.Groups[3].Success) results.Add(match.Groups[3].Value);   // Group 3: Unquoted
+                // Group 1: Double quoted
+                // Group 2: Single quoted
+                // Group 3: Unquoted
+                foreach (Group matchGroup in match.Groups) {
+                    if (matchGroup.Index == 0) continue;    // This is skipped, its result is not desired 
+                    if (!matchGroup.Success) continue;
+                    results.Add(matchGroup.Value);
+                    break;
+                }
             }
             return results;
         }

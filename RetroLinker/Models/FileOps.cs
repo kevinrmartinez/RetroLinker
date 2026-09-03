@@ -250,6 +250,19 @@ namespace RetroLinker.Models
         
         public static DirectoryInfo GetDirectoryInfo(string dirPath) => new(dirPath);
 
+        public static List<FileInfo> GetFilesInDirectory(string dirPath, string searchPattern = "*", 
+            EnumerationOptions? enumerationOptions = null)
+        {
+            enumerationOptions ??= new EnumerationOptions() {
+                IgnoreInaccessible = true,
+                MatchCasing = MatchCasing.CaseInsensitive,
+                RecurseSubdirectories = false
+            };
+            var dirInfo = new DirectoryInfo(dirPath);
+            return (dirInfo.Exists) ? new List<FileInfo>(dirInfo.GetFiles(searchPattern, enumerationOptions)) 
+                : new List<FileInfo>();
+        }
+
         #endregion
 
         #region FUNCTIONS

@@ -37,7 +37,7 @@ public partial class PatchesView : UserControl
         // Constructor for Designer
         InitializeComponent();
         
-        ParentWindow = new MainWindow(true);
+        _parentWindow = new MainWindow(true);
         CoreContent = "\"path/to/rom.bin\"";
         _patchString = string.Empty;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
@@ -45,20 +45,21 @@ public partial class PatchesView : UserControl
         DataContext = this;
     }
     
-    public PatchesView(MainWindow mainWindow, string patchString)
+    public PatchesView(MainWindow mainWindow)
     {
         InitializeComponent();
         
-        ParentWindow = mainWindow;
-        CoreContent = "bbbbbbbba";
-        _patchString = patchString;
+        _parentWindow = mainWindow;
+        var buildingLink = _parentWindow.PermaView?.BuildingLink ?? new Shortcutter();
+        CoreContent = buildingLink.ROMdir;
+        _patchString = buildingLink.PatchArg;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
         DataContext = this;
     }
     
     // == Window Object ==
-    private MainWindow ParentWindow;
+    private readonly MainWindow _parentWindow;
     
     // == FIELDS ==
     private PatchOpts _patchOpts;
@@ -155,7 +156,7 @@ public partial class PatchesView : UserControl
         try {
             LockControls(true);
             var openOptions = PickerOpt.PatchOpenOptions(_patchOpts);
-            string file = await FileDialogOps.OpenFileAsync(openOptions, ParentWindow);
+            string file = await FileDialogOps.OpenFileAsync(openOptions, _parentWindow);
             if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -190,8 +191,8 @@ public partial class PatchesView : UserControl
             }
         }
         
-        ParentWindow.ReturnToMainView(this, patchComm);
+        _parentWindow.ReturnToMainView(this, patchComm);
     }
 
-    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
+    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
 }

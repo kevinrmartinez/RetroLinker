@@ -45,6 +45,7 @@ class Program
     private static readonly string LogFileName = $"{AppName}.log";
     // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
     private static readonly string LogFileBak = $"{LogFileName}.bak";
+    private const string LogDebug = "debug";
 
     #region APP
 
@@ -111,7 +112,19 @@ class Program
             FileOps.FileMoving(Logger.LogFile, bakFullName);
         }
 
+#if DEBUG
+        Logger.DebugTracing = true;
+#else
+        Logger.DebugTracing = IsDebugTracing();
+#endif
         Logger.AutoFlush = true;
+    }
+
+    private static bool IsDebugTracing() {
+        var files = FileOps.GetFilesInDirectory(FileOps.BaseDir, $"{LogDebug}");
+        if (files.Count == 0) return false;
+        string[] names = [LogDebug, $"{LogDebug}.txt"];
+        return files.Any(fsi => names.Contains(fsi.Name.ToLowerInvariant()));
     }
     
     // AppInfo

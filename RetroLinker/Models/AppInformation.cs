@@ -18,7 +18,7 @@
 
 namespace RetroLinker.Models;
 
-public readonly struct AppInformation(
+public class AppInformation(
     string fullName,
     string name,
     string version,
@@ -45,6 +45,7 @@ public readonly struct AppInformation(
                 FullName  {FullName}
                 Name      {Name}
                 Version   {Version}
+                Admin     {IsRunningAdmin}
                 BuildDate {finalDate}
                 Git Hash  {finalGitHash}
                """;
