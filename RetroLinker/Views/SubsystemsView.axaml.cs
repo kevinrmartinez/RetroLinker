@@ -13,9 +13,6 @@ namespace RetroLinker.Views;
 
 public partial class SubsystemsView : UserControl
 {
-    // Window Object
-    private MainWindow ParentWindow;
-    
     // Props
     public string Core { get; init; }
     public string CoreContent { get; init; }
@@ -30,32 +27,41 @@ public partial class SubsystemsView : UserControl
         Core = "[CORE]";
         CoreContent = "rom.zip";
         SubSystem = "[SUBSYSTEM]";
-        ParentWindow = new MainWindow(true);
+        _parentWindow = new MainWindow(true);
         Arguments = FillListTest();
         DataContext = this;
     }
 
     // Active Constructor
-    public SubsystemsView(MainWindow mainWindow, SubsystemReq subsystemReq)
+    public SubsystemsView(MainWindow mainWindow)
     {
         InitializeComponent();
-        ParentWindow = mainWindow;
-        Core = subsystemReq.Core;
-        CoreContent = subsystemReq.Content;
+        _parentWindow = mainWindow;
+        var buildingLink = _parentWindow.PermaView?.BuildingLink ?? new Shortcutter();
+        Core = buildingLink.ROMcore;
+        CoreContent = buildingLink.ROMdir;
         var subsystem = string.Empty;
         var subsystemArgs = new List<string>();
-        try {
-            var subsysArgs = CommandManager.ResolveSubsystemArg(subsystemReq.SubSystemArg);
+        try
+        {
+            var subsysArgs = CommandManager.ResolveSubsystemArg(buildingLink.SubsysArg);
             subsystem = subsysArgs.Item1;
             subsystemArgs = subsysArgs.Item2;
+        }
+        catch (System.ArgumentNullException) {
+            // Ignore
         }
         catch (System.ArgumentException ex) {
             Logger.LogErro(ex);
         }
+        
         SubSystem = subsystem;
         Arguments = new ObservableCollection<string>(subsystemArgs);
         DataContext = this;
     }
+    
+    // Window Object
+    private readonly MainWindow _parentWindow;
     
     // Subsystem controls
     
@@ -77,7 +83,7 @@ public partial class SubsystemsView : UserControl
         try 
         {
             LockControls(true);
-            var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow);
+            var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, _parentWindow);
             if (string.IsNullOrEmpty(file)) return;
             TextBoxNewArg.Text = file;
         }
@@ -118,10 +124,10 @@ public partial class SubsystemsView : UserControl
         var subsysArg = (string.IsNullOrEmpty(SubSystem)) 
             ? string.Empty 
             : CommandManager.CreateSubsystemArg(SubSystem, Arguments);
-        ParentWindow.ReturnToMainView(this, subsysArg);
+        _parentWindow.ReturnToMainView(this, subsysArg);
     }
 
-    private void BtnDiscSubsystem_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
+    private void BtnDiscSubsystem_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
     
     // Designer Only
     private ObservableCollection<string> FillListTest()
@@ -134,11 +140,4 @@ public partial class SubsystemsView : UserControl
         }
         return arguments;
     }
-}
-
-public readonly struct SubsystemReq(string core, string coreContent, string subSystem)
-{
-    public string Core { get; } = core;
-    public string Content { get; } = coreContent;
-    public string SubSystemArg { get; } = subSystem;
 }

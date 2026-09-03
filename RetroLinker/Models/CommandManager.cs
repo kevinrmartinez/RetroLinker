@@ -132,6 +132,8 @@ namespace RetroLinker.Models
         // AppendConfig
         public static (string, List<string>) ResolveAppendConfigArg(string arg)
         {
+            if(string.IsNullOrWhiteSpace(arg))
+                throw new System.ArgumentNullException(nameof(arg));
             if (!arg.StartsWith(appendConfig))
                 throw new System.ArgumentException(@"Invalid append config argument: '" + arg + @"'", nameof(arg));
             
@@ -155,6 +157,8 @@ namespace RetroLinker.Models
         // Subsystem
         public static (string, List<string>) ResolveSubsystemArg(string arg)
         {
+            if(string.IsNullOrWhiteSpace(arg))
+                throw new System.ArgumentNullException(nameof(arg));
             if (!arg.StartsWith(subsystem))
                 throw new System.ArgumentException(@"Invalid subsystem argument: '" + arg + @"'", nameof(arg));
             
@@ -173,25 +177,6 @@ namespace RetroLinker.Models
                 fixedArgs.Add(Utils.PutPathBetweenQuotes(subsysArg));
             arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
             return arg;
-        }
-
-        public static void TestAllOptions()
-        {
-            var patchArg = "--ups=\"path/to/rom.bin\"";
-            var subsysArg = "--subsystem=abc \"path/to/rom1.bin\" \"path/to/rom 2.bin\"";
-            var CONFappend = "--appendconfig=\"/path/to/config1.conf|/path/to/config 2.conf|/path/to/config3.conf\"";
-            
-            var patchResolved = ResolveSoftPatchingArg(patchArg);
-            var subsysResolved = ResolveSubsystemArg(subsysArg);
-            var confResolved = ResolveAppendConfigArg(CONFappend);
-            
-            Logger.LogDebg($"{patchResolved.Item1}, {patchResolved.Item2.PatchType}");
-            Logger.LogDebg($"{subsysResolved.Item1}, {Utils.GetMultiLineStringFromList(subsysResolved.Item2)}");
-            Logger.LogDebg($"{confResolved.Item1}, {Utils.GetMultiLineStringFromList(confResolved.Item2)}");
-            
-            Logger.LogDebg(CreateSoftPatchingArg(patchResolved.Item1, patchResolved.Item2));
-            Logger.LogDebg(CreateSubsystemArg(subsysResolved.Item1, subsysResolved.Item2));
-            Logger.LogDebg(CreateAppendConfigArg(confResolved.Item2));
         }
     }
     

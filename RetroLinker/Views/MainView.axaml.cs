@@ -378,24 +378,7 @@ public partial class MainView : UserControl
     }
     
     // External/Call-back
-    public void UpdateLinkFromOutside(MainViewTypes viewType, string longArg)
-    {
-        switch (viewType)
-        {
-            case MainViewTypes.PatchesView:
-                PatchArg = longArg;
-                break;
-            case MainViewTypes.SubsysView:
-                SubsysArg = longArg;
-                break;
-            case MainViewTypes.AppendView:
-                CONFappend =  longArg;
-                break;
-            default:
-                Logger.LogErro("Unexpected view type at UpdateLinkFromOutside: " + viewType);
-                break;
-        }
-    }
+    
     
     // Other Functions
     string UpdateFixedLinkName(string fileNameNoExt, string? core) {
@@ -820,7 +803,7 @@ public partial class MainView : UserControl
     void btnROMDir_OnClick(object sender, RoutedEventArgs e) => btnROMDir_ClickAsync();
     
     void BtnPatches_OnClick(object? sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainViewTypes.PatchesView, BuildingLink.PatchArg);
+        ParentWindow.ChangeOut(MainViewTypes.PatchesView);
     }
     #endregion
 
@@ -840,21 +823,14 @@ public partial class MainView : UserControl
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
-        else {
-            FixedOutputName = UpdateFixedLinkName(txtLINKRename.Text, combo.Text);
-        }
+        else FixedOutputName = UpdateFixedLinkName(txtLINKRename.Text, combo.Text);
         UpdateContext();
     }
     
-    void btnSubSys_OnClick(object sender, RoutedEventArgs e)
-    {
-        // BuildingLink.ROMcore, BuildingLink.ROMdir,
-        var reqs = new SubsystemReq(
-            comboCore.Text ?? string.Empty, 
-            txtROMDir.Text ?? string.Empty, 
-            BuildingLink.SubsysArg);
-        ParentWindow.ChangeOut(MainViewTypes.SubsysView, reqs);
+    void btnSubSys_OnClick(object sender, RoutedEventArgs e) {
+        ParentWindow.ChangeOut(MainViewTypes.SubsysView);
     }
+    
     #endregion
 
     #region Config Controls
@@ -885,8 +861,7 @@ public partial class MainView : UserControl
     
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        BuildingLink.CONFfile = comboConfig.SelectedIndex switch
-        {
+        BuildingLink.CONFfile = comboConfig.SelectedIndex switch {
             -1 => null,
             0 => string.Empty,
             _ => (string)comboConfig.SelectedItem!
@@ -894,7 +869,7 @@ public partial class MainView : UserControl
     }
     
     void btnAppendConfig_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.ChangeOut(MainViewTypes.AppendView, BuildingLink.CONFappend);
+        ParentWindow.ChangeOut(MainViewTypes.AppendView);
     }
     #endregion
 
