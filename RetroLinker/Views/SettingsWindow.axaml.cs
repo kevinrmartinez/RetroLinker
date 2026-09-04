@@ -91,7 +91,12 @@ namespace RetroLinker.Views
         #endregion
         
         #region Window/Dialog Controls
-        void btnDISSettings_OnClick(object sender, RoutedEventArgs e) => CloseWindow(null);
+
+        void btnDISSettings_OnClick(object sender, RoutedEventArgs e) {
+            if (NewSettings.ChosenTheme != _oldSettings.ChosenTheme)
+                if (CCTab1.Content is SettingsView view) view.SetCurrentTheme(_oldSettings.ChosenTheme);
+            CloseWindow(null);
+        }
 
         async void btnDEFSettings_Click()
         {

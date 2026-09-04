@@ -130,7 +130,8 @@ public partial class MainView : UserControl
         txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
         ApplyDragDropEvents();
         ApplySettingsToControls();
-            
+        
+        // TODO: Make these 3 async, but shouldn't block the main view and its controls
         comboCore_Loaded(ParentWindow.CoresList);
         comboConfig_Loaded();
         comboICONDir_Loaded(ParentWindow.IconsListEx);
@@ -162,27 +163,27 @@ public partial class MainView : UserControl
     void comboICONDir_Loaded((List<string> list, string? error) icons)
     {
         comboICONDir.Items.Clear();
-        if (string.IsNullOrEmpty(icons.error))
-        {
-            comboICONDir.Items.Add(resMainView.comboDefItem);
+        comboICONDir.Items.Add(resMainView.comboDefItem);
+        // REWRITE: This could be a try-catch
+        if (string.IsNullOrEmpty(icons.error)) {
             foreach (var iconFile in icons.list)
                 comboICONDir.Items.Add(iconFile);
             Logger.LogInfo("Icons list imported");
-
-            PreloadedIconsCount = comboICONDir.ItemCount;
-            comboICONDir.SelectedIndex++;
-            rdoIconDef.IsChecked = true;
         }
-        else
-        {
+        else {
             var message = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{icons.error}'";
             var content = new PopUpGenericContent(message, resMainView.popIconsError_Title);
             _ = this.PopUpGenericMessageBox(content, GenericPopUpType.Error);
         }
+        
+        PreloadedIconsCount = comboICONDir.ItemCount;
+        comboICONDir.SelectedIndex++;
+        rdoIconDef.IsChecked = true;
     }
 
     void ApplyDragDropEvents()
     {
+        // REWRITE: This can be done with separated border elements
         var borderTransition = new BrushTransition() {
             Property = BorderBrushProperty,
             Duration = System.TimeSpan.FromMilliseconds(250),
@@ -191,12 +192,13 @@ public partial class MainView : UserControl
         AvaloniaTemplatedControl[] templatedControls = [comboICONDir, txtRADir, txtROMDir, comboConfig, txtLINKDir];
         foreach (var control in templatedControls)
         {
-            DragDrop.SetAllowDrop(control, true);
-            if (control.Transitions != null) control.Transitions.Add(borderTransition);
+            if (control.Transitions is { } transitions) transitions.Add(borderTransition);
             else control.Transitions = [ borderTransition ];
-            control.AddHandler(DragDrop.DragEnterEvent, ControlBox_DragEnter);
-            control.AddHandler(DragDrop.DragLeaveEvent, ControlBox_DragLeave);
-            control.AddHandler(DragDrop.DropEvent, ControlBox_DropParse);
+            DragDrop.SetAllowDrop(control, true);
+            DragDrop.AddDragOverHandler(control, ControlBox_DragEnter);
+            DragDrop.AddDragLeaveHandler(control, ControlBox_DragLeave);
+            DragDrop.AddDropHandler(control, ControlBox_DropParse);
+            // https://docs.avaloniaui.net/docs/how-to/drag-and-drop-how-to
         }
     }
     #endregion
@@ -360,7 +362,7 @@ public partial class MainView : UserControl
     async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs) {
         var popupWindow = new PopUpWindow();
         popupWindow.RenamePopUp(givenPath, givenCore, outputs);
-        return await popupWindow.ShowDialog<List<ShortcutterOutput>>(ParentWindow);
+        return await popupWindow.ShowDialog<List<ShortcutterOutput>?>(ParentWindow) ?? new List<ShortcutterOutput>();
     }
     
     async Task<bool> OverwriteFilePopUp(string pathToFile)
@@ -393,12 +395,15 @@ public partial class MainView : UserControl
 
     bool IsRenameInactive() => Settings is { AlwaysAskOutput: true, TileIcoPath: null };
     
-    // Execution
     void LockControls(bool lockControls) {
         gridBODY.IsEnabled = !lockControls;
         UpdateContext();
     }
+    
+    #endregion
 
+    #region Execution
+    
     void ResetAfterExecute()
     {
         if (BuildingLink.OutputPaths.Count == 0 && PreviousOutput.ValidOutput)
@@ -923,11 +928,10 @@ public partial class MainView : UserControl
         try {
             LockControls(true);
             LinkCustomName = false;
-            var fullPath = FileOps.CombineMultipleInputs(
-                Settings.DEFLinkOutput, 
-                (string.IsNullOrWhiteSpace(textBox.Text)) ? LinuxDesktopEntry.NamePlaceHolder : textBox.Text
-            );
-            // TODO: If pop-up gets discarded, the output returns without extension
+            var properFileName = (string.IsNullOrWhiteSpace(textBox.Text))
+                ? LinuxDesktopEntry.NamePlaceHolder
+                : textBox.Text + FileOps.GetOutputExt(DesktopOS);
+            var fullPath = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, properFileName);
             BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
             if (BuildingLink.OutputPaths.Count == 0) return;
         
@@ -981,7 +985,7 @@ public partial class MainView : UserControl
     void ControlBox_DragLeave(object? sender, DragEventArgs e)
     {
         if (sender is not AvaloniaTemplatedControl tc) return;
-        tc.BorderBrush = txtDesc.BorderBrush;
+        ResetBorderBrush(tc);
     }
 
     void ControlBox_DropParse(object? sender, DragEventArgs e)
@@ -991,14 +995,20 @@ public partial class MainView : UserControl
         var text = e.DataTransfer.TryGetText();
         if (filesEnum is not null && filesEnum.Any()) {
             var files = new List<IStorageItem>(filesEnum);
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandleDrop(tc, files.First().Path.LocalPath), tc));
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => 
+                ControlBox_DropResult(ControlBox_HandleDrop(tc, files.First().Path.LocalPath), tc)
+                );
             return;
         }
         if (!string.IsNullOrWhiteSpace(text)) {
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc));
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => 
+                ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc)
+                );
             return;
         }
-        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(false, tc));
+        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => 
+            ControlBox_DropResult(false, tc)
+            );
     }
     
     bool ControlBox_HandleDrop(AvaloniaTemplatedControl sender, string droppedPath)
@@ -1044,8 +1054,13 @@ public partial class MainView : UserControl
     {
         var resultBrush = accepted ? Brushes.LimeGreen : Brushes.Crimson; 
         tc.BorderBrush = resultBrush;
-        await Task.Delay(700);
-        // TODO: If 'txtLINKRename' is the one changing...
+        await Task.Delay(1000);
+        ResetBorderBrush(tc);
+    }
+
+    void ResetBorderBrush(AvaloniaTemplatedControl tc) {
+        // 'tc.ClearValue(BorderBrushProperty);' should do this, but I'm having mixed results
+        // tc.SetValue(BorderBrushProperty, AvaloniaProperty.UnsetValue);
         tc.BorderBrush = txtLINKRename.BorderBrush;
     }
     #endregion

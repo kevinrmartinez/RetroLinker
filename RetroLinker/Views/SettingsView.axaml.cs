@@ -76,10 +76,10 @@ namespace RetroLinker.Views
         #endregion
         
         // Appearance
-        void LoadTheme(byte ThemeCode)
+        void LoadTheme(byte themeCode)
         {
             // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
-            switch (ThemeCode)
+            switch (themeCode)
             {
                 case 1: // Light
                     swtThemeSwitch.IsChecked = false;
@@ -93,17 +93,19 @@ namespace RetroLinker.Views
             }
         }
         
+        public void SetCurrentTheme(byte themeCode) => LoadTheme(themeCode);
+        
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             // Avalonia's Designer gets borked on this part
             if (swtThemeSwitch.IsChecked.GetValueOrDefault())
             {
-                Application.Current!.RequestedThemeVariant = dark_theme;
+                Application.Current?.RequestedThemeVariant = dark_theme;
                 ParentWindow.NewSettings.ChosenTheme = 2;
             }
             else
             {
-                Application.Current!.RequestedThemeVariant = light_theme;
+                Application.Current?.RequestedThemeVariant = light_theme;
                 ParentWindow.NewSettings.ChosenTheme = 1;
             }
         }

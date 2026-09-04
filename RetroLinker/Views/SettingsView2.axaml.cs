@@ -76,53 +76,75 @@ public partial class SettingsView2 : UserControl
 
     void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
     
-    void btnclrUserAssets_OnClick(object sender, RoutedEventArgs e) {
+    void btnrevUserAssets_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.NewSettings.UserAssetsPath = ParentWindow.GetDefSettings().UserAssetsPath;
         // txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
     }
     
     // RA EXECUTABLE
-    async void btnDefRADir_ClickAsync()
+    async void btnDefRADir_ClickAsync(TextBox textBox)
     {
         try {
             LockControls(true);
             var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
-            string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
+            string currentFile = ((string.IsNullOrEmpty(textBox.Text)) || !DesktopOS) ? string.Empty : textBox.Text;
             string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrWhiteSpace(file)) return;
-            // txtDefRADir.Text = file;
             ParentWindow.NewSettings.DEFRADir = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
-    void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
-    
-    void btnclrDefRADir_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.NewSettings.DEFRADir = (DesktopOS) ? ParentWindow.GetDefSettings().DEFRADir : FileOps.LinuxRABin;
-        // txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+    void btnDefRADir_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnDefRADir_ClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.DEFRADir = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().DEFRADir,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.DEFRADir
+                };
+                break;
+        }
+        UpdateContext();
     }
     
     // DEFAULT ROM PATH
-    async void btnDefROMPath_ClickAsync()
+    async void btnDefROMPath_ClickAsync(TextBox textBox)
     {
         try {
             LockControls(true);
-            string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
+            string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            // txtDefROMPath.Text = folder;
             ParentWindow.NewSettings.DEFROMPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
-    void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();
-    
-    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.NewSettings.DEFROMPath = ParentWindow.GetDefSettings().DEFROMPath;
-        // txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+    void btnDefROMPath_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnDefROMPath_ClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.DEFROMPath = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().DEFROMPath,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.DEFROMPath // Shouldn't happen
+                };
+                break;
+        }
+        UpdateContext();
     }
 }

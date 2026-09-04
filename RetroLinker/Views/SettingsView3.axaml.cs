@@ -317,7 +317,8 @@ namespace RetroLinker.Views
                 case TextBoxActions action:
                     ParentWindow.NewSettings.TileIcoPath = action switch {
                         TextBoxActions.Restore => ParentWindow.GetOldSettings().TileIcoPath,
-                        _ => null
+                        TextBoxActions.Clear => null,
+                        _ => ParentWindow.NewSettings.TileIcoPath
                     };
                     break;
             }

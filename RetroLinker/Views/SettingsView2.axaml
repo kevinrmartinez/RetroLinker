@@ -30,7 +30,7 @@
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
 							<Button x:Name="btnUserAssets" Classes="textbox_inline browseFolder" Click="btnUserAssets_OnClick"/>
-							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnclrUserAssets_OnClick"/>
+							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnrevUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -47,8 +47,12 @@
 						         IsReadOnly="{Binding DesktopOS}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnDefRADir" Classes="textbox_inline browseFile" Click="btnDefRADir_OnClick"/>
-							<Button x:Name="btnclrDefRADir" Classes="textbox_inline restore" Click="btnclrDefRADir_Click"/>
+							<Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtDefRADir}" 
+							        Click="btnDefRADir_OnClick"/>
+							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
+							        Click="btnDefRADir_OnClick"/>
+							<Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}" 
+							        Click="btnDefRADir_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -64,8 +68,12 @@
 						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnDefROMPath" Classes="textbox_inline browseFolder" Click="btnDefROMPath_OnClick"/>
-							<Button x:Name="btnclrDefROMPath" Classes="textbox_inline restore" Click="btnclrDefROMPath_Click"/>
+							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtDefROMPath}" 
+							        Click="btnDefROMPath_OnClick"/>
+							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
+							        Click="btnDefROMPath_OnClick"/>
+							<Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+							        Click="btnDefROMPath_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
