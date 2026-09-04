@@ -34,7 +34,6 @@ public static class Operations
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
-    // TODO: these two are set to many times on runtime...
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMTopDir { get; private set; }
 
@@ -49,8 +48,7 @@ public static class Operations
             FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
             Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
-        Cores = FileOps.LoadCores(coresFile);
-        return Cores;
+        return Cores = FileOps.LoadCores(coresFile);
     }
 
     private static Uri GetDefaultCores() => new(CoreList);
@@ -68,20 +66,34 @@ public static class Operations
 
     public static async void SetDesktopStorageFolder(TopLevel topLevel)
     {
-        DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
-        var dbgOut = (DesktopFolder is null) 
-            ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\"" 
-            : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
-        Logger.LogDebg(dbgOut);
+        try
+        {
+            DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
+            var dbgOut = (DesktopFolder is null)
+                ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\""
+                : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);
+        }
+        catch (Exception ex) {
+            Logger.LogErro(ex);
+            DesktopFolder = null;
+        }
     }
     
     public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
     {
-        if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
-        ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
-        var dbgOut = (ROMTopDir is null)
-            ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
-            : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
-        Logger.LogDebg(dbgOut);
+        try
+        {
+            if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
+            ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
+            var dbgOut = (ROMTopDir is null)
+                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
+                : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);
+        }
+        catch (Exception ex) {
+            Logger.LogErro(ex);
+            ROMTopDir = null;
+        }
     }
 }
