@@ -132,7 +132,8 @@ public static class ShortcutManager
             new(TileIcoOptions.name, link.FriendlyName),
             new(TileIcoOptions.target, link.RaExecutable),
             new(TileIcoOptions.arguments, link.RaArguments),
-            new(TileIcoOptions.icon, link.IconPath)
+            new(TileIcoOptions.icon, link.IconPath),
+            new(TileIcoOptions.all_users, link.TileIcoAllUsers)
         ]);
         if (!string.IsNullOrEmpty(link.TileIcoImagePath)) 
             tileIcoArguments.Add(new(TileIcoOptions.image, link.TileIcoImagePath));
