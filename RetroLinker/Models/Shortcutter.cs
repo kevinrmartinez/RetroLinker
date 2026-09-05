@@ -23,7 +23,7 @@ using RetroLinker.Translations;
 
 namespace RetroLinker.Models
 {
-    public class Shortcutter
+    public class Shortcutter : System.ICloneable
     {
         // TODO: Revise the names and setter of the properties (0.9)
         #region Object
@@ -49,7 +49,7 @@ namespace RetroLinker.Models
         public string ROMname
         {
             get => rom_name;
-            private set { SetROMname(value); }  // TODO: Retire, it's not used in anything
+            private set { SetROMname(value); }  // TODO: Retire, it's not used in anything (0.9)
         }    // 3
         public string ROMcore { get; set; }     // 4
         public string? CONFfile { get; set; }   // 5
@@ -96,32 +96,7 @@ namespace RetroLinker.Models
             FinishSetup();
         }
 
-        public Shortcutter(Shortcutter objToClone)
-        {
-            // TODO: Inherit the class from IClonable, and replace this
-            RAdir = objToClone.RAdir;
-            RApath = objToClone.RApath;
-            ROMdir = objToClone.ROMdir;
-            ROMname = objToClone.ROMname;
-            ROMcore = objToClone.ROMcore;
-            CONFfile = objToClone.CONFfile;
-            ICONfile = objToClone.ICONfile;
-            Command = objToClone.Command;
-            Desc = objToClone.Desc;
-            OutputPaths = objToClone.OutputPaths;
-            VerboseB = objToClone.VerboseB;
-            FullscreenB = objToClone.FullscreenB;
-            AccessibilityB = objToClone.AccessibilityB;
-            MenuOnErrorB = objToClone.MenuOnErrorB;
-            PatchArg = objToClone.PatchArg;
-            CONFappend = objToClone.CONFappend;
-            SubsysArg = objToClone.SubsysArg;
-            TileIcoNameVisible = objToClone.TileIcoNameVisible;
-            TileIcoNameDark = objToClone.TileIcoNameDark;
-            TileIcoAllUsers  = objToClone.TileIcoAllUsers;
-            TileIcoImage  = objToClone.TileIcoImage;
-            FinishSetup();
-        }
+        public object Clone() => this.MemberwiseClone();
 
         private void FinishSetup()
         {
@@ -287,29 +262,13 @@ namespace RetroLinker.Models
         }
         
         // Methods
-        void RebuildOutput(string newFullPath)
-        {
-            if (FullPath == newFullPath) return;
-            FullPath = newFullPath;
-            FileName = FileOps.GetFileNameFromPath(newFullPath);
-        }
-
-        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
+        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool desktopOs, string? romCore)
         {
             // REWRITE: reorganize constructors along with this method
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
-            var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
+            var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(desktopOs);
             return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))
                     : new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
-        }
-
-        // REWRITE: Obsolete?
-        public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore, ShortcutterOutput? baseOutput)
-        {
-            var newOutput = (DesktopOS) ? new ShortcutterOutput(fullPath) : new ShortcutterOutput(fullPath, romCore);
-            
-            if (baseOutput is null) return newOutput;
-            return (!DesktopOS && baseOutput.CustomEntryName) ? baseOutput : newOutput;
         }
     }
 

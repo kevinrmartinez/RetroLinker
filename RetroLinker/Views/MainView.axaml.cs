@@ -418,27 +418,28 @@ public partial class MainView : UserControl
     {
         try {
             LockControls(true);
-            var OutputLink = new Shortcutter(BuildingLink);
-            BuildingLink.OutputPaths = new();
-
+            var outputLink = (Shortcutter)BuildingLink.Clone();
+            outputLink.OutputPaths = new List<ShortcutterOutput>(BuildingLink.OutputPaths);
+            BuildingLink.OutputPaths.Clear();
+            
             // Controls Lock
             LockControls(true);
             // Avalonia.Threading.Dispatcher.UIThread.Invoke(() => LockForExecute(true), DispatcherPriority.Normal);
             
             // Checkboxes!
-            OutputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
-            OutputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
-            OutputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
-            OutputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
+            outputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
+            outputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
+            outputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
+            outputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
 
             // Validating contentless or not
-            OutputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : OutputLink.ROMdir;
+            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : outputLink.ROMdir;
 
             // Validate there's an executable (Linux)
-            OutputLink.RAdir = ValidateLINBin(OutputLink.RAdir);
+            outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
 
             // Validate there is a core
-            OutputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
+            outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
 
             // TODO: Move to a separated method
             // Link handling
@@ -450,7 +451,7 @@ public partial class MainView : UserControl
                 {
                     var outDirectory = (Settings.TileIcoPath is null)
                         ? Settings.DEFLinkOutput
-                        : FileOps.TileIconOutDirs[OutputLink.TileIcoAllUsers];
+                        : FileOps.TileIconOutDirs[outputLink.TileIcoAllUsers];
                     var outputPathStr = (IsRenameInactive())
                         ? linkDir
                         : FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS), outDirectory);
@@ -458,37 +459,37 @@ public partial class MainView : UserControl
                 }
                 else
                 {
-                    if ((OutputLink.OutputPaths.Count > 0) && OutputLink.OutputPaths.First().CustomEntryName) {
-                        outputPath = OutputLink.OutputPaths.First();
+                    if ((outputLink.OutputPaths.Count > 0) && outputLink.OutputPaths.First().CustomEntryName) {
+                        outputPath = outputLink.OutputPaths.First();
                     }
                     else
                     {
                         if (!Settings.AlwaysAskOutput) {
                             var outputPathStr = FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS),
                                 Settings.DEFLinkOutput);
-                            outputPath = new ShortcutterOutput(outputPathStr, OutputLink.ROMcore);
+                            outputPath = new ShortcutterOutput(outputPathStr, outputLink.ROMcore);
                         }
-                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(OutputLink.OutputPaths.First(), DesktopOS, OutputLink.ROMcore);
+                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(outputLink.OutputPaths.First(), DesktopOS, outputLink.ROMcore);
                     }
                 }
 
-                if (OutputLink.OutputPaths.Count == 0) OutputLink.OutputPaths.Add(outputPath);
-                else if (OutputLink.OutputPaths.First().FullPath != outputPath.FullPath)
+                if (outputLink.OutputPaths.Count == 0) outputLink.OutputPaths.Add(outputPath);
+                else if (outputLink.OutputPaths.First().FullPath != outputPath.FullPath)
                 {
                     // This is just to not use fixed array positions...
                     // Alternative: OutputLink.OutputPaths[0] = outputPath;
-                    var oldOutputIndex = OutputLink.OutputPaths.IndexOf(OutputLink.OutputPaths.First());
-                    OutputLink.OutputPaths[oldOutputIndex] = outputPath;
+                    var oldOutputIndex = outputLink.OutputPaths.IndexOf(outputLink.OutputPaths.First());
+                    outputLink.OutputPaths[oldOutputIndex] = outputPath;
                 }
             }
             
             // Include a link description, if any
-            OutputLink.Desc = txtDesc.Text;
+            outputLink.Desc = txtDesc.Text;
 
             // TODO: Move to a separated method
             // Icons handling
             void UpdateUserIcon(string newPath) {
-                OutputLink.ICONfile = newPath;
+                outputLink.ICONfile = newPath;
                 
                 if (IconItemSET is { ConversionRequired: true, comboIconIndex: { } index })
                 {
@@ -502,7 +503,7 @@ public partial class MainView : UserControl
                 }
             }
             
-            if (comboICONDir.SelectedIndex == 0) OutputLink.ICONfile = string.Empty; // RA binary icon (Default)
+            if (comboICONDir.SelectedIndex == 0) outputLink.ICONfile = string.Empty; // RA binary icon (Default)
             else
             {
                 if (DesktopOS)
@@ -510,18 +511,18 @@ public partial class MainView : UserControl
                     // If it's Windows, the images may need to be converted to .ico
                     if (IconItemSET is { ConversionRequired: true })
                     {
-                        OutputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
-                        OutputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                        if (!FileOps.IsFileWinPE(OutputLink.ICONfile))
+                        outputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
+                        outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
+                        if (!FileOps.IsFileWinPE(outputLink.ICONfile))
                         {
-                            string ROMIcoSavAUX = (string.IsNullOrEmpty(OutputLink.ROMdir)) ? OutputLink.RAdir : OutputLink.ROMdir;
-                            if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = OutputLink.ROMcore;
-                            if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(OutputLink));
+                            string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir)) ? outputLink.RAdir : outputLink.ROMdir;
+                            if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = outputLink.ROMcore;
+                            if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
                             var newPath = Settings.IcoSavPath switch
                             {
-                                SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, ROMIcoSavAUX),
-                                SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(OutputLink.ICONfile, OutputLink.RAdir),
-                                _ => FileOps.CpyIconToUsrSet(OutputLink.ICONfile)
+                                SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(outputLink.ICONfile, ROMIcoSavAUX),
+                                SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(outputLink.ICONfile, outputLink.RAdir),
+                                _ => FileOps.CpyIconToUsrSet(outputLink.ICONfile)
                             };
                             UpdateUserIcon(newPath);
                         }
@@ -540,13 +541,13 @@ public partial class MainView : UserControl
                             Logger.LogDebg(ms.ToString("G"));
                             Logger.LogErro(ex);
                         }
-                        finally { OutputLink.TileIcoImage = imageFromIco; }
+                        finally { outputLink.TileIcoImage = imageFromIco; }
                     }
                 }
                 // If it's Linux, no conversion is required
 
                 // In case of 'CpyUserIcon = true'
-                if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(OutputLink.ICONfile));
+                if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
             }
 
             // REQUIRED FIELDS CHECKS
@@ -554,11 +555,11 @@ public partial class MainView : UserControl
             PopUpGenericContent popUpContent;
             GenericPopUpType popUpType;
             var outputIsValid = false;
-            if (OutputLink.OutputPaths.Count > 0)
-                if (OutputLink.OutputPaths.First().ValidOutput) outputIsValid = true;
-            if ((!string.IsNullOrEmpty(OutputLink.RAdir))
-                && (!string.IsNullOrEmpty(OutputLink.ROMdir))
-                && (!string.IsNullOrEmpty(OutputLink.ROMcore))
+            if (outputLink.OutputPaths.Count > 0)
+                if (outputLink.OutputPaths.First().ValidOutput) outputIsValid = true;
+            if ((!string.IsNullOrEmpty(outputLink.RAdir))
+                && (!string.IsNullOrEmpty(outputLink.ROMdir))
+                && (!string.IsNullOrEmpty(outputLink.ROMcore))
                 && (outputIsValid))
             {
                 Logger.LogDebg("All fields for link creation have been accepted.");
@@ -566,7 +567,7 @@ public partial class MainView : UserControl
                 // Check for overwriting
                 if (!IsRenameInactive()) {
                     // If the user selects no, the execution is canceled
-                    var overwriteResult = await OverwriteFilePopUp(OutputLink.OutputPaths.First().FullPath);
+                    var overwriteResult = await OverwriteFilePopUp(outputLink.OutputPaths.First().FullPath);
                     if (!overwriteResult) {
                         ResetAfterExecute();
                         return;
@@ -576,19 +577,19 @@ public partial class MainView : UserControl
                 // Double quotes for directories that are parameters ->
                 // -> for the ROM file
                 if (!chkContentless.IsChecked.GetValueOrDefault()) 
-                { OutputLink.ROMdir = Utils.PutPathBetweenQuotes(OutputLink.ROMdir); }
+                { outputLink.ROMdir = Utils.PutPathBetweenQuotes(outputLink.ROMdir); }
 
                 // -> for the config file
-                if (!string.IsNullOrEmpty(OutputLink.CONFfile)) 
-                { OutputLink.CONFfile = Utils.PutPathBetweenQuotes(OutputLink.CONFfile); }
+                if (!string.IsNullOrEmpty(outputLink.CONFfile)) 
+                { outputLink.CONFfile = Utils.PutPathBetweenQuotes(outputLink.CONFfile); }
 
                 // Link Copies handling
                 if (Settings.MakeLinkCopy)
-                    OutputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, OutputLink.OutputPaths.First()));
-                PreviousOutput = OutputLink.OutputPaths.First();
+                    outputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, outputLink.OutputPaths.First()));
+                PreviousOutput = outputLink.OutputPaths.First();
                 
                 // Create Shortcuts
-                List<ShortcutterResult> opResult = OutputLink.BuildShortcut(DesktopOS);
+                List<ShortcutterResult> opResult = outputLink.BuildShortcut(DesktopOS);
                 // TODO: Move to a separated method, maybe
                 // Single Shortcut created
                 if (opResult.Count == 1)
