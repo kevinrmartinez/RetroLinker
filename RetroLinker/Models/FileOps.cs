@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using RetroLinker.Models.Linux;
 
 namespace RetroLinker.Models
@@ -93,9 +94,9 @@ namespace RetroLinker.Models
 
         public static bool ExistSettingsJsonFile() => File.Exists(PathToSettingFileJson);
 
-        public static Settings LoadSettingsFO()
+        public static async Task<Settings> LoadSettingsFO()
         {
-            LoadedSettings = SettingsOps.LoadSettings();
+            LoadedSettings = await SettingsOps.LoadSettings();
             Logger.LogDebg($"Settings loaded for {nameof(FileOps)}");
             BuildConfigDir(LoadedSettings);
             return LoadedSettings;
@@ -122,7 +123,7 @@ namespace RetroLinker.Models
             return LoadedSettings;
         }
 
-        public static string ReadSettingsFile() => ReadFileTextToEnd(PathToSettingFileJson);
+        public static Task<string> ReadSettingsFile() => ReadFileTextToEndAsync(PathToSettingFileJson);
         
         public static async void WriteSettingsFile(string settingString)
         {
@@ -146,6 +147,34 @@ namespace RetroLinker.Models
         #endregion
 
         #region Load
+
+        public static bool LogFileIsWritable(string logFilePath)
+        {
+            if (File.Exists(logFilePath))
+            {
+                try
+                {
+                    using var fsWriter = File.AppendText(logFilePath);
+                    fsWriter.Write("================================================\n");
+                    fsWriter.Close();
+                }
+                catch (Exception ex) {
+                    Logger.LogErro(ex);
+                    return false; 
+                }
+            }
+            else
+            {
+                try {
+                    File.Create(logFilePath).Close();
+                }
+                catch (Exception ex) {
+                    Logger.LogErro(ex);
+                    return false;
+                }
+            }
+            return true;
+        }
         
         public static bool GetCoreFile(out string file)
         {
@@ -159,12 +188,12 @@ namespace RetroLinker.Models
             return true;
         }
         
-        public static string[] LoadCores(string filePath)
+        public static async Task<string[]> LoadCores(string filePath)
         {
             try
             {
                 Logger.LogInfo($"Starting reading of \"{filePath}\".");
-                var cores = ReadFileLinesToEnd(filePath);
+                var cores = await ReadFileLinesToEndAsync(filePath);
                 Logger.LogInfo($"Completed reading of \"{filePath}\".");
                 return cores;
             }
@@ -178,7 +207,7 @@ namespace RetroLinker.Models
 
         public static (List<string>, string?) LoadIcons(bool DesktopOS)
         {
-            var dir = LoadedSettings.UserAssetsPath + Path.DirectorySeparatorChar;
+            var dir = LoadedSettings.UserAssetsPath + OsDirSeparator;
             var files = new List<string>();
             string? iconException = null;
 
@@ -237,13 +266,45 @@ namespace RetroLinker.Models
         
         public static bool PathAlreadyExists(string path) => Path.Exists(path);
 
-        public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
-        
-        public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
+        public static bool PathAlreadyExistsAndNotEmpty(string path) {
+            if (!Path.Exists(path)) return true;
+            else return (GetFileInfo(path).Length > 0);
+        }
 
-        public static void FileMoving(string source, string destination, bool overwrite = false) => File.Move(source, destination, overwrite);
+        // public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
+        public static Task<string[]> ReadFileLinesToEndAsync(string filePath) => File.ReadAllLinesAsync(filePath);
         
-        public static void FileDeletion(string filePath) => File.Delete(filePath);
+        // public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
+        
+        public static async Task<string> ReadFileTextToEndAsync(string filePath) => await File.ReadAllTextAsync(filePath);
+
+        /// <summary>
+        /// A wrapper for <see cref="File.Move(string,string,bool)"/>
+        /// </summary>
+        /// <remarks>Do not use when the UI is running. Reserve for critical operations.</remarks>
+        public static void MoveFile(string source, string destination, bool overwrite = false) => File.Move(source, destination, overwrite);
+
+        /// <summary>
+        /// An async wrapper for <see cref="File.Move(string,string,bool)"/>
+        /// </summary>
+        /// <remarks>Use this when the UI is running.</remarks>
+        public static async Task MoveFileAsync(string source, string destination, bool overwrite = false) {
+            await Task.Run(() => File.Move(source, destination, overwrite));
+        } 
+        
+        /// <summary>
+        /// A wrapper for <see cref="File.Delete"/>
+        /// </summary>
+        /// <remarks>Do not use when the UI is running. Reserve for critical operations.</remarks>
+        public static void DeleteFile(string filePath) => File.Delete(filePath);
+
+        /// <summary>
+        /// An async wrapper for <see cref="File.Delete"/>
+        /// </summary>
+        /// <remarks>Use this when the UI is running.</remarks>
+        public static async Task DeleteFileAsync(string filePath) {
+            await Task.Run(() => File.Delete(filePath));
+        }
         
         
         public static FileInfo GetFileInfo(string filePath) => new(filePath);

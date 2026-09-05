@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -28,20 +28,17 @@ public partial class MainWindow : Window
     // Props
     public MainView? PermaView { get; private set; }
     public Settings Settings { get; private set; }
-    public string[] CoresList { get; }
-    public (List<string>, string?) IconsListEx { get; }
     
     // Fields
     public static readonly string OsDirSeparator = FileOps.OsDirSeparator.ToString();
     public bool IsDesigner = true;
-    private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
     
     public MainWindow()
     {
         InitializeComponent();
-        Settings = FileOps.LoadSettingsFO();
-        CoresList = Operations.GetCoresArray();
-        IconsListEx = FileOps.LoadIcons(DesktopOS);
+        var sTask = Task.Run(FileOps.LoadSettingsFO);
+        sTask.Wait();
+        Settings = sTask.Result;
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
@@ -52,15 +49,14 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         IsDesigner = isDesigner;
-        CoresList = [];
-        IconsListEx = (new List<string>(), null);
-        // Settings = FileOps.LoadDesignerSettingsFO(true);
         Settings = new Settings();
         PermaView = null;
         if (isDesigner) return;
         
         // This is needed because of an edge case with the designer (can't remember witch)
-        Settings = FileOps.LoadSettingsFO();
+        var sTask = Task.Run(FileOps.LoadSettingsFO);
+        sTask.Wait();
+        Settings = sTask.Result;
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
@@ -68,8 +64,6 @@ public partial class MainWindow : Window
 
     public MainWindow(MainView mainViewDesigner) : this(true) {
         mainViewDesigner.Name = "MainViewDesigner";
-        CoresList = Operations.GetCoresArray();
-        IconsListEx = FileOps.LoadIcons(DesktopOS);
     }
 
     public void SetSettings(Settings settings) => Settings = settings;
@@ -94,11 +88,13 @@ public partial class MainWindow : Window
 
     public void LocaleReload(string locale)
     {
-        // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
+        
         if (LanguageManager.SetLocale(locale)) return;
         
+        // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
         var ogTransition = ContBotton.PageTransition;
         ContTop.Content = null;
+        PermaView?.DisposeResources();
         PermaView = new MainView(this);
         ContBotton.PageTransition = null;
         ContBotton.Content = PermaView;

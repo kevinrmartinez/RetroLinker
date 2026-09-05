@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
@@ -36,14 +37,14 @@ namespace RetroLinker.Models
         public static Settings GetCachedSettings() => CachedSettings;
         
         // Load & Save
-        public static Settings LoadSettings()
+        public static async Task<Settings> LoadSettings()
         {
             Settings? settings = new();
             if (FileOps.ExistSettingsJsonFile())
             {
                 try
                 {
-                    settings = JsonHelper.DeserializeProxy<Settings>(FileOps.ReadSettingsFile());
+                    settings = JsonHelper.DeserializeProxy<Settings>(await FileOps.ReadSettingsFile());
                     CachedSettings = settings ?? throw new System.IO.InvalidDataException(InvalidDataMessage);
                     PrevConfigs.AddRange(settings.SavedConfigs);
                     LinkCopyPaths.AddRange(settings.SavedCopyPaths);

@@ -105,11 +105,16 @@ class Program
     // Logging
     private static void SetUpLogger()
     {
-        Logger.SetLogFile(LogFileName);
-        var bakFullName = FileOps.CombineMultipleInputs(FileOps.GetDirFromPath(Logger.LogFile) ?? FileOps.BaseDir, LogFileBak);
-        if (FileOps.PathAlreadyExists(Logger.LogFile)) {
-            if (FileOps.PathAlreadyExists(bakFullName)) FileOps.FileDeletion(bakFullName);
-            FileOps.FileMoving(Logger.LogFile, bakFullName);
+        if (FileOps.LogFileIsWritable(LogFileName))
+        {
+            Logger.SetLogFile(LogFileName);
+            var bakFullName =
+                FileOps.CombineMultipleInputs(FileOps.GetDirFromPath(Logger.LogFile) ?? FileOps.BaseDir, LogFileBak);
+            if (FileOps.PathAlreadyExistsAndNotEmpty(Logger.LogFile))
+            {
+                if (FileOps.PathAlreadyExists(bakFullName)) FileOps.DeleteFile(bakFullName);
+                FileOps.MoveFile(Logger.LogFile, bakFullName);
+            }
         }
 
 #if DEBUG
