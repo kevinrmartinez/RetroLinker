@@ -589,7 +589,7 @@ public partial class MainView : UserControl
                 PreviousOutput = outputLink.OutputPaths.First();
                 
                 // Create Shortcuts
-                List<ShortcutterResult> opResult = outputLink.BuildShortcut(DesktopOS);
+                List<ShortcutterResult> opResult = await outputLink.BuildShortcut(DesktopOS);
                 // TODO: Move to a separated method, maybe
                 // Single Shortcut created
                 if (opResult.Count == 1)

@@ -18,6 +18,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using RetroLinker.Models.Generic;
 using RetroLinker.Translations;
 
@@ -128,7 +130,7 @@ namespace RetroLinker.Models
 
         #region Link Output
         // Link Creation - OS selection
-        public List<ShortcutterResult> BuildShortcut(bool os)
+        public async Task<List<ShortcutterResult>> BuildShortcut(bool os)
         {
             var cachedSettings = SettingsOps.GetCachedSettings();
             // Windows Setup
@@ -137,17 +139,17 @@ namespace RetroLinker.Models
             
             // Building the arguments
             Command = CommandManager.CommandBuilder(this);
-            return (os) ? BuildWinShortcut(winBuilderOpt) : BuildLinShorcut(); // TODO: Should be async, it always writes to disk
+            return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
         }
 
-        private ShortcutterResult CreateShortcut(ShortcutterOutput output,
-            System.Action<LinkParameters> osCreateShortcut)
+        private async Task<ShortcutterResult> CreateShortcut(ShortcutterOutput output,
+            System.Func<LinkParameters, Task> osCreateShortcut)
         {
             var linkParams = new LinkParameters(this, output);
             var result = new ShortcutterResult(linkParams.OutputPath);
             Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
             try {
-                osCreateShortcut(linkParams);
+                await osCreateShortcut(linkParams);
                 result.ResultSuccess();
             }
             catch (System.Exception ex) {
@@ -161,44 +163,44 @@ namespace RetroLinker.Models
         // == Windows ==
         private enum WindowsBuildOptions { Vbs, TileIco }
 
-        private Dictionary<WindowsBuildOptions, System.Func<List<ShortcutterResult>>> _windowsBuilder = new();
+        private Dictionary<WindowsBuildOptions, System.Func<Task<List<ShortcutterResult>>>> _windowsBuilder = new();
         
-        private List<ShortcutterResult> BuildWinShortcut(WindowsBuildOptions builderOpt) {
+        private async Task<List<ShortcutterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
             var builder = _windowsBuilder[builderOpt];
-            return builder();
+            return await builder();
         }
 
-        private List<ShortcutterResult> BuildWinShortcut_Vbs()
+        private async Task<List<ShortcutterResult>> BuildWinShortcut_Vbs()
         {
             var resultList = new List<ShortcutterResult>();
             if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
             Command = Utils.TwoDoubleQuotes(Command); // Add 2 double quotes for vbs compatibility
             foreach (var output in OutputPaths) {
-                var linkResult = CreateShortcut(output, Windows.ShortcutManager.CreateShortcut);
+                var linkResult = await CreateShortcut(output, Windows.ShortcutManager.CreateShortcut);
                 resultList.Add(linkResult);
             }
             return resultList;
         }
 
-        private List<ShortcutterResult> BuildWinShortcut_TileIco()
+        private async Task<List<ShortcutterResult>> BuildWinShortcut_TileIco()
         {
             var results = new List<ShortcutterResult>();
             var tileIcoOutput = OutputPaths.First();
-            var linkResult = CreateShortcut(tileIcoOutput, Windows.ShortcutManager.CreateTileIcoShortcut);
+            var linkResult = await CreateShortcut(tileIcoOutput, Windows.ShortcutManager.CreateTileIcoShortcut);
             results.Add(linkResult);
             OutputPaths.Remove(tileIcoOutput);
-            if (OutputPaths.Count > 0) results.AddRange(BuildWinShortcut_Vbs());
+            if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Vbs());
             return results;
         }
         
 
         // == Linux ==
-        private List<ShortcutterResult> BuildLinShorcut()
+        private async Task<List<ShortcutterResult>> BuildLinShorcut()
         {
             var resultList = new List<ShortcutterResult>();
             if (string.IsNullOrEmpty(ICONfile)) ICONfile = FileOps.DotDesktopRAIcon;
             foreach (var output in OutputPaths) {
-                var linkResult = CreateShortcut(output, Linux.ShortcutManager.CreateShortcut);
+                var linkResult = await CreateShortcut(output, Linux.ShortcutManager.CreateShortcut);
                 resultList.Add(linkResult);
             }
             return resultList;

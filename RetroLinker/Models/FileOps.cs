@@ -530,15 +530,16 @@ namespace RetroLinker.Models
             return EntryName;
         }
         
-        public static void WriteDesktopEntry(string outputFile, byte[] fileBytes) => File.WriteAllBytes(outputFile, fileBytes);
+        public static async Task WriteDesktopEntry(string outputFile, byte[] fileBytes) => await File.WriteAllBytesAsync(outputFile, fileBytes);
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+        
         public static void MakeLinuxFileExecutable(string filePath)
         {
             // Freaking bit magic: https://aaronbos.dev/posts/csharp-flags-enum
             // |= Adds file mode to existing ones
             // &= idk, it cleared all file modes and only left added one
             // -= Removes file mode from existing ones
+            if (OperatingSystem.IsWindows()) return;    // <= To suppress CA1416
             var fileInfo = new FileInfo(filePath);
             fileInfo.UnixFileMode |= UnixFileMode.UserExecute | UnixFileMode.GroupExecute;
         }
