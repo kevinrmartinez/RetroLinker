@@ -37,7 +37,7 @@ public static class ShortcutManager
     private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
     private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
     
-    public static void CreateShortcut(LinkParameters link)
+    public static async Task CreateShortcut(LinkParameters link)
     {
         var scriptStrings = $"""
                              {commentLine}
@@ -54,12 +54,12 @@ public static class ShortcutManager
                              End Function
                              """;
         
-        RunLinkWriteScript(scriptStrings);
+        await Task.Run(() => RunLinkWriteScript(scriptStrings));
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
     }
 
     // Return a Shortcutter type
-    public static string?[] ReadShortcut(string linkPath)
+    public static async Task<string?[]> ReadShortcut(string linkPath)
     {
         // Why does creating an Array(4) is VBS results in an array with 5 positions?
         var scriptStrings = $"""
@@ -77,7 +77,7 @@ public static class ShortcutManager
                             End Function
                             """;
         
-        var linkContent = RunLinkReadScript(scriptStrings);
+        var linkContent = await Task.Run(() => RunLinkReadScript(scriptStrings));
         Logger.LogInfo($"\"{linkPath}\" file read successfully.");
         var linkStrings = new string?[linkContent.Length];
         for (int i = 0; i < linkContent.Length; i++)
@@ -113,21 +113,19 @@ public static class ShortcutManager
         return values;
     }
 #else
-    private static void RunLinkWriteScript(string script) => throw new PlatformNotSupportedException();
-    private static object[] RunLinkReadScript(string script) => throw new PlatformNotSupportedException();
+    private static void RunLinkWriteScript(string _) => throw new PlatformNotSupportedException();
+    private static object[] RunLinkReadScript(string _) => throw new PlatformNotSupportedException();
 #endif
 
-    public static void CreateTileIcoShortcut(LinkParameters link)
+    public static async Task CreateTileIcoShortcut(LinkParameters link)
     {
-        const string TileIcoCreate = "create";
-        const string tileIcoCustom = "custom";
-        // const string tileIcoCustomTest = "custom-test";
-        
-        var tileIcoArguments = new TileicoArgmentList();
+        var tileIcoArguments = new TileicoArgumentList();
         TileIcoOptions? tileIcoNameOpt = null;
         if (link.TileIcoNameVisible) {
             tileIcoNameOpt = link.TileIcoNameDark ? TileIcoOptions.name_on_tile_dark : TileIcoOptions.name_on_tile_light;
         }
+        
+        tileIcoArguments.Add(new(TileIcoCommands.create, TileIcoSubCommands.custom));
         tileIcoArguments.AddRange([
             new(TileIcoOptions.name, link.FriendlyName),
             new(TileIcoOptions.target, link.RaExecutable),
@@ -140,9 +138,15 @@ public static class ShortcutManager
         if (tileIcoNameOpt is { } opt) 
             tileIcoArguments.Add(new TileicoArgument(opt, true));
         
+        await ExecuteTileIco(tileIcoArguments);
+    }
+
+#if WINDOWS
+    private static async Task ExecuteTileIco(TileicoArgumentList args)
+    {
         var tileIcoPath = SettingsOps.GetCachedSettings().TileIcoPath;
         ArgumentException.ThrowIfNullOrEmpty(tileIcoPath);
-        var pi = new ProcessStartInfo(tileIcoPath)
+        var psi = new ProcessStartInfo(tileIcoPath)
         {
             UseShellExecute = false,
             RedirectStandardError = true,
@@ -152,25 +156,30 @@ public static class ShortcutManager
             CreateNoWindow = true,
 #endif
         };
-        pi.ArgumentList.Add(TileIcoCreate);
-        pi.ArgumentList.Add(tileIcoCustom);
-        // pi.ArgumentList.Add(tileIcoCustomTest); // For debugging
-        foreach (var argument in tileIcoArguments) {
-            pi.ArgumentList.Add(argument.Option);
-            pi.ArgumentList.Add(argument.Value);
+        foreach (var argument in args) {
+            psi.ArgumentList.Add(argument.Option);
+            psi.ArgumentList.Add(argument.Value);
         }
-        using var proc = Process.Start(pi);
+        using var proc = Process.Start(psi);
         
-        if (proc is null) throw new ApplicationException($"'{pi.FileName}' failed to start");
+        if (proc is null) throw new ApplicationException($"'{psi.FileName}' failed to start");
         // var errorsTask = proc.StandardError.ReadToEndAsync();
-        proc.WaitForExit(); // Should be async, but the whole workflow up to here has to change
+        await proc.WaitForExitAsync();
         
         if (proc.ExitCode == 0) return;
         
-        var errors = proc.StandardError.ReadToEnd();
+        var errors = await proc.StandardError.ReadToEndAsync();
         throw new ApplicationException(errors);
     }
+#else
+    private static async Task ExecuteTileIco(TileicoArgumentList _) => throw new PlatformNotSupportedException();
+#endif
+
+    
 }
+
+internal enum TileIcoCommands { create, delete }
+internal enum TileIcoSubCommands { custom, custom_test }
 
 internal enum TileIcoOptions
 {
@@ -193,6 +202,11 @@ internal struct TileicoArgument
         Option = option;
         Value = value;
     }
+
+    public TileicoArgument(TileIcoCommands command, TileIcoSubCommands subCommand) {
+        Option = EnumToString(command);
+        Value = EnumToString(subCommand);
+    }
     
     public TileicoArgument(TileIcoOptions option, object value)
     {
@@ -210,37 +224,30 @@ internal struct TileicoArgument
         }
         ArgumentException.ThrowIfNullOrEmpty(valueToString, nameof(value)); // Reconsider
         
-        Option = $"--{option.ToString("G").Replace('_', '-')}";
+        Option = $"--{EnumToString(option)}";
         Value = valueToString;
     }
+
+    private static string EnumToString(Enum value) => value.ToString("G").Replace('_', '-');
 
     public override string ToString() => $"{Option} {Value}";
     
     public bool SameArgument(TileicoArgument other) => (Option == other.Option);
 }
 
-internal class TileicoArgmentList : List<TileicoArgument>
+internal class TileicoArgumentList : List<TileicoArgument>
 {
     /// <summary>Adds an object to the end of the <see cref="List{TileicoArgument}" />.</summary>
-    /// <param name="item">The <see cref="TileicoArgument"/> to be added to the end of the <see cref="List{TileicoArgument}" />. If an element with the same '<see cref="TileicoArgument.Option"/>' member already exist, then <paramref name="item"/> is not added.</param>
+    /// <param name="item">The <see cref="TileicoArgument"/> to be added to the end of the <see cref="List{TileicoArgument}" />. If an element with the same '<see cref="TileicoArgument.Option"/>' member already exist, then <paramref name="item"/> won't be added.</param>
     public new void Add(TileicoArgument item) {
         if (!this.Any(i => i.SameArgument(item))) base.Add(item);
     }
 
     /// <summary>Adds the elements of the specified collection to the end of the <see cref="List{TileicoArgument}" />.</summary>
     /// <param name="collection">The collection whose elements should be added to the end of the <see cref="List{TileicoArgument}" />.</param>
-    /// <remarks>The object to add is conditioned, see <see cref="Add"/></remarks>
+    /// <remarks>The object to add is conditioned, see <see cref="Add"/>.</remarks>
     public new void AddRange(IEnumerable<TileicoArgument> collection) {
+        // I believe this is expensive in the long run, but it is called with very few (~10 at most) elements in practice
         foreach (var item in collection) Add(item);
-    }
-
-    // Unrequited
-    public string ToStringSingleLine()
-    {
-        var result = string.Empty;
-        foreach (var item in this) {
-            result += item + " ";
-        }
-        return result.TrimEnd();
     }
 }

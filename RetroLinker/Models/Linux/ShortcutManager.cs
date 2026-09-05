@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RetroLinker.Models.Linux;
 
@@ -32,7 +34,7 @@ public static class ShortcutManager
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
-    public static void CreateShortcut(LinkParameters link)
+    public static async Task CreateShortcut(LinkParameters link)
     {
         List<string> shortcut = new()
         {
@@ -65,17 +67,17 @@ public static class ShortcutManager
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
         
-        FileOps.WriteDesktopEntry(outputFile, outputBytes);
+        await FileOps.WriteDesktopEntry(outputFile, outputBytes);
         // If file write is successful (doesn't throw), set execution permissions
-        System.Threading.Tasks.Task.Run(() => SetExecPermissions(outputFile));
+        _ = SetExecPermissions(outputFile);
     }
 
-    private static void SetExecPermissions(string filePath)
+    private static async Task SetExecPermissions(string filePath)
     {
         Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
-            FileOps.MakeLinuxFileExecutable(filePath);
+            await Task.Run(() => FileOps.MakeLinuxFileExecutable(filePath));
             Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {
