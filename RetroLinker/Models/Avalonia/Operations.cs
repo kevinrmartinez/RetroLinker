@@ -38,7 +38,7 @@ public static class Operations
     public static IStorageFolder? ROMTopDir { get; private set; }
 
     
-    public static string[] GetCoresArray()
+    public static async Task<string[]> GetCoresArray()
     {
         if (Cores.Length >= 1) return Cores;
         if (!FileOps.GetCoreFile(out string coresFile))
@@ -48,7 +48,7 @@ public static class Operations
             FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
             Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
-        return Cores = FileOps.LoadCores(coresFile);
+        return Cores = await FileOps.LoadCores(coresFile);
     }
 
     private static Uri GetDefaultCores() => new(CoreList);

@@ -126,15 +126,13 @@ public partial class MainView : UserControl
 #endif
             
         SetViewPreSettings();
-
-        txtLINKDir.PropertyChanged += TxtLINKDir_OnPropertyChanged;
+        
         ApplyDragDropEvents();
         ApplySettingsToControls();
         
-        // TODO: Make these 3 async, but shouldn't block the main view and its controls
-        comboCore_Loaded(ParentWindow.CoresList);
         comboConfig_Loaded();
-        comboICONDir_Loaded(ParentWindow.IconsListEx);
+        _ = comboCore_Loaded();
+        _ = comboICONDir_Loaded();
             
         // Arguments should only load when above controls are ready
         ApplyArgs();
@@ -143,9 +141,11 @@ public partial class MainView : UserControl
             
         // TODO_MAYBE: Tutorial event for new users
     }
+    
 
-    void comboCore_Loaded(string[] cores)
+    async Task comboCore_Loaded()
     {
+        var cores = await Operations.GetCoresArray();
         if (cores.Length < 1) ToolTip.SetTip(comboCore, resMainView.lblNoCores);
         else comboCore.ItemsSource = cores;
         Logger.LogInfo($"{cores.Length} cores were imported.");
@@ -160,10 +160,13 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    void comboICONDir_Loaded((List<string> list, string? error) icons)
+    async Task comboICONDir_Loaded()
     {
         comboICONDir.Items.Clear();
         comboICONDir.Items.Add(resMainView.comboDefItem);
+        comboICONDir.SelectedIndex++;
+
+        var icons = await Task.Run<(List<string> list, string? error)>(() => FileOps.LoadIcons(DesktopOS));
         // REWRITE: This could be a try-catch
         if (string.IsNullOrEmpty(icons.error)) {
             foreach (var iconFile in icons.list)
@@ -177,7 +180,6 @@ public partial class MainView : UserControl
         }
         
         PreloadedIconsCount = comboICONDir.ItemCount;
-        comboICONDir.SelectedIndex++;
         rdoIconDef.IsChecked = true;
     }
 
@@ -264,14 +266,11 @@ public partial class MainView : UserControl
 
         txtROMDir.IsReadOnly = true;
         comboConfig.IsTextSearchEnabled = false;
-        txtLINKDir.IsReadOnly = true;
     }
     
     void LoadNewSettings() {
-        // settings = FileOps.LoadCachedSettingsFO();
         ApplySettingsToControls();
         LoadLocalization();
-        // UpdateContext();
     }
     
     ThemeVariant LoadThemeVariant()
@@ -960,11 +959,6 @@ public partial class MainView : UserControl
         UpdateContext();
     }
     
-    void TxtLINKDir_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e) {
-        if (sender is not TextBox textBox) return;
-        if (e.Property.Name == "IsReadOnly") textBox.Text = string.Empty;
-    }
-    
     private void swtTileIcoAllUsers_OnClick(object? sender, RoutedEventArgs e) => UpdateContext();
     
     #endregion
@@ -1068,10 +1062,15 @@ public partial class MainView : UserControl
     // CLOSING
     void View1_Unloaded(object sender, RoutedEventArgs e)
     {
+        // Save new configs
         var cachedSettings = SettingsOps.GetCachedSettings();
         if ( 
             ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) 
             || !Settings.Equals(cachedSettings)
         ) SettingsOps.WriteSettings(Settings);
+    }
+
+    public void DisposeResources() {
+        ICONimage.Dispose();
     }
 }
