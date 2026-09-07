@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release</Configurations>
@@ -37,13 +37,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.1" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.16.0" />
+    <PackageReference Include="Avalonia" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.2" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.17.1" />
     <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
-    <PackageReference Include="Microsoft.ClearScript.Windows" Version="7.5.1" Condition="'$(TargetFramework)' == 'net10.0-windows'"/>
     <PackageReference Include="Optris.Icons.Avalonia.FontAwesome7" Version="12.0.7" />
+    <PackageReference Include="SharpShellLink" Version="2.0.3" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
     <PackageReference Include="Zeronia.Diagnostics" Version="12.1.0">
       <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->

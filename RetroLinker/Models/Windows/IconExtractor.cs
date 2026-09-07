@@ -30,11 +30,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
-#if WINDOWS
+    [SupportedOSPlatform("windows")]
     public class IconExtractor
     {
         ////////////////////////////////////////////////////////////////////////
@@ -90,12 +91,12 @@ namespace RetroLinker.Models.Windows
         /// Extracts an icon from the file as a MemoryStream.
         /// </summary>
         /// <param name="index">Zero based index of the icon to be extracted.</param>
-        /// <returns>A System.IO.MemoryStream object.</returns>
+        /// <returns>A <see cref="System.IO.MemoryStream"/> object.</returns>
         /// <remarks>Always returns new copy of the Icon. It should be disposed by the user.</remarks>
         public MemoryStream GetIcon(int index)
         {
             if (index < 0 || Count <= index)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
 
             // The output was changed to the MemoryStream itself. That way there's no need to import the Windows OS only System.Drawing library.
             // Returns the .ico file in memory.
@@ -105,7 +106,7 @@ namespace RetroLinker.Models.Windows
         /// <summary>
         /// Extracts all the icons from the file as MemoryStreams.
         /// </summary>
-        /// <returns>An array of System.IO.MemoryStream objects.</returns>
+        /// <returns>An array of <see cref="System.IO.MemoryStream"/> objects.</returns>
         /// <remarks>Always returns new copies of the Icons. They should be disposed by the user.</remarks>
         public MemoryStream[] GetAllIcons()
         {
@@ -259,17 +260,4 @@ namespace RetroLinker.Models.Windows
             return fileName;
         }
     }
-#else
-    public class IconExtractor
-    {
-        public string FileName { get; private set; }
-        public int Count { get; } = 0;
-        
-        // It's actually possible to extract the icon from PEs on Linux
-        public IconExtractor(string fileName) => throw new PlatformNotSupportedException();
-        public MemoryStream GetIcon(int index) => throw new PlatformNotSupportedException();
-        public MemoryStream[] GetAllIcons() => throw new PlatformNotSupportedException();
-    }
-#endif
-    
 }

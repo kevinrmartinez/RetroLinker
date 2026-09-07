@@ -25,15 +25,16 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if WINDOWS
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security;
 using System.Security.Principal;
 using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
+    [SupportedOSPlatform("windows")]
     internal static class NativeMethods
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -77,10 +78,12 @@ namespace RetroLinker.Models.Windows
         public static extern int GetMappedFileName(IntPtr hProcess, IntPtr lpv, StringBuilder lpFilename, int nSize);
     }
 
+    
     [UnmanagedFunctionPointer(CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Unicode)]
     [SuppressUnmanagedCodeSecurity]
     internal delegate bool ENUMRESNAMEPROC(IntPtr hModule, IntPtr lpszType, IntPtr lpszName, IntPtr lParam);
 
+    [SupportedOSPlatform("windows")]
     public static class NativeAccess
     {
         public static bool IsWindowsProcessElevated() {
@@ -91,6 +94,5 @@ namespace RetroLinker.Models.Windows
         }
     }
 }
-#endif
 
 

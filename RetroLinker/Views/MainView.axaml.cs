@@ -105,6 +105,9 @@ public partial class MainView : UserControl
     private ShortcutterOutput PreviousOutput = new();
 
     // TODO: This has to be a enum or something, as it needs to include MacOS. And move to App. (>=0.10)
+    //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
+    //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
+    // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
     // true = Windows; false = Linux.
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
