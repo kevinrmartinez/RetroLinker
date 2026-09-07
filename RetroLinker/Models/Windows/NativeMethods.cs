@@ -34,7 +34,7 @@ using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
-    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform(App.PlatformWin)]
     internal static class NativeMethods
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -83,7 +83,7 @@ namespace RetroLinker.Models.Windows
     [SuppressUnmanagedCodeSecurity]
     internal delegate bool ENUMRESNAMEPROC(IntPtr hModule, IntPtr lpszType, IntPtr lpszName, IntPtr lParam);
 
-    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform(App.PlatformWin)]
     public static class NativeAccess
     {
         public static bool IsWindowsProcessElevated() {

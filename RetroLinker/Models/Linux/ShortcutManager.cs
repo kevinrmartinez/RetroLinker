@@ -18,11 +18,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetroLinker.Models.Linux;
 
+[SupportedOSPlatform(App.PlatformLin)]
 public static class ShortcutManager
 {
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/

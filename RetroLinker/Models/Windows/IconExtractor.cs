@@ -35,7 +35,7 @@ using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
-    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform(App.PlatformWin)]
     public class IconExtractor
     {
         ////////////////////////////////////////////////////////////////////////

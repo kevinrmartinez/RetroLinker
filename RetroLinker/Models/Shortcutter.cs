@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
 using RetroLinker.Models.Generic;
@@ -95,17 +96,13 @@ namespace RetroLinker.Models
             CONFappend = string.Empty;
             SubsysArg = string.Empty;
             TileIcoImage = string.Empty;
-            FinishSetup();
         }
 
-        public object Clone() => this.MemberwiseClone();
-
-        private void FinishSetup()
+        public object Clone()
         {
-            _windowsBuilder = new() {
-                { WindowsBuildOptions.Vbs, BuildWinShortcut_Vbs },
-                { WindowsBuildOptions.TileIco, BuildWinShortcut_TileIco }
-            };
+            var newShortcut = (Shortcutter)this.MemberwiseClone();
+            newShortcut.OutputPaths = new List<ShortcutterOutput>(OutputPaths);
+            return newShortcut;
         }
 
         private void SetRAdir(string value) {
@@ -128,6 +125,7 @@ namespace RetroLinker.Models
         
         #endregion
 
+        
         #region Link Output
         // Link Creation - OS selection
         public async Task<List<ShortcutterResult>> BuildShortcut(bool os)
@@ -139,6 +137,7 @@ namespace RetroLinker.Models
             
             // Building the arguments
             Command = CommandManager.CommandBuilder(this);
+            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard
             return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
         }
 
@@ -165,16 +164,26 @@ namespace RetroLinker.Models
 
         private Dictionary<WindowsBuildOptions, System.Func<Task<List<ShortcutterResult>>>> _windowsBuilder = new();
         
+        [SupportedOSPlatform(App.PlatformWin)]
+        private void SetupWindowsBuilder() {
+            _windowsBuilder = new() {
+                { WindowsBuildOptions.Vbs, BuildWinShortcut_Ssl },
+                { WindowsBuildOptions.TileIco, BuildWinShortcut_TileIco }
+            };
+        }
+        
+        [SupportedOSPlatform(App.PlatformWin)]
         private async Task<List<ShortcutterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
+            SetupWindowsBuilder();
             var builder = _windowsBuilder[builderOpt];
             return await builder();
         }
 
-        private async Task<List<ShortcutterResult>> BuildWinShortcut_Vbs()
+        [SupportedOSPlatform(App.PlatformWin)]
+        private async Task<List<ShortcutterResult>> BuildWinShortcut_Ssl()
         {
             var resultList = new List<ShortcutterResult>();
             if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
-            Command = Utils.TwoDoubleQuotes(Command); // Add 2 double quotes for vbs compatibility
             foreach (var output in OutputPaths) {
                 var linkResult = await CreateShortcut(output, Windows.ShortcutManager.CreateShortcut);
                 resultList.Add(linkResult);
@@ -182,6 +191,7 @@ namespace RetroLinker.Models
             return resultList;
         }
 
+        [SupportedOSPlatform(App.PlatformWin)]
         private async Task<List<ShortcutterResult>> BuildWinShortcut_TileIco()
         {
             var results = new List<ShortcutterResult>();
@@ -189,12 +199,13 @@ namespace RetroLinker.Models
             var linkResult = await CreateShortcut(tileIcoOutput, Windows.ShortcutManager.CreateTileIcoShortcut);
             results.Add(linkResult);
             OutputPaths.Remove(tileIcoOutput);
-            if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Vbs());
+            if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Ssl());
             return results;
         }
         
 
         // == Linux ==
+        [SupportedOSPlatform(App.PlatformLin)]
         private async Task<List<ShortcutterResult>> BuildLinShorcut()
         {
             var resultList = new List<ShortcutterResult>();
@@ -211,9 +222,10 @@ namespace RetroLinker.Models
 
     public class ShortcutterOutput
     {
-        public string FullPath { get; set; }
+        // REWRITE: Revise whole class
+        public string FullPath { get; }
         public string FriendlyName { get; private set; }
-        public string FileName { get; set; }
+        public string FileName { get; }
         public bool CustomEntryName { get; set; }
         public bool ValidOutput { get; private set; }
 
@@ -277,6 +289,7 @@ namespace RetroLinker.Models
 
     public class LinkParameters
     {
+        // TODO: Make this class abstract, and create two new classes: `WindowsLinkParameters` and `LinuxLinkParameters` 
         public string RaExecutable { get; }
         public string? RaWorkDir { get; }
         public string RaArguments { get; }
@@ -308,9 +321,9 @@ namespace RetroLinker.Models
     }
     
     
-    public class ShortcutterResult(string outputPath)
+    public record struct ShortcutterResult(string OutputPath)
     {
-        public string OutputPath { get; } = outputPath;
+        public string OutputPath { get; } = OutputPath;
         public string? Message { get; private set; }
         public bool Error { get; private set; }
         public string? ExMessage { get; private set; }
