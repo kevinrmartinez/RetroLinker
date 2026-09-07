@@ -27,6 +27,7 @@ namespace RetroLinker;
 public class App : Application
 {
     public static AppInformation LocalInformation { get; private set; } 
+        = new(string.Empty, string.Empty,  string.Empty, false);
     
     public const string RetroBin = "retroarch";
     

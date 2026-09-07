@@ -158,11 +158,9 @@ class Program
 
     private static AppInformation GetAppInfo()
     {
-#if WINDOWS
-        var isRunningAdmin = Models.Windows.NativeAccess.IsWindowsProcessElevated();
-#else
-        var isRunningAdmin = Models.Linux.NativeAccess.IsUnixProcessElevated();
-#endif
+        var isRunningAdmin = OperatingSystem.IsWindows() 
+            ? Models.Windows.NativeAccess.IsWindowsProcessElevated()
+            : Models.Linux.NativeAccess.IsUnixProcessElevated();
         var fullName = AppAssemblyName.FullName;
         var buildDate = GetBuildDateOfAssembly();
         var gitHash = GetGitHashOfRepo();

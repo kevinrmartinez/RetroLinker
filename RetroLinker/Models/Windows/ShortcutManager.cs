@@ -21,9 +21,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-#if WINDOWS
-using Microsoft.ClearScript.Windows.Core;
-#endif
 
 namespace RetroLinker.Models.Windows;
 
@@ -84,38 +81,19 @@ public static class ShortcutManager
             linkStrings[i] = linkContent[i].ToString();
         return linkStrings;
     }
-    
-#if WINDOWS
-    private static VBScriptEngine RunScriptEngine(string script)
-    {
-        var engine = new VBScriptEngine($"{scriptTitle}", NullSyncInvoker.Instance);
-        engine.Execute(script);
-        return engine;
-    }
 
     
     private static void RunLinkWriteScript(string script)
     {
-        var engine = RunScriptEngine(script);
-        // VBS returns Int16 (short) instead of Int32 (int)
-        var result = (short)engine.Invoke($"{createLink}");
-        
-        if (result == 0) return;
-        var err = $"The LinkWrite script was not executed properly! Error code {result}.";
-        Logger.LogErro(err);
-        throw new ApplicationException(err);
+        return;
+        Logger.LogErro("");
+        throw new ApplicationException();
     }
     
     private static object[] RunLinkReadScript(string script)
     {
-        var engine = RunScriptEngine(script);
-        var values = (object[])engine.Invoke($"{readLink}");
-        return values;
+        return [];
     }
-#else
-    private static void RunLinkWriteScript(string _) => throw new PlatformNotSupportedException();
-    private static object[] RunLinkReadScript(string _) => throw new PlatformNotSupportedException();
-#endif
 
     public static async Task CreateTileIcoShortcut(LinkParameters link)
     {
@@ -141,7 +119,7 @@ public static class ShortcutManager
         await ExecuteTileIco(tileIcoArguments);
     }
 
-#if WINDOWS
+
     private static async Task ExecuteTileIco(TileicoArgumentList args)
     {
         var tileIcoPath = SettingsOps.GetCachedSettings().TileIcoPath;
@@ -171,9 +149,6 @@ public static class ShortcutManager
         var errors = await proc.StandardError.ReadToEndAsync();
         throw new ApplicationException(errors);
     }
-#else
-    private static async Task ExecuteTileIco(TileicoArgumentList _) => throw new PlatformNotSupportedException();
-#endif
 
     
 }
