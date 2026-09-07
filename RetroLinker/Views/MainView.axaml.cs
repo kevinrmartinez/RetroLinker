@@ -422,7 +422,7 @@ public partial class MainView : UserControl
         try {
             LockControls(true);
             var outputLink = (Shortcutter)BuildingLink.Clone();
-            outputLink.OutputPaths = new List<ShortcutterOutput>(BuildingLink.OutputPaths);
+            // outputLink.OutputPaths = new List<ShortcutterOutput>(BuildingLink.OutputPaths);
             BuildingLink.OutputPaths.Clear();
             
             // Controls Lock

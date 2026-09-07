@@ -30,6 +30,8 @@ public class App : Application
         = new(string.Empty, string.Empty,  string.Empty, false);
     
     public const string RetroBin = "retroarch";
+    public const string PlatformWin = "windows";
+    public const string PlatformLin = "linux";
     
     public static string[]? Args;
     

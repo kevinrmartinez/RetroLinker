@@ -306,6 +306,9 @@ namespace RetroLinker.Models
             await Task.Run(() => File.Delete(filePath));
         }
         
+        public static async Task WriteAllBytesToFileAsync(string filePath, byte[] bytes) 
+            => await File.WriteAllBytesAsync(filePath, bytes);
+        
         
         public static FileInfo GetFileInfo(string filePath) => new(filePath);
         

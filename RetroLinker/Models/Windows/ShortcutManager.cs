@@ -20,81 +20,31 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using SharpShellLink;
 
 namespace RetroLinker.Models.Windows;
 
+[SupportedOSPlatform(App.PlatformWin)]
 public static class ShortcutManager
 {
-    private const string objShell = "shell";
-    private const string objLink = "link";
-    private const string objArray = "valueArray";
-    private const string createLink = "CreateLink";
-    private const string readLink = "ReadLink";
-    private static readonly string commentLine = $"' {App.LocalInformation.Name} v{App.LocalInformation.Version}";
-    private static readonly string scriptTitle = $"{App.LocalInformation.Name} Script Runner";
-    
     public static async Task CreateShortcut(LinkParameters link)
     {
-        var scriptStrings = $"""
-                             {commentLine}
-                             Function {createLink}()
-                               Set {objShell} = CreateObject("WScript.Shell")
-                               Set {objLink} = {objShell}.CreateShortcut("{link.OutputPath}")
-                               {objLink}.TargetPath = "{link.RaExecutable}"
-                               {objLink}.WorkingDirectory = "{link.RaWorkDir}"
-                               {objLink}.Arguments = "{link.RaArguments}"
-                               {objLink}.Description = "{link.Description}"
-                               {objLink}.IconLocation = "{link.IconPath}"
-                               {objLink}.Save
-                               {createLink} = 0
-                             End Function
-                             """;
+        const int iconIndex = 0;    // This may be changeable in the future
+        var outputFile = Shortcut.CreateShortcut(link.RaExecutable, link.RaArguments, link.IconPath, iconIndex);
+        outputFile.StringData?.WorkingDir = link.RaWorkDir ?? string.Empty;
+        outputFile.StringData?.NameString = link.Description ?? string.Empty;
         
-        await Task.Run(() => RunLinkWriteScript(scriptStrings));
+        await FileOps.WriteAllBytesToFileAsync(link.OutputPath, outputFile.GetBytes());
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
     }
-
-    // Return a Shortcutter type
-    public static async Task<string?[]> ReadShortcut(string linkPath)
-    {
-        // Why does creating an Array(4) is VBS results in an array with 5 positions?
-        var scriptStrings = $"""
-                            {commentLine}
-                            Function {readLink}()
-                                Dim {objArray}(4)
-                                Set {objShell} = CreateObject("WScript.Shell")
-                                Set {objLink} = {objShell}.CreateShortcut("{linkPath}")
-                                {objArray}(0) = {objLink}.TargetPath
-                                {objArray}(1) = {objLink}.WorkingDirectory
-                                {objArray}(2) = {objLink}.Arguments
-                                {objArray}(3) = {objLink}.Description
-                                {objArray}(4) = {objLink}.IconLocation
-                                {readLink} = {objArray}
-                            End Function
-                            """;
-        
-        var linkContent = await Task.Run(() => RunLinkReadScript(scriptStrings));
-        Logger.LogInfo($"\"{linkPath}\" file read successfully.");
-        var linkStrings = new string?[linkContent.Length];
-        for (int i = 0; i < linkContent.Length; i++)
-            linkStrings[i] = linkContent[i].ToString();
-        return linkStrings;
-    }
-
     
-    private static void RunLinkWriteScript(string script)
-    {
-        return;
-        Logger.LogErro("");
-        throw new ApplicationException();
-    }
+    // public static async Task<LinkParameters> ReadShortcut(string linkPath)
+    // {
+    //     var inputFile = Shortcut.ReadFromFile(linkPath);
+    // }
     
-    private static object[] RunLinkReadScript(string script)
-    {
-        return [];
-    }
-
     public static async Task CreateTileIcoShortcut(LinkParameters link)
     {
         var tileIcoArguments = new TileicoArgumentList();
@@ -118,8 +68,7 @@ public static class ShortcutManager
         
         await ExecuteTileIco(tileIcoArguments);
     }
-
-
+    
     private static async Task ExecuteTileIco(TileicoArgumentList args)
     {
         var tileIcoPath = SettingsOps.GetCachedSettings().TileIcoPath;
@@ -172,11 +121,6 @@ internal struct TileicoArgument
 {
     public readonly string Option;
     public readonly string Value;
-
-    private TileicoArgument(string option,  string value) {
-        Option = option;
-        Value = value;
-    }
 
     public TileicoArgument(TileIcoCommands command, TileIcoSubCommands subCommand) {
         Option = EnumToString(command);
