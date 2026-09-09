@@ -41,6 +41,33 @@ namespace RetroLinker.Views;
 
 public partial class MainView : UserControl
 {
+    // Window Object
+    public MainWindow ParentWindow { get; }
+    
+    // Props
+    public Settings Settings { get; private set; }
+    public Shortcutter BuildingLink { get; } = new();
+    public string PatchArg {
+        get;
+        set => field = SetPatchArg(value);
+    } = string.Empty;
+    public string SubsysArg {
+        get;
+        set => field = SetSubsysArg(value);
+    } = string.Empty;
+    public string CONFappend {
+        get;
+        set => field = SetCONFappend(value);
+    } = string.Empty;
+    public bool TileIconAllUsers {
+        get; 
+        set => field = SetTileIconAllUsers(value);
+    }
+    
+    public string? FixedOutputDir { get; private set; }
+    public string? FixedOutputName { get; private set; }
+    
+    
     public MainView()
     {
         // Constructor for Designer
@@ -63,44 +90,14 @@ public partial class MainView : UserControl
         CompleteSetup();
     }
     
-    // Debug
-    private bool IsDesingner;
     
-    // Window Object
-    public MainWindow ParentWindow { get; }
-    
-    // Props
-    public Settings Settings { get; private set; }
-    public Shortcutter BuildingLink { get; } = new();
-    public string PatchArg {
-        get;
-        private set => field = SetPatchArg(value);
-    } = string.Empty;
-    public string SubsysArg {
-        get;
-        set => field = SetSubsysArg(value);
-    } = string.Empty;
-    public string CONFappend {
-        get;
-        set => field = SetCONFappend(value);
-    } = string.Empty;
-    public bool TileIconAllUsers {
-        get; 
-        set => field = SetTileIconAllUsers(value);
-    }
-    
-    public string? FixedOutputDir { get; private set; }
-    public string? FixedOutputName { get; private set; }
-
     // Fields
-    // private bool FormFirstLoad = true;
+    private bool IsDesingner;   // Debug
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
-    // private byte CurrentTheme = 250;
     private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetNAimage()));
     private IconsItems? IconItemSET;
-    // private Shortcutter BuildingLink = new();
     private bool LinkCustomName;
     private ShortcutterOutput PreviousOutput = new();
 
@@ -417,65 +414,176 @@ public partial class MainView : UserControl
         LockControls(false);
     }
 
+    private ShortcutterOutput HandleLinkOutput(string userInput, ShortcutOutputHelper shortcutHelper)
+    {
+        if (DesktopOS)
+        {
+            var outDirectory = (Settings.TileIcoPath is null)
+                ? Settings.DEFLinkOutput
+                : FileOps.TileIconOutDirs[shortcutHelper.TileIcoAllUsers];
+            var outputPathStr = (IsRenameInactive())
+                ? userInput
+                : FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS), outDirectory);
+            return new ShortcutterOutput(outputPathStr);
+        }
+        else
+        {
+            if ((shortcutHelper.Outputs.Count > 0) && shortcutHelper.Outputs.First().CustomEntryName) {
+                return shortcutHelper.Outputs.First();
+            }
+            else
+            {
+                if (!Settings.AlwaysAskOutput) {
+                    var outputPathStr = FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS),
+                        Settings.DEFLinkOutput);
+                    return new ShortcutterOutput(outputPathStr, shortcutHelper.RaCore);
+                }
+                else return ShortcutterOutput.RebuildOutputWithFriendly(shortcutHelper.Outputs.First(), DesktopOS, shortcutHelper.RaCore);
+            }
+        }
+    }
+
+    private async Task HandleFinalIcon(Shortcutter outputLink)
+    {
+        void UpdateUserIcon(string newPath) {
+            outputLink.ICONfile = newPath;
+
+            if (IconItemSET is not { ConversionRequired: true, comboIconIndex: { } index }) return;
+            // This is for the sake of compatibility with my old code; it will be tighter when Binding is implemented 
+            var newIconItem = new IconsItems(newPath, index);
+            comboICONDir.SelectedIndex = 0;
+            IconProc.IconItemsList[IconProc.IconItemsList.IndexOf(IconItemSET)] = newIconItem;
+            comboICONDir.Items.RemoveAt(index);
+            comboICONDir.Items.Insert(index, newIconItem.FilePath);
+            comboICONDir.SelectedIndex = index;
+        }
+            
+        if (comboICONDir.SelectedIndex == 0) outputLink.ICONfile = string.Empty; // RA binary icon (Default)
+        else
+        {
+            if (DesktopOS)
+            {
+                // If it's Windows, the images may need to be converted to .ico
+                if (IconItemSET is { ConversionRequired: true })
+                {
+                    outputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
+                    outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
+                    if (!FileOps.IsFileWinPE(outputLink.ICONfile))
+                    {
+                        string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir)) ? outputLink.RAdir : outputLink.ROMdir;
+                        if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = outputLink.ROMcore;
+                        if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
+                        var newPath = Settings.IcoSavPath switch
+                        {
+                            SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(outputLink.ICONfile, ROMIcoSavAUX),
+                            SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(outputLink.ICONfile, outputLink.RAdir),
+                            _ => FileOps.CpyIconToUsrSet(outputLink.ICONfile)
+                        };
+                        UpdateUserIcon(newPath);
+                    }
+                }
+                else if (IconItemSET is { ConversionRequired: false } && Settings.TileIcoPath is not null)
+                {
+                    var imageFromIco = string.Empty;
+                    try {
+                        var image = IconProc.ReverseImageConvert(IconItemSET.FilePath);
+                        imageFromIco = FileOps.WriteImageToTemp(image, IconItemSET.FileName);
+                    }
+                    catch (System.Exception ex) {
+                        var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
+                            null, resMainView.wrnIcoToImage_header);
+                        var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
+                        Logger.LogDebg(ms.ToString("G"));
+                        Logger.LogErro(ex);
+                    }
+                    finally { outputLink.TileIcoImage = imageFromIco; }
+                    outputLink.ICONfile = IconItemSET.FilePath; // TODO: test
+                }
+            }
+            // If it's Linux, no conversion is required
+
+            // In case of 'CpyUserIcon = true'
+            if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
+        }
+    }
+
+    private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<ShortcutterResult> results)
+    {
+        if (results.Count == 0) {
+            throw new System.NotImplementedException("No shortcuts were written");
+            return (new PopUpGenericContent(),  GenericPopUpType.Error);
+        }
+        // Single Shortcut created
+        else if (results.Count == 1)
+        {
+            return (!results.First().Error) 
+                ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
+                : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{results.First().ExMessage}",
+                    resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
+        }
+        // Multiple Shortcuts created
+        else
+        {
+            bool hasErrors = false;
+            foreach (var r in results) {
+                if (r.Error) hasErrors = true;
+                break;
+            }
+
+            if (!hasErrors) {
+                return (new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces),
+                    GenericPopUpType.Success);
+            }
+            else
+            {
+                int successCount = 0;
+                string content = string.Empty;
+                foreach (var R in results)
+                {
+                    string output = R.OutputPath + ": ";
+                    content = string.Concat(content, output);
+                    content = string.Concat(content, R.Message);
+                    content = string.Concat(content, "\n");
+                    if (R.Error)
+                    {
+                        content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
+                        content = string.Concat(content, "\n");
+                    }
+                    else successCount++;
+                }
+                return (new PopUpGenericContent(content, null, resMainView.popMultiOutput0_Head),
+                    (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error);
+            }
+        }
+    }
+
     async void RunExecution()
     {
         try {
             LockControls(true);
             var outputLink = (Shortcutter)BuildingLink.Clone();
-            // outputLink.OutputPaths = new List<ShortcutterOutput>(BuildingLink.OutputPaths);
             BuildingLink.OutputPaths.Clear();
             
-            // Controls Lock
-            LockControls(true);
-            // Avalonia.Threading.Dispatcher.UIThread.Invoke(() => LockForExecute(true), DispatcherPriority.Normal);
+            // Validate there's an executable (Linux)
+            outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
+            
+            // Validating contentless or not
+            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : outputLink.ROMdir;
+            
+            // Validate there is a core
+            // outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
             
             // Checkboxes!
             outputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
             outputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
             outputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
             outputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
-
-            // Validating contentless or not
-            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : outputLink.ROMdir;
-
-            // Validate there's an executable (Linux)
-            outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
-
-            // Validate there is a core
-            outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
-
-            // TODO: Move to a separated method
+            
             // Link handling
             var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
             if (!string.IsNullOrWhiteSpace(linkDir))
             {
-                ShortcutterOutput outputPath;
-                if (DesktopOS)
-                {
-                    var outDirectory = (Settings.TileIcoPath is null)
-                        ? Settings.DEFLinkOutput
-                        : FileOps.TileIconOutDirs[outputLink.TileIcoAllUsers];
-                    var outputPathStr = (IsRenameInactive())
-                        ? linkDir
-                        : FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS), outDirectory);
-                    outputPath = new ShortcutterOutput(outputPathStr);
-                }
-                else
-                {
-                    if ((outputLink.OutputPaths.Count > 0) && outputLink.OutputPaths.First().CustomEntryName) {
-                        outputPath = outputLink.OutputPaths.First();
-                    }
-                    else
-                    {
-                        if (!Settings.AlwaysAskOutput) {
-                            var outputPathStr = FileOps.GetDefinedLinkPath(linkDir + FileOps.GetOutputExt(DesktopOS),
-                                Settings.DEFLinkOutput);
-                            outputPath = new ShortcutterOutput(outputPathStr, outputLink.ROMcore);
-                        }
-                        else outputPath = ShortcutterOutput.RebuildOutputWithFriendly(outputLink.OutputPaths.First(), DesktopOS, outputLink.ROMcore);
-                    }
-                }
-
+                var outputPath = HandleLinkOutput(linkDir, new ShortcutOutputHelper(outputLink));
                 if (outputLink.OutputPaths.Count == 0) outputLink.OutputPaths.Add(outputPath);
                 else if (outputLink.OutputPaths.First().FullPath != outputPath.FullPath)
                 {
@@ -487,74 +595,12 @@ public partial class MainView : UserControl
             }
             
             // Include a link description, if any
-            outputLink.Desc = txtDesc.Text;
-
-            // TODO: Move to a separated method
-            // Icons handling
-            void UpdateUserIcon(string newPath) {
-                outputLink.ICONfile = newPath;
-                
-                if (IconItemSET is { ConversionRequired: true, comboIconIndex: { } index })
-                {
-                    // This is for the sake of compatibility with my old code; it will be tighter when Binding is implemented 
-                    var newIconItem = new IconsItems(newPath, index);
-                    comboICONDir.SelectedIndex = 0;
-                    IconProc.IconItemsList[IconProc.IconItemsList.IndexOf(IconItemSET)] = newIconItem;
-                    comboICONDir.Items.RemoveAt(index);
-                    comboICONDir.Items.Insert(index, newIconItem.FilePath);
-                    comboICONDir.SelectedIndex = index;
-                }
-            }
+            // outputLink.Desc = txtDesc.Text;
             
-            if (comboICONDir.SelectedIndex == 0) outputLink.ICONfile = string.Empty; // RA binary icon (Default)
-            else
-            {
-                if (DesktopOS)
-                {
-                    // If it's Windows, the images may need to be converted to .ico
-                    if (IconItemSET is { ConversionRequired: true })
-                    {
-                        outputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
-                        outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                        if (!FileOps.IsFileWinPE(outputLink.ICONfile))
-                        {
-                            string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir)) ? outputLink.RAdir : outputLink.ROMdir;
-                            if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = outputLink.ROMcore;
-                            if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
-                            var newPath = Settings.IcoSavPath switch
-                            {
-                                SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(outputLink.ICONfile, ROMIcoSavAUX),
-                                SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(outputLink.ICONfile, outputLink.RAdir),
-                                _ => FileOps.CpyIconToUsrSet(outputLink.ICONfile)
-                            };
-                            UpdateUserIcon(newPath);
-                        }
-                    }
-                    else if (IconItemSET is { ConversionRequired: false } && Settings.TileIcoPath is not null)
-                    {
-                        var imageFromIco = string.Empty;
-                        try {
-                            var image = IconProc.ReverseImageConvert(IconItemSET.FilePath);
-                            imageFromIco = FileOps.WriteImageToTemp(image, IconItemSET.FileName);
-                        }
-                        catch (System.Exception ex) {
-                            var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
-                                null, resMainView.wrnIcoToImage_header);
-                            var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
-                            Logger.LogDebg(ms.ToString("G"));
-                            Logger.LogErro(ex);
-                        }
-                        finally { outputLink.TileIcoImage = imageFromIco; }
-                    }
-                }
-                // If it's Linux, no conversion is required
-
-                // In case of 'CpyUserIcon = true'
-                if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
-            }
+            // Icons handling
+            await HandleFinalIcon(outputLink);
 
             // REQUIRED FIELDS CHECKS
-            // var msboxParams = new MessageBoxStandardParams();
             PopUpGenericContent popUpContent;
             GenericPopUpType popUpType;
             var outputIsValid = false;
@@ -592,57 +638,15 @@ public partial class MainView : UserControl
                 PreviousOutput = outputLink.OutputPaths.First();
                 
                 // Create Shortcuts
-                List<ShortcutterResult> opResult = await outputLink.BuildShortcut(DesktopOS);
-                // TODO: Move to a separated method, maybe
-                // Single Shortcut created
-                if (opResult.Count == 1)
-                {
-                    (popUpContent, popUpType) = (!opResult.First().Error) 
-                        ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
-                        : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{opResult.First().ExMessage}",
-                            resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
-                }
-                // Multiple Shortcuts created
-                else
-                {
-                    bool hasErrors = false;
-                    foreach (var r in opResult) {
-                        if (r.Error) hasErrors = true;
-                        break;
-                    }
-
-                    if (!hasErrors) {
-                        popUpContent = new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces);
-                        popUpType = GenericPopUpType.Success;
-                    }
-                    else
-                    {
-                        int successCount = 0;
-                        string content = string.Empty;
-                        foreach (var R in opResult)
-                        {
-                            string output = R.OutputPath + ": ";
-                            content = string.Concat(content, output);
-                            content = string.Concat(content, R.Message);
-                            content = string.Concat(content, "\n");
-                            if (R.Error)
-                            {
-                                content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
-                                content = string.Concat(content, "\n");
-                            }
-                            else successCount++;
-                        }
-                        popUpContent = new(content, null, resMainView.popMultiOutput0_Head);
-                        popUpType = (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error;
-                    }
-                }
+                var opsResult = await outputLink.BuildShortcut(DesktopOS);
+                (popUpContent, popUpType) = HandleExecutionReturn(opsResult);
             }
             else {
                 popUpContent = new(resMainView.popMissReq_Mess, resMainView.popMissReq_Title);
                 popUpType = GenericPopUpType.Warning;
             }
             // The collection of IFs fills 'msbox_params', then it's used to Pop-Up a MessageBox
-            _ = this.PopUpGenericMessageBox(popUpContent, popUpType);
+            await this.PopUpGenericMessageBox(popUpContent, popUpType);
             ResetAfterExecute();
         }
         catch (System.Exception e) {
