@@ -75,7 +75,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
 						<Label Content="{x:Static lc:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"
+							                 Text="{Binding BuildingLink.ROMcore}"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
 									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
@@ -181,6 +182,8 @@
 						</Border>
 					</StackPanel>
 					<Rectangle Height="10"/>
+					
+					<!-- Description/Comment -->
 					<StackPanel Orientation="Horizontal" Margin="3,0">
 						<Label Content="{x:Static lc:resMainView.lblDesc}"/>
 						<cc:IconFontWithTip IconValue="fa7-circle-info" Tip="{x:Static lc:resMainView.tipDescTileIco}"
@@ -188,7 +191,7 @@
 						                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" 
-					         ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
+					         Text="{Binding BuildingLink.Desc}" ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->

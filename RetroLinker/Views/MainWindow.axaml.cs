@@ -35,25 +35,27 @@ public partial class MainWindow : Window
     
     public MainWindow()
     {
+        // Constructor for Designer
         InitializeComponent();
         var sTask = Task.Run(FileOps.LoadSettingsFO);
         sTask.Wait();
         Settings = sTask.Result;
-        LanguageManager.SetLocale(Settings.LanguageLocale);
+        // LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
     }
-
-    // Constructor for Designer
+    
     public MainWindow(bool isDesigner)
     {
+        // Constructor used on runtime, this may need a REWRITE 
         InitializeComponent();
         IsDesigner = isDesigner;
-        Settings = new Settings();
-        PermaView = null;
-        if (isDesigner) return;
+        if (isDesigner) {
+            Settings = new Settings();
+            PermaView = null;
+            return;
+        }
         
-        // This is needed because of an edge case with the designer (can't remember witch)
         var sTask = Task.Run(FileOps.LoadSettingsFO);
         sTask.Wait();
         Settings = sTask.Result;
@@ -63,34 +65,26 @@ public partial class MainWindow : Window
     }
 
     public MainWindow(MainView mainViewDesigner) : this(true) {
+        // Constructor for MainView Designer
         mainViewDesigner.Name = "MainViewDesigner";
     }
 
     public void SetSettings(Settings settings) => Settings = settings;
     
-    public void ChangeOut(MainViewTypes views)
+    public void ChangeOut(MainViewTypes view)
     {
         ContBotton.IsTransitionReversed = false;
-        try
-        {
-            ContBotton.Content = views switch {
-                MainViewTypes.AppendView => new AppendView(this),
-                MainViewTypes.PatchesView => new PatchesView(this),
-                MainViewTypes.SubsysView => new SubsystemsView(this),
-                _ => PermaView
-            };
-        }
-        catch (System.InvalidCastException ex) {
-            _ = this.PopUpGenericError(ex);
-            GoBackToMainView();
-        }
+        ContBotton.Content = view switch {
+            MainViewTypes.AppendView => new AppendView(this),
+            MainViewTypes.PatchesView => new PatchesView(this),
+            MainViewTypes.SubsysView => new SubsystemsView(this),
+            _ => PermaView
+        };
     }
 
     public void LocaleReload(string locale)
     {
-        
         if (LanguageManager.SetLocale(locale)) return;
-        
         // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
         var ogTransition = ContBotton.PageTransition;
         ContTop.Content = null;
@@ -119,13 +113,13 @@ public partial class MainWindow : Window
         switch (view)
         {
             case AppendView:
-                mainView.BuildingLink.CONFappend = args;
+                mainView.CONFappend = args;
                 break;
             case PatchesView:
-                mainView.BuildingLink.PatchArg = args;
+                mainView.PatchArg = args;
                 break;
             case SubsystemsView:
-                mainView.BuildingLink.SubsysArg = args;
+                mainView.SubsysArg = args;
                 break;
             default:
                 // Should not happen

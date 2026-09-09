@@ -287,6 +287,20 @@ namespace RetroLinker.Models
     }
 
 
+    public record struct ShortcutOutputHelper
+    {
+        public readonly string RaCore;
+        public readonly List<ShortcutterOutput> Outputs;
+        public readonly bool TileIcoAllUsers;
+
+        public ShortcutOutputHelper(in Shortcutter originalShortcut) {
+            RaCore = originalShortcut.ROMcore;
+            Outputs = originalShortcut.OutputPaths;
+            TileIcoAllUsers = originalShortcut.TileIcoAllUsers;
+        }
+    } 
+
+
     public class LinkParameters
     {
         // TODO: Make this class abstract, and create two new classes: `WindowsLinkParameters` and `LinuxLinkParameters` 

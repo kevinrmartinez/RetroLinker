@@ -43,11 +43,10 @@ public class App : Application
         {
             Args = desktop.Args;
             LanguageManager.FixLocale(LanguageManager.ENLocale);
-            desktop.MainWindow = new MainWindow
+            desktop.MainWindow = new MainWindow(false)
             {
                 Title = $"{LocalInformation.Name} v{LocalInformation.Version}",
                 DataContext = null,
-                IsDesigner = false
             };
         }
         else {
