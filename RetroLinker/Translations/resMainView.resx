@@ -168,4 +168,10 @@
     <data name="wrnIcoToImage_mess" xml:space="preserve">
         <value>Could not convert the selected .ico to an image for tileico, proceeding without one</value>
     </data>
+    <data name="tipTileIcoOverwrite" xml:space="preserve">
+        <value>Overwrite existing shortcut with the same name</value>
+    </data>
+    <data name="lblTileIcon" xml:space="preserve">
+        <value>Tile Icon</value>
+    </data>
 </root>

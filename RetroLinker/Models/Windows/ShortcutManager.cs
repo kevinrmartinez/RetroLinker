@@ -29,8 +29,9 @@ namespace RetroLinker.Models.Windows;
 [SupportedOSPlatform(App.PlatformWin)]
 public static class ShortcutManager
 {
-    public static async Task CreateShortcut(LinkParameters link)
+    public static async Task CreateShortcut(LinkParameters linkBase)
     {
+        var link = (WindowsLinkParameters)linkBase;
         const int iconIndex = 0;    // This may be changeable in the future
         var outputFile = Shortcut.CreateShortcut(link.RaExecutable, link.RaArguments, link.IconPath, iconIndex);
         outputFile.StringData?.WorkingDir = link.RaWorkDir ?? string.Empty;
@@ -40,13 +41,15 @@ public static class ShortcutManager
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
     }
     
-    // public static async Task<LinkParameters> ReadShortcut(string linkPath)
-    // {
-    //     var inputFile = Shortcut.ReadFromFile(linkPath);
-    // }
-    
-    public static async Task CreateTileIcoShortcut(LinkParameters link)
+    public static async Task<LinkParameters> ReadShortcut(string linkPath)
     {
+        var inputFile = Shortcut.ReadFromFile(linkPath);
+        return new WindowsLinkParameters(inputFile, linkPath);
+    }
+    
+    public static async Task CreateTileIcoShortcut(LinkParameters linkBase)
+    {
+        var link = (WindowsLinkParameters)linkBase;
         var tileIcoArguments = new TileicoArgumentList();
         TileIcoOptions? tileIcoNameOpt = null;
         if (link.TileIcoNameVisible) {
@@ -59,7 +62,9 @@ public static class ShortcutManager
             new(TileIcoOptions.target, link.RaExecutable),
             new(TileIcoOptions.arguments, link.RaArguments),
             new(TileIcoOptions.icon, link.IconPath),
-            new(TileIcoOptions.all_users, link.TileIcoAllUsers)
+            new(TileIcoOptions.all_users, link.TileIcoAllUsers),
+            new(TileIcoOptions.overwrite, link.TileIcoOverwrite)
+            // TODO: Update tileico to reflect this changes!!
         ]);
         if (!string.IsNullOrEmpty(link.TileIcoImagePath)) 
             tileIcoArguments.Add(new(TileIcoOptions.image, link.TileIcoImagePath));
@@ -92,8 +97,9 @@ public static class ShortcutManager
         if (proc is null) throw new ApplicationException($"'{psi.FileName}' failed to start");
         // var errorsTask = proc.StandardError.ReadToEndAsync();
         await proc.WaitForExitAsync();
-        
-        if (proc.ExitCode == 0) return;
+
+        const int allGood = 0;
+        if (proc.ExitCode == allGood) return;
         
         var errors = await proc.StandardError.ReadToEndAsync();
         throw new ApplicationException(errors);
@@ -110,14 +116,15 @@ internal enum TileIcoOptions
     name, 
     target, 
     arguments,
-    all_users,
     icon,
     image,
+    all_users,
+    overwrite,
     name_on_tile_light,
     name_on_tile_dark
 }
 
-internal struct TileicoArgument 
+internal readonly struct TileicoArgument 
 {
     public readonly string Option;
     public readonly string Value;
@@ -133,6 +140,7 @@ internal struct TileicoArgument
         switch (option)
         {
             case TileIcoOptions.all_users:
+            case TileIcoOptions.overwrite:
             case TileIcoOptions.name_on_tile_light:
             case TileIcoOptions.name_on_tile_dark:
                 if (value is bool boolValue) valueToString = boolValue.ToString().ToLower();

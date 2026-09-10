@@ -194,5 +194,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("tipBrowseFolder", resourceCulture);
             }
         }
+        
+        public static string genOverwrite {
+            get {
+                return ResourceManager.GetString("genOverwrite", resourceCulture);
+            }
+        }
     }
 }
