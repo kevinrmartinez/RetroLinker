@@ -75,6 +75,7 @@ public partial class MainView : UserControl
         ParentWindow = new MainWindow(this);
         IsDesingner = true;
         Settings =  new Settings();
+        Settings.TileIcoPath = "mmmmmmm";
         CompleteSetup();
 
         PatchArg = "--ups=\"path/to/rom.bin\"";
@@ -445,6 +446,7 @@ public partial class MainView : UserControl
 
     private async Task HandleFinalIcon(Shortcutter outputLink)
     {
+        // 'outputLink.ICONfile' is set when the comboBox changes, this is done in case of conversions and copy
         void UpdateUserIcon(string newPath) {
             outputLink.ICONfile = newPath;
 
@@ -497,7 +499,6 @@ public partial class MainView : UserControl
                         Logger.LogErro(ex);
                     }
                     finally { outputLink.TileIcoImage = imageFromIco; }
-                    outputLink.ICONfile = IconItemSET.FilePath; // TODO: test
                 }
             }
             // If it's Linux, no conversion is required

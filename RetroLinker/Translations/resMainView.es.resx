@@ -143,4 +143,10 @@
     <data name="wrnIcoToImage_header" xml:space="preserve">
         <value>Falló la conversión de imagen</value>
     </data>
+    <data name="tipTileIcoOverwrite" xml:space="preserve">
+        <value>Sobre-escribir un acceso directo existente con el mismo nombre</value>
+    </data>
+    <data name="lblTileIcon" xml:space="preserve">
+        <value>Ícono de Mosaico</value>
+    </data>
 </root>

@@ -71,4 +71,7 @@
     <data name="tipBrowseFolder" xml:space="preserve">
         <value>Buscar una carpeta</value>
     </data>
+    <data name="genOverwrite" xml:space="preserve">
+        <value>Sobre-escribir</value>
+    </data>
 </root>

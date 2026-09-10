@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetroLinker.Models.Linux;
@@ -36,8 +35,9 @@ public static class ShortcutManager
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
-    public static async Task CreateShortcut(LinkParameters link)
+    public static async Task CreateShortcut(LinkParameters linkBase)
     {
+        var link = (LinuxLinkParameters)linkBase;
         List<string> shortcut = new()
         {
             CommentLine,

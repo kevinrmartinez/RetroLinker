@@ -150,35 +150,42 @@
 								</cc:MainViewExtensionNotice.Text>
 							</cc:MainViewExtensionNotice>
 						</StackPanel>
+						
 						<!-- TileIcon Controls -->
 						<Border Name="panelTileIcon" HorizontalAlignment="Stretch" CornerRadius="4" Margin="3,0" Padding="2"
 						        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
-							<StackPanel Orientation="Horizontal">
-								<CheckBox x:Name="chkTextOnTile" IsChecked="{Binding BuildingLink.TileIcoNameVisible}">
-									<StackPanel Orientation="Horizontal">
-										<TextBlock Text="{x:Static lc:resMainView.chkNameOnTile}"/>
-										<Rectangle Width="3"/>
-										<i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-											<ToolTip.Tip><Image Source="../Assets/Images/TileIcon_NameOFF_NameON_x1.5.png"/></ToolTip.Tip>
-										</i:Icon>
-									</StackPanel>
-								</CheckBox>
+							<DockPanel>
+								<Label DockPanel.Dock="Top" FontSize="10" FontWeight="Bold" Margin="0" Padding="0"
+								       Content="{x:Static lc:resMainView.lblTileIcon}"/>
+								<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12">
+									<CheckBox x:Name="chkTextOnTile" IsChecked="{Binding BuildingLink.TileIcoNameVisible}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Text="{x:Static lc:resMainView.chkNameOnTile}"/>
+											<Rectangle Width="3"/>
+											<cc:IconFontWithTip FontSize="16" IconValue="fa7-image" ToolTip.Placement="Right">
+												<cc:IconFontWithTip.Tip><Image Source="../Assets/Images/TileIcon_NameOFF_NameON_x1.5.png"/></cc:IconFontWithTip.Tip>
+											</cc:IconFontWithTip>
+										</StackPanel>
+									</CheckBox>
 								
-								<Rectangle Width="12"/>
-								<ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
-								              OnContent="{x:Static lc:resMainView.swtTextOnTileColor_On}" 
-								              OffContent="{x:Static lc:resMainView.swtTextOnTileColor_Off}"
-								              IsChecked="{Binding !BuildingLink.TileIcoNameDark}"/>
+									<ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
+									              OnContent="{x:Static lc:resMainView.swtTextOnTileColor_On}" 
+									              OffContent="{x:Static lc:resMainView.swtTextOnTileColor_Off}"
+									              IsChecked="{Binding !BuildingLink.TileIcoNameDark}"/>
 								
-								<Rectangle Width="6"/>
-								<Rectangle VerticalAlignment="Stretch" StrokeThickness="1" 
-								           Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-								<Rectangle Width="6"/>
-								<ToggleSwitch OffContent="{x:Static lc:resMainView.swtTileIcoAllUsers_Off}" 
-								              OnContent="{x:Static lc:resMainView.swtTileIcoAllUsers_On}"
-								              IsChecked="{Binding TileIconAllUsers}"
-								              Click="swtTileIcoAllUsers_OnClick"/>
-							</StackPanel>
+									<Rectangle VerticalAlignment="Stretch" StrokeThickness="1" 
+									           Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+								
+									<ToggleSwitch OffContent="{x:Static lc:resMainView.swtTileIcoAllUsers_Off}" 
+									              OnContent="{x:Static lc:resMainView.swtTileIcoAllUsers_On}"
+									              IsChecked="{Binding TileIconAllUsers}"
+									              Click="swtTileIcoAllUsers_OnClick"/>
+								
+									<CheckBox Content="{x:Static lc:resGeneric.genOverwrite}" 
+									          ToolTip.Tip="{x:Static lc:resMainView.tipTileIcoOverwrite}"
+									          IsChecked="{Binding BuildingLink.TileIcoOverwrite}"/>
+								</StackPanel>
+							</DockPanel>
 						</Border>
 					</StackPanel>
 					<Rectangle Height="10"/>

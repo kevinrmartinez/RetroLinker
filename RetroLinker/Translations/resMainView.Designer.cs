@@ -344,5 +344,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("wrnIcoToImage_mess", resourceCulture);
             }
         }
+        
+        public static string tipTileIcoOverwrite {
+            get {
+                return ResourceManager.GetString("tipTileIcoOverwrite", resourceCulture);
+            }
+        }
+        
+        public static string lblTileIcon {
+            get {
+                return ResourceManager.GetString("lblTileIcon", resourceCulture);
+            }
+        }
     }
 }

@@ -93,4 +93,7 @@
     <data name="tipBrowseFolder" xml:space="preserve">
         <value>Browse fo a folder</value>
     </data>
+    <data name="genOverwrite" xml:space="preserve">
+        <value>Overwrite</value>
+    </data>
 </root>
