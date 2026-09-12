@@ -76,6 +76,7 @@ namespace RetroLinker.Models
     }
     
     
+    // TODO: Create another Settings class (private setters) for saving the props, making validations in the process 
     public class Settings : LocalSerializable, System.ICloneable
     {
         public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;

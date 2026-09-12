@@ -13,7 +13,7 @@
              Loaded="View_OnLoaded">
 
     <UserControl.Styles>
-        <StyleInclude Source="/Styles/SettingsStyles.axaml" />
+        <StyleInclude Source="/Styles/SettingsStyles.axaml"/>
     </UserControl.Styles>
 
     <StackPanel x:Name="panelContent" Orientation="Vertical">
@@ -52,21 +52,21 @@
         <!-- OUTPUT COPIES -->
         <Border Classes="SettingCatg">
             <StackPanel>
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_MakeLinkCopy}" />
-                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
+                <Label Content="{x:Static lc:resSettingsWindow.lblCat_MakeLinkCopy}"/>
+                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <CheckBox x:Name="chkMakeLinkCopy" Classes="SettingCatg"
                           Content="{x:Static lc:resSettingsWindow.chkMakeLinkCopy}"
-                          IsChecked="{Binding ParentWindow.NewSettings.MakeLinkCopy}" />
+                          IsChecked="{Binding ParentWindow.NewSettings.MakeLinkCopy}"/>
                 <Border Classes="SettingCatg">
                     <StackPanel>
                         <ListBox x:Name="lsboxLinkCopies" CornerRadius="9"
                                  IsEnabled="{Binding #chkMakeLinkCopy.IsChecked}">
                             <ListBoxItem x:Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
                                 <Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
-                                    <ComboBox x:Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch" />
+                                    <ComboBox x:Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
                                     <Button x:Name="btnaddLinkCopy" Grid.Column="1" Height="30"
                                             Click="BtnAddLinkCopy_OnClick"
-                                            i:Attached.Icon="fa7-plus" />
+                                            i:Attached.Icon="fa7-plus"/>
                                 </Grid>
                             </ListBoxItem>
                         </ListBox>
@@ -79,18 +79,18 @@
         <!-- Windows .ico -->
         <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
             <StackPanel x:Name="panelIcoOutputControls" IsEnabled="{Binding $parent.IsVisible}">
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_IcoOutput}" /> 
-                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
-                <Rectangle Height="4" />
+                <Label Content="{x:Static lc:resSettingsWindow.lblCat_IcoOutput}"/> 
+                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+                <Rectangle Height="4"/>
                 <TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
-                           Text="{x:Static lc:resSettingsWindow.blcIcoOutout}" />
+                           Text="{x:Static lc:resSettingsWindow.blcIcoOutout}"/>
                 <!-- SAVE ICO CONTROLS -->
                 <TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
-                           Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}" />
+                           Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}"/>
                 <Grid x:Name="panelWindowsOnlyControls2" Margin="3,4" ColumnDefinitions="*,Auto">
                     <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button x:Name="btnIcoSavPath" Classes="textbox_inline browseFolder" Click="btnIcoSavPath_OnClick" />
+                        <Button x:Name="btnIcoSavPath" Classes="textbox_inline browseFolder" Click="btnIcoSavPath_OnClick"/>
                         <Button x:Name="btnclrIcoSavPath" Classes="restore textbox_inline"
                                 Click="btnclrIcoSavPath_Click"/>
                     </StackPanel>
@@ -100,35 +100,35 @@
                         <CheckBox x:Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"
                                   VerticalAlignment="Center"
                                   IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
-                                  ToolTip.Tip="{x:Static lc:resSettingsWindow.tipUseDefaultIcoSavPath}" />
+                                  ToolTip.Tip="{x:Static lc:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
                         <ComboBox x:Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center"
                                   HorizontalAlignment="Stretch" Margin="-5,0,5,0"
-                                  DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed" />
+                                  DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
                     </Grid>
                     <CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg"
                               Content="{x:Static lc:resSettingsWindow.chkExtractIco}"
                               IsChecked="{Binding ParentWindow.NewSettings.ExtractIco}"
-                              ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}" />
+                              ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}"/>
                     <CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg"
                               Content="{x:Static lc:resSettingsWindow.chkIcoLinkName}"
-                              IsChecked="{Binding ParentWindow.NewSettings.IcoLinkName}" />
+                              IsChecked="{Binding ParentWindow.NewSettings.IcoLinkName}"/>
                 </Grid>
             </StackPanel>
         </Border>
 
         <!-- Windows Menu tile icon -->
-        <Border Classes="SettingCatg" >
-            <!-- IsVisible="{Binding DesktopOS}" -->
+        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
+            <!--  -->
             <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}" />
-                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5" />
+                <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}"/>
+                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <!-- <CheckBox x:Name="chkTileIcons" Classes="SettingCatg" Content="Enable" IsChecked="True"/> -->
                 
                 <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static lc:resSettingsWindow.blcTileIco1}">
-                    <Rectangle Width="2" />
-                    <i:Icon FontSize="16" Value="fa7-image" ToolTip.Placement="Right">
-                        <ToolTip.Tip><Image Source="../Assets/Images/TileIcon_OFF_ON_x1.5.png" /></ToolTip.Tip>
-                    </i:Icon>
+                    <Rectangle Width="2"/>
+                    <cc:IconFontWithTip IconValue="fa7-image" ToolTip.Placement="Left">
+                        <cc:IconFontWithTip.Tip><Image Source="../Assets/Images/TileIcon_OFF_ON_x1.5.png"/></cc:IconFontWithTip.Tip>
+                    </cc:IconFontWithTip>
                 </TextBlock>
                 <TextBlock TextWrapping="Wrap" Margin="3,0">
                     <Run Text="{x:Static lc:resSettingsWindow.blcTileIco2_A}"/>

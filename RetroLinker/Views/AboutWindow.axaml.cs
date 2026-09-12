@@ -1,6 +1,6 @@
 /*
     RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2025  Kevin Rafael Martinez Johnston
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -65,13 +65,14 @@ public partial class AboutWindow : Window
             new ThirdParty("Magick.NET", new Uri("https://github.com/dlemstra/Magick.NET"), "Powerful image manipulation library"),
             new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
             new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
-            new ThirdParty("Microsoft.ClearScript.Windows", new Uri("https://github.com/ClearFoundry/ClearScript")),
+            new ThirdParty("SharpShellLink", new Uri("https://github.com/JeremyAnsel/SharpShellLink"), "A .NET Class Library for processing ShellLink (LNK) files"),
             new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App"),
         ];
         
         // Attribution
         ThirdPartyRes = [
             // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
+            new ThirdParty("Libretro invader logo", new Uri("https://github.com/libretro/retroarch-assets")),
             new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
             new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
             // new ThirdParty("Liberation Mono Fonts", new Uri(FileOps.CombineMultipleInputs(FileOps.DefLicensesDir, "LiberationMono-License.txt")))
@@ -80,10 +81,11 @@ public partial class AboutWindow : Window
         
         // Special Thanks
         ThirdPartyThanks = [
-            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "DevTool for AvaloniaUI v12"),
+            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "Classic Avalonia DevTool for AvaloniaUI v12")
         ];
         
         // =Update Bindings=
+        DataContext = null;
         DataContext = this;
     }
 

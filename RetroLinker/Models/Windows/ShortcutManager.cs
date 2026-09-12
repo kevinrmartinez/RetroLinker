@@ -64,7 +64,6 @@ public static class ShortcutManager
             new(TileIcoOptions.icon, link.IconPath),
             new(TileIcoOptions.all_users, link.TileIcoAllUsers),
             new(TileIcoOptions.overwrite, link.TileIcoOverwrite)
-            // TODO: Update tileico to reflect this changes!!
         ]);
         if (!string.IsNullOrEmpty(link.TileIcoImagePath)) 
             tileIcoArguments.Add(new(TileIcoOptions.image, link.TileIcoImagePath));

@@ -73,9 +73,9 @@ public partial class MainView : UserControl
         // Constructor for Designer
         InitializeComponent();
         ParentWindow = new MainWindow(this);
-        IsDesingner = true;
+        _isDesingner = true;
         Settings =  new Settings();
-        Settings.TileIcoPath = "mmmmmmm";
+        // Settings.TileIcoPath = "mmmmmmm";
         CompleteSetup();
 
         PatchArg = "--ups=\"path/to/rom.bin\"";
@@ -93,7 +93,7 @@ public partial class MainView : UserControl
     
     
     // Fields
-    private bool IsDesingner;   // Debug
+    private readonly bool _isDesingner;   // Debug
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
@@ -102,7 +102,7 @@ public partial class MainView : UserControl
     private bool LinkCustomName;
     private ShortcutterOutput PreviousOutput = new();
 
-    // TODO: This has to be a enum or something, as it needs to include MacOS. And move to App. (>=0.10)
+    // TODO: This has to be a enum or something, as it needs to include macOS. And move to App. (>=0.10)
     //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
     //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
     // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
@@ -110,9 +110,11 @@ public partial class MainView : UserControl
     private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
     
     
-    #region LOAD EVENTS
+    #region LOAD OPS
     void CompleteSetup()
     {
+        if (!DesktopOS) Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
+        
         // Implement an Event for theme handling
 #if DEBUG
         try {
@@ -292,7 +294,7 @@ public partial class MainView : UserControl
     {
         if (!string.IsNullOrEmpty(Settings.DEFRADir)) txtRADir.Text = Settings.DEFRADir;
         BuildingLink.RAdir = Settings.DEFRADir;
-        if (!IsDesingner && !ParentWindow.IsDesigner) {
+        if (!_isDesingner && !ParentWindow.IsDesigner) {
             Operations.SetROMTop(Settings.DEFROMPath, ParentWindow);
             Operations.SetDesktopStorageFolder(ParentWindow);
         }
