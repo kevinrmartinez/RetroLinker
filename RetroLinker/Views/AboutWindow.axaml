@@ -166,8 +166,10 @@
                             <TextBlock.Text>
                                 <!-- BUILD_DATE; GIT_HASH -->
                                 <MultiBinding StringFormat="{}{0}; {1}">
-                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:G}" Converter="{StaticResource DateToLocalConverter}" TargetNullValue="NoDate"/>
-                                    <Binding Path="AppInfo.GitHash" Converter="{StaticResource TextToUpperConverter}" TargetNullValue="NoHash"/>
+                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:G}" TargetNullValue="[NO DATE]"
+                                             Converter="{StaticResource DateToLocalConverter}"/>
+                                    <Binding Path="AppInfo.GitHash" TargetNullValue="[NO HASH]"
+                                             Converter="{StaticResource TextToUpperConverter}"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>

@@ -343,13 +343,17 @@ namespace RetroLinker.Models
 
         public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
         {
-            if (shortcut.LinkTargetIDList is null) throw new System.ArgumentException("Can't get target from shortcut");
-
-            RaExecutable = shortcut.LinkTargetIDList.Path;
+            string targetPath;
+            if (shortcut.LinkTargetIDList is not null) targetPath = shortcut.LinkTargetIDList.Path;
+            else if (shortcut.ExtraData.EnvironmentVariableDataBlock is not null)
+                targetPath = shortcut.ExtraData.EnvironmentVariableDataBlock.TargetUnicode;
+            else throw new System.ArgumentException("Can't get target from shortcut");
+            
+            RaExecutable = targetPath;
             RaArguments = shortcut.StringData?.CommandLineArguments ?? string.Empty;
             Description = shortcut.StringData?.NameString;
             IconPath = shortcut.StringData?.IconLocation ?? string.Empty;
-            FriendlyName = shortcut.LinkTargetIDList.DisplayName;
+            FriendlyName = shortcut.LinkTargetIDList?.DisplayName ?? FileOps.GetFileNameNoExtFromPath(linkPath);
             OutputPath = linkPath;
             TileIcoImagePath = string.Empty;
         }
