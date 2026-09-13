@@ -86,28 +86,27 @@ namespace RetroLinker.Models
         public static List<string> ParseSingleLineArguments(string args, char separator = ' ')
         {
             var results = new List<string>();
-            if (string.IsNullOrWhiteSpace(args)) return results;
+            var sqStart = $"{separator}{SQ}";
+            // var sqEnd = $"{SQ}{separator}";
+            var dqStart = $"{separator}{DQ}";
+            // var dqEnd = $"{DQ}{separator}";
+            
+            var wrk = args.Insert(0, separator.ToString());
+            wrk += separator.ToString();
 
-            // Just wanted to mention that I HATE regular expressions, but is the most direct solution I found...
-            /* Regex Explanation:
-             * "([^"]*)"    : Matches content inside double quotes
-             * '([^']*)'    : Matches content inside single quotes
-             * [^\s'"]+     : Matches sequences of characters that aren't spaces or quotes
-             */
-            const string pattern = @" ""([^""]*)"" | '([^']*)' | ([^\s'"" ]+) ";
-            var matches = Regex.Matches(args, pattern, RegexOptions.IgnorePatternWhitespace);
-
-            foreach (Match match in matches) {
-                // Group 1: Double quoted
-                // Group 2: Single quoted
-                // Group 3: Unquoted
-                foreach (Group matchGroup in match.Groups) {
-                    if (matchGroup.Index == 0) continue;    // This is skipped, its result is not desired 
-                    if (!matchGroup.Success) continue;
-                    results.Add(matchGroup.Value);
-                    break;
-                }
+            if (wrk.Contains(sqStart) || wrk.Contains(dqStart))
+            { 
+               var newSep = $"-_{Random.Shared.Next().ToString()}_-";
+               wrk = wrk.Replace(sqStart, newSep); 
+               wrk = wrk.Replace(dqStart, newSep);
+               var split = wrk.Split(newSep, StringSplitOptions.RemoveEmptyEntries);
+               foreach (var s in split)
+                   results.Add(s.TrimEnd(SQ, DQ, separator).TrimStart());
             }
+            else {
+                results.AddRange(wrk.Split(separator, StringSplitOptions.RemoveEmptyEntries));
+            }
+
             return results;
         }
         
