@@ -88,8 +88,8 @@ public class NumberGreaterThan : IValueConverter
     {
         if (targetType == typeof(bool))
         {
-            var valueParsed = Models.Generic.Utils.GetNumberFromObject<double>(value, culture, out var realValue);
-            var paramParsed = Models.Generic.Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+            var valueParsed = Utils.GetNumberFromObject<double>(value, culture, out var realValue);
+            var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
         
             if (valueParsed && paramParsed) return realValue > realParam;
         }
@@ -100,8 +100,8 @@ public class NumberGreaterThan : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (Models.Generic.Utils.IsNumericType(targetType)) {
-            var paramParsed = Models.Generic.Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+        if (Utils.IsNumericType(targetType)) {
+            var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
             if (paramParsed) return realParam;
         }
         if (targetType.IsAssignableTo(typeof(string))) return value?.ToString();

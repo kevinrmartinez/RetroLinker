@@ -20,16 +20,17 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
-using System.Text.RegularExpressions;
 
-namespace RetroLinker.Models.Generic
+namespace RetroLinker.Models
 {
     public static class Utils
     {
+        private const char SQ = '\'';
         private const char DQ = '\"';
         private const char LinIllegaChar = '/';
         private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
 
+        private static bool HasSingleQuotes(string path) => path.StartsWith(SQ) && path.EndsWith(SQ);
         private static bool HasDoubleQuotes(string path) => path.StartsWith(DQ) && path.EndsWith(DQ);
         
         public static string PutPathBetweenQuotes(string path)
@@ -40,7 +41,7 @@ namespace RetroLinker.Models.Generic
             return path;
         }
 
-        public static string ReversePutPathBetweenQuotes(string path) 
+        public static string ReversePutPathBetweenQuotes(string path)
         {
             if (string.IsNullOrWhiteSpace(path) || !HasDoubleQuotes(path)) return path;
             path = path.TrimStart(DQ);
@@ -81,8 +82,8 @@ namespace RetroLinker.Models.Generic
             var object64 = Convert.ToBase64String(objectBytes);
             return object64;
         }
-
-        public static List<string> ParseArguments(string args)
+        
+        public static List<string> ParseSingleLineArguments(string args, char separator = ' ')
         {
             var results = new List<string>();
             if (string.IsNullOrWhiteSpace(args)) return results;

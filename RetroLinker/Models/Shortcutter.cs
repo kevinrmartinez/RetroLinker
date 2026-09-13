@@ -137,7 +137,7 @@ namespace RetroLinker.Models
             
             // Building the arguments
             Command = CommandManager.CommandBuilder(this);
-            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard
+            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
             return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
         }
 

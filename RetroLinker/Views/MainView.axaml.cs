@@ -29,7 +29,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
-using RetroLinker.Models.Generic;
 using RetroLinker.Translations;
 
 using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;

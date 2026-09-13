@@ -34,8 +34,7 @@ As Windows Shortcuts can only use .ico files for its icons, RetroLinker comes re
 
 ![Application Window - 2048 Example](MainApp_Ex03.png)
 
-In the following capture, we can see that the example from before are now part of the Games category on the system apps menu.
-
+In the following capture, we can see that the example from before are now part of the Games category on the system apps menu.  
 ![Examples added to System Applications](SystemMenu_Ex01.png)
 
 ## Planned RetroArch parameters
@@ -90,6 +89,4 @@ The project will most likely compile for macOS with no problems, but the resulti
 Running it like this it's **NOT RECOMMENDED**, as it is untested territory. Support for macOS is planned, I just don't have the enviroment to test it.
 
 ## Contributing
-Not much to say. ~~Starting from release/tag v0.8~~, contributions are welcome via forking: fork, do your changes and create a pull request to the master branch
-
-***This app is currently work-in-progress.***
+Not much to say. ~~Starting from release/tag v0.8~~, contributions are welcome via forking: fork, do your changes and create a pull request to the **dev** branch.

@@ -16,9 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
 {
@@ -165,7 +165,7 @@ namespace RetroLinker.Models
             var noOption = GetArgumentNoOption(arg);
             var subsys = noOption.Split(' ').First();
             var fullSubsysArgs = noOption.Substring(subsys.Length + 1);
-            var subsysArgs = Utils.ParseArguments(fullSubsysArgs);
+            var subsysArgs = Utils.ParseSingleLineArguments(fullSubsysArgs);
             return (subsys,  subsysArgs);
         }
 
@@ -177,6 +177,16 @@ namespace RetroLinker.Models
                 fixedArgs.Add(Utils.PutPathBetweenQuotes(subsysArg));
             arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
             return arg;
+        }
+
+        public static void TestSubsystemArg()
+        {
+            var testValue = "--subsystem=abc path/to/rom1.bin path/to/rom2.bin path/to/rom3.bin";
+            (var res1, var res2) = ResolveSubsystemArg(testValue);
+            Console.WriteLine(nameof(res1));
+            Console.WriteLine(res1);
+            Console.WriteLine(nameof(res2));
+            res2.ForEach(Console.WriteLine);
         }
     }
     
