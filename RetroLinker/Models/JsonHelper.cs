@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
-namespace RetroLinker.Models.Generic;
+namespace RetroLinker.Models;
 
 public static class JsonHelper
 {
@@ -54,13 +54,11 @@ public static class JsonHelper
     {
         try
         {
-            switch (typeof(T).Name)
+            return typeof(T).Name switch
             {
-                case nameof(Settings):
-                    return Deserialize(json) as T;
-                default:
-                    throw new System.NotSupportedException("Deserializer not implemented");
-            }
+                nameof(Settings) => Deserialize(json) as T,
+                _ => throw new System.NotSupportedException("Deserializer not implemented")
+            };
         }
         catch (System.Exception ex) when  (ex is System.NotSupportedException or JsonException) {
             Logger.LogErro($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex.Message}");
