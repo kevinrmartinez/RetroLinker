@@ -356,5 +356,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblTileIcon", resourceCulture);
             }
         }
+        
+        public static string popNoOutput_Mess {
+            get {
+                return ResourceManager.GetString("popNoOutput_Mess", resourceCulture);
+            }
+        }
     }
 }

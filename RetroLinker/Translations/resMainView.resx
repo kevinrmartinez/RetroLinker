@@ -174,4 +174,7 @@
     <data name="lblTileIcon" xml:space="preserve">
         <value>Tile Icon</value>
     </data>
+    <data name="popNoOutput_Mess" xml:space="preserve">
+        <value>No links were processed!\nThis is not expected behavior, please contact the mantainer on GitHub!</value>
+    </data>
 </root>

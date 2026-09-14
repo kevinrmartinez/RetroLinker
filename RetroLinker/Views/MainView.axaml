@@ -219,6 +219,7 @@
 			
 			<!-- Icon Selection -->
 			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" Margin="2,0">
+				<!-- TODO: Add animation to SizeChange -->
 				<Rectangle Grid.Row="0" Height="15"/>
 				<StackPanel Grid.Row="1">
 					<Label Content="{x:Static lc:resMainView.lblICON}"/>

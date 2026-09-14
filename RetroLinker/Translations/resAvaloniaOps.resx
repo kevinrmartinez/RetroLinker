@@ -105,4 +105,7 @@
     <data name="dlgFileTileCliexe" xml:space="preserve">
         <value>Pick the 'tileico' executable</value>
     </data>
+    <data name="dlgFileExe" xml:space="preserve">
+        <value>Pick the executable file</value>
+    </data>
 </root>

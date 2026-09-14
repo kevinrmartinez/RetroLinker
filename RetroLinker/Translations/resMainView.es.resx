@@ -149,4 +149,7 @@
     <data name="lblTileIcon" xml:space="preserve">
         <value>Ícono de Mosaico</value>
     </data>
+    <data name="popNoOutput_Mess" xml:space="preserve">
+        <value>Ningun link fue creado!\nEste no es un comportamiento esperado, por favor contacte al mantainer en GitHub!</value>
+    </data>
 </root>

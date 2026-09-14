@@ -57,9 +57,9 @@ namespace RetroLinker.Models.Avalonia
             switch (template)
             {
                 // Windows exe
-                case OpenOpts.RAexe:
+                case OpenOpts.WinExe:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe; // TODO: change with more generic title
+                    options.Title = resAvaloniaOps.dlgFileExe;
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
@@ -95,9 +95,9 @@ namespace RetroLinker.Models.Avalonia
                     break;
 
                 // Linux executable
-                case OpenOpts.RAbin:
+                case OpenOpts.LinBin:
                     options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
+                    options.Title = resAvaloniaOps.dlgFileExe;
                     options.FileTypeFilter = RADirFileTypes_lin;
                     break;
 
@@ -165,7 +165,7 @@ namespace RetroLinker.Models.Avalonia
         }
     }
     
-    public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
+    public enum OpenOpts { WinExe, RAroms, RAcfg, WINico, LinBin, LINico }
     public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy, DefOutput}
     public enum SaveOpts { WINlnk, LINdesktop }
     public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
