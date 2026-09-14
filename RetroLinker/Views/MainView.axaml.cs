@@ -511,50 +511,50 @@ public partial class MainView : UserControl
 
     private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<ShortcutterResult> results)
     {
-        if (results.Count == 0) {
-            throw new System.NotImplementedException("No shortcuts were written");
-            return (new PopUpGenericContent(),  GenericPopUpType.Error);
-        }
-        // Single Shortcut created
-        else if (results.Count == 1)
+        switch (results.Count)
         {
-            return (!results.First().Error) 
-                ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
-                : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{results.First().ExMessage}",
-                    resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
-        }
-        // Multiple Shortcuts created
-        else
-        {
-            bool hasErrors = false;
-            foreach (var r in results) {
-                if (r.Error) hasErrors = true;
-                break;
-            }
-
-            if (!hasErrors) {
-                return (new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces),
-                    GenericPopUpType.Success);
-            }
-            else
+            // Very erroneous behavior
+            case 0:
+                return (new PopUpGenericContent(resMainView.popNoOutput_Mess), GenericPopUpType.Error);
+            // Single Shortcut created
+            case 1:
+                return (!results.First().Error) 
+                    ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
+                    : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{results.First().ExMessage}",
+                        resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
+            // Multiple Shortcuts created
+            default:
             {
-                int successCount = 0;
-                string content = string.Empty;
-                foreach (var R in results)
-                {
-                    string output = R.OutputPath + ": ";
-                    content = string.Concat(content, output);
-                    content = string.Concat(content, R.Message);
-                    content = string.Concat(content, "\n");
-                    if (R.Error)
-                    {
-                        content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
-                        content = string.Concat(content, "\n");
-                    }
-                    else successCount++;
+                bool hasErrors = false;
+                foreach (var r in results) {
+                    if (r.Error) hasErrors = true;
+                    break;
                 }
-                return (new PopUpGenericContent(content, null, resMainView.popMultiOutput0_Head),
-                    (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error);
+
+                if (!hasErrors) {
+                    return (new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces),
+                        GenericPopUpType.Success);
+                }
+                else
+                {
+                    int successCount = 0;
+                    string content = string.Empty;
+                    foreach (var R in results)
+                    {
+                        string output = R.OutputPath + ": ";
+                        content = string.Concat(content, output);
+                        content = string.Concat(content, R.Message);
+                        content = string.Concat(content, "\n");
+                        if (R.Error)
+                        {
+                            content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
+                            content = string.Concat(content, "\n");
+                        }
+                        else successCount++;
+                    }
+                    return (new PopUpGenericContent(content, null, resMainView.popMultiOutput0_Head),
+                        (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error);
+                }
             }
         }
     }
@@ -774,11 +774,12 @@ public partial class MainView : UserControl
             OpenOpts opt;
             string currentFile = string.Empty;
             if (DesktopOS) {
-                opt = OpenOpts.RAexe;
+                opt = OpenOpts.WinExe;
                 currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
             }
-            else { opt = OpenOpts.RAbin; }
-            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            else { opt = OpenOpts.LinBin; }
+            var dlgTitle = resAvaloniaOps.dlgFileRAexe;
+            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
             if (string.IsNullOrEmpty(file)) return;
             RADirSet(file);
         }

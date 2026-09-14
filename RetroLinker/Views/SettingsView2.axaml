@@ -78,7 +78,7 @@
 					</Grid>
 				</StackPanel>
 			</Border>
-            
+            <!-- TODO: Add an icon parent directory -->
         </Grid>
         
     </Grid>

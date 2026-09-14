@@ -54,7 +54,7 @@
                         <Grid ColumnDefinitions="*,Auto" Margin="2">
                             <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="⏏" Classes="textbox_inline browse" Click="ButtonNewArgBrowse_OnClick"/>
+                                <Button Content="⏏" Classes="textbox_inline browseFile" Click="ButtonNewArgBrowse_OnClick"/>
                                 <Button Content="⌫" Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
                                         ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgDis_Tip}"/>
                                 <Button Content="✓" Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"

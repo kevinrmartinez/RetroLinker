@@ -218,5 +218,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("dlgFileTileCliexe", resourceCulture);
             }
         }
+        
+        public static string dlgFileExe {
+            get {
+                return ResourceManager.GetString("dlgFileExe", resourceCulture);
+            }
+        }
     }
 }

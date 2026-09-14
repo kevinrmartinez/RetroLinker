@@ -67,7 +67,6 @@ public partial class SettingsView2 : UserControl
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            // txtUserAssets.Text = folder;
             ParentWindow.NewSettings.UserAssetsPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -78,7 +77,6 @@ public partial class SettingsView2 : UserControl
     
     void btnrevUserAssets_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.NewSettings.UserAssetsPath = ParentWindow.GetDefSettings().UserAssetsPath;
-        // txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
     }
     
     // RA EXECUTABLE
@@ -86,9 +84,10 @@ public partial class SettingsView2 : UserControl
     {
         try {
             LockControls(true);
-            var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
-            string currentFile = ((string.IsNullOrEmpty(textBox.Text)) || !DesktopOS) ? string.Empty : textBox.Text;
-            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            var opt = DesktopOS ? OpenOpts.WinExe : OpenOpts.LinBin;
+            var dlgTitle = Translations.resAvaloniaOps.dlgFileRAexe;
+            var currentFile = ((string.IsNullOrEmpty(textBox.Text)) || !DesktopOS) ? string.Empty : textBox.Text;
+            var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
             if (string.IsNullOrWhiteSpace(file)) return;
             ParentWindow.NewSettings.DEFRADir = file;
         }
