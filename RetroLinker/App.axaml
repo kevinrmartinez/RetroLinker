@@ -31,6 +31,7 @@
         <cc:TextToFullPath x:Key="TextToFullPathConverter"/>
         <!-- Numbers -->
         <cc:NumberGreaterThan x:Key="NumberGreaterThanConverter"/>
+        <cc:NumberLowerThan x:Key="NumberLowerThanConverter"/>
         <!-- Dates -->
         <cc:DateToLocal x:Key="DateToLocalConverter"/>
     </Application.Resources>

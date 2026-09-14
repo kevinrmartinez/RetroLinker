@@ -86,12 +86,41 @@ public class NumberGreaterThan : IValueConverter
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (targetType == typeof(bool))
+        if (targetType.IsAssignableFrom(typeof(bool)))
         {
             var valueParsed = Utils.GetNumberFromObject<double>(value, culture, out var realValue);
             var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
-        
+            
             if (valueParsed && paramParsed) return realValue > realParam;
+        }
+        
+        // converter used for the wrong type
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (Utils.IsNumericType(targetType)) {
+            var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+            if (paramParsed) return realParam;
+        }
+        if (targetType.IsAssignableTo(typeof(string))) return value?.ToString();
+        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
+    }
+}
+
+public class NumberLowerThan : IValueConverter
+{
+    public static readonly NumberLowerThan Instance = new();
+    
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (targetType.IsAssignableFrom(typeof(bool)))
+        {
+            var valueParsed = Utils.GetNumberFromObject<double>(value, culture, out var realValue);
+            var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
+            
+            if (valueParsed && paramParsed) return realValue < realParam;
         }
         
         // converter used for the wrong type

@@ -397,7 +397,7 @@ public partial class MainView : UserControl
     bool IsRenameInactive() => Settings is { AlwaysAskOutput: true, TileIcoPath: null };
     
     void LockControls(bool lockControls) {
-        gridBODY.IsEnabled = !lockControls;
+        this.IsEnabled = !lockControls;
         UpdateContext();
     }
     

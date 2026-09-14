@@ -13,8 +13,10 @@
 		<TransitioningContentControl.PageTransition>
 			<CrossFade Duration="0:00:00.30"/>
 		</TransitioningContentControl.PageTransition>
+		
 		<!-- Content -->
 		<TransitioningContentControl Name="ContBotton" IsTransitionReversed="False">
+			<!-- Props -->
 			<TransitioningContentControl.PageTransition>
 				<PageSlide Duration="0:00:00.340" Orientation="Horizontal" SlideInEasing="QuadraticEaseOut" SlideOutEasing="QuadraticEaseOut"/>
 			</TransitioningContentControl.PageTransition>
