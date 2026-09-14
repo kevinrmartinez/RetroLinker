@@ -92,4 +92,10 @@
     <data name="dlgFileExe" xml:space="preserve">
         <value>Eliga el archivo ejecutable</value>
     </data>
+    <data name="pckFileTypeWinLnk" xml:space="preserve">
+        <value>Acceso Directo</value>
+    </data>
+    <data name="dlgFolderIconParent" xml:space="preserve">
+        <value>Eliga el directorio padre de sus archivos de iconos</value>
+    </data>
 </root>

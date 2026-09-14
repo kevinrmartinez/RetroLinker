@@ -242,9 +242,11 @@
 							</StackPanel>
 
 							<!-- pic256 -->
-							<Viewbox Classes.collapsed="{Binding ParentWindow.Height, 
+							<Viewbox Classes.collapsed="{Binding Height, 
 							         Converter={StaticResource NumberLowerThanConverter},
-							         ConverterParameter={StaticResource MinHeightForLargePic}}">
+							         ConverterParameter={StaticResource MinHeightForLargePic},
+							         RelativeSource={RelativeSource AncestorType=vw:MainWindow}}">
+								<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
 								<Viewbox.Styles>
 									<Style Selector="Viewbox">
 										<Setter Property="HorizontalAlignment" Value="Left"/>

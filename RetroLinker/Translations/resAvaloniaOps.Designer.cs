@@ -224,5 +224,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("dlgFileExe", resourceCulture);
             }
         }
+        
+        public static string dlgFolderIconParent {
+            get {
+                return ResourceManager.GetString("dlgFolderIconParent", resourceCulture);
+            }
+        }
     }
 }

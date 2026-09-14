@@ -146,4 +146,37 @@ public partial class SettingsView2 : UserControl
         }
         UpdateContext();
     }
+
+    async void btnIconParentPath_OnClickAsync(TextBox textBox)
+    {
+        try
+        {
+            LockControls(true);
+            string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IconParent, ParentWindow, currentFolder);
+            if (string.IsNullOrWhiteSpace(folder)) return;
+            ParentWindow.NewSettings.IconParentPath = folder;
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
+    }
+
+    private void btnIconParentPath_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnIconParentPath_OnClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.IconParentPath = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().IconParentPath,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.IconParentPath // Shouldn't happen
+                };
+                break;
+        }
+        UpdateContext();
+    }
 }

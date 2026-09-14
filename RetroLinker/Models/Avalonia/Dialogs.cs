@@ -60,6 +60,7 @@ public static class FileDialogOps
             {
                 OpenFolderOpts.UserAssets => resAvaloniaOps.dlgFolderUserAssets,
                 OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
+                OpenFolderOpts.IconParent => resAvaloniaOps.dlgFolderIconParent,
                 OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
                 OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
                 OpenFolderOpts.DefOutput => resAvaloniaOps.dlgFolderDefOutput,
