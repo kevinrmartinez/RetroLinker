@@ -81,6 +81,7 @@ namespace RetroLinker.Models
         public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
         public string DEFRADir { get; set; } = string.Empty;
         public string DEFROMPath { get; set; } = string.Empty;
+        public string IconParentPath { get; set; } = string.Empty;
         public bool PrevConfig { get; set; } = false;
         public bool AlwaysAskOutput { get; set; } = true;
         public string DEFLinkOutput { get; set; } = string.Empty;

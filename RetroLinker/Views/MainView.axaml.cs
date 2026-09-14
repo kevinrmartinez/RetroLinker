@@ -294,7 +294,8 @@ public partial class MainView : UserControl
         if (!string.IsNullOrEmpty(Settings.DEFRADir)) txtRADir.Text = Settings.DEFRADir;
         BuildingLink.RAdir = Settings.DEFRADir;
         if (!_isDesingner && !ParentWindow.IsDesigner) {
-            Operations.SetROMTop(Settings.DEFROMPath, ParentWindow);
+            Operations.SetROMParentStorageFolder(Settings.DEFROMPath, ParentWindow);
+            Operations.SetIconParentStorageFolder(Settings.IconParentPath, ParentWindow);
             Operations.SetDesktopStorageFolder(ParentWindow);
         }
         

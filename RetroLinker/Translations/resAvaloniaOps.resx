@@ -108,4 +108,7 @@
     <data name="dlgFileExe" xml:space="preserve">
         <value>Pick the executable file</value>
     </data>
+    <data name="dlgFolderIconParent" xml:space="preserve">
+        <value>Pick your icon files parent directory </value>
+    </data>
 </root>

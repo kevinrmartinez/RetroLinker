@@ -45,6 +45,7 @@
 		</TabControl>
 		
 		<!-- CONTROLS -->
+		<!-- TODO -->
 		<StackPanel Grid.Row="2" Height="48" Margin="3" Orientation="Horizontal" Spacing="3" HorizontalAlignment="Center">
 
 			<Button x:Name="btnDEFSettings" Click="btnDEFSettings_Click" VerticalAlignment="Stretch">

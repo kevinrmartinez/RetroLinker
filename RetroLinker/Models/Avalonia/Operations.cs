@@ -35,7 +35,8 @@ public static class Operations
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
     public static IStorageFolder? DesktopFolder { get; private set; }
-    public static IStorageFolder? ROMTopDir { get; private set; }
+    public static IStorageFolder? ROMParentDir { get; private set; }
+    public static IStorageFolder? IconParentDir { get; private set; }
 
     
     public static async Task<string[]> GetCoresArray()
@@ -80,20 +81,37 @@ public static class Operations
         }
     }
     
-    public static async void SetROMTop(string? dir_ROMTop, TopLevel topLevel)
+    public static async void SetROMParentStorageFolder(string? dir, TopLevel topLevel)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(dir_ROMTop)) return;
-            ROMTopDir = await GetStorageFolder(dir_ROMTop, topLevel);
-            var dbgOut = (ROMTopDir is null)
-                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir_ROMTop}\""
-                : $"ROMPadreStorageFolder set to: \"{ROMTopDir.Path.LocalPath}\"";
+            if (string.IsNullOrWhiteSpace(dir)) return;
+            ROMParentDir = await GetStorageFolder(dir, topLevel);
+            var dbgOut = (ROMParentDir is null)
+                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir}\""
+                : $"ROMPadreStorageFolder set to: \"{ROMParentDir.Path.LocalPath}\"";
             Logger.LogDebg(dbgOut);
         }
         catch (Exception ex) {
             Logger.LogErro(ex);
-            ROMTopDir = null;
+            ROMParentDir = null;
+        }
+    }
+
+    public static async void SetIconParentStorageFolder(string? dir, TopLevel topLevel)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(dir)) return;
+            IconParentDir = await GetStorageFolder(dir, topLevel);
+            var dbgOut = (IconParentDir is null)
+                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir}\""
+                : $"ROMPadreStorageFolder set to: \"{IconParentDir.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);
+        }
+        catch (Exception ex) {
+            Logger.LogErro(ex);
+            IconParentDir = null;
         }
     }
 }
