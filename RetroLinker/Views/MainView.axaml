@@ -9,16 +9,19 @@
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
-             x:CompileBindings="True"
-			 Name="View1" Unloaded="View1_Unloaded">
+             x:CompileBindings="True" 
+             Unloaded="View1_Unloaded">
 	
+	<UserControl.Resources>
+		<x:Double x:Key="MinHeightForLargePic">699</x:Double>
+	</UserControl.Resources>
 	<UserControl.Styles>
 		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
 	</UserControl.Styles>
 	
 	<Grid RowDefinitions="Auto, *">
-		<!--Top-->
-		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainView.lblTITLE}" Classes="Header">
+		<!-- Top/Header -->
+		<cc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resGeneric.GenAppName}" Classes="Header">
 				<cc:MainWindowHeader.LeftControl>
 					<Button Width="40" VerticalAlignment="Center" Margin="5,0,0,0" Click="ButtonAbout_OnClick"
 					        i:Attached.Icon="fa7-circle-info" FontSize="22"/>
@@ -30,11 +33,11 @@
 				</cc:MainWindowHeader.RightControl>
 		</cc:MainWindowHeader>
 		
-		<!--Body-->
-		<!-- TODO: Standardize margins and padding -->
+		<!-- Body -->
+		<!-- TODO: Standardize margins and padding (oh god...) -->
 		<Grid Name="gridBODY" Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
 			
-			<!--Main Operations-->
+			<!-- Main Operations -->
 			<Grid Name="gridOPS" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto, *, Auto">
 
 				<!-- ROW0 - Spacing -->
@@ -45,7 +48,7 @@
 					<Label Margin="0,5,0,0" Content="{x:Static lc:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="retroarch.exe"/>
-						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browse" Click="btnRADir_OnClick"/>
+						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnRADir_OnClick"/>
 					</Grid>
 				</StackPanel>
 
@@ -58,7 +61,7 @@
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="supermariobros.nes"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
-							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browse"/>
+							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browseFile"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa7-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static lc:resMainView.tipPatches}"/>
 						</StackPanel>
 					</Grid>
@@ -72,7 +75,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
 						<Label Content="{x:Static lc:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"
+							                 Text="{Binding BuildingLink.ROMcore}"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
 									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
@@ -89,7 +93,7 @@
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
-								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browse"/>
+								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browseFile"/>
 								<Button Name="btnAppendConfig" Click="btnAppendConfig_OnClick" Classes="textbox_inline" 
 								        i:Attached.Icon="fa7-plus" ToolTip.Tip="{x:Static lc:resMainView.tipAppendConfig}"/>
 							</StackPanel>
@@ -115,18 +119,86 @@
 						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" IsEnabled="False"
 						        Content="{x:Static lc:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
 					</Grid>
-					<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
-					<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}" Classes="ReqField"/>
-					<Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtLINKDir" Grid.Row="0" Grid.Column="0" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros.lnk" />
-						<Button Name="btnLINKRename" Grid.Row="0" Grid.Column="1" IsVisible="False" Click="BtnLINKRename_OnClick"
-						        i:Attached.Icon="fa7-pen" FontSize="18"/>
-						<Button Name="btnLINKDir" Grid.Row="0" Grid.Column="2" Classes="textbox_inline browse" Click="btnLINKDir_OnClick"/>
-						<TextBlock Name="lblLinkDefinedDir" Grid.Row="1" Grid.Column="0" Text="{x:Static lc:resMainView.lblLinkDeskDir}" 
-						           FontSize="11" TextWrapping="Wrap" Margin="2 ,0"/>
-					</Grid>
-					<Label Margin="3,0" Content="{x:Static lc:resMainView.lblDesc}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
-					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" ToolTip.Tip="{x:Static lc:resMainView.txtDesc_tip}"/>
+					
+					<StackPanel Orientation="Vertical">
+						<!-- Select Link Output -->
+						<StackPanel Name="panelLINKOut" Orientation="Vertical" IsVisible="{Binding !#panelLINKRename.IsVisible}">
+							<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkDir}" Classes="ReqField"/>
+							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
+								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros.lnk"/>
+								<Button Name="btnLINKDir" Grid.Column="1" Classes="textbox_inline browseFile" 
+								        CommandParameter="{Binding #txtLINKDir}" Click="btnLINKDir_OnClick"/>
+							</Grid>
+						</StackPanel>
+						<!-- Write Link Name -->
+						<StackPanel Name="panelLINKRename" Orientation="Vertical">
+							<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static lc:resMainView.lblLinkName}" Classes="ReqField"/>
+							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
+								<TextBox Name="txtLINKRename" Grid.Column="0" IsReadOnly="False" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros"/>
+								<Button Name="btnLINKRename" Grid.Column="1" CommandParameter="{Binding #txtLINKRename}" 
+								        Click="BtnLINKRename_OnClick" i:Attached.Icon="fa7-pen" FontSize="18"/>
+							</Grid>
+							<cc:MainViewExtensionNotice Name="noticeLinkDefinedDir" FontSize="11" Margin="3,0"
+							                            Foreground="{DynamicResource TextControlForeground}"
+							                            Tag="{x:Static vw:MainWindow.OsDirSeparator}">
+								<cc:MainViewExtensionNotice.Text>
+									<MultiBinding StringFormat="{}{0}{2}{1}">
+										<Binding Path="FixedOutputDir"/>
+										<Binding Path="FixedOutputName"/>
+										<Binding Path="#noticeLinkDefinedDir.Tag"/>
+									</MultiBinding>
+								</cc:MainViewExtensionNotice.Text>
+							</cc:MainViewExtensionNotice>
+						</StackPanel>
+						
+						<!-- TileIcon Controls -->
+						<Border Name="panelTileIcon" HorizontalAlignment="Stretch" CornerRadius="4" Margin="3,0" Padding="2"
+						        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+							<DockPanel>
+								<Label DockPanel.Dock="Top" FontSize="10" FontWeight="Bold" Margin="0" Padding="0"
+								       Content="{x:Static lc:resMainView.lblTileIcon}"/>
+								<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12">
+									<CheckBox x:Name="chkTextOnTile" IsChecked="{Binding BuildingLink.TileIcoNameVisible}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Text="{x:Static lc:resMainView.chkNameOnTile}"/>
+											<Rectangle Width="3"/>
+											<cc:IconFontWithTip FontSize="16" IconValue="fa7-image" ToolTip.Placement="Right">
+												<cc:IconFontWithTip.Tip><Image Source="../Assets/Images/TileIcon_NameOFF_NameON_x1.5.png"/></cc:IconFontWithTip.Tip>
+											</cc:IconFontWithTip>
+										</StackPanel>
+									</CheckBox>
+								
+									<ToggleSwitch x:Name="swtTextOnTileColor" IsEnabled="{Binding #chkTextOnTile.IsChecked}" 
+									              OnContent="{x:Static lc:resMainView.swtTextOnTileColor_On}" 
+									              OffContent="{x:Static lc:resMainView.swtTextOnTileColor_Off}"
+									              IsChecked="{Binding !BuildingLink.TileIcoNameDark}"/>
+								
+									<Rectangle VerticalAlignment="Stretch" StrokeThickness="1" 
+									           Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+								
+									<ToggleSwitch OffContent="{x:Static lc:resMainView.swtTileIcoAllUsers_Off}" 
+									              OnContent="{x:Static lc:resMainView.swtTileIcoAllUsers_On}"
+									              IsChecked="{Binding TileIconAllUsers}"
+									              Click="swtTileIcoAllUsers_OnClick"/>
+								
+									<CheckBox Content="{x:Static lc:resGeneric.genOverwrite}" 
+									          ToolTip.Tip="{x:Static lc:resMainView.tipTileIcoOverwrite}"
+									          IsChecked="{Binding BuildingLink.TileIcoOverwrite}"/>
+								</StackPanel>
+							</DockPanel>
+						</Border>
+					</StackPanel>
+					<Rectangle Height="10"/>
+					
+					<!-- Description/Comment -->
+					<StackPanel Orientation="Horizontal" Margin="3,0">
+						<Label Content="{x:Static lc:resMainView.lblDesc}"/>
+						<cc:IconFontWithTip IconValue="fa7-circle-info" Tip="{x:Static lc:resMainView.tipDescTileIco}"
+						                    IsVisible="{Binding Settings.TileIcoPath, 
+						                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+					</StackPanel>
+					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" 
+					         Text="{Binding BuildingLink.Desc}" ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->
@@ -134,34 +206,33 @@
 				
 				<!-- ROW6 - Execution Button-->
 				<Panel Name="panelEXECUTE" Grid.Row="6" Margin="3,5">
-					<Button Name="btnEXECUTE" 
-							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" 
-							VerticalAlignment="Stretch" VerticalContentAlignment="Center" 
-							Height="55" 
+					<Button Name="btnEXECUTE" Height="55"
+							HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+							VerticalAlignment="Stretch" VerticalContentAlignment="Center"
 							Content="{x:Static lc:resGeneric.btnExecute}"
 							Click="btnEXECUTE_OnClick"/>
 				</Panel>
 			</Grid>
 
-			<!--Spacing-->
+			<!-- Spacing -->
 			<Rectangle Grid.Column="1" Margin="2,0"/>
 			
-			<!--Icon Selection-->
+			<!-- Icon Selection -->
 			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" Margin="2,0">
 				<Rectangle Grid.Row="0" Height="15"/>
 				<StackPanel Grid.Row="1">
 					<Label Content="{x:Static lc:resMainView.lblICON}"/>
-					<Border BorderThickness="1" BorderBrush="Gray">
+					<Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
 						<StackPanel Orientation="Vertical" Margin="2">
 							<StackPanel Orientation="Horizontal" Spacing="14">
 								<RadioButton Name="rdoIconDef" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnDefault}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 								<RadioButton Name="rdoIconCus" GroupName="IconSource" Content="{x:Static lc:resGeneric.btnCustom}" IsCheckedChanged="rdoIcon_CheckedChanged"/>
 							</StackPanel>
-							<!--Icon Control-->
+							<!-- Icon Control -->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
 								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 										   SelectionChanged="comboICONDir_SelectionChanged"/>
-								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browse" Click="btnICONDir_OnClick"/>
+								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"
@@ -170,13 +241,43 @@
 								<Label VerticalAlignment="Center" Content="{x:Static lc:resMainView.lblIconNoImage}" FontSize="12"/>
 							</StackPanel>
 
-							<!--pic128-->
+							<!-- pic256 -->
+							<Viewbox Classes.collapsed="{Binding Height, 
+							         Converter={StaticResource NumberLowerThanConverter},
+							         ConverterParameter={StaticResource MinHeightForLargePic},
+							         RelativeSource={RelativeSource AncestorType=vw:MainWindow}}">
+								<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
+								<Viewbox.Styles>
+									<Style Selector="Viewbox">
+										<Setter Property="HorizontalAlignment" Value="Left"/>
+										<Setter Property="Width" Value="258"/>
+										<Setter Property="Height" Value="258"/>
+										<Setter Property="Margin" Value="0,4"/>
+										<Style Selector="^.collapsed">
+											<Setter Property="Width" Value="0"/>
+											<Setter Property="Height" Value="0"/>
+											<Setter Property="Margin" Value="0"/>
+										</Style>
+									</Style>
+								</Viewbox.Styles>
+								<Viewbox.Transitions>
+									<Transitions>
+										<DoubleTransition Property="Width" Duration="0:00:00.35" Easing="CubicEaseOut"/>
+										<DoubleTransition Property="Height" Duration="0:00:00.35" Easing="CubicEaseOut"/>
+									</Transitions>
+								</Viewbox.Transitions>
+								
+								<Border BorderThickness="2" BorderBrush="Gray">
+									<Image Name="pic256"/>
+								</Border>
+							</Viewbox>
+							<!-- pic128 -->
 							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
 								<Image Name="pic128"/>
 								</Border>
 							</Viewbox>
-							<!--pic64-->
+							<!-- pic64 -->
 							<Viewbox Height="66" Width="66" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
 								<Image Name="pic64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -184,25 +285,46 @@
 							</Viewbox>
 
 							<StackPanel Orientation="Horizontal">
-								<!--pic32-->
-								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="0,4">
+								<!-- pic48 -->
+								<Viewbox Height="50" Width="50" HorizontalAlignment="Left" Margin="0,4">
+									<Border BorderThickness="2" BorderBrush="Gray">
+										<Image Name="pic48" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+									</Border>
+								</Viewbox>
+								<!-- pic32 -->
+								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
 										<Image Name="pic32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
-								<!--pic16-->
-								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="4,0">
+								<!-- pic16 -->
+								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
 										<Image Name="pic16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
 							</StackPanel>
+							
+							<Border HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
+							        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+								<Border.IsVisible>
+									<MultiBinding Converter="{x:Static BoolConverters.And}">
+										<Binding Path="#rdoIconDef.IsChecked"/>
+										<Binding Path="Settings.TileIcoPath" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+									</MultiBinding>
+								</Border.IsVisible>
+								
+								<DockPanel HorizontalSpacing="6" Margin="3,0">
+									<i:Icon Value="fa7-triangle-exclamation" FontSize="18" DockPanel.Dock="Left" Foreground="Goldenrod"/>
+									<TextBlock TextWrapping="Wrap" FontSize="12" DockPanel.Dock="Right"
+									           Text="{x:Static lc:resMainView.lblDefIconOnTileIco}"/>
+								</DockPanel>
+							</Border>
 						</StackPanel>
 					</Border>
 				</StackPanel>
 			</Grid>
 		</Grid>
-		<!--BODY END-->
+		<!-- BODY END -->
 	</Grid>
-	<!--https://stackify.com/cross-platform-net-core-apps/-->
 </UserControl>

@@ -83,4 +83,19 @@
     <data name="pckFileTypePatches" xml:space="preserve">
         <value>Archivos de parche validos</value>
     </data>
+    <data name="dlgFolderDefOutput" xml:space="preserve">
+        <value>Eliga el directorio donde se crearan los accesos directos </value>
+    </data>
+    <data name="dlgFileTileCliexe" xml:space="preserve">
+        <value>Eliga el ejecutable de 'tileico'</value>
+    </data>
+    <data name="dlgFileExe" xml:space="preserve">
+        <value>Eliga el archivo ejecutable</value>
+    </data>
+    <data name="pckFileTypeWinLnk" xml:space="preserve">
+        <value>Acceso Directo</value>
+    </data>
+    <data name="dlgFolderIconParent" xml:space="preserve">
+        <value>Eliga el directorio padre de sus archivos de iconos</value>
+    </data>
 </root>

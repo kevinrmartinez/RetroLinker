@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -26,76 +26,69 @@ namespace RetroLinker.Views;
 public partial class MainWindow : Window
 {
     // Props
-    public Settings Settings { get; }
-    public string[] CoresList { get; }
-    public (List<string>, string?) IconsListEx { get; }
+    public MainView? PermaView { get; private set; }
+    public Settings Settings { get; private set; }
     
     // Fields
-    private UserControl PermaView;
+    public static readonly string OsDirSeparator = FileOps.OsDirSeparator.ToString();
     public bool IsDesigner = true;
-    private readonly bool DesktopOS = System.OperatingSystem.IsWindows(); // temporal fix
     
     public MainWindow()
     {
+        // Constructor for Designer
         InitializeComponent();
-        Settings = FileOps.LoadSettingsFO();
-        CoresList = Operations.GetCoresArray();
-        IconsListEx = FileOps.LoadIcons(DesktopOS);
-        LanguageManager.SetLocale(Settings.LanguageLocale);
+        var sTask = Task.Run(FileOps.LoadSettingsFO);
+        sTask.Wait();
+        Settings = sTask.Result;
+        // LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
     }
-
-    // Constructor for Designer
+    
     public MainWindow(bool isDesigner)
     {
+        // Constructor used on runtime, this may need a REWRITE 
         InitializeComponent();
         IsDesigner = isDesigner;
-        CoresList = [];
-        IconsListEx = (new List<string>(), null);
-        // Settings = FileOps.LoadDesignerSettingsFO(true);
-        Settings = new Settings();
-        PermaView = new RenameEntryView();
-        if (isDesigner) return;
+        if (isDesigner) {
+            Settings = new Settings();
+            PermaView = null;
+            return;
+        }
         
-        // This is needed because of an edge case with the designer (can't remember witch)
-        Settings = FileOps.LoadSettingsFO();
+        var sTask = Task.Run(FileOps.LoadSettingsFO);
+        sTask.Wait();
+        Settings = sTask.Result;
         LanguageManager.SetLocale(Settings.LanguageLocale);
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
     }
 
     public MainWindow(MainView mainViewDesigner) : this(true) {
+        // Constructor for MainView Designer
         mainViewDesigner.Name = "MainViewDesigner";
-        CoresList = Operations.GetCoresArray();
-        IconsListEx = FileOps.LoadIcons(DesktopOS);
     }
+
+    public void SetSettings(Settings settings) => Settings = settings;
     
-    public void ChangeOut(MainViewTypes views, object currentValue)
+    public void ChangeOut(MainViewTypes view)
     {
         ContBotton.IsTransitionReversed = false;
-        try
-        {
-            ContBotton.Content = views switch {
-                MainViewTypes.AppendView => new AppendView(this,  (string)currentValue),
-                MainViewTypes.PatchesView => new PatchesView(this, (string)currentValue),
-                MainViewTypes.SubsysView => new SubsystemsView(this, (SubsystemReq)currentValue),
-                _ => PermaView
-            };
-        }
-        catch (System.InvalidCastException ex) {
-            _ = this.PopUpGenericError(ex);
-            GoBackToMainView();
-        }
+        ContBotton.Content = view switch {
+            MainViewTypes.AppendView => new AppendView(this),
+            MainViewTypes.PatchesView => new PatchesView(this),
+            MainViewTypes.SubsysView => new SubsystemsView(this),
+            _ => PermaView
+        };
     }
 
     public void LocaleReload(string locale)
     {
-        // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
         if (LanguageManager.SetLocale(locale)) return;
-        
+        // If ContBotton doesn't drop its transition during locale refresh, both transitions play at the same time
         var ogTransition = ContBotton.PageTransition;
         ContTop.Content = null;
+        PermaView?.DisposeResources();
         PermaView = new MainView(this);
         ContBotton.PageTransition = null;
         ContBotton.Content = PermaView;
@@ -104,7 +97,8 @@ public partial class MainWindow : Window
     }
     
     private void GoBackToMainView() {
-        // Disposal of views only required if the view has native resources: https://github.com/AvaloniaUI/Avalonia/discussions/6556
+        // Disposal of views only required if the view has native resources
+        // https://github.com/AvaloniaUI/Avalonia/discussions/6556
         ContBotton.IsTransitionReversed = true;
         ContBotton.Content = PermaView;
     }
@@ -113,18 +107,30 @@ public partial class MainWindow : Window
 
     public void ReturnToMainView(UserControl view, string args)
     {
-        var viewType = view switch {
-            AppendView => MainViewTypes.AppendView,
-            PatchesView => MainViewTypes.PatchesView,
-            SubsystemsView => MainViewTypes.SubsysView,
-            _ => MainViewTypes.MainView
-        };
-        if (PermaView is not MainView permaView) return;
+        if (PermaView is not { } mainView) return;
         
         GoBackToMainView();
-        permaView.UpdateLinkFromOutside(viewType, args);
+        switch (view)
+        {
+            case AppendView:
+                mainView.CONFappend = args;
+                break;
+            case PatchesView:
+                mainView.PatchArg = args;
+                break;
+            case SubsystemsView:
+                mainView.SubsysArg = args;
+                break;
+            default:
+                // Should not happen
+                var viewType = view.GetType();
+                Logger.LogWarn($"A view of type '{viewType}' tried to update arguments");
+                break;
+        }
     }
 }
 
 public enum MainViewTypes
 { MainView, PatchesView, SubsysView, AppendView }
+
+public enum TextBoxActions { Restore, Clear }

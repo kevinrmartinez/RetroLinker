@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -27,26 +27,33 @@ namespace RetroLinker.Views
 {
     public partial class SettingsView : UserControl
     {
-        public SettingsView()
-        {
+        // Window Obj
+        // private MainWindow MainAppWindow;
+        public SettingsWindow ParentWindow { get; }
+        
+        public SettingsView() {
             InitializeComponent();
             ParentWindow = new SettingsWindow(true);
+            CompleteConstructor();
         }
 
-        public SettingsView(SettingsWindow parentWindow, bool desktopOs)
+        public SettingsView(SettingsWindow parentWindow, bool desktopOs) 
         {
             InitializeComponent();
             ParentWindow = parentWindow;
             DesktopOS = desktopOs;
-            // settings = ParentWindow.settings;
+            CompleteConstructor();
         }
-        
-        // Window Obj
-        // private MainWindow MainAppWindow;
-        private SettingsWindow ParentWindow;
+
+        private void CompleteConstructor()
+        {
+            FillComboLocale();
+            LoadTheme(ParentWindow.NewSettings.ChosenTheme);
+            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
+            DataContext = this;
+        }
 
         // PROPS/STATICS
-        private bool FirstTimeLoad = true;
         private bool DesktopOS;
         // Consider using independent Settings references
         // private Settings settings; 
@@ -54,24 +61,7 @@ namespace RetroLinker.Views
         static readonly ThemeVariant light_theme = ThemeVariant.Light;
         static readonly ThemeVariant system_theme = ThemeVariant.Default;
 
-        #region Loads
-        // LOADS
-        void View_OnLoaded(object sender, RoutedEventArgs e)
-        { 
-            if (FirstTimeLoad) FillComboLocale();
-            
-            // Settings
-            ApplySettingsToControls();
-        }
-
-        void ApplySettingsToControls()
-        { 
-            chkPrevCONFIG.IsChecked = ParentWindow.settings.PrevConfig;
-            chkCpyUserIcon.IsChecked = ParentWindow.settings.CpyUserIcon;
-            LoadTheme(ParentWindow.settings.ChosenTheme);
-            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.settings);
-        }
-
+        #region Loading
         void FillComboLocale()
         {
             int index = (comboLocale.SelectedIndex >= 0) ? comboLocale.SelectedIndex : 0;
@@ -82,16 +72,14 @@ namespace RetroLinker.Views
                 comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
                 index++;
             }
-            FirstTimeLoad = false;
         }
         #endregion
-
+        
         // Appearance
-        // TODO: Refactorize using an event, possibly based in the 'ThemeCode' byte
-        void LoadTheme(byte ThemeCode)
+        void LoadTheme(byte themeCode)
         {
             // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
-            switch (ThemeCode)
+            switch (themeCode)
             {
                 case 1: // Light
                     swtThemeSwitch.IsChecked = false;
@@ -105,18 +93,20 @@ namespace RetroLinker.Views
             }
         }
         
+        public void SetCurrentTheme(byte themeCode) => LoadTheme(themeCode);
+        
         void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             // Avalonia's Designer gets borked on this part
             if (swtThemeSwitch.IsChecked.GetValueOrDefault())
             {
-                Application.Current!.RequestedThemeVariant = dark_theme;
-                ParentWindow.settings.ChosenTheme = 2;
+                Application.Current?.RequestedThemeVariant = dark_theme;
+                ParentWindow.NewSettings.ChosenTheme = 2;
             }
             else
             {
-                Application.Current!.RequestedThemeVariant = light_theme;
-                ParentWindow.settings.ChosenTheme = 1;
+                Application.Current?.RequestedThemeVariant = light_theme;
+                ParentWindow.NewSettings.ChosenTheme = 1;
             }
         }
 
@@ -127,7 +117,7 @@ namespace RetroLinker.Views
                 // Avalonia's Designer breaks on this part
                 Application.Current!.RequestedThemeVariant = system_theme;
                 swtThemeSwitch.IsEnabled = false;
-                ParentWindow.settings.ChosenTheme = 0;
+                ParentWindow.NewSettings.ChosenTheme = 0;
             }
             else {
                 swtThemeSwitch.IsEnabled = true; 
@@ -139,15 +129,7 @@ namespace RetroLinker.Views
         private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
             // REWRITE: Rewrite so this button shouldn't be necessary
             var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
-            ParentWindow.settings.LanguageLocale = locale.Culture.Name;
-        }
-
-        // OTHER PREFERENCES
-        void View1ChecksHandle(object? sender, RoutedEventArgs e)
-        {
-            if (sender is not CheckBox) return;
-            ParentWindow.settings.PrevConfig = chkPrevCONFIG.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.CpyUserIcon = chkCpyUserIcon.IsChecked.GetValueOrDefault();
+            ParentWindow.NewSettings.LanguageLocale = locale.Culture.Name;
         }
     }
 }

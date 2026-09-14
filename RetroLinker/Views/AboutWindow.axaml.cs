@@ -1,6 +1,6 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2025  Kevin Rafael Martinez Johnston
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -29,10 +28,10 @@ namespace RetroLinker.Views;
 public partial class AboutWindow : Window
 {
     public AppInformation AppInfo { get; }
-    public Contribs[] Contributors { get; }
-    public Dictionary<string, Uri> ThirdPartyCredits { get; } = new();
-    
-    private readonly Dictionary<string, Uri> _thirdPartyCredits = new();
+    public Contributor[] Contributors { get; }
+    public ThirdParty[] ThirdPartyLibs { get; }
+    public ThirdParty[] ThirdPartyRes { get; }
+    public ThirdParty[] ThirdPartyThanks { get; }
     
     public AboutWindow()
     {
@@ -47,32 +46,51 @@ public partial class AboutWindow : Window
         // Contributors (In order of arrival)
         // Contributors feel free to add their names and social media/contact/GitHub in this record array
         Contributors = [ 
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contribs("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+#if DEBUG
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+#endif
         ];
-        // ItemsControlContributors.ItemsSource = _contributors;
+        
+        // Used Libraries
+        ThirdPartyLibs =
+        [
+            new ThirdParty("AvaloniaUI", new Uri("https://avaloniaui.net/"), "Cross-platform UI framework"),
+            new ThirdParty("Magick.NET", new Uri("https://github.com/dlemstra/Magick.NET"), "Powerful image manipulation library"),
+            new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
+            new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
+            new ThirdParty("SharpShellLink", new Uri("https://github.com/JeremyAnsel/SharpShellLink"), "A .NET Class Library for processing ShellLink (LNK) files"),
+            new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App"),
+        ];
         
         // Attribution
-        // TODO: Move to Binding
-        // ThirdPartyCredits.Add("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")); Don't remember what this was
-        _thirdPartyCredits.Add("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder"));
-        _thirdPartyCredits.Add("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/"));
-        foreach (var key in _thirdPartyCredits.Keys)
-        {
-            var hyperlink = new HyperlinkButton()
-            {
-                NavigateUri = _thirdPartyCredits[key],
-                Content = key,
-                Padding = new Thickness(0)
-            };
-            StackPanelCredits.Children.Add(hyperlink);
-        }
+        ThirdPartyRes = [
+            // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
+            new ThirdParty("Libretro invader logo", new Uri("https://github.com/libretro/retroarch-assets")),
+            new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
+            new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
+            // new ThirdParty("Liberation Mono Fonts", new Uri(FileOps.CombineMultipleInputs(FileOps.DefLicensesDir, "LiberationMono-License.txt")))
+            new ThirdParty("Liberation Mono Fonts", new Uri("https://github.com/liberationfonts/liberation-fonts"))
+        ];
+        
+        // Special Thanks
+        ThirdPartyThanks = [
+            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "Classic Avalonia DevTool for AvaloniaUI v12")
+        ];
+        
+        // =Update Bindings=
+        DataContext = null;
         DataContext = this;
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
 }
 
-public record Contribs(string DisplayName, Uri? OnlinePageUrl);
+public record Contributor(string DisplayName, Uri? OnlinePageUrl);
+public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);

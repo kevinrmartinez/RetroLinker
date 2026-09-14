@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,9 @@
 */
 
 using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -28,12 +28,25 @@ namespace RetroLinker.Views
 {
     public partial class SettingsWindow : Window
     {
+        // Window Obj
+        // private MainWindow mainWindow;
+
+        // PROPS/STATICS
+        public Settings NewSettings { get; }
+
+        private readonly Settings _oldSettings;
+        private readonly Settings _defSettings = new();
+        ContentControl[] _tabs;
+        private bool DesktopOS = System.OperatingSystem.IsWindows();
+        public List<string> SetLinkCopyPaths;
+        
         public SettingsWindow()
         {
             // Constructor for Designer
             InitializeComponent();
-            settings = new Settings();
-            
+            _oldSettings = new Settings();
+            NewSettings = new Settings();
+            _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
             CCTab1.Content = new SettingsView(this, DesktopOS);
             CCTab2.Content = new SettingsView2(this, DesktopOS);
@@ -43,35 +56,47 @@ namespace RetroLinker.Views
         public SettingsWindow(bool isDesigner)
         {
             InitializeComponent();
-            settings = new Settings();
+            _oldSettings = new Settings();
+            NewSettings = new Settings();
+            _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
         }
         
-        public SettingsWindow(MainWindow mainWindow, Settings _settings)
+        public SettingsWindow(MainWindow mainWindow, in Settings settings)
         {
             InitializeComponent();
             // this.mainWindow = mainWindow;
-            settings = _settings;
-            
+            _oldSettings = settings;
+            var newSettings = settings.Clone() as Settings;
+            NewSettings = newSettings ?? new Settings();
+            _tabs = [CCTab1, CCTab2, CCTab3];
             SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
             CCTab1.Content = new SettingsView(this, DesktopOS);
             CCTab2.Content = new SettingsView2(this, DesktopOS);
             CCTab3.Content = new SettingsView3(this, DesktopOS);
         }
-        
-        // Window Obj
-        // private MainWindow mainWindow;
 
-        // PROPS/STATICS
-        public Settings settings { get; set; }
-        public Settings DEFsettings { get; set; } = new();
+        #region GeneralFunctions
+        public Settings GetOldSettings() => _oldSettings;
+        public Settings GetDefSettings() => _defSettings;
         
-        private bool DesktopOS = System.OperatingSystem.IsWindows();
-        public List<string> SetLinkCopyPaths;
+        private void CCTab_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        {
+            if (sender is not ContentControl cc) return;
+            if (cc.Content is not UserControl view) return;
+            view.DataContext = null;
+            view.DataContext = view;
+        }
 
+        #endregion
         
         #region Window/Dialog Controls
-        void btnDISSettings_OnClick(object sender, RoutedEventArgs e) => CloseWindow(null);
+
+        void btnDISSettings_OnClick(object sender, RoutedEventArgs e) {
+            if (NewSettings.ChosenTheme != _oldSettings.ChosenTheme)
+                if (CCTab1.Content is SettingsView view) view.SetCurrentTheme(_oldSettings.ChosenTheme);
+            CloseWindow(null);
+        }
 
         async void btnDEFSettings_Click()
         {
@@ -92,8 +117,8 @@ namespace RetroLinker.Views
                 if (result != MsBox.Avalonia.Enums.ButtonResult.Ok) return;
                 SettingsOps.PrevConfigs = new List<string>();
                 SettingsOps.LinkCopyPaths = new List<string>();
-                SettingsOps.WriteSettings(DEFsettings);
-                CloseWindow(DEFsettings);
+                SettingsOps.WriteSettings(GetDefSettings());
+                CloseWindow(GetDefSettings());
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         }
@@ -102,16 +127,14 @@ namespace RetroLinker.Views
 
         void btnSAVESettings_OnClick(object sender, RoutedEventArgs e)
         {
-            if (SetLinkCopyPaths.Count < 1) settings.MakeLinkCopy = false;
-            if (!settings.AlwaysAskOutput) settings.AlwaysAskOutput = string.IsNullOrEmpty(settings.DEFLinkOutput);
+            if (SetLinkCopyPaths.Count < 1) NewSettings.MakeLinkCopy = false;
+            if (!NewSettings.AlwaysAskOutput) NewSettings.AlwaysAskOutput = string.IsNullOrEmpty(NewSettings.DEFLinkOutput);
             SettingsOps.LinkCopyPaths = SetLinkCopyPaths;
-            SettingsOps.WriteSettings(settings);
-            CloseWindow(settings);
+            SettingsOps.WriteSettings(NewSettings);
+            CloseWindow(NewSettings);
         }
 
         void CloseWindow(Settings? retSettings) => Close(retSettings);
         #endregion
-
-        
     }
 }

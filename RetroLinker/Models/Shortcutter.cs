@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -17,13 +17,14 @@
 */
 
 using System.Collections.Generic;
-using RetroLinker.Models.Generic;
-using RetroLinker.Translations;
-using ShortcutCreator = RetroLinker.Models.Windows.ShortcutCreator;
+using System.Linq;
+using System.Runtime.Versioning;
+using System.Threading.Tasks;
+//using RetroLinker.Translations;
 
 namespace RetroLinker.Models
 {
-    public class Shortcutter
+    public class Shortcutter : System.ICloneable
     {
         // TODO: Revise the names and setter of the properties (0.9)
         #region Object
@@ -37,7 +38,7 @@ namespace RetroLinker.Models
         public string RApath
         {
             get => ra_path; 
-            private set { SetRApath(value); }   // TODO: Set later in the workflow (0.9)
+            private set { SetRApath(value); }   // TODO: Retire; move to LinkParameters (0.9)
         }      // 1
 
         public string ROMdir
@@ -49,22 +50,27 @@ namespace RetroLinker.Models
         public string ROMname
         {
             get => rom_name;
-            private set { SetROMname(value); }
+            private set { SetROMname(value); }  // TODO: Retire, it's not used in anything (0.9)
         }    // 3
         public string ROMcore { get; set; }     // 4
         public string? CONFfile { get; set; }   // 5
-        public string? ICONfile { get; set; }   // 6
-        public string Command { get; set; }     // 7
+        public string ICONfile { get; set; }   // 6
+        public string Command { get; private set; }     // 7
         public string? Desc { get; set; }       // 8
-        public List<ShortcutterOutput> OutputPaths { get; set; }      // 9
+        public List<ShortcutterOutput> OutputPaths { get; set; }    // 9
         public bool VerboseB { get; set; }      // 10
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
         public bool MenuOnErrorB { get; set; }  // 13
         public string PatchArg { get; set; }    // 14
         public string CONFappend { get; set; }  // 15
-        public string SubsysArg { get; set; }      // 16
-
+        public string SubsysArg { get; set; }   // 16
+        public bool TileIcoNameVisible { get; set; }    // 17
+        public bool TileIcoNameDark { get; set; }       // 18
+        public bool TileIcoAllUsers { get; set; }       // 19
+        public bool TileIcoOverwrite { get; set; }      // 20
+        public string TileIcoImage { get; set; }        // 21
+        
         private string ra_dir   = string.Empty;
         private string ra_path  = string.Empty;
         private string rom_dir  = string.Empty;
@@ -78,6 +84,7 @@ namespace RetroLinker.Models
             RApath = string.Empty;
             ROMdir = string.Empty;
             ROMcore = string.Empty;
+            ICONfile = string.Empty;
             Command = string.Empty;
             OutputPaths = new List<ShortcutterOutput>();
             VerboseB = false;
@@ -87,27 +94,15 @@ namespace RetroLinker.Models
             PatchArg = string.Empty;
             CONFappend = string.Empty;
             SubsysArg = string.Empty;
+            TileIcoOverwrite = true;
+            TileIcoImage = string.Empty;
         }
 
-        public Shortcutter(Shortcutter objToClone)
+        public object Clone()
         {
-            RAdir = objToClone.RAdir;
-            RApath = objToClone.RApath;
-            ROMdir = objToClone.ROMdir;
-            ROMname = objToClone.ROMname;
-            ROMcore = objToClone.ROMcore;
-            CONFfile = objToClone.CONFfile;
-            ICONfile = objToClone.ICONfile;
-            Command = objToClone.Command;
-            Desc = objToClone.Desc;
-            OutputPaths = objToClone.OutputPaths;
-            VerboseB = objToClone.VerboseB;
-            FullscreenB = objToClone.FullscreenB;
-            AccessibilityB = objToClone.AccessibilityB;
-            MenuOnErrorB = objToClone.MenuOnErrorB;
-            PatchArg = objToClone.PatchArg;
-            CONFappend = objToClone.CONFappend;
-            SubsysArg = objToClone.SubsysArg;
+            var newShortcut = (Shortcutter)this.MemberwiseClone();
+            newShortcut.OutputPaths = new List<ShortcutterOutput>(OutputPaths);
+            return newShortcut;
         }
 
         private void SetRAdir(string value) {
@@ -130,77 +125,98 @@ namespace RetroLinker.Models
         
         #endregion
 
+        
         #region Link Output
         // Link Creation - OS selection
-        public List<ShortcutterResult> BuildShortcut(bool os) {
+        public async Task<List<ShortcutterResult>> BuildShortcut(bool os)
+        {
+            var cachedSettings = SettingsOps.GetCachedSettings();
+            // Windows Setup
+            var winBuilderOpt = WindowsBuildOptions.Vbs;
+            if (cachedSettings.TileIcoPath is not null) winBuilderOpt = WindowsBuildOptions.TileIco;
+            
             // Building the arguments
             Command = CommandManager.CommandBuilder(this);
-            return (os) ? BuildWinShortcut(this) : BuildLinShorcut(this);
-        }
-        
-        // Windows
-        private static List<ShortcutterResult> BuildWinShortcut(Shortcutter link)
-        {
-            var ResultList = new List<ShortcutterResult>();
-            //WinFuncImport.WinFuncMethods CreateShortcut = WinFuncImport.FuncLoader.GetShortcutMethod();
-            
-            // Add 2 double quotes for vbs compatibility
-            link.Command = Utils.TwoDoubleQuotes(link.Command);
-            
-            // Try to create every shortcut listed on OutputPaths
-            foreach (ShortcutterOutput output in link.OutputPaths)
-            {
-                var outputFile = output.FullPath;
-                var LinkResult = new ShortcutterResult(outputFile);
-                ResultList.Add(LinkResult);
-                Logger.LogInfo($"Creating \"{outputFile}\"...");
-                try 
-                { 
-                    ShortcutCreator.CreateShortcut(link, outputFile);
-                    LinkResult.Messeage = LinkResult.Success1; 
-                }
-                catch (System.Exception e)
-                {
-                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
-                    Logger.LogErro(e);
-                    LinkResult.Messeage = LinkResult.Failure1;
-                    LinkResult.Error = true;
-                    LinkResult.eMesseage = e.Message;
-                }
-            }
-            
-            return ResultList;
+            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
+            return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
         }
 
-        // Linux
-        private static List<ShortcutterResult> BuildLinShorcut(Shortcutter link)
+        private async Task<ShortcutterResult> CreateShortcut(LinkParameters outputParameters,
+            System.Func<LinkParameters, Task> osCreateShortcut)
         {
-            var ResultList = new List<ShortcutterResult>();
-            
-            if (string.IsNullOrEmpty(link.ICONfile)) /*{ link.ICONfile = FileOps.GetRAIcons(); }*/
-            { link.ICONfile = FileOps.DotDesktopRAIcon; }
-            
-            foreach (var output in link.OutputPaths)
-            {
-                var outputFile = output.FullPath;
-                var LinkResult = new ShortcutterResult(outputFile);
-                ResultList.Add(LinkResult);
-                Logger.LogInfo($"Creating \"{outputFile}\"...");
-                
-                try { 
-                    Linux.ShortcutCreator.CreateShortcut(link, output);
-                    LinkResult.Messeage = LinkResult.Success1;
-                }
-                catch (System.Exception e)
-                {
-                    Logger.LogWarn($"\"{outputFile}\" could not be created!");
-                    Logger.LogErro(e);
-                    LinkResult.Messeage = LinkResult.Failure1;
-                    LinkResult.Error = true;
-                    LinkResult.eMesseage = e.Message;
-                }
+            var result = new ShortcutterResult(outputParameters.OutputPath);
+            Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
+            try {
+                await osCreateShortcut(outputParameters);
+                result.ResultSuccess();
             }
-            return ResultList;
+            catch (System.Exception ex) {
+                Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
+                Logger.LogErro(ex);
+                result.ResultFailure(ex.Message);
+            }
+            return result;
+        }
+        
+        // == Windows ==
+        private enum WindowsBuildOptions { Vbs, TileIco }
+
+        private Dictionary<WindowsBuildOptions, System.Func<Task<List<ShortcutterResult>>>> _windowsBuilder = new();
+        
+        [SupportedOSPlatform(App.PlatformWin)]
+        private void SetupWindowsBuilder() {
+            _windowsBuilder = new() {
+                { WindowsBuildOptions.Vbs, BuildWinShortcut_Ssl },
+                { WindowsBuildOptions.TileIco, BuildWinShortcut_TileIco }
+            };
+        }
+        
+        [SupportedOSPlatform(App.PlatformWin)]
+        private async Task<List<ShortcutterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
+            SetupWindowsBuilder();
+            var builder = _windowsBuilder[builderOpt];
+            return await builder();
+        }
+
+        [SupportedOSPlatform(App.PlatformWin)]
+        private async Task<List<ShortcutterResult>> BuildWinShortcut_Ssl()
+        {
+            var resultList = new List<ShortcutterResult>();
+            if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
+            foreach (var output in OutputPaths) {
+                var param = new WindowsLinkParameters(this, output);
+                var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateShortcut);
+                resultList.Add(linkResult);
+            }
+            return resultList;
+        }
+
+        [SupportedOSPlatform(App.PlatformWin)]
+        private async Task<List<ShortcutterResult>> BuildWinShortcut_TileIco()
+        {
+            var results = new List<ShortcutterResult>();
+            var tileIcoOutput = OutputPaths.First();
+            var param = new WindowsLinkParameters(this, tileIcoOutput);
+            var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateTileIcoShortcut);
+            results.Add(linkResult);
+            OutputPaths.Remove(tileIcoOutput);
+            if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Ssl());
+            return results;
+        }
+        
+
+        // == Linux ==
+        [SupportedOSPlatform(App.PlatformLin)]
+        private async Task<List<ShortcutterResult>> BuildLinShorcut()
+        {
+            var resultList = new List<ShortcutterResult>();
+            if (string.IsNullOrEmpty(ICONfile)) ICONfile = FileOps.DotDesktopRAIcon;
+            foreach (var output in OutputPaths) {
+                var param = new LinuxLinkParameters(this, output);
+                var linkResult = await CreateShortcut(param, Linux.ShortcutManager.CreateShortcut);
+                resultList.Add(linkResult);
+            }
+            return resultList;
         }
         #endregion
     }
@@ -208,9 +224,10 @@ namespace RetroLinker.Models
 
     public class ShortcutterOutput
     {
-        public string FullPath { get; set; }
-        public string FriendlyName { get; set; }
-        public string FileName { get; set; }
+        // REWRITE: Revise whole class
+        public string FullPath { get; }
+        public string FriendlyName { get; private set; }
+        public string FileName { get; }
         public bool CustomEntryName { get; set; }
         public bool ValidOutput { get; private set; }
 
@@ -261,41 +278,123 @@ namespace RetroLinker.Models
         }
         
         // Methods
-        void RebuildOutput(string newFullPath)
-        {
-            if (FullPath == newFullPath) return;
-            FullPath = newFullPath;
-            FileName = FileOps.GetFileNameFromPath(newFullPath);
-        }
-
-        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool DesktopOS, string? romCore)
+        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool desktopOs, string? romCore)
         {
             // REWRITE: reorganize constructors along with this method
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
-            var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(DesktopOS);
+            var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(desktopOs);
             return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))
                     : new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
         }
+    }
 
-        public static ShortcutterOutput BuildForOS(bool DesktopOS, string fullPath, string romCore, ShortcutterOutput? baseOutput)
+
+    public record struct ShortcutOutputHelper
+    {
+        public readonly string RaCore;
+        public readonly List<ShortcutterOutput> Outputs;
+        public readonly bool TileIcoAllUsers;
+
+        public ShortcutOutputHelper(in Shortcutter originalShortcut) {
+            RaCore = originalShortcut.ROMcore;
+            Outputs = originalShortcut.OutputPaths;
+            TileIcoAllUsers = originalShortcut.TileIcoAllUsers;
+        }
+    } 
+
+    
+    public abstract class LinkParameters
+    {
+        public string RaExecutable { get; protected init; } = string.Empty;
+        public string RaArguments { get; protected init; } = string.Empty;
+        public string? Description { get; protected init; }
+        public string IconPath { get; protected init; } = string.Empty;
+        public string FriendlyName { get; protected init; } = string.Empty;
+        public string OutputPath { get; protected init; } = string.Empty;
+
+        
+    }
+
+    [SupportedOSPlatform(App.PlatformWin)]
+    public class WindowsLinkParameters : LinkParameters
+    {
+        public string? RaWorkDir { get; }
+        public bool TileIcoNameVisible { get; }
+        public bool TileIcoNameDark { get; }
+        public bool TileIcoAllUsers { get; }
+        public bool TileIcoOverwrite { get; }
+        public string TileIcoImagePath { get; }
+
+        public WindowsLinkParameters(Shortcutter shortcut, ShortcutterOutput shortcutOutput)
         {
-            var newOutput = (DesktopOS) ? new ShortcutterOutput(fullPath) : new ShortcutterOutput(fullPath, romCore);
+            RaExecutable = shortcut.RAdir;
+            RaWorkDir = FileOps.GetDirFromPath(RaExecutable);
+            RaArguments = shortcut.Command;
+            Description = shortcut.Desc;
+            IconPath = shortcut.ICONfile;
+            FriendlyName = shortcutOutput.FriendlyName;
+            OutputPath = shortcutOutput.FullPath;
+            TileIcoNameVisible = shortcut.TileIcoNameVisible;
+            TileIcoNameDark = shortcut.TileIcoNameDark;
+            TileIcoAllUsers = shortcut.TileIcoAllUsers;
+            TileIcoOverwrite = shortcut.TileIcoOverwrite;
+            TileIcoImagePath = shortcut.TileIcoImage;
+        }
+
+        public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
+        {
+            string targetPath;
+            if (shortcut.LinkTargetIDList is not null) targetPath = shortcut.LinkTargetIDList.Path;
+            else if (shortcut.ExtraData.EnvironmentVariableDataBlock is not null)
+                targetPath = shortcut.ExtraData.EnvironmentVariableDataBlock.TargetUnicode;
+            else throw new System.ArgumentException("Can't get target from shortcut");
             
-            if (baseOutput is null) return newOutput;
-            return (!DesktopOS && baseOutput.CustomEntryName) ? baseOutput : newOutput;
+            RaExecutable = targetPath;
+            RaArguments = shortcut.StringData?.CommandLineArguments ?? string.Empty;
+            Description = shortcut.StringData?.NameString;
+            IconPath = shortcut.StringData?.IconLocation ?? string.Empty;
+            FriendlyName = shortcut.LinkTargetIDList?.DisplayName ?? FileOps.GetFileNameNoExtFromPath(linkPath);
+            OutputPath = linkPath;
+            TileIcoImagePath = string.Empty;
+        }
+    }
+    
+    [SupportedOSPlatform(App.PlatformLin)]
+    public class LinuxLinkParameters : LinkParameters
+    {
+        public bool Verbose { get; }
+        public LinuxLinkParameters(Shortcutter shortcut, ShortcutterOutput shortcutOutput)
+        {
+            RaExecutable = shortcut.RAdir;
+            RaArguments = shortcut.Command;
+            Description = shortcut.Desc;
+            IconPath = shortcut.ICONfile;
+            Verbose = shortcut.VerboseB;
+            FriendlyName = shortcutOutput.FriendlyName;
+            OutputPath = shortcutOutput.FullPath;
         }
     }
     
     
-    public class ShortcutterResult(string outputPath)
+    public record struct ShortcutterResult(string OutputPath)
     {
-        public string OutputPath { get; set; } = outputPath;
-        public string? Messeage { get; set; }
-        public bool Error { get; set; }
-        public string? eMesseage { get; set; }
+        public string OutputPath { get; } = OutputPath;
+        public string? Message { get; private set; }
+        public bool Error { get; private set; }
+        public string? ExMessage { get; private set; }
 
         
-        public readonly string Success1 = resMainView.popLinkSucces;
-        public readonly string Failure1 = resMainView.popLinkFailure;
+        private static readonly string Success1 = Translations.resMainView.popLinkSucces;
+        private static readonly string Failure1 = Translations.resMainView.popLinkFailure;
+
+        public void ResultSuccess() {
+            Message = Success1;
+        }
+
+        public void ResultFailure(string? exMessage = null) {
+            Message = Failure1;
+            Error = true;
+            ExMessage = exMessage;
+        }
     }
 }

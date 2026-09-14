@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -52,65 +52,53 @@ namespace RetroLinker.Models.Avalonia
         
         public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
         {
-            var options = new FilePickerOpenOptions();
+            var options = new FilePickerOpenOptions {
+                AllowMultiple = false
+            };
 
             switch (template)
             {
                 // Windows exe
-                case OpenOpts.RAexe:
-                    options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
+                case OpenOpts.WinExe:
+                    options.Title = resAvaloniaOps.dlgFileExe;
                     options.FileTypeFilter = RADirFileTypes_win;
                     break;
 
                 // ROM files (all files)
                 case OpenOpts.RAroms:
-                    options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (Operations.ROMTopDir is not null)
-                    { options.SuggestedStartLocation = Operations.ROMTopDir; }
-                    /*
-                     * From the XDG Portal Docs:
-                     * "Suggested folder from which the files should be opened.
-                     * The portal implementation is free to ignore this option."
-                     *
-                     * The DBus FilePicker added a way to force the start location and AvaloniaUI 11.0.6 implemented it,
-                     * but is very new, and it doesn't solve GTK pickers...
-                     */
+                    if (Operations.ROMParentDir is not null) options.SuggestedStartLocation = Operations.ROMParentDir;
                     break;
 
                 // RetroArch config
                 case OpenOpts.RAcfg:
-                    options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileRAcfg;
                     options.FileTypeFilter = CONFIGDirFileTypes;
                     break;
 
                 // Windows icon
                 case OpenOpts.WINico:
-                    options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes;
+                    if (Operations.IconParentDir is not null) options.SuggestedStartLocation = Operations.IconParentDir;
                     break;
 
                 // Linux executable
-                case OpenOpts.RAbin:
-                    options.AllowMultiple = false;
-                    options.Title = resAvaloniaOps.dlgFileRAexe;
+                case OpenOpts.LinBin:
+                    options.Title = resAvaloniaOps.dlgFileExe;
                     options.FileTypeFilter = RADirFileTypes_lin;
                     break;
 
                 // Linux images for icons
                 case OpenOpts.LINico:
-                    options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes2;
+                    if (Operations.IconParentDir is not null) options.SuggestedStartLocation = Operations.IconParentDir;
                     break;
 
                 // This part should never happen...
                 default:
-                    options.AllowMultiple = false;
                     options.Title = resAvaloniaOps.dlgFileInFallback;
                     break;
             }
@@ -165,8 +153,8 @@ namespace RetroLinker.Models.Avalonia
         }
     }
     
-    public enum OpenOpts { RAexe, RAroms, RAcfg, WINico, RAbin, LINico }
-    public enum OpenFolderOpts {UserAssets, ROMParent, IcoOutput, LinkCopy}
+    public enum OpenOpts { WinExe, RAroms, RAcfg, WINico, LinBin, LINico }
+    public enum OpenFolderOpts {UserAssets, ROMParent, IconParent, IcoOutput, LinkCopy, DefOutput}
     public enum SaveOpts { WINlnk, LINdesktop }
     public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
 }

@@ -2,79 +2,105 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vw="using:RetroLinker.Views"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView2"
-             Name="SettingsView2_1" Loaded="View_OnLoaded">
+             x:DataType="vw:SettingsView2"
+             x:CompileBindings="True">
 	
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
 	</UserControl.Styles>
     
-	<Grid Name="gridConfigAll2" RowDefinitions="Auto, *">
+	<Grid x:Name="gridConfigAll2" RowDefinitions="Auto, *">
         <!-- CONTENT -->
-        <Grid Grid.Row="0" RowDefinitions="Auto, Auto, Auto, Auto">
+        <StackPanel Grid.Row="0">
             <!-- USER ASSETS -->
-			<Border Grid.Row="0" Classes="SettingCatg">
+			<Border Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_AserAssets}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
 					           Text="{x:Static lc:resSettingsWindow.blcUserAssets}"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox Name="txtUserAssets" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
+						<TextBox x:Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						         Text="{Binding ParentWindow.NewSettings.UserAssetsPath, 
+						         Converter={StaticResource TextToFullPathConverter}}"
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnUserAssets" Height="30" Classes="browse" Click="btnUserAssets_OnClick"/>
-							<Button Name="btnclrUserAssets" Height="30" Classes="SettingCatg" Click="btnclrUserAssets_OnClick">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button x:Name="btnUserAssets" Classes="textbox_inline browseFolder" Click="btnUserAssets_OnClick"/>
+							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnrevUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
 			</Border>
 
 			<!-- RA EXECUTABLE -->
-			<Border Grid.Row="1" Classes="SettingCatg">
+			<Border Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefRADir}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
-						<Button Name="btnApplyUserAssets" Grid.Column="1" Height="30" CornerRadius="7" Margin="0,0,2,3" Click="BtnApplyUserAssets_OnClick">
-							<i:Icon Value="fa7-check" Foreground="ForestGreen"/>
-						</Button>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
+						<TextBox x:Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+						         Text="{Binding ParentWindow.NewSettings.DEFRADir}"
+						         IsReadOnly="{Binding DesktopOS}"
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefRADir" Height="30" Classes="browse" Click="btnDefRADir_OnClick"/>
-							<Button Name="btnclrDefRADir" Height="30" Classes="SettingCatg" Click="btnclrDefRADir_Click">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtDefRADir}" 
+							        Click="btnDefRADir_OnClick"/>
+							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
+							        Click="btnDefRADir_OnClick"/>
+							<Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}" 
+							        Click="btnDefRADir_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
 			</Border>
 
-			<!-- DEFAULT ROM PATH -->
-			<Border Grid.Row="2" Classes="SettingCatg">
+			<!-- ROM PARENT DIRECTORY -->
+			<Border Classes="SettingCatg">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
 					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-					<Grid Margin="0,3" ColumnDefinitions="*, Auto">
-						<TextBox Name="txtDefROMPath" Grid.Column="0" Classes="SettingCatg" HorizontalAlignment="Stretch" IsReadOnly="True"/>
+					<Grid Margin="1,3" ColumnDefinitions="*, Auto">
+						<TextBox x:Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
+						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Name="btnDefROMPath" Height="30" Classes="browse" Click="btnDefROMPath_OnClick"/>
-							<Button Name="btnclrDefROMPath" Height="30" Classes="SettingCatg" Click="btnclrDefROMPath_Click">
-								<i:Icon Value="fa7-arrow-rotate-left" Foreground="Crimson"/>
-							</Button>
+							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtDefROMPath}" 
+							        Click="btnDefROMPath_OnClick"/>
+							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
+							        Click="btnDefROMPath_OnClick"/>
+							<Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+							        Click="btnDefROMPath_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
 			</Border>
             
-        </Grid>
-        
-        <!--SPACING-->
-        <Rectangle Grid.Row="1"/>
+            <!-- ICON PARENT DIRECTORY -->
+            <Border Classes="SettingCatg">
+	            <StackPanel>
+		            <Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
+		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">
+			            <TextBox x:Name="txtIconParentPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+			                     Text="{Binding ParentWindow.NewSettings.IconParentPath}" 
+			                     LostFocus="TxtBox_OnLostFocus"/>
+			            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+				            <Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtIconParentPath}" 
+				                    Click="btnIconParentPath_OnClick"/>
+				            <Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
+				                    Click="btnIconParentPath_OnClick"/>
+				            <Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+				                    Click="btnIconParentPath_OnClick"/>
+			            </StackPanel>
+		            </Grid>
+	            </StackPanel>
+            </Border>
+            
+        </StackPanel>
         
     </Grid>
 </UserControl>

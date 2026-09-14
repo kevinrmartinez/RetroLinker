@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Metadata;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -112,7 +112,7 @@ public static class LocaleComboItem
 
 public class ExtraMainControlButton : Button
 {
-    // Content Properties
+    // Fields
     const string blankText = "blank";
     const string blankIcon = "fa7-question";
     
@@ -146,6 +146,7 @@ public class ExtraMainControlButton : Button
         RefreshContent();
     }
 
+    // TODO: Reimplement using DataTemplates (>=0.9)
     private StackPanel GetContent()
     {
         var icon = new ProjektankerIcon()
@@ -203,5 +204,43 @@ public class ExtraMainControlButton : Button
         }
         SetAndRaise(ButtonFunctionProperty, ref _buttonFunction, function);
         RefreshContent();
+    }
+}
+
+[TemplatePart("PART_Icon", typeof(ProjektankerIcon), IsRequired = true)]
+public class IconFontWithTip : UserControl
+{
+    // Avalonia Properties
+    // - IconValue
+    public static readonly DirectProperty<IconFontWithTip, string> IconValueProperty =
+        AvaloniaProperty.RegisterDirect<IconFontWithTip, string>(
+            nameof(IconValue),
+            b => b.IconValue,
+            (b, v) => b.IconValue = v);
+
+    public string IconValue {
+        get;
+        set => SetAndRaise(IconValueProperty, ref field, value);
+    } = string.Empty;
+    
+    // - Tip
+    public static readonly DirectProperty<IconFontWithTip, object?> TipProperty =
+        AvaloniaProperty.RegisterDirect<IconFontWithTip, object?>(
+            nameof(Tip),
+            c => c.Tip,
+            (c, v) => c.Tip = v);
+
+    public object? Tip {
+        get;
+        set => SetAndRaise(TipProperty, ref field, value);
+    }
+    
+
+    // Content Properties
+    
+
+    // Constructor
+    public IconFontWithTip() {
+        InitializeIfNeeded();
     }
 }

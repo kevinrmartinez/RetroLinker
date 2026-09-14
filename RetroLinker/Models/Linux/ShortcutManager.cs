@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -18,10 +18,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
+using System.Threading.Tasks;
 
 namespace RetroLinker.Models.Linux;
 
-public static class ShortcutCreator
+[SupportedOSPlatform(App.PlatformLin)]
+public static class ShortcutManager
 {
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>=0.9) 
@@ -32,8 +35,9 @@ public static class ShortcutCreator
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
     
-    public static void CreateShortcut(Shortcutter link, ShortcutterOutput linkOutput)
+    public static async Task CreateShortcut(LinkParameters linkBase)
     {
+        var link = (LinuxLinkParameters)linkBase;
         List<string> shortcut = new()
         {
             CommentLine,
@@ -41,22 +45,20 @@ public static class ShortcutCreator
             Category
         };
 
-        shortcut.Add($"Comment={link.Desc}");
+        shortcut.Add($"Comment={link.Description}");
 
-        shortcut.Add($"Exec={link.RAdir} {link.Command}");
+        shortcut.Add($"Exec={link.RaExecutable} {link.RaArguments}");
+        
+        shortcut.Add($"Icon={link.IconPath}");
 
-        string _iconFile = (string.IsNullOrEmpty(link.ICONfile)) ? FileOps.DotDesktopRAIcon : link.ICONfile;
-        shortcut.Add($"Icon={_iconFile}");
-
-        shortcut.Add("Name=" + linkOutput.FriendlyName);
+        shortcut.Add("Name=" + link.FriendlyName);
         // shortcut.Add(notify);
-
-        string _terminal = (link.VerboseB) ? "true" : "false";
-        shortcut.Add($"Terminal={_terminal}");
+        
+        shortcut.Add($"Terminal={link.Verbose.ToString().ToLower()}");
 
         shortcut.Add(LinkType);
 
-        string outputFile = linkOutput.FullPath;
+        string outputFile = link.OutputPath;
 
         for (int i = 0; i < shortcut.Count; i++)
         {
@@ -67,17 +69,17 @@ public static class ShortcutCreator
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
         
-        FileOps.WriteDesktopEntry(outputFile, outputBytes);
+        await FileOps.WriteDesktopEntry(outputFile, outputBytes);
         // If file write is successful (doesn't throw), set execution permissions
-        System.Threading.Tasks.Task.Run(() => SetExecPermissions(outputFile));
+        _ = SetExecPermissions(outputFile);
     }
 
-    private static void SetExecPermissions(string filePath)
+    private static async Task SetExecPermissions(string filePath)
     {
         Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
-            FileOps.MakeFileExecutable(filePath);
+            await Task.Run(() => FileOps.MakeLinuxFileExecutable(filePath));
             Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {

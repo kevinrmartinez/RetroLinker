@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-
 namespace RetroLinker.Models;
 
-public readonly struct AppInformation(
+public class AppInformation(
     string fullName,
     string name,
     string version,
-    DateTime? buildDate = null,
+    bool isRunningAdmin,
+    System.DateTime? buildDate = null,
     string? gitHash = null)
 {
     public string FullName { get; } = fullName;
     public string Name { get; } = name;
     public string Version { get; } = version;
-    public DateTime? BuildDate { get; } = buildDate;
+    public System.DateTime? BuildDate { get; } = buildDate;
     public string? GitHash { get; } = gitHash;
+    public bool IsRunningAdmin { get; } = isRunningAdmin;
 
 
     public override string ToString() => $"{Name} v{Version}";
@@ -39,12 +39,13 @@ public readonly struct AppInformation(
     public string ToStringLines()
     {
         const string noData = "No Data";
-        var finalDate = BuildDate?.ToString("u") ?? noData;
+        var finalDate = BuildDate?.ToString("O") ?? noData;
         var finalGitHash = GitHash ?? noData;
         return $"""
                 FullName  {FullName}
                 Name      {Name}
                 Version   {Version}
+                Admin     {IsRunningAdmin}
                 BuildDate {finalDate}
                 Git Hash  {finalGitHash}
                """;

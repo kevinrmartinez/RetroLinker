@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -20,11 +20,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 
@@ -36,20 +33,24 @@ public partial class AppendView : UserControl
     public AppendView()
     {
         InitializeComponent();
-        ParentWindow = new MainWindow(true);
+        _parentWindow = new MainWindow(true);
         AppendPaths = FillListTest();
         ItemsControlPaths.Items = AppendPaths;
         DataContext =  this;
     }
     
     // Active Constructor
-    public AppendView(MainWindow mainWindow, string appendArg)
+    public AppendView(MainWindow mainWindow)
     {
         InitializeComponent();
-        ParentWindow = mainWindow;
+        // TODO: When 'PrevConfig' == true, also store a list of appended files 
+        _parentWindow = mainWindow;
         var appendConfigFiles = new List<string>();
         try {
-            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(appendArg);
+            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.CONFappend ?? string.Empty);
+        }
+        catch (System.ArgumentNullException) {
+            // Ignore
         }
         catch (System.ArgumentException ex) {
             Logger.LogErro(ex);
@@ -60,10 +61,10 @@ public partial class AppendView : UserControl
     }
     
     // Window Object
-    private MainWindow ParentWindow;
+    private readonly MainWindow _parentWindow;
     
     // Props
-    public ObservableCollection<string> AppendPaths { get; private set; }
+    public ObservableCollection<string> AppendPaths { get; }
     
     // FIELDS
     private OpenOpts ConfigOpt = OpenOpts.RAcfg;
@@ -77,7 +78,7 @@ public partial class AppendView : UserControl
         try 
         {
             LockControls(true);
-            var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, ParentWindow);
+            var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, _parentWindow);
             if (string.IsNullOrWhiteSpace(loadedFile)) return;
             if (!AppendPaths.Contains(loadedFile))
                 AppendPaths.Add(loadedFile);
@@ -94,10 +95,10 @@ public partial class AppendView : UserControl
         var appendArg = (AppendPaths.Count == 0) 
             ? string.Empty 
             : CommandManager.CreateAppendConfigArg(new List<string>(AppendPaths));
-        ParentWindow.ReturnToMainView(this, appendArg);
+        _parentWindow.ReturnToMainView(this, appendArg);
     }
 
-    private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => ParentWindow.ReturnToMainView();
+    private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
 
     private ObservableCollection<string> FillListTest()
     {
@@ -108,11 +109,5 @@ public partial class AppendView : UserControl
             appendPaths.Add(testPath);
         }
         return appendPaths;
-    }
-
-    private void Visual_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-    {
-        Logger.LogDebg($"{GetType().Name} Detached From Visual Tree");
-        Logger.LogDebg((object?)e.AttachmentPoint?.GetType().Name);
     }
 }

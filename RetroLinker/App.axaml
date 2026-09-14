@@ -1,13 +1,38 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:RetroLinker.Styles"
              x:Class="RetroLinker.App"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
-        <!-- TODO: Customize accent colors (>= 0.9) -->
+        <!-- TODO: Customize accent colors (0.9) -->
         <!-- https://docs.avaloniaui.net/docs/basics/user-interface/styling/themes/fluent -->
     </Application.Styles>
-             <!-- TODO: Add globally fixed colors (Resources) (>= 0.9) -->
+             
+    <Application.Resources>
+        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's of no use in the current implementation -->
+        <!-- Fonts -->
+        <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
+        
+        <!-- TODO: Add globally fixed colors (Resources) (0.9) -->
+        <!-- https://docs.avaloniaui.net/docs/app-development/resources -->
+        <x:String x:Key="FounderName">kevinrmartinez</x:String>
+        <x:Uri x:Key="LicenceUrl">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
+        <x:Uri x:Key="FounderUrl">https://github.com/kevinrmartinez</x:Uri>
+        <x:String x:Key="TileIconifierCli">TileIconifier.CLI</x:String>
+        <x:Uri x:Key="TileIconifierNetUrl">https://github.com/kevinrmartinez/TileIconifier.Net</x:Uri>
+        
+        <!-- Binding Converters -->
+        <!-- Strings -->
+        <cc:TextToUpper x:Key="TextToUpperConverter"/>
+        <cc:TextToLower x:Key="TextToLowerConverter"/>
+        <cc:TextToFullPath x:Key="TextToFullPathConverter"/>
+        <!-- Numbers -->
+        <cc:NumberGreaterThan x:Key="NumberGreaterThanConverter"/>
+        <cc:NumberLowerThan x:Key="NumberLowerThanConverter"/>
+        <!-- Dates -->
+        <cc:DateToLocal x:Key="DateToLocalConverter"/>
+    </Application.Resources>
 </Application>

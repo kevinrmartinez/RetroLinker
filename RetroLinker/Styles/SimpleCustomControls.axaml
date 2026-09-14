@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:ctrl="clr-namespace:RetroLinker.Styles"
         xmlns:lc="clr-namespace:RetroLinker.Translations">
     <Design.PreviewWith>
         <Border Padding="20">
@@ -8,7 +9,10 @@
                 <Button Classes="check"/>
                 <Button Classes="trash"/>
                 <Button Classes="clear_text"/>
-                <Button Classes="textbox_inline browse"/>
+                <Button Classes="restore"/>
+                <Button Classes="browseFolder"/>
+                <Button Classes="browseFile"/>
+                <ctrl:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -34,8 +38,29 @@
         <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
-    <Style Selector="Button.browse">
+    <Style Selector="Button.restore">
+        <Setter Property="i:Attached.Icon" Value="fa7-arrow-rotate-left"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
+    <Style Selector="Button.browseFolder">
+        <Setter Property="i:Attached.Icon" Value="fa7-folder-closed"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFolder}"/>
+    </Style>
+    
+    <Style Selector="Button.browseFile">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowse}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFile}"/>
+    </Style>
+    
+    <Style Selector="ctrl|IconFontWithTip">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Margin="0" Background="Transparent" ToolTip.Tip="{TemplateBinding Tip}">
+                    <!-- The ToolTip misbehaves with a null background -->
+                    <i:Icon Name="PART_Icon" Value="{TemplateBinding IconValue}"/>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
     </Style>
 </Styles>

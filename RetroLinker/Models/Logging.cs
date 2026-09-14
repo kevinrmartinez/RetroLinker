@@ -11,15 +11,17 @@ public static class Logger
     
     // Props
     public static string LogFile { get; private set; }
-    public static TraceSource TraceDefault { get; }
-    public static TraceSource TraceError { get; }
-    public static TraceSource TraceDebug { get; }
+    private static TraceSource TraceDefault { get; }
+    private static TraceSource TraceError { get; }
+    private static TraceSource TraceDebug { get; }
     public static bool AutoFlush { get; set; }
+    public static bool DebugTracing { get; set; }
 
     // Public Fields
     
     
     // Internal Fields
+    
     private const string _placeholder = "PLACEHOLDER.log";
     private const string _prefixInfo = "[Info]";
     private const string _prefixWarn = "[Warn]";
@@ -33,7 +35,7 @@ public static class Logger
         LogFile = _placeholder;
 
         TraceDefault = new TraceSource("Default", ~SourceLevels.Error);
-        TraceError = new TraceSource("Error", SourceLevels.Error);
+        TraceError =   new TraceSource("Error", SourceLevels.Error);
         TraceDebug = new TraceSource("Debug", SourceLevels.All);
 
         var consoleTracer = new ConsoleTraceListener(false) {
@@ -48,7 +50,6 @@ public static class Logger
         TraceDefault.Listeners.Add(consoleTracer);
         TraceError.Listeners.Add(consoleErrorTracer);
         TraceDebug.Listeners.Add(consoleTracer);
-        // Trace.AutoFlush = true;
     }
 
     public static void SetLogFile(string logFileName)
@@ -99,6 +100,7 @@ public static class Logger
     public static void LogCrit(object? obj) => LogCrit(ObjToString(obj));
 
     public static void LogDebg(string message) {
+        if (!DebugTracing) return;
         foreach (TraceListener listener in TraceDebug.Listeners) {
             listener.WriteLine(message, _prefixDebg);
             if (AutoFlush) listener.Flush();
@@ -109,6 +111,6 @@ public static class Logger
     public static void Close() {
         TraceDefault.Close();
         TraceError.Close();
-        TraceDebug.Close();
+        TraceDebug?.Close();
     }
 }

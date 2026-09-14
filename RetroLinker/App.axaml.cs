@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -27,8 +27,11 @@ namespace RetroLinker;
 public class App : Application
 {
     public static AppInformation LocalInformation { get; private set; } 
+        = new(string.Empty, string.Empty,  string.Empty, false);
     
     public const string RetroBin = "retroarch";
+    public const string PlatformWin = "windows";
+    public const string PlatformLin = "linux";
     
     public static string[]? Args;
     
@@ -40,11 +43,10 @@ public class App : Application
         {
             Args = desktop.Args;
             LanguageManager.FixLocale(LanguageManager.ENLocale);
-            desktop.MainWindow = new MainWindow
+            desktop.MainWindow = new MainWindow(false)
             {
                 Title = $"{LocalInformation.Name} v{LocalInformation.Version}",
                 DataContext = null,
-                IsDesigner = false
             };
         }
         else {

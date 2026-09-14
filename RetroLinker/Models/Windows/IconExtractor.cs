@@ -30,10 +30,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
+    [SupportedOSPlatform(App.PlatformWin)]
     public class IconExtractor
     {
         ////////////////////////////////////////////////////////////////////////
@@ -89,12 +91,12 @@ namespace RetroLinker.Models.Windows
         /// Extracts an icon from the file as a MemoryStream.
         /// </summary>
         /// <param name="index">Zero based index of the icon to be extracted.</param>
-        /// <returns>A System.IO.MemoryStream object.</returns>
+        /// <returns>A <see cref="System.IO.MemoryStream"/> object.</returns>
         /// <remarks>Always returns new copy of the Icon. It should be disposed by the user.</remarks>
         public MemoryStream GetIcon(int index)
         {
             if (index < 0 || Count <= index)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
 
             // The output was changed to the MemoryStream itself. That way there's no need to import the Windows OS only System.Drawing library.
             // Returns the .ico file in memory.
@@ -104,7 +106,7 @@ namespace RetroLinker.Models.Windows
         /// <summary>
         /// Extracts all the icons from the file as MemoryStreams.
         /// </summary>
-        /// <returns>An array of System.IO.MemoryStream objects.</returns>
+        /// <returns>An array of <see cref="System.IO.MemoryStream"/> objects.</returns>
         /// <remarks>Always returns new copies of the Icons. They should be disposed by the user.</remarks>
         public MemoryStream[] GetAllIcons()
         {
@@ -123,7 +125,7 @@ namespace RetroLinker.Models.Windows
             IntPtr hModule = IntPtr.Zero;
             try
             {
-                hModule = IENativeMethods.LoadLibraryEx(fileName, IntPtr.Zero, LOAD_LIBRARY_AS_DATAFILE);
+                hModule = NativeMethods.LoadLibraryEx(fileName, IntPtr.Zero, LOAD_LIBRARY_AS_DATAFILE);
                 if (hModule == IntPtr.Zero)
                     throw new Win32Exception();
 
@@ -183,14 +185,14 @@ namespace RetroLinker.Models.Windows
 
                     return true;
                 };
-                IENativeMethods.EnumResourceNames(hModule, RT_GROUP_ICON, callback, IntPtr.Zero);
+                NativeMethods.EnumResourceNames(hModule, RT_GROUP_ICON, callback, IntPtr.Zero);
 
                 iconData = tmpData.ToArray();
             }
             finally
             {
                 if (hModule != IntPtr.Zero)
-                    IENativeMethods.FreeLibrary(hModule);
+                    NativeMethods.FreeLibrary(hModule);
             }
         }
 
@@ -198,19 +200,19 @@ namespace RetroLinker.Models.Windows
         {
             // Load the binary data from the specified resource.
 
-            IntPtr hResInfo = IENativeMethods.FindResource(hModule, name, type);
+            IntPtr hResInfo = NativeMethods.FindResource(hModule, name, type);
             if (hResInfo == IntPtr.Zero)
                 throw new Win32Exception();
 
-            IntPtr hResData = IENativeMethods.LoadResource(hModule, hResInfo);
+            IntPtr hResData = NativeMethods.LoadResource(hModule, hResInfo);
             if (hResData == IntPtr.Zero)
                 throw new Win32Exception();
 
-            IntPtr pResData = IENativeMethods.LockResource(hResData);
+            IntPtr pResData = NativeMethods.LockResource(hResData);
             if (pResData == IntPtr.Zero)
                 throw new Win32Exception();
 
-            uint size = IENativeMethods.SizeofResource(hModule, hResInfo);
+            uint size = NativeMethods.SizeofResource(hModule, hResInfo);
             if (size == 0)
                 throw new Win32Exception();
 
@@ -231,8 +233,8 @@ namespace RetroLinker.Models.Windows
             string fileName;
             {
                 var buf = new StringBuilder(MAX_PATH);
-                int len = IENativeMethods.GetMappedFileName(
-                    IENativeMethods.GetCurrentProcess(), hModule, buf, buf.Capacity);
+                int len = NativeMethods.GetMappedFileName(
+                    NativeMethods.GetCurrentProcess(), hModule, buf, buf.Capacity);
                 if (len == 0)
                     throw new Win32Exception();
 
@@ -246,7 +248,7 @@ namespace RetroLinker.Models.Windows
             {
                 var drive = c + ":";
                 var buf = new StringBuilder(MAX_PATH);
-                int len = IENativeMethods.QueryDosDevice(drive, buf, buf.Capacity);
+                int len = NativeMethods.QueryDosDevice(drive, buf, buf.Capacity);
                 if (len == 0)
                     continue;
 

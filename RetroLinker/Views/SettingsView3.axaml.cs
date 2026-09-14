@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -27,6 +27,25 @@ namespace RetroLinker.Views
 {
     public partial class SettingsView3 : UserControl
     {
+        // Window Obj
+        // private MainWindow appMainWindow;
+        public SettingsWindow ParentWindow { get; }
+        
+        // PROPS/STATICS
+        public bool DesktopOS { get; }
+        
+        private bool IsDesigner;
+        private bool FirstTimeLoad = true;
+        private int candidatesCount;
+
+        private string StrAddCustomCopyPath = resSettingsWindow.strAddCustomCopyPath;
+        private List<string> candidateCopiesPath = new();
+        private List<string> defIcoSavPathList = new() {
+            resSettingsWindow.strDefIcoSavPathItem0,
+            resSettingsWindow.strDefIcoSavPathItem1,
+            resSettingsWindow.strDefIcoSavPathItem2,
+        };
+        
         public SettingsView3()
         {
             // Constructor for Designer
@@ -35,54 +54,27 @@ namespace RetroLinker.Views
             IsDesigner = true;
         }
         
-        public SettingsView3(SettingsWindow settingsWindow, bool OS)
-        {
+        public SettingsView3(SettingsWindow settingsWindow, bool OS) {
             InitializeComponent();
             ParentWindow = settingsWindow;
             DesktopOS = OS;
         }
         
-        // Window Obj
-        // private MainWindow appMainWindow;
-        private SettingsWindow ParentWindow;
-
-        // PROPS/STATICS
-        private bool IsDesigner;
-        private bool FirstTimeLoad = true;
-        private bool DesktopOS;
-        private int candidatesCount;
-
-        private string StrAddCustomCopyPath = resSettingsWindow.strAddCustomCopyPath;
-        private List<string> candidateCopiesPath = new();
-        private List<string> defIcoSavPathList = new()
-        {
-            resSettingsWindow.strDefIcoSavPathItem0,
-            resSettingsWindow.strDefIcoSavPathItem1,
-            resSettingsWindow.strDefIcoSavPathItem2,
-        };
-        
         // LOAD
         private void View_OnLoaded(object? sender, RoutedEventArgs e)
         {
+            // TODO: Move to Binding, requiring to practically rewrite this whole view (>= 0.9)
             if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
             if (FirstTimeLoad)
             {
-                if (!DesktopOS)
-                {
-                    candidateCopiesPath.AddRange(SettingsOps.LinLinkPathCandidates);
-                    panelWindowsOnlyControls.IsEnabled = false;
-                }
-                else candidateCopiesPath.AddRange(SettingsOps.WinLinkPathCandidates);
+                if (!DesktopOS) candidateCopiesPath.AddRange(FileOps.LinLinkPathCandidates);
+                else candidateCopiesPath.AddRange(FileOps.WinLinkPathCandidates);
                 candidatesCount = candidateCopiesPath.Count;
 
                 foreach (var candidate in candidateCopiesPath)
-                {
                     comboDEFLinkOutput.Items.Add(candidate);
-                }
                 foreach (var path in SettingsOps.LinkCopyPaths)
-                {
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));
-                }
                 
                 candidateCopiesPath.Add(StrAddCustomCopyPath);
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
@@ -93,37 +85,28 @@ namespace RetroLinker.Views
             }
             //Settings
             ApplySettingsToControls();
-            // if (ParentWindow.settings.UserAssetsPath == ParentWindow.settings.ConvICONPath) 
-            // { chkUseUserAssets.IsChecked = true; }
         }
         
         // FUNCTIONS
         void ApplySettingsToControls()
         {
-            chkAlwaysAskOutput.IsChecked = ParentWindow.settings.AlwaysAskOutput;
-            panelDEFLinkOutput.IsEnabled = !ParentWindow.settings.AlwaysAskOutput;
             if (panelDEFLinkOutput.IsEnabled)
             {
-                var DefPath = ParentWindow.settings.DEFLinkOutput;
+                var DefPath = ParentWindow.NewSettings.DEFLinkOutput;
                 if (!comboDEFLinkOutput.Items.Contains(DefPath))
                     comboDEFLinkOutput.Items.Add(DefPath);
                 comboDEFLinkOutput.SelectedItem = DefPath;
             }
             else comboDEFLinkOutput.SelectedIndex = 0;
-            
-            chkMakeLinkCopy.IsChecked = ParentWindow.settings.MakeLinkCopy;
-            lsboxLinkCopies.IsEnabled = ParentWindow.settings.MakeLinkCopy;
 
             if (!DesktopOS) return;
-            ValidateSavIcoPath(ParentWindow.settings.IcoSavPath);
-            chkExtractIco.IsChecked = ParentWindow.settings.ExtractIco;
-            chkIcoLinkName.IsChecked = ParentWindow.settings.IcoLinkName;
+            ValidateSavIcoPath(ParentWindow.NewSettings.IcoSavPath);
         }
 
         void ValidateSavIcoPath(string wrkPath)
         {
-            var UsrAssets = ParentWindow.settings.UserAssetsPath;
-            var AbsoUsrAssets = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
+            var UsrAssets = ParentWindow.NewSettings.UserAssetsPath;
+            var AbsoUsrAssets = FileOps.GetAbsolutePath(UsrAssets);
             
             switch (wrkPath)
             {
@@ -151,18 +134,18 @@ namespace RetroLinker.Views
             
             txtIcoSavPath.Text = index switch
             {
-                0 => ParentWindow.settings.UserAssetsPath,
+                0 => ParentWindow.NewSettings.UserAssetsPath,
                 1 => resSettingsWindow.txtIcoSavPath1,
                 2 => resSettingsWindow.txtIcoSavPath2,
-                _ => ParentWindow.settings.UserAssetsPath
+                _ => ParentWindow.NewSettings.UserAssetsPath
             };
             
-            ParentWindow.settings.IcoSavPath = index switch
+            ParentWindow.NewSettings.IcoSavPath = index switch
             {
-                0 => ParentWindow.settings.UserAssetsPath,
+                0 => ParentWindow.NewSettings.UserAssetsPath,
                 1 => SettingsOps.IcoSavROM,
                 2 => SettingsOps.IcoSavRA,
-                _ => ParentWindow.settings.UserAssetsPath
+                _ => ParentWindow.NewSettings.UserAssetsPath
             };
         }
         
@@ -172,7 +155,8 @@ namespace RetroLinker.Views
             comboUseDefaultIcoSavPath.IsEnabled = false;
             comboUseDefaultIcoSavPath.SelectedIndex = 0;
             panelWindowsOnlyControls2.IsEnabled = true;
-            ParentWindow.settings.IcoSavPath = path;
+            ParentWindow.NewSettings.IcoSavPath = path;
+            txtIcoSavPath.Text = path;
         }
 
         int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
@@ -183,30 +167,33 @@ namespace RetroLinker.Views
             var gridControl = new Styles.LinkCopyItemGrid(dir);
 
             var trashButton = gridControl.NewItemTrash;
-            trashButton!.Click += btnTrashCopyItem;
+            trashButton.Click += btnTrashCopyItem;
             
             newItem.Content = gridControl.NewItemGrid;
             return newItem;
         }
 
-        private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
-        
-        // DEFAULT OUTPUT
-        private void ChkAlwaysAskOutput_OnClick(object? sender, RoutedEventArgs e) {
-            var chk = chkAlwaysAskOutput.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.AlwaysAskOutput = chk;
-            panelDEFLinkOutput.IsEnabled = !chk;
+        private void UpdateContext() {
+            DataContext = null;
+            DataContext = this;
+        }
+
+        private void LockControls(bool locked) {
+            panelContent.IsEnabled = !locked;
+            UpdateContext();
         }
         
+        
+        // DEFAULT OUTPUT
         private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
-            ParentWindow.settings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
+            ParentWindow.NewSettings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
 
         private async void BtnDefLinkOutput_ClickAsync()
         {
             try {
                 LockControls(true);
                 string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
-                string folder = await FileDialogOps.OpenFolderAsync(template:0, currentFolder, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
                 if (string.IsNullOrWhiteSpace(folder)) return;
                 // int customDirIndex = candidatesCount;
                 if (comboDEFLinkOutput.Items.Count == candidatesCount) comboDEFLinkOutput.Items.Add(folder);
@@ -220,18 +207,11 @@ namespace RetroLinker.Views
         private void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) => BtnDefLinkOutput_ClickAsync();
         
         private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) {
-            ParentWindow.settings.DEFLinkOutput = ParentWindow.DEFsettings.DEFLinkOutput;
+            ParentWindow.NewSettings.DEFLinkOutput = ParentWindow.GetDefSettings().DEFLinkOutput;
             comboDEFLinkOutput.SelectedIndex = 0;
         }
         
-        
         // LINK COPY
-        private void ChkMakeLinkCopy_IsCheckedChanged(object? sender, RoutedEventArgs e) {
-            var chk = chkMakeLinkCopy.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.MakeLinkCopy = chk;
-            lsboxLinkCopies.IsEnabled = chk;
-        }
-
         private async void BtnAddLinkCopy_ClickAsync()
         {
             try {
@@ -241,7 +221,7 @@ namespace RetroLinker.Views
 
                 if (currentItem == StrAddCustomCopyPath)
                 {
-                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, string.Empty, ParentWindow);
+                    string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.LinkCopy, ParentWindow);
                     if (!string.IsNullOrWhiteSpace(folder)) {
                         lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(folder));
                         ParentWindow.SetLinkCopyPaths.Add(folder);
@@ -251,6 +231,7 @@ namespace RetroLinker.Views
                     lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
                     ParentWindow.SetLinkCopyPaths.Add(currentItem);
                 }
+                // If the element already exist in the list, make the existing element light up, or shake or something 
                 comboaddLinkCopy.SelectedIndex = 0;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
@@ -273,19 +254,18 @@ namespace RetroLinker.Views
         }
 
         
-        // ICONS
-        
         #region WINDOWS OS ONLY
 
+        // ICONS
         private async void btnIcoSavPath_ClickAsync()
         {
             try {
                 LockControls(true);
                 string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
-                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, currentFolder, ParentWindow);
+                string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, ParentWindow, currentFolder);
                 if (string.IsNullOrWhiteSpace(folder)) return;
                 txtIcoSavPath.Text = folder; 
-                ParentWindow.settings.IcoSavPath = folder;
+                ParentWindow.NewSettings.IcoSavPath = folder;
             }
             catch (System.Exception e) { _ = this.PopUpGenericError(e); }
             finally { LockControls(false); }
@@ -294,13 +274,8 @@ namespace RetroLinker.Views
         private void btnIcoSavPath_OnClick(object sender, RoutedEventArgs e) => btnIcoSavPath_ClickAsync();
 
         private void btnclrIcoSavPath_Click(object sender, RoutedEventArgs e) {
-            ParentWindow.settings.IcoSavPath = ParentWindow.DEFsettings.IcoSavPath;
-            txtIcoSavPath.Text = ParentWindow.settings.IcoSavPath;
-        }
-        
-        private void IcoSavChecks_IsCheckedChanged(object? sender, RoutedEventArgs e) {
-            ParentWindow.settings.ExtractIco = chkExtractIco.IsChecked.GetValueOrDefault();
-            ParentWindow.settings.IcoLinkName = chkIcoLinkName.IsChecked.GetValueOrDefault();
+            ParentWindow.NewSettings.IcoSavPath = ParentWindow.GetDefSettings().IcoSavPath;
+            txtIcoSavPath.Text = ParentWindow.NewSettings.IcoSavPath;
         }
         
         private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e) {
@@ -309,8 +284,45 @@ namespace RetroLinker.Views
         }
         
         private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e) {
+            
             if (sender is not ComboBox combo) return;
             SetDefaultSavIcoPath((byte)combo.SelectedIndex);
+        }
+        
+        // TILE ICON
+        private async void btnTileIcoBrowse_OnClickAsync(TextBox textBox)
+        {
+            try
+            {
+                LockControls(true);
+                var dialogTitle = resAvaloniaOps.dlgFileTileCliexe;
+                var currentFile = (string.IsNullOrWhiteSpace(textBox.Text)) ? FileOps.BaseDir : textBox.Text;
+                var file = await FileDialogOps.OpenFileAsync(OpenOpts.WinExe, ParentWindow, currentFile, dialogTitle);
+                if (string.IsNullOrWhiteSpace(file)) return;
+                // txtUserAssets.Text = folder;
+                ParentWindow.NewSettings.TileIcoPath = file;
+            }
+            catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+            finally { LockControls(false); }
+        }
+        
+        // REWRITE: This is brilliant, now reimplement it across the settings :)
+        private void btnTileIco_OnClick(object? sender, RoutedEventArgs e) {
+            if (sender is not Button button) return;
+            switch (button.CommandParameter)
+            {
+                case TextBox textBox:
+                    btnTileIcoBrowse_OnClickAsync(textBox);
+                    return;
+                case TextBoxActions action:
+                    ParentWindow.NewSettings.TileIcoPath = action switch {
+                        TextBoxActions.Restore => ParentWindow.GetOldSettings().TileIcoPath,
+                        TextBoxActions.Clear => null,
+                        _ => ParentWindow.NewSettings.TileIcoPath
+                    };
+                    break;
+            }
+            UpdateContext();
         }
         #endregion
     }

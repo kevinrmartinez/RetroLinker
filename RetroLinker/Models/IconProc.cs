@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,8 @@ namespace RetroLinker.Models
         public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
 
         public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
+        
+        public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
 
         private static MagickImage ResizeToIco(MagickImage ico)
         {
@@ -48,17 +50,23 @@ namespace RetroLinker.Models
             return ico;
         }
 
+        private static MemoryStream GetStream(MagickImage img) {
+            var imgStream = new MemoryStream();
+            img.Write(imgStream);
+            imgStream.Position = 0;
+            return imgStream;
+        }
+
         private static MemoryStream GetStream(string path)
         {
+            // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
             // Set the background transparent before reading the image.
             // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
-            var IMG = new MagickImage() {BackgroundColor = MagickColors.Transparent};
+            var img = new MagickImage() {BackgroundColor = MagickColors.Transparent};
             
-            IMG.Read(path);
-            IMG.Format = MagickFormat.Png32;
-            var ImgStream = new MemoryStream();
-            IMG.Write(ImgStream);
-            return ImgStream;
+            img.Read(path);
+            img.Format = MagickFormat.Png32;
+            return GetStream(img);
         }
 
         public static void BuildIconItem(string filePath, int newIndex, bool OS)
@@ -70,7 +78,8 @@ namespace RetroLinker.Models
             if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
             if (OS)
             {
-                if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, 0);
+                const int defaultIndex = 0;
+                if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, defaultIndex);
                 if (FileOps.WinExtraIconsExt.Contains($"*{fileExt}") || (FileOps.IsExtWinPE(fileExt))) 
                     icoItem.ConversionRequired = true;
             }

@@ -2,29 +2,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
         xmlns:vw="clr-namespace:RetroLinker.Views"
         xmlns:lc="clr-namespace:RetroLinker.Translations"
-        mc:Ignorable="d" d:DesignWidth="510" d:DesignHeight="400"
+        mc:Ignorable="d" d:DesignWidth="540" d:DesignHeight="420"
         x:Class="RetroLinker.Views.AboutWindow"
         x:DataType="vw:AboutWindow"
         x:CompileBindings="True"
-        MinWidth="450" MinHeight="350" Width="510" Height="400"
+        MinWidth="500" MinHeight="400" Width="540" Height="420"
         WindowStartupLocation="CenterScreen" Title="{x:Static lc:resAboutWindow.wndTitle}" Icon="/Assets/avalonia-logo.ico">
     
+    <!-- === STYLES === -->
     <Window.Styles>
+        <Style Selector="HyperlinkButton">
+            <Setter Property="ToolTip.Tip" Value="{Binding $self.NavigateUri}"/>
+        </Style>
+        
         <Style Selector="Label#LabelTitle">
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
         
         <Style Selector="Border#BorderDev">
-            <!-- The Background should be a little different tone than the body's, but that's we'll need a theme to control that -->
-            <Setter Property="Background" Value="LightSlateGray"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="6,2"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
         <Style Selector="TextBlock#LabelBuild">
+            <Setter Property="FontFamily" Value="{StaticResource LiberationMonoFont}"/>
+            <!-- <Setter Property="FontWeight" Value="DemiBold"/> -->
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
@@ -39,6 +46,48 @@
             <Setter Property="FontWeight" Value="Light"/>
         </Style>
         
+        <Style Selector="HyperlinkButton.InLine">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="0"/>
+            <!-- <Setter Property="Margin" Value="0,0,0,0"/> -->
+            
+            <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                <Setter Property="Margin" Value="0"/>
+            </Style>
+            
+            <Style Selector="^ TabItem">
+                <Setter Property="Padding" Value="4"/>
+                <Setter Property="Margin" Value="1,0,1,-2"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="MinHeight" Value="10"/>
+                <Setter Property="CornerRadius" Value="4,4,0,0"/>
+                
+                <!-- It seems broken... -->
+                <!-- <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark1}"/> -->
+                
+                <!-- <Style Selector="^:pointerover"><Setter Property="Background" Value="Red"/></Style> -->
+                <Style Selector="^:selected">
+                    <Setter Property="Background" Value="{DynamicResource SystemAccentColor}"/>
+                    <Style Selector="^ /template/ Border#PART_SelectedPipe">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource TextControlForeground}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    </Style>
+                </Style>
+                
+                <Style Selector="^ > Border">
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
+                    <Setter Property="CornerRadius" Value="1,4,4,4"/>
+                    <Setter Property="Padding" Value="4"/>
+                </Style>
+            </Style>
+        </Style>
+        
         <Style Selector="Border#BorderContributors">
             <Setter Property="Padding" Value="2"/>
             <Setter Property="BorderBrush" Value="Gray"/>
@@ -49,37 +98,54 @@
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="Margin" Value="2"/>
             <Setter Property="ItemTemplate">
-                <DataTemplate DataType="vw:Contribs"
-                              x:DataType="vw:Contribs">
-                    <HyperlinkButton Padding="2" Content="{Binding DisplayName}" NavigateUri="{Binding OnlinePageUrl}"/>
+                <DataTemplate DataType="vw:Contributor">
+                    <StackPanel Orientation="Horizontal" Margin="4">
+                        <i:Icon Value="fa7-user"/>
+                        <HyperlinkButton Content="{Binding DisplayName}" 
+                                         NavigateUri="{Binding OnlinePageUrl}" 
+                                         FontSize="14" Padding="2" HorizontalAlignment="Center"/>
+                    </StackPanel>
                 </DataTemplate>
             </Setter>
         </Style>
-        <Style Selector="StackPanel#StackPanelCredits">
-            <Setter Property="Orientation" Value="Vertical"/>
-            <Style Selector="^ TextBlock">
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="TextDecorations" Value="Underline"/>
-                <Setter Property="Margin" Value="2"/>
-            </Style>
-            <Style Selector="^ HyperlinkButton">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Margin" Value="2,1"/>
+        
+        <Style Selector="ItemsControl.ThirdParty">
+            <Setter Property="ItemTemplate">
+                <DataTemplate DataType="vw:ThirdParty">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" Margin="0,4">
+                            <HyperlinkButton Content="{Binding DisplayName}" 
+                                             NavigateUri="{Binding OnlinePageUrl}" 
+                                             FontSize="13" Margin="4,1" Padding="0"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="8" Padding="0" Margin="6,0" 
+                                       Text="{Binding Comment}" IsVisible="{Binding !!Comment}"/>
+                        </StackPanel>
+                        <Rectangle StrokeThickness="1" Stroke="{DynamicResource ButtonBackground}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </Setter>
+            
+            <Style Selector="^ ContentPresenter:nth-last-child(1)">
+                <Style Selector="^ Rectangle">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
             </Style>
         </Style>
+        
         <Style Selector="Button">
+            <Setter Property="Margin" Value="0,4,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="Width" Value="65"/>
-            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="FontSize" Value="16"/>
         </Style>
     </Window.Styles>
     
-    
+    <!-- === CONTROLS === -->
     <Grid RowDefinitions="*,Auto" Margin="5">
         <!-- BODY -->
-        <!-- TODO: Add External Libraries (0.8) -->
-        <Grid Grid.Row="0" RowDefinitions="0.7*,*">
+        <Grid Grid.Row="0" RowDefinitions="0.7*,Auto,*">
+            <!-- ROW0: App Presentation -->
             <Grid Grid.Row="0" ColumnDefinitions="0.7*,*">
                 <!-- PENDING: Change image with app logo -->
                 <Image Grid.Column="0" HorizontalAlignment="Center" Source="../Assets/Images/NaN.png"/>
@@ -87,8 +153,9 @@
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical">
                     <Label x:Name="LabelTitle">
                         <Label.Content>
+                            <!-- TITLE vVERSION -->
                             <MultiBinding StringFormat="{}{0} v{1}">
-                                <Binding Path="AppInfo.Name" FallbackValue="[Proyect]"/>
+                                <Binding Path="AppInfo.Name" FallbackValue="[Project]"/>
                                 <Binding Path="AppInfo.Version" FallbackValue="[Version]"/>
                             </MultiBinding>
                         </Label.Content>
@@ -97,11 +164,12 @@
                     <Border x:Name="BorderDev">
                         <TextBlock x:Name="LabelBuild">
                             <TextBlock.Text>
-                                <!-- APP BUILD DATE; GIT COMMIT HASH -->
+                                <!-- BUILD_DATE; GIT_HASH -->
                                 <MultiBinding StringFormat="{}{0}; {1}">
-                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:s}" TargetNullValue="NoDate"/>
-                                    <!-- Create a custom converter to get the hash in all caps (ToUpper) -->
-                                    <Binding Path="AppInfo.GitHash" TargetNullValue="NoDate"/> 
+                                    <Binding Path="AppInfo.BuildDate" StringFormat="{}{0:G}" TargetNullValue="[NO DATE]"
+                                             Converter="{StaticResource DateToLocalConverter}"/>
+                                    <Binding Path="AppInfo.GitHash" TargetNullValue="[NO HASH]"
+                                             Converter="{StaticResource TextToUpperConverter}"/>
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
@@ -111,33 +179,79 @@
                     <Label x:Name="LabelCopyright" Content="{x:Static lc:resAboutWindow.lblCopyright}"/>
                     <StackPanel Orientation="Horizontal">
                         <Label x:Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
-                        <HyperlinkButton x:Name="LinkLicense" Padding="0" Content="{x:Static lc:resAboutWindow.hypLicense}" 
-                                         NavigateUri="https://www.gnu.org/licenses/gpl-3.0.en.html"/>
+                        <HyperlinkButton x:Name="LinkLicense" Classes="InLine" 
+                                         Content="{x:Static lc:resAboutWindow.hypLicense}" 
+                                         NavigateUri="{StaticResource LicenceUrl}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto,Auto" Margin="0,14,0,8">
-                <StackPanel Grid.Row="0" Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding Source={x:Static lc:resAboutWindow.lblMaintainer}, StringFormat='\{0\}: '}"/>
-                        <HyperlinkButton Content="kevinrmartinez" NavigateUri="https://github.com/kevinrmartinez" Padding="0"/>
-                    </StackPanel>
-                    <Rectangle Height="6"/>
-                    <Label Content="{x:Static lc:resAboutWindow.lblContributors}" IsVisible="False"/>
-                </StackPanel>
-                <Border x:Name="BorderContributors" Grid.Row="1" IsVisible="False">
-                    <ScrollViewer>
-                        <ItemsControl x:Name="ItemsControlContributors" ItemsSource="{Binding Contributors}"/>
-                    </ScrollViewer>
-                </Border>
-                <StackPanel x:Name="StackPanelCredits" Grid.Row="2">
-                    <TextBlock Text="{x:Static lc:resAboutWindow.lblAttributions}"/>
-                    <!-- Filled by code behind -->
-                </StackPanel>
-            </Grid>
+            
+            <!-- ROW1: Spacing -->
+            <Rectangle Grid.Row="1" Height="10"/>
+            
+            <!-- ROW2: Contributors & Attributions -->
+            <TabControl Grid.Row="2" VerticalAlignment="Stretch">
+                
+                <!-- Contributors -->
+                <TabItem Header="{x:Static lc:resAboutWindow.lblContributors}">
+                    <Border VerticalAlignment="Stretch">
+                        <Grid RowDefinitions="Auto, Auto, Auto, *">
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Label Content="{x:Static lc:resAboutWindow.lblMaintainer}"/>
+                                <HyperlinkButton Content="{StaticResource FounderName}"
+                                                 NavigateUri="{StaticResource FounderUrl}" Classes="InLine"/>
+                            </StackPanel>
+                            <Rectangle Grid.Row="1" Height="10"/>
+                            <Label Grid.Row="2" Content="{x:Static lc:resAboutWindow.lblContributors}" 
+                                   IsVisible="{Binding !!Contributors.Length}"/>
+                            <Border Grid.Row="3" x:Name="BorderContributors" 
+                                    IsVisible="{Binding !!Contributors.Length}">
+                                <ScrollViewer>
+                                    <ItemsControl x:Name="ItemsControlContributors" 
+                                                  ItemsSource="{Binding Contributors}"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </TabItem>
+                
+                <!-- Attributions -->
+                <TabItem Header="{x:Static lc:resAboutWindow.lblAttributions}">
+                    <Border>
+                        <ScrollViewer AllowAutoHide="True">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{x:Static lc:resAboutWindow.hypBackend}"/>
+                                    <HyperlinkButton Content="{x:Static lc:resGeneric.genDotnet_A}" NavigateUri="https://dot.net" Classes="InLine"/>
+                                </StackPanel>
+                                <Rectangle Height="10"/>
+                                
+                                <Label Content="{x:Static lc:resAboutWindow.lblLibraries}"/>
+                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                    <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyLibs}"/>
+                                </Border>
+                                <Rectangle Height="10"/>
+                                
+                                <Label Content="{x:Static lc:resAboutWindow.lblResources}"/>
+                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                    <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyRes}"/>
+                                </Border>
+                                <Rectangle Height="10"/>
+                                
+                                <Label Content="{x:Static lc:resAboutWindow.lblThanksSp}"/>
+                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                    <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyThanks}"/>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </TabItem>
+                
+            </TabControl>
+            
         </Grid>
         
         <!-- EXIT BUTTON -->
-        <Button Grid.Row="1" Content="{x:Static lc:resAboutWindow.btnClose}" Click="Button_OnClick"/>
+        <Button Grid.Row="1" Content="{x:Static lc:resGeneric.btnClose}" Click="Button_OnClick"/>
     </Grid>
 </Window>

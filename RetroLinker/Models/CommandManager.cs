@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using RetroLinker.Models.Generic;
 
 namespace RetroLinker.Models
 {
@@ -132,6 +132,8 @@ namespace RetroLinker.Models
         // AppendConfig
         public static (string, List<string>) ResolveAppendConfigArg(string arg)
         {
+            if(string.IsNullOrWhiteSpace(arg))
+                throw new System.ArgumentNullException(nameof(arg));
             if (!arg.StartsWith(appendConfig))
                 throw new System.ArgumentException(@"Invalid append config argument: '" + arg + @"'", nameof(arg));
             
@@ -155,13 +157,15 @@ namespace RetroLinker.Models
         // Subsystem
         public static (string, List<string>) ResolveSubsystemArg(string arg)
         {
+            if(string.IsNullOrWhiteSpace(arg))
+                throw new System.ArgumentNullException(nameof(arg));
             if (!arg.StartsWith(subsystem))
                 throw new System.ArgumentException(@"Invalid subsystem argument: '" + arg + @"'", nameof(arg));
             
             var noOption = GetArgumentNoOption(arg);
             var subsys = noOption.Split(' ').First();
             var fullSubsysArgs = noOption.Substring(subsys.Length + 1);
-            var subsysArgs = Utils.ParseArguments(fullSubsysArgs);
+            var subsysArgs = Utils.ParseSingleLineArguments(fullSubsysArgs);
             return (subsys,  subsysArgs);
         }
 
@@ -175,23 +179,14 @@ namespace RetroLinker.Models
             return arg;
         }
 
-        public static void TestAllOptions()
+        public static void TestSubsystemArg()
         {
-            var patchArg = "--ups=\"path/to/rom.bin\"";
-            var subsysArg = "--subsystem=abc \"path/to/rom1.bin\" \"path/to/rom 2.bin\"";
-            var CONFappend = "--appendconfig=\"/path/to/config1.conf|/path/to/config 2.conf|/path/to/config3.conf\"";
-            
-            var patchResolved = ResolveSoftPatchingArg(patchArg);
-            var subsysResolved = ResolveSubsystemArg(subsysArg);
-            var confResolved = ResolveAppendConfigArg(CONFappend);
-            
-            Logger.LogDebg($"{patchResolved.Item1}, {patchResolved.Item2.PatchType}");
-            Logger.LogDebg($"{subsysResolved.Item1}, {Utils.GetMultiLineStringFromList(subsysResolved.Item2)}");
-            Logger.LogDebg($"{confResolved.Item1}, {Utils.GetMultiLineStringFromList(confResolved.Item2)}");
-            
-            Logger.LogDebg(CreateSoftPatchingArg(patchResolved.Item1, patchResolved.Item2));
-            Logger.LogDebg(CreateSubsystemArg(subsysResolved.Item1, subsysResolved.Item2));
-            Logger.LogDebg(CreateAppendConfigArg(confResolved.Item2));
+            var testValue = "--subsystem=abc path/to/rom1.bin path/to/rom2.bin path/to/rom3.bin";
+            (var res1, var res2) = ResolveSubsystemArg(testValue);
+            Console.WriteLine(nameof(res1));
+            Console.WriteLine(res1);
+            Console.WriteLine(nameof(res2));
+            res2.ForEach(Console.WriteLine);
         }
     }
     

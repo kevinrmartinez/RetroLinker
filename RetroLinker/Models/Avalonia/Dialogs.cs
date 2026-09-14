@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2025  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -31,26 +31,27 @@ namespace RetroLinker.Models.Avalonia;
 
 public static class FileDialogOps
 {
-    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null)
+    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null, string? newDialogTitle = null)
     {
         var opt = PickerOpt.OpenPickerOpt(template);
+        opt.Title = newDialogTitle ?? opt.Title;
         if (!string.IsNullOrEmpty(currentFile)) {
-            currentFile = FileOps.GetDirFromPath(currentFile)!;
-            opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
+            var currentDir = FileOps.GetDirFromPath(currentFile);
+            if (!string.IsNullOrEmpty(currentDir)) 
+                opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentDir, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
         string dir = (file.Count > 0) ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
-    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel)
-    {
+    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel) {
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
         string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
-    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, string currentFolder, TopLevel topLevel)
+    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, TopLevel topLevel, string? currentFolder = null)
     {
         FolderPickerOpenOptions opt = new()
         {
@@ -59,8 +60,10 @@ public static class FileDialogOps
             {
                 OpenFolderOpts.UserAssets => resAvaloniaOps.dlgFolderUserAssets,
                 OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
+                OpenFolderOpts.IconParent => resAvaloniaOps.dlgFolderIconParent,
                 OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
                 OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
+                OpenFolderOpts.DefOutput => resAvaloniaOps.dlgFolderDefOutput,
                 // This option shouldn't happen
                 _ => resAvaloniaOps.dlgFolderFallback
             },
@@ -69,8 +72,8 @@ public static class FileDialogOps
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFolder, topLevel);
         
         var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-        string dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
-        return dir;
+        var dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
+        return dir.TrimEnd(FileOps.OsDirSeparator);
     }
 
     public static async Task<string> SaveFileAsync(SaveOpts template, string currentFile, TopLevel topLevel)
@@ -86,6 +89,7 @@ public static class FileDialogOps
         return dir;
     }
 }
+
 
 public static class PopUpDialogOps
 {

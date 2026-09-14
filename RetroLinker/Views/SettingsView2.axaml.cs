@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 */
 
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
@@ -25,48 +26,38 @@ namespace RetroLinker.Views;
 
 public partial class SettingsView2 : UserControl
 {
-    public SettingsView2()
-    {
+    // Window Obj
+    // private MainWindow MainAppWindow;
+    public SettingsWindow ParentWindow { get; }
+    
+    // PROPS/STATICS
+    public bool DesktopOS { get; }
+
+    public SettingsView2() {
         // Constructor for Designer
         InitializeComponent();
         ParentWindow = new SettingsWindow(true);
     }
     
-    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs)
-    {
+    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs) {
         InitializeComponent();
         ParentWindow = settingsWindow;
         DesktopOS = desktopOs;
     }
     
-    // Window Obj
-    // private MainWindow MainAppWindow;
-    private SettingsWindow ParentWindow;
-    
-    // PROPS/STATICS
-    // private bool FirstTimeLoad = true;
-    private bool DesktopOS;
-    
-    // LOAD
-    void View_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        // Settings
-        ApplySettingsToControls();
+    // GENERIC
+    private void UpdateContext() {
+        DataContext = null;
+        DataContext = this;
     }
     
-    void ApplySettingsToControls()
-    { 
-        // Absolute path
-        txtUserAssets.Text = System.IO.Path.GetFullPath(ParentWindow.settings.UserAssetsPath);
-        txtDefRADir.IsReadOnly = DesktopOS;
-        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
-        btnApplyUserAssets.IsVisible = !DesktopOS;
-        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
-    }
+    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();
     
     // USER ASSETS
-    
-    void LockControls(bool locked) => gridConfigAll2.IsEnabled = !locked;
+    void LockControls(bool locked) {
+        gridConfigAll2.IsEnabled = !locked;
+        UpdateContext();
+    }
     
     async void btnUserAssets_ClickAsync()
     {
@@ -74,10 +65,9 @@ public partial class SettingsView2 : UserControl
         {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(template: 0, currentFolder, ParentWindow);
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtUserAssets.Text = folder;
-            ParentWindow.settings.UserAssetsPath = folder;
+            ParentWindow.NewSettings.UserAssetsPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -85,61 +75,108 @@ public partial class SettingsView2 : UserControl
 
     void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
     
-    void btnclrUserAssets_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.UserAssetsPath = ParentWindow.DEFsettings.UserAssetsPath;
-        txtUserAssets.Text = ParentWindow.settings.UserAssetsPath;
+    void btnrevUserAssets_OnClick(object sender, RoutedEventArgs e) {
+        ParentWindow.NewSettings.UserAssetsPath = ParentWindow.GetDefSettings().UserAssetsPath;
     }
     
     // RA EXECUTABLE
-    private void BtnApplyUserAssets_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Control control) return;
-        if (control.Parent is not Grid grid) return;
-        if (grid.Children[0] is not TextBox txtBox) return;
-        if (!string.IsNullOrWhiteSpace(txtBox.Text)) ParentWindow.settings.DEFRADir = txtBox.Text;
-    }
-
-    async void btnDefRADir_ClickAsync()
+    async void btnDefRADir_ClickAsync(TextBox textBox)
     {
         try {
             LockControls(true);
-            var opt = DesktopOS ? OpenOpts.RAexe : OpenOpts.RAbin;
-            string currentFile = ((string.IsNullOrEmpty(txtDefRADir.Text)) || !DesktopOS) ? string.Empty : txtDefRADir.Text;
-            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
+            var opt = DesktopOS ? OpenOpts.WinExe : OpenOpts.LinBin;
+            var dlgTitle = Translations.resAvaloniaOps.dlgFileRAexe;
+            var currentFile = ((string.IsNullOrEmpty(textBox.Text)) || !DesktopOS) ? string.Empty : textBox.Text;
+            var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
             if (string.IsNullOrWhiteSpace(file)) return;
-            txtDefRADir.Text = file; 
-            ParentWindow.settings.DEFRADir = file;
+            ParentWindow.NewSettings.DEFRADir = file;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
-    void btnDefRADir_OnClick(object sender, RoutedEventArgs e) => btnDefRADir_ClickAsync();
-    
-    void btnclrDefRADir_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.DEFRADir = (DesktopOS) ? ParentWindow.DEFsettings.DEFRADir : FileOps.LinuxRABin;
-        txtDefRADir.Text = ParentWindow.settings.DEFRADir;
+    void btnDefRADir_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnDefRADir_ClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.DEFRADir = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().DEFRADir,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.DEFRADir
+                };
+                break;
+        }
+        UpdateContext();
     }
     
     // DEFAULT ROM PATH
-    async void btnDefROMPath_ClickAsync()
+    async void btnDefROMPath_ClickAsync(TextBox textBox)
     {
         try {
             LockControls(true);
-            string currentFolder = (string.IsNullOrEmpty(txtDefROMPath.Text)) ? string.Empty : txtDefROMPath.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, currentFolder, ParentWindow);
+            string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtDefROMPath.Text = folder; 
-            ParentWindow.settings.DEFROMPath = folder;
+            ParentWindow.NewSettings.DEFROMPath = folder;
         }
         catch (System.Exception e) { _ = this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
-    void btnDefROMPath_OnClick(object sender, RoutedEventArgs e) => btnDefROMPath_ClickAsync();
-    
-    void btnclrDefROMPath_Click(object sender, RoutedEventArgs e) {
-        ParentWindow.settings.DEFROMPath = ParentWindow.DEFsettings.DEFROMPath;
-        txtDefROMPath.Text = ParentWindow.settings.DEFROMPath;
+    void btnDefROMPath_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnDefROMPath_ClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.DEFROMPath = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().DEFROMPath,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.DEFROMPath // Shouldn't happen
+                };
+                break;
+        }
+        UpdateContext();
+    }
+
+    async void btnIconParentPath_OnClickAsync(TextBox textBox)
+    {
+        try
+        {
+            LockControls(true);
+            string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IconParent, ParentWindow, currentFolder);
+            if (string.IsNullOrWhiteSpace(folder)) return;
+            ParentWindow.NewSettings.IconParentPath = folder;
+        }
+        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        finally { LockControls(false); }
+    }
+
+    private void btnIconParentPath_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnIconParentPath_OnClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.IconParentPath = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().IconParentPath,
+                    TextBoxActions.Clear => string.Empty,
+                    _ => ParentWindow.NewSettings.IconParentPath // Shouldn't happen
+                };
+                break;
+        }
+        UpdateContext();
     }
 }

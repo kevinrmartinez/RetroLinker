@@ -165,9 +165,39 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tipBrowse {
+        public static string tipBrowseFile {
             get {
-                return ResourceManager.GetString("tipBrowse", resourceCulture);
+                return ResourceManager.GetString("tipBrowseFile", resourceCulture);
+            }
+        }
+        
+        public static string btnClose {
+            get {
+                return ResourceManager.GetString("btnClose", resourceCulture);
+            }
+        }
+        
+        public static string genDotnet_A {
+            get {
+                return ResourceManager.GetString("genDotnet_A", resourceCulture);
+            }
+        }
+        
+        public static string GenAppName {
+            get {
+                return ResourceManager.GetString("GenAppName", resourceCulture);
+            }
+        }
+        
+        public static string tipBrowseFolder {
+            get {
+                return ResourceManager.GetString("tipBrowseFolder", resourceCulture);
+            }
+        }
+        
+        public static string genOverwrite {
+            get {
+                return ResourceManager.GetString("genOverwrite", resourceCulture);
             }
         }
     }

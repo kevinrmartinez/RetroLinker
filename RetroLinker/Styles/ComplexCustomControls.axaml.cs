@@ -1,5 +1,5 @@
 /*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2026 Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Metadata;
 
@@ -141,8 +140,7 @@ public class UserStringList : TemplatedControl
         AvaloniaProperty.RegisterDirect<UserStringList, Button?>(
             nameof(ClearButton),
             l => l.ClearButton);
-    public Button? ClearButton
-    {
+    public Button? ClearButton {
         get;
         set => SetAndRaise(ClearButtonProperty, ref field, value);
     }
@@ -152,8 +150,7 @@ public class UserStringList : TemplatedControl
     public static readonly RoutedEvent<RoutedEventArgs> AddItemEvent =
         RoutedEvent.Register<UserStringList, RoutedEventArgs>(nameof(AddItemClick), RoutingStrategies.Direct);
     
-    public event System.EventHandler<RoutedEventArgs> AddItemClick
-    {
+    public event System.EventHandler<RoutedEventArgs> AddItemClick {
         add => AddHandler(AddItemEvent, value);
         remove => RemoveHandler(AddItemEvent, value);
     }

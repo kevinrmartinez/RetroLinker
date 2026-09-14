@@ -1,5 +1,5 @@
 ﻿/*
-    A .NET GUI application to help create desktop links of games running on RetroArch.
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
     Copyright (C) 2023  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,8 @@
 */
 
 using System.Collections.Generic;
-using RetroLinker.Models.Generic;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace RetroLinker.Models
 {
@@ -32,33 +33,17 @@ namespace RetroLinker.Models
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
         
-        public static string[] WinLinkPathCandidates { get; } =
-        [
-            FileOps.UserDesktop,
-            FileOps.WINPublicDesktop,
-            FileOps.CombineMultipleInputs(FileOps.UserProfile, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs"),
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonStartMenu) // TODO: test
-        ];  // Source: https://en.wikipedia.org/wiki/Start_menu
-        
-        public static string[] LinLinkPathCandidates { get; } =
-        [
-            FileOps.UserDesktop,
-            FileOps.CombineMultipleInputs(FileOps.UserProfile, ".local", "share", "applications"),
-            FileOps.CombineMultipleInputs("/", "usr", "local", "share", "applications"),
-            FileOps.CombineMultipleInputs("/", "usr", "share", "applications")
-        ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
-        
         public static Settings GetCachedSettings() => CachedSettings;
         
         // Load & Save
-        public static Settings LoadSettings()
+        public static async Task<Settings> LoadSettings()
         {
             Settings? settings = new();
             if (FileOps.ExistSettingsJsonFile())
             {
                 try
                 {
-                    settings = JsonHelper.Deserialize<Settings>(FileOps.ReadSettingsFile());
+                    settings = JsonHelper.DeserializeProxy<Settings>(await FileOps.ReadSettingsFile());
                     CachedSettings = settings ?? throw new System.IO.InvalidDataException(InvalidDataMessage);
                     PrevConfigs.AddRange(settings.SavedConfigs);
                     LinkCopyPaths.AddRange(settings.SavedCopyPaths);
@@ -83,17 +68,20 @@ namespace RetroLinker.Models
             savingSettings.SavedConfigs = PrevConfigs;
             savingSettings.SavedCopyPaths =  LinkCopyPaths;
             CachedSettings = savingSettings;
-            var fileString = JsonHelper.Serialize(savingSettings);
-            FileOps.WriteSettingsFile(fileString);
+            var serializedSettings = JsonHelper.SerializeProxy(savingSettings);
+            if (!string.IsNullOrEmpty(serializedSettings)) FileOps.WriteSettingsFile(serializedSettings);
+            else Logger.LogErro("Settings could not be serialized into a file");
         }
     }
-
-
-    public class Settings
+    
+    
+    // TODO: Create another Settings class (private setters) for saving the props, making validations in the process 
+    public class Settings : LocalSerializable, System.ICloneable
     {
         public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
         public string DEFRADir { get; set; } = string.Empty;
         public string DEFROMPath { get; set; } = string.Empty;
+        public string IconParentPath { get; set; } = string.Empty;
         public bool PrevConfig { get; set; } = false;
         public bool AlwaysAskOutput { get; set; } = true;
         public string DEFLinkOutput { get; set; } = string.Empty;
@@ -102,6 +90,7 @@ namespace RetroLinker.Models
         public string IcoSavPath { get; set; }
         public bool ExtractIco { get; set; } = false;
         public bool IcoLinkName { get; set; } = false;
+        public string? TileIcoPath { get; set; }
         public byte ChosenTheme { get; set; } = 0;
         public string LanguageLocale { get; set; } = DefaultLanguage;
         public List<string> SavedConfigs { get; set; } = new();
@@ -113,13 +102,21 @@ namespace RetroLinker.Models
             IcoSavPath = UserAssetsPath; 
         }
 
+        public object Clone() => this.MemberwiseClone();
+
         public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
         
-        public string GetBase64()
+        public string? GetBase64()
         {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
-            var jsonString = JsonHelper.Serialize(this);
+            var jsonString = JsonHelper.SerializeProxy(this);
+            if (string.IsNullOrEmpty(jsonString)) return null;
             var object64 = Utils.GenerateBase64(jsonString);
             return object64;
         }
+    }
+    
+    [JsonSerializable(typeof(Settings))]
+    internal partial class SettingsSerializerContext : JsonSerializerContext {
+        // I believe this can be left empty only because Settings uses primitives as properties
     }
 }

@@ -27,12 +27,15 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security;
+using System.Security.Principal;
 using System.Text;
 
 namespace RetroLinker.Models.Windows
 {
-    internal static class IENativeMethods
+    [SupportedOSPlatform(App.PlatformWin)]
+    internal static class NativeMethods
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [SuppressUnmanagedCodeSecurity]
@@ -75,7 +78,21 @@ namespace RetroLinker.Models.Windows
         public static extern int GetMappedFileName(IntPtr hProcess, IntPtr lpv, StringBuilder lpFilename, int nSize);
     }
 
+    
     [UnmanagedFunctionPointer(CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Unicode)]
     [SuppressUnmanagedCodeSecurity]
     internal delegate bool ENUMRESNAMEPROC(IntPtr hModule, IntPtr lpszType, IntPtr lpszName, IntPtr lParam);
+
+    [SupportedOSPlatform(App.PlatformWin)]
+    public static class NativeAccess
+    {
+        public static bool IsWindowsProcessElevated() {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+
+        }
+    }
 }
+
+
