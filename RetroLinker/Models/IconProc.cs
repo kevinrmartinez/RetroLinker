@@ -19,6 +19,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using ImageMagick;
 using RetroLinker.Models.Windows;
 using SkiaSharp;
@@ -35,6 +36,8 @@ namespace RetroLinker.Models
         public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
         
         public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
+        
+        public static MagickImage ReverseImageConvert(MemoryStream img) => new(img) {Format = MagickFormat.Png};
 
         private static MagickImage ResizeToIco(MagickImage ico)
         {
@@ -86,10 +89,55 @@ namespace RetroLinker.Models
             }
             IconItemsList.Add(icoItem);
         }
+        
+        public static async Task<string> ResolveImageForTileico(string iconFile, string tileIcoImage, IconsItems? iconItem)
+        {
+            MemoryStream? memoryStream = null;
+            string? ogFilePath = null;
+            var ogFileName = string.Empty;
+            var imageFromIco = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(tileIcoImage)) {
+                // if a conversion to .ico happened, 'outputLink.TileIcoImage' has either: an image file, or a Windows PE
+                var path = tileIcoImage;
+                if (FileOps.IsFileWinPE(path)) {                    // If it's a Windows PE...
+                    if (FileOps.IsFileWinPE(iconFile)) {            //  and was not extracted, 'IconItemSET' should have what we want
+                        memoryStream = iconItem?.IconStream;        // the IconStream may be null
+                        ogFilePath = iconItem?.FilePath;
+                        ogFileName = iconItem?.FileName;
+                    }
+                    else {                                          //  and was extracted
+                        ogFilePath = iconFile;
+                        ogFileName = FileOps.GetFileNameFromPath(ogFilePath);
+                    }
+                }
+                else imageFromIco = path;   // If it's an image file, just return that
+            }
+            else if (iconItem is { ConversionRequired: false }) {
+                // if a conversion did not happen, then 'outputLink.ICONfile' is a .ico file
+                memoryStream = iconItem.IconStream;
+                ogFileName = iconItem.FileName;
+            }
+
+            if (string.IsNullOrEmpty(imageFromIco))
+            {
+                MagickImage? image = null;
+                if (memoryStream is not null) {
+                    memoryStream.Position = 0;
+                    image = ReverseImageConvert(memoryStream);
+                }
+                else if (!string.IsNullOrWhiteSpace(ogFilePath)) {
+                    image = ReverseImageConvert(ogFilePath);
+                }
+                if (image is not null) imageFromIco = FileOps.WriteImageToTemp(image, ogFileName);
+            }
+            
+            return imageFromIco;
+        }
 
         #region Windows Only
         [SupportedOSPlatform(App.PlatformWin)]
-        private static MemoryStream ExtractIco(string path, int index)
+        public static MemoryStream ExtractIco(string path, int index)
         {
             var icoExtractor = new IconExtractor(path);
             var icoCount = icoExtractor.Count;
