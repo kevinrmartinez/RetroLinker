@@ -472,11 +472,13 @@ public partial class MainView : UserControl
                 // If it's Windows, the images may need to be converted to .ico
                 if (IconItemSET is { ConversionRequired: true })
                 {
-                    outputLink.TileIcoImage = IconItemSET.FilePath;     // Pass the original image as the image for the Tile Icon
+                    outputLink.TileIcoImage = IconItemSET.FilePath; // Pass the original image as the image for the Tile Icon
                     outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
                     if (!FileOps.IsFileWinPE(outputLink.ICONfile))
                     {
-                        string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir)) ? outputLink.RAdir : outputLink.ROMdir;
+                        string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir))
+                            ? outputLink.RAdir
+                            : outputLink.ROMdir;
                         if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = outputLink.ROMcore;
                         if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
                         var newPath = Settings.IcoSavPath switch
@@ -488,21 +490,23 @@ public partial class MainView : UserControl
                         UpdateUserIcon(newPath);
                     }
                 }
-                else if (IconItemSET is { ConversionRequired: false } && Settings.TileIcoPath is not null)
+
+                if (Settings.TileIcoPath is not null)
                 {
-                    var imageFromIco = string.Empty;
+                    var imagePath = string.Empty;
                     try {
-                        var image = IconProc.ReverseImageConvert(IconItemSET.FilePath);
-                        imageFromIco = FileOps.WriteImageToTemp(image, IconItemSET.FileName);
+                        imagePath = await IconProc.ResolveImageForTileico(outputLink.ICONfile, outputLink.TileIcoImage, IconItemSET);
+                        System.ArgumentException.ThrowIfNullOrEmpty(imagePath);
                     }
-                    catch (System.Exception ex) {
+                    catch (System.Exception ex)
+                    {
                         var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
                             null, resMainView.wrnIcoToImage_header);
                         var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
                         Logger.LogDebg(ms.ToString("G"));
                         Logger.LogErro(ex);
                     }
-                    finally { outputLink.TileIcoImage = imageFromIco; }
+                    outputLink.TileIcoImage = imagePath;
                 }
             }
             // If it's Linux, no conversion is required
