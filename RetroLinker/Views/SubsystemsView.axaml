@@ -70,8 +70,8 @@
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ExtraMainControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
-                <pc:ExtraMainControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
+                <pc:ViewControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
+                <pc:ViewControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
             </Grid>
             
         </Grid>

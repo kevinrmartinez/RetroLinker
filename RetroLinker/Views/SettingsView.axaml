@@ -31,18 +31,20 @@
 						<Rectangle Width="18"/>
 						<CheckBox x:Name="chkThemeDefault" Content="{x:Static lc:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
 					</StackPanel>
-					<Rectangle Grid.Column="1"/>
+					
+					<Rectangle Grid.Column="1" Stroke="Gray" StrokeThickness="0.5"/>
+					
 					<StackPanel Grid.Column="2">
 						<Label Margin="3,0,0,0" Content="{x:Static lc:resSettingsWindow.lblLocale}"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<!-- TODO: Show comboLocale content with a DataTemplate -->
+							<!-- TODO: Show comboLocale content with a DataTemplate (>=0.9) -->
 							<ComboBox x:Name="comboLocale" Grid.Column="0" Margin="3,0,0,2" 
 							          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
-							<Button x:Name="btnLocale" Grid.Column="1" VerticalAlignment="Bottom" Margin="3" Click="BtnLocale_OnClick">
+							<!-- TODO: Make this button obsolete (requires Binding?) -->
+							<Button x:Name="btnLocale" Grid.Column="1" Margin="3" Click="BtnLocale_OnClick">
 								<i:Icon Value="fa7-check" FontSize="18" Foreground="Green"/>
 							</Button>
 						</Grid>
-						
 					</StackPanel>
 				</Grid>
 			</StackPanel>
