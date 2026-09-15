@@ -351,11 +351,13 @@ public partial class MainView : UserControl
     }
     
     void FillIconBoxes(string path) {
+        ICONimage.Dispose();
         ICONimage = Operations.GetBitmap(path);
         FillIconSource(ICONimage);
     }
     
     void FillIconBoxes(AvaloniaBitmap bitmap) {
+        ICONimage.Dispose();
         ICONimage = bitmap;
         FillIconSource(ICONimage);
     }
