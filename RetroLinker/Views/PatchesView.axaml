@@ -58,8 +58,8 @@
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <cc:ExtraMainControlButton Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSavePatch_OnClick"/>
-                <cc:ExtraMainControlButton Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscPatch_OnClick"/>
+                <cc:ViewControlButton Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSavePatch_OnClick"/>
+                <cc:ViewControlButton Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscPatch_OnClick"/>
             </Grid>
             
         </Grid>

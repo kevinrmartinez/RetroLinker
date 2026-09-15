@@ -26,7 +26,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using RetroLinker.Models;
-
+using RetroLinker.Translations;
 using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
@@ -110,7 +110,7 @@ public static class LocaleComboItem
 }
 
 
-public class ExtraMainControlButton : Button
+public class ViewControlButton : Button
 {
     // Fields
     const string blankText = "blank";
@@ -122,11 +122,11 @@ public class ExtraMainControlButton : Button
     
     // Avalonia Properties
     public enum ButtonFunctions
-    { None, Save, Discard }
+    { None, Save, Discard, Default }
 
     // - ButtonFunction Selection
-    public static readonly DirectProperty<ExtraMainControlButton, ButtonFunctions> ButtonFunctionProperty =
-        AvaloniaProperty.RegisterDirect<ExtraMainControlButton, ButtonFunctions>(
+    public static readonly DirectProperty<ViewControlButton, ButtonFunctions> ButtonFunctionProperty =
+        AvaloniaProperty.RegisterDirect<ViewControlButton, ButtonFunctions>(
             nameof(ButtonFunction),
             b => b.ButtonFunction,
             (b, v) => b.ButtonFunction = v);
@@ -142,7 +142,7 @@ public class ExtraMainControlButton : Button
     private string ButtonIconValue { get; set; } =  blankIcon;
     private SolidColorBrush? ButtonIconColor { get; set; }
 
-    public ExtraMainControlButton() {
+    public ViewControlButton() {
         RefreshContent();
     }
 
@@ -177,11 +177,14 @@ public class ExtraMainControlButton : Button
     {
         var yesIcon = "fa7-check";
         var yesColor = new SolidColorBrush(Colors.Green);
-        var yesText = Translations.resGeneric.btnConfirm;
+        var yesText = resGeneric.btnConfirm;
         
         var noIcon = "fa7-x";
         var noColor = new SolidColorBrush(Colors.Crimson);
-        var noText = Translations.resGeneric.btnDiscard;
+        var noText = resGeneric.btnDiscard;
+
+        var defIcon = "fa7-arrow-rotate-left";
+        var defText = resGeneric.btnDefault;
         
         
         switch (function)
@@ -195,6 +198,11 @@ public class ExtraMainControlButton : Button
                 ButtonText = noText;
                 ButtonIconValue = noIcon;
                 ButtonIconColor = noColor;
+                break;
+            case ButtonFunctions.Default:
+                ButtonText = defText;
+                ButtonIconValue = defIcon;
+                ButtonIconColor = null;
                 break;
             default:
                 ButtonText = blankText;

@@ -35,8 +35,8 @@
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ExtraMainControlButton x:Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
-                <pc:ExtraMainControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
+                <pc:ViewControlButton x:Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
+                <pc:ViewControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
             </Grid>
             
         </Grid>
