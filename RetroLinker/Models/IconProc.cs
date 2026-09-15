@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 using ImageMagick;
 using RetroLinker.Models.Windows;
 using SkiaSharp;
@@ -87,6 +88,7 @@ namespace RetroLinker.Models
         }
 
         #region Windows Only
+        [SupportedOSPlatform(App.PlatformWin)]
         private static MemoryStream ExtractIco(string path, int index)
         {
             var icoExtractor = new IconExtractor(path);

@@ -12,16 +12,19 @@
     <VersionPrefix>0.8.0</VersionPrefix>
     <!--<VersionSuffix>dev</VersionSuffix>-->
     <PlatformTarget>x64</PlatformTarget>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;ReleaseAoT</Configurations>
     <Platforms>AnyCPU</Platforms>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='ReleaseAoT'">
     <!-- https://docs.avaloniaui.net/docs/deployment/native-aot -->
     <!-- Add to all projects/libraries in use, to ensure AOT compatibility -->
     <IsAotCompatible>true</IsAotCompatible>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
+    <PublishAot>true</PublishAot>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   
   <ItemGroup>
