@@ -9,6 +9,7 @@
     <AssemblyName>RetroLinkerLib</AssemblyName>
     <VersionPrefix>0.8.0</VersionPrefix>
     <!--<VersionSuffix>dev</VersionSuffix>-->
+    <NoWarn>CA1416</NoWarn>
     <!-- Required to use the LibraryImport attribute -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -31,7 +32,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <!-- TODO -->
     <PackageReference Include="Avalonia" Version="12.1.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.2" />
