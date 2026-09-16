@@ -64,6 +64,9 @@ namespace RetroLinker.Models
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         public static readonly string WINUserStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
         public static readonly string WINSystemStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+
+        private static readonly DirectoryInfo LicensesDir = new(DefLicensesDir);
+        public static readonly FileInfo[] LicensesFiles = (LicensesDir.Exists) ? LicensesDir.GetFiles() : [ ];
         
         public static string[] WinLinkPathCandidates { get; } =
         [
@@ -71,7 +74,6 @@ namespace RetroLinker.Models
             WINPublicDesktop,
             WINUserStartMenu,
             WINSystemStartMenu
-            
         ];  // Source: https://en.wikipedia.org/wiki/Start_menu
         
         public static string[] LinLinkPathCandidates { get; } =
@@ -87,7 +89,7 @@ namespace RetroLinker.Models
             [true] = WINSystemStartMenu
         };
         
-        private static Settings LoadedSettings = new();
+        private static Settings _loadedSettings = new();
 
 
         #region Settings
@@ -96,31 +98,31 @@ namespace RetroLinker.Models
 
         public static async Task<Settings> LoadSettingsFO()
         {
-            LoadedSettings = await SettingsOps.LoadSettings();
+            _loadedSettings = await SettingsOps.LoadSettings();
             Logger.LogDebg($"Settings loaded for {nameof(FileOps)}");
-            BuildConfigDir(LoadedSettings);
-            return LoadedSettings;
+            BuildConfigDir(_loadedSettings);
+            return _loadedSettings;
         }
 
         public static Settings LoadCachedSettingsFO()
         {
-            LoadedSettings = SettingsOps.GetCachedSettings();
-            BuildConfigDir(LoadedSettings);
-            return LoadedSettings;
+            _loadedSettings = SettingsOps.GetCachedSettings();
+            BuildConfigDir(_loadedSettings);
+            return _loadedSettings;
         }
 
         public static Settings SetNewSettings(Settings settings)
         {
-            LoadedSettings = settings;
-            return LoadedSettings;
+            _loadedSettings = settings;
+            return _loadedSettings;
         }
 
         public static Settings LoadDesignerSettingsFO(bool fixedOutput)
         {
-            LoadedSettings = new Settings();
-            BuildConfigDir(LoadedSettings);
-            if (fixedOutput) LoadedSettings.AlwaysAskOutput = false;
-            return LoadedSettings;
+            _loadedSettings = new Settings();
+            BuildConfigDir(_loadedSettings);
+            if (fixedOutput) _loadedSettings.AlwaysAskOutput = false;
+            return _loadedSettings;
         }
 
         public static Task<string> ReadSettingsFile() => ReadFileTextToEndAsync(PathToSettingFileJson);
@@ -178,7 +180,7 @@ namespace RetroLinker.Models
         
         public static bool GetCoreFile(out string file)
         {
-            var externalCores = Path.Combine(LoadedSettings.UserAssetsPath, CoresFile);
+            var externalCores = Path.Combine(_loadedSettings.UserAssetsPath, CoresFile);
             if (!File.Exists(externalCores))
             {
                 file = string.Empty;
@@ -207,7 +209,7 @@ namespace RetroLinker.Models
 
         public static (List<string>, string?) LoadIcons(bool DesktopOS)
         {
-            var dir = LoadedSettings.UserAssetsPath + OsDirSeparator;
+            var dir = _loadedSettings.UserAssetsPath + OsDirSeparator;
             var files = new List<string>();
             string? iconException = null;
 
@@ -371,8 +373,7 @@ namespace RetroLinker.Models
             return linkCopies;
         }
 
-        public static bool IsConfigFile(string filePath, out string fileExt)
-        {
+        public static bool IsConfigFile(string filePath, out string fileExt) {
             fileExt = GetFileExtFromPath(filePath);
             return (fileExt is ".txt" or ".cfg");
         }
@@ -385,8 +386,8 @@ namespace RetroLinker.Models
         {
             if (string.IsNullOrEmpty(ogPath)) return string.Empty;  // If we analyze this in a vacuum, this should throw
             string name = Path.GetFileName(ogPath);
-            string newPath = Path.Combine(LoadedSettings.IcoSavPath, name);
-            CheckUsrSetDir(LoadedSettings.IcoSavPath);
+            string newPath = Path.Combine(_loadedSettings.IcoSavPath, name);
+            CheckUsrSetDir(_loadedSettings.IcoSavPath);
             // TODO: This line below is problematic, it doesn't let the user replace an existing item (0.9)
             //  Solution 1: Delete old, and copy (or overwrite)
             //  Solution 2: Resolve the naming conflict (add a number at the end of the file name)
@@ -441,14 +442,14 @@ namespace RetroLinker.Models
         {
             string icoExt = GetFileExtFromPath(selectedIconItem.FileName).ToLower();
             string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
-            string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : LoadedSettings.UserAssetsPath;
+            string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : _loadedSettings.UserAssetsPath;
             string newPath = Path.Combine(newDir, icoName);
             selectedIconItem.IconStream?.Position = 0;
 
             switch (icoExt)
             {
                 case WinPeExt1 or WinPeExt2:
-                    if (LoadedSettings.ExtractIco) {
+                    if (_loadedSettings.ExtractIco) {
                         var extractedIco = IconProc.ImageConvert(selectedIconItem.IconStream!);
                         extractedIco.Write(newPath);
                         extractedIco.Dispose();

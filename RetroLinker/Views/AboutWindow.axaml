@@ -181,7 +181,7 @@
                         <Label x:Name="LabelLicense" Content="{x:Static lc:resAboutWindow.lblLicense}"/>
                         <HyperlinkButton x:Name="LinkLicense" Classes="InLine" 
                                          Content="{x:Static lc:resAboutWindow.hypLicense}" 
-                                         NavigateUri="{StaticResource LicenceUrl}" />
+                                         NavigateUri="{StaticResource LicenseUri}"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
