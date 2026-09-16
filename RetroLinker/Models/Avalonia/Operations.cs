@@ -61,6 +61,9 @@ public static class Operations
     public static AvaloniaBitmap GetBitmap(string path) => new(path);
 
     public static AvaloniaBitmap GetBitmap(System.IO.Stream imgStream) => new(imgStream);
+    
+    public static async Task<IStorageFile?> GetStorageFile(string path, TopLevel topLevel) => 
+        await topLevel.StorageProvider.TryGetFileFromPathAsync(path);
 
     public static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);

@@ -17,6 +17,7 @@
 */
 
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -76,7 +77,7 @@ public partial class AboutWindow : Window
             new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
             new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
             // new ThirdParty("Liberation Mono Fonts", new Uri(FileOps.CombineMultipleInputs(FileOps.DefLicensesDir, "LiberationMono-License.txt")))
-            new ThirdParty("Liberation Mono Fonts", new Uri("https://github.com/liberationfonts/liberation-fonts"))
+            new ThirdParty("Liberation Mono Fonts", LiberationUri)
         ];
         
         // Special Thanks
@@ -87,6 +88,23 @@ public partial class AboutWindow : Window
         // =Update Bindings=
         DataContext = null;
         DataContext = this;
+    }
+
+    private static readonly Uri LiberationUri = GetLiberationMonoUri();     // It's static because I just need to set this once per runtime
+    private static Uri GetLiberationMonoUri()
+    {
+        try
+        {
+            var licenseFile = FileOps.LicensesFiles.First(fi => fi.Name.Contains("LiberationMono-"));
+            var uriPath = new Uri(licenseFile.FullName);
+            return uriPath;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogErro($"{nameof(AboutWindow)}.{nameof(GetLiberationMonoUri)}:)");
+            Logger.LogErro(ex);
+            return new Uri("https://github.com/liberationfonts/liberation-fonts");
+        }
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
