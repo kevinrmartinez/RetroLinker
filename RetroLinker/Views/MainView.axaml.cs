@@ -511,8 +511,8 @@ public partial class MainView : UserControl
             }
             // If it's Linux, no conversion is required
 
-            // In case of 'CpyUserIcon = true'
-            if (Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
+            // In case of 'CpyUserIcon = true', but it'll be ignored if Tileico is in use 
+            if (Settings.TileIcoPath is null && Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
         }
     }
 
