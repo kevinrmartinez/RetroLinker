@@ -156,4 +156,7 @@
     <data name="tipDisableBecauseTileIco" xml:space="preserve">
         <value>This is disable while TileIconifier is in use</value>
     </data>
+    <data name="lblCat_IconParentDir" xml:space="preserve">
+        <value>Icon Files Parent Directory</value>
+    </data>
 </root>

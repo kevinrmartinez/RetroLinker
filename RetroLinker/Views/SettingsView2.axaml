@@ -29,8 +29,10 @@
 						         Converter={StaticResource TextToFullPathConverter}}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button x:Name="btnUserAssets" Classes="textbox_inline browseFolder" Click="btnUserAssets_OnClick"/>
-							<Button x:Name="btnclrUserAssets" Classes="textbox_inline restore" Click="btnrevUserAssets_OnClick"/>
+							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtUserAssets}" 
+							        Click="btnUserAssets_OnClick"/>
+							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
+							        Click="btnUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -82,8 +84,7 @@
             <!-- ICON PARENT DIRECTORY -->
             <Border Classes="SettingCatg">
 	            <StackPanel>
-		            <!-- TODO -->
-		            <Label Content="LOOLOOOLO"/>
+		            <Label Content="{x:Static lc:resSettingsWindow.lblCat_IconParentDir}"/>
 		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">
 			            <TextBox x:Name="txtIconParentPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
