@@ -116,6 +116,7 @@ namespace RetroLinker.Models
             else if (iconItem is { ConversionRequired: false }) {
                 // if a conversion did not happen, then 'outputLink.ICONfile' is a .ico file
                 memoryStream = iconItem.IconStream;
+                ogFilePath = iconItem.FilePath;
                 ogFileName = iconItem.FileName;
             }
 
