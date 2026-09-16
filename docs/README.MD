@@ -55,19 +55,27 @@ You would need:
 - Around 1.7 GB of free space for the third party packages (NuGets) that will be downloaded.
 
 To build for your current system, simply run the following command inside the RetroLinker.Desktop folder:  
-`dotnet build`  
+```
+dotnet build
+```
 The resulting files will be under bin/Debug/net10.0 in that same folder.
 
 To build in a configuration for everyday use, run the following command inside the RetroLinker.Desktop folder:  
-`dotnet publish -c Release -o <desired/output/path>`  
+```
+dotnet publish -c Release -o <desired/output/path>
+```  
 This will create a 'portable' release of the app, it can run as long .NET 10.0 is installed. More on `dotnet publish` [here](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish)
 
 If you want to copy the release configuration the releases use, you will need the [.NET Runtime ID](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids) of your platform, and run the following command inside the RetroLinker.Desktop folder:   
-`dotnet publish --no-logo -c Release -o <desired/output/path> -r <runtime-id> -p:PublishAot=true -p:DebugSymbols=false`  
+```
+dotnet publish --no-logo -c ReleaseAoT -r <runtime-id> -o <desired/output/path>
+```
 If you are building for a platform already covered by our releases, you can run the script appropriate for your OS from the [RetroLinker.Destop/Scripts](../RetroLinker.Desktop/Scripts) folder.  
-The option `-p:PublishAot=true` creates an executable for your platform, completely skipping over the dotnet runtime. But it has platform restrictions, you can learn more [here](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus#platformarchitecture-restrictions).
-If you find yourself against this restriction, you can replace PublishAot with: `-p:PublishSingleFile=true -p:PublishTrimmed=true`. The command will look like this:  
-`dotnet publish --no-logo -c Release -o <desired/output/path> -r <runtime-id> -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugSymbols=false`
+The option `-c ReleaseAoT` creates an executable for your platform, completely skipping over the dotnet runtime. But it has platform restrictions, you can learn more [here](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Cnet9plus#platformarchitecture-restrictions).
+If you find yourself against this restriction, you can replace ReleaseAoT with: `-c Release -p:PublishSingleFile=true -p:PublishTrimmed=true`. The command will look like this:  
+```
+dotnet publish --no-logo -c Release -r <runtime-id> -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugSymbols=false -o <desired/output/path>
+```
 
 ### Building Restrictions
 AvaloniaUI, the framework used for the graphic interface, and the current image manipulation solution, Magick.NET, have a total of 3 hard dependencies on desktop that only serves compiled libraries on select platforms:
@@ -79,7 +87,7 @@ AvaloniaUI, the framework used for the graphic interface, and the current image 
 
 If your platform is anything other than that, you will need to compile its libraries for the target system. These C++ libraries are:
 
-- libHarfBuzzSharp v8.3.1.3 ([reference]([https://github.com/mono/SkiaSharp/blob/main/documentation/dev/packages.md](https://github.com/mono/SkiaSharp/blob/v3.119.4/documentation/dev/packages.md)))
+- libHarfBuzzSharp v8.3.1.3 ([reference](https://github.com/mono/SkiaSharp/blob/v3.119.4/documentation/dev/packages.md))
 - libSkiaSharp v3.119.4 ([guide](https://github.com/mono/SkiaSharp/tree/v3.119.4#building-skiasharp))
 - Magick.Native-Q8 v14.17.1 ([guide](https://github.com/dlemstra/Magick.NET/blob/main/docs/Readme.md))
 
@@ -89,4 +97,4 @@ The project will most likely compile for macOS with no problems, but the resulti
 Running it like this it's **NOT RECOMMENDED**, as it is untested territory. Support for macOS is planned, I just don't have the enviroment to test it.
 
 ## Contributing
-Not much to say. ~~Starting from release/tag v0.8~~, contributions are welcome via forking: fork, do your changes and create a pull request to the **dev** branch.
+Not much to say. Contributions are welcome via forking: fork from the **dev** branch, do your amazing contribution, and create a pull request to the **dev** branch.

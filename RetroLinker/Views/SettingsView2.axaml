@@ -82,7 +82,8 @@
             <!-- ICON PARENT DIRECTORY -->
             <Border Classes="SettingCatg">
 	            <StackPanel>
-		            <Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
+		            <!-- TODO -->
+		            <Label Content="LOOLOOOLO"/>
 		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">
 			            <TextBox x:Name="txtIconParentPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
