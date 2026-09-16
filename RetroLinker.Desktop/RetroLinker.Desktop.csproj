@@ -25,6 +25,9 @@
     <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
     <PublishAot>true</PublishAot>
     <DebugSymbols>false</DebugSymbols>
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   
   <ItemGroup>
