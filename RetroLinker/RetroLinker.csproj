@@ -3,7 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;ReleaseAoT</Configurations>
     <Platforms>AnyCPU</Platforms>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AssemblyName>RetroLinkerLib</AssemblyName>
