@@ -320,5 +320,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("tipDisableBecauseTileIco", resourceCulture);
             }
         }
+        
+        public static string lblCat_IconParentDir {
+            get {
+                return ResourceManager.GetString("lblCat_IconParentDir", resourceCulture);
+            }
+        }
     }
 }

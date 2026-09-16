@@ -59,13 +59,13 @@ public partial class SettingsView2 : UserControl
         UpdateContext();
     }
     
-    async void btnUserAssets_ClickAsync()
+    async void btnUserAssets_ClickAsync(TextBox textBox)
     {
         try
         {
             LockControls(true);
-            string currentFolder = (string.IsNullOrEmpty(txtUserAssets.Text)) ? string.Empty : txtUserAssets.Text;
-            string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
+            var currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+            var folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
             ParentWindow.NewSettings.UserAssetsPath = folder;
         }
@@ -73,16 +73,29 @@ public partial class SettingsView2 : UserControl
         finally { LockControls(false); }
     }
 
-    void btnUserAssets_OnClick(object sender, RoutedEventArgs e) => btnUserAssets_ClickAsync();
-    
-    void btnrevUserAssets_OnClick(object sender, RoutedEventArgs e) {
-        ParentWindow.NewSettings.UserAssetsPath = ParentWindow.GetDefSettings().UserAssetsPath;
+    void btnUserAssets_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button) return;
+        switch (button.CommandParameter)
+        {
+            case TextBox textBox:
+                btnUserAssets_ClickAsync(textBox);
+                break;
+            case TextBoxActions action:
+                ParentWindow.NewSettings.UserAssetsPath = action switch {
+                    TextBoxActions.Restore => ParentWindow.GetOldSettings().UserAssetsPath,
+                    _ => ParentWindow.NewSettings.UserAssetsPath
+                };
+                break;
+        }
+        UpdateContext();
     }
     
     // RA EXECUTABLE
     async void btnDefRADir_ClickAsync(TextBox textBox)
     {
-        try {
+        try 
+        {
             LockControls(true);
             var opt = DesktopOS ? OpenOpts.WinExe : OpenOpts.LinBin;
             var dlgTitle = Translations.resAvaloniaOps.dlgFileRAexe;
@@ -117,7 +130,8 @@ public partial class SettingsView2 : UserControl
     // DEFAULT ROM PATH
     async void btnDefROMPath_ClickAsync(TextBox textBox)
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);

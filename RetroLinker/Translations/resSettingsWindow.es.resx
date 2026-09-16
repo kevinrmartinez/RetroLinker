@@ -146,4 +146,7 @@
     <data name="tipDisableBecauseTileIco" xml:space="preserve">
         <value>Esto esta deshabilitado mientras TileIconifier esta en uso</value>
     </data>
+    <data name="lblCat_IconParentDir" xml:space="preserve">
+        <value>Directorio Padre de archivos de iconos</value>
+    </data>
 </root>
