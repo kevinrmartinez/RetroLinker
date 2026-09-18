@@ -326,5 +326,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblCat_IconParentDir", resourceCulture);
             }
         }
+        
+        public static string tipIconParentPath {
+            get {
+                return ResourceManager.GetString("tipIconParentPath", resourceCulture);
+            }
+        }
     }
 }

@@ -108,4 +108,7 @@
     <data name="lblPatchType" xml:space="preserve">
         <value>Patch type:</value>
     </data>
+    <data name="lblAppendCurrentConf" xml:space="preserve">
+        <value>Config File:</value>
+    </data>
 </root>

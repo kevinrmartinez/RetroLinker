@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -41,13 +40,13 @@ public static class FileDialogOps
                 opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentDir, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-        string dir = (file.Count > 0) ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
+        string dir = (file.Count > 0) ? FileOps.GetAbsolutePath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
     public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel) {
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
-        string dir = file.Count > 0 ? Path.GetFullPath(file[0].Path.LocalPath) : string.Empty;
+        string dir = file.Count > 0 ? FileOps.GetAbsolutePath(file[0].Path.LocalPath) : string.Empty;
         return dir;
     }
 
@@ -72,7 +71,7 @@ public static class FileDialogOps
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFolder, topLevel);
         
         var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-        var dir = dirList.Count > 0 ? Path.GetFullPath(dirList[0].Path.LocalPath) : string.Empty;
+        var dir = dirList.Count > 0 ? FileOps.GetAbsolutePath(dirList[0].Path.LocalPath) : string.Empty;
         return dir.TrimEnd(FileOps.OsDirSeparator);
     }
 
@@ -130,6 +129,7 @@ public static class PopUpDialogOps
         return await msBox.ShowWindowDialogAsync(msboxOwner);
     }
     
+    
     // Window extensions
     public static async Task<T> PopUpMessageBox<T>(this Window window, AbstractMessageBoxParams someParams) {
         return await CallMessageBox<T>(window, someParams);
@@ -158,8 +158,11 @@ public static class PopUpDialogOps
     {
         Logger.LogErro(exception);
         var content = new PopUpGenericContent(exception.Message,  customTitle, customHeader);
-        _ = await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
+        await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
+        // TODO: Return Critical error when a assembly is not found (0.9)
+        // if (exception is System.IO.FileNotFoundException fnf && fnf.Message.Contains("assembly", System.StringComparison.OrdinalIgnoreCase)) { }
     }
+    
     
     // UserControl extensions
     public static async Task<T> PopUpMessageBox<T>(this UserControl view, AbstractMessageBoxParams someParams) {

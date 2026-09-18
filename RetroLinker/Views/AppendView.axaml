@@ -26,7 +26,14 @@
             <Rectangle Grid.Row="0" Height="8"/>
             
             <!-- ROW1 - Controls Tittle  -->
-            <Label Grid.Row="1" Content="{x:Static lc:resMainExtras.lblAppendPath}"/>
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <DockPanel>
+                    <Label DockPanel.Dock="Left" VerticalAlignment="Center" Content="{x:Static lc:resMainExtras.lblAppendCurrentConf}"/>
+                    <TextBox Text="{Binding SelectedConfigFile, TargetNullValue=???}" IsEnabled="False"/>
+                </DockPanel>
+                <Rectangle Height="8"/>
+                <Label Content="{x:Static lc:resMainExtras.lblAppendPath}"/>
+            </StackPanel>
             
             <!-- ROW2 - Append Controls -->
             <Border Grid.Row="2" Classes="AppendControls">

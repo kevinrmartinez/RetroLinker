@@ -77,4 +77,7 @@
     <data name="lblPatchType" xml:space="preserve">
         <value>Tipo de parche:</value>
     </data>
+    <data name="lblAppendCurrentConf" xml:space="preserve">
+        <value>Archivo Config:</value>
+    </data>
 </root>

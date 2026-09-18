@@ -38,7 +38,8 @@ public partial class SubsystemsView : UserControl
         InitializeComponent();
         _parentWindow = mainWindow;
         var buildingLink = _parentWindow.PermaView?.BuildingLink ?? new Shortcutter();
-        Core = buildingLink.ROMcore;
+        // Core = buildingLink.ROMcore;
+        Core = mainWindow.PermaView?.comboCore.Text ?? string.Empty;    // Temporal solution
         CoreContent = buildingLink.ROMdir;
         var subsystem = string.Empty;
         var subsystemArgs = new List<string>();

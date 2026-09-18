@@ -31,16 +31,16 @@ class Program
     // https://anthonysimmon.com/programmatically-elevate-dotnet-app-on-any-platform/
     // pkexec
     // Fields
+    private const string EmpryValue = "N/A";
     private const string KeyBuildDate = "BuildDateUTC";
     private static readonly Assembly AppAssembly = typeof(Program).Assembly;
     private static readonly AssemblyName AppAssemblyName = AppAssembly.GetName();
-    private static readonly string AppName = AppAssemblyName.Name ?? "N/A";
-    // private static readonly string AppVersion = AppAssemblyName.Version?.ToString(3) ?? "N/A";
-    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "N/A";
+    private static readonly string AppName = AppAssemblyName.Name ?? EmpryValue;
+    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? EmpryValue;
     private static readonly string[] AppVersionSplit = AppVersionFull.Split('+');
     private static readonly string AppVersion = (AppVersionSplit.Length > 1)
         ? AppVersionSplit[Index.Start]
-        : AppAssemblyName.Version?.ToString(3) ?? "N/A";
+        : AppAssemblyName.Version?.ToString(3) ?? EmpryValue;
     
     private static readonly string LogFileName = $"{AppName}.log";
     // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
@@ -53,33 +53,38 @@ class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         SetUpLogger();
         Logger.LogInfo($"{AppName} v{AppVersion}");
         
         Logger.LogDebg("Starting AvaloniaApp");
+        
+        // TODO: Subscribe to more Avalonia error handlers/detectors
+        //  https://docs.avaloniaui.net/docs/app-development/setting-unhandled-exceptions
 #if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
-        BuildAvaloniaApp()
+        var appExit = BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
 #else
+        int appExit = 1;
         // Try-Catch is used to print the Exception to log, and then close the log.
         try {
             // I think that every exception that happens while the app is running can be capture here, thrusting that 
             // the 'Program' class doesn't cause exceptions.
-            BuildAvaloniaApp()
+            appExit = BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e) {
-            Logger.LogErro($"{AppName} has crashed to desktop with the following error:");
-            Logger.LogErro(e);
+            Logger.LogCrit($"{AppName} has crashed to desktop with the following error:");
+            Logger.LogCrit(e);
         }
 #endif
         
         // App Closing
         Logger.Close();
+        return appExit;
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

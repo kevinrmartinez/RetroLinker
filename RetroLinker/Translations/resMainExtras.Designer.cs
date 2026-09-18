@@ -224,5 +224,11 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblPatchType", resourceCulture);
             }
         }
+        
+        public static string lblAppendCurrentConf {
+            get {
+                return ResourceManager.GetString("lblAppendCurrentConf", resourceCulture);
+            }
+        }
     }
 }

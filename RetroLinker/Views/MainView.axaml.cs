@@ -534,7 +534,8 @@ public partial class MainView : UserControl
             {
                 bool hasErrors = false;
                 foreach (var r in results) {
-                    if (r.Error) hasErrors = true;
+                    if (!r.Error) continue;
+                    hasErrors = true;
                     break;
                 }
 
@@ -580,7 +581,7 @@ public partial class MainView : UserControl
             outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : outputLink.ROMdir;
             
             // Validate there is a core
-            // outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
+            outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
             
             // Checkboxes!
             outputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
@@ -659,7 +660,7 @@ public partial class MainView : UserControl
             ResetAfterExecute();
         }
         catch (System.Exception e) {
-            _ = this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
+            await this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
         }
         finally { LockControls(false); }
     }
@@ -676,7 +677,7 @@ public partial class MainView : UserControl
             SetSettings((settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO());
             LoadNewSettings();
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     } 
     
@@ -726,7 +727,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ICONDir_Set(file);
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -790,7 +791,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             RADirSet(file);
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -818,7 +819,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -875,7 +876,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -930,7 +931,7 @@ public partial class MainView : UserControl
             }
 #endif
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -956,7 +957,7 @@ public partial class MainView : UserControl
             textBox.Text = BuildingLink.OutputPaths.First().FriendlyName;
             FixedOutputName = BuildingLink.OutputPaths.First().FileName;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
