@@ -56,6 +56,7 @@ public partial class AppendView : UserControl
             Logger.LogErro(ex);
         }
 
+        SelectedConfigFile = _parentWindow.PermaView?.comboConfig.SelectedItem?.ToString();
         AppendPaths = new ObservableCollection<string>(appendConfigFiles);
         DataContext =  this;
     }
@@ -64,10 +65,11 @@ public partial class AppendView : UserControl
     private readonly MainWindow _parentWindow;
     
     // Props
+    public string? SelectedConfigFile { get; }
     public ObservableCollection<string> AppendPaths { get; }
     
     // FIELDS
-    private OpenOpts ConfigOpt = OpenOpts.RAcfg;
+    private const OpenOpts ConfigOpt = OpenOpts.RAcfg;
 
     // Append Config controls
 

@@ -159,4 +159,7 @@
     <data name="lblCat_IconParentDir" xml:space="preserve">
         <value>Icon Files Parent Directory</value>
     </data>
+    <data name="tipIconParentPath" xml:space="preserve">
+        <value>It's used when browsing for an icon file</value>
+    </data>
 </root>

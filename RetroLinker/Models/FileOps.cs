@@ -215,25 +215,28 @@ namespace RetroLinker.Models
 
             try
             {
-                var filesList = new DirectoryInfo(dir).GetFiles();
-                Logger.LogInfo($"Searching for Icons at \"{dir}\".");
-                foreach (var file in filesList)
+                if (IconProc.IconItemsList.Count == 0)
                 {
-                    var ext = file.Extension;
-                    var filePath = file.FullName;
-                    if (DesktopOS)
+                    var filesList = new DirectoryInfo(dir).GetFiles();
+                    Logger.LogInfo($"Searching for Icons at \"{dir}\".");
+                    foreach (var file in filesList)
                     {
-                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
-                            IconProc.IconItemsList.Add(new IconsItems(filePath, true));
-                        else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filePath));
+                        var ext = file.Extension;
+                        var filePath = file.FullName;
+                        if (DesktopOS)
+                        {
+                            if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
+                                IconProc.IconItemsList.Add(new IconsItems(filePath, true));
+                            else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filePath));
+                        }
+                        else if (LinIconsExt.Contains("*" + ext))
+                            IconProc.IconItemsList.Add(new IconsItems(filePath));
                     }
-                    else if (LinIconsExt.Contains("*" + ext))
-                        IconProc.IconItemsList.Add(new IconsItems(filePath));
-                }
 
-                Logger.LogInfo(filesList.Length == 0
-                    ? "No icons found."
-                    : $"{IconProc.IconItemsList.Count} icons were found.");
+                    Logger.LogInfo(filesList.Length == 0
+                        ? "No icons found."
+                        : $"{IconProc.IconItemsList.Count} icons were found.");
+                }
 
                 var index = 1;
                 foreach (var file in IconProc.IconItemsList) {

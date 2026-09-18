@@ -7,7 +7,7 @@
     <Platforms>AnyCPU</Platforms>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AssemblyName>RetroLinkerLib</AssemblyName>
-    <VersionPrefix>0.8.0</VersionPrefix>
+    <VersionPrefix>0.8.1</VersionPrefix>
     <!--<VersionSuffix>dev</VersionSuffix>-->
     <NoWarn>CA1416</NoWarn>
     <!-- Required to use the LibraryImport attribute -->
@@ -15,6 +15,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
+  <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseAoT' ">
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
 
   <PropertyGroup>
     <!-- https://docs.avaloniaui.net/docs/deployment/native-aot -->
@@ -25,9 +29,6 @@
   
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AvaloniaResource Include="Styles\**" />
   </ItemGroup>
   

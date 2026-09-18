@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vw="using:RetroLinker.Views"
+             xmlns:cc="using:RetroLinker.Styles"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView2"
@@ -84,7 +85,10 @@
             <!-- ICON PARENT DIRECTORY -->
             <Border Classes="SettingCatg">
 	            <StackPanel>
-		            <Label Content="{x:Static lc:resSettingsWindow.lblCat_IconParentDir}"/>
+		            <StackPanel Orientation="Horizontal">
+			            <Label Content="{x:Static lc:resSettingsWindow.lblCat_IconParentDir}"/>
+			            <cc:IconFontWithTip IconValue="fa7-circle-question" Tip="{x:Static lc:resSettingsWindow.tipIconParentPath}"/>
+		            </StackPanel>
 		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">
 			            <TextBox x:Name="txtIconParentPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"

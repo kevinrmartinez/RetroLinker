@@ -13,7 +13,7 @@
              Unloaded="View1_Unloaded">
 	
 	<UserControl.Resources>
-		<x:Double x:Key="MinHeightForLargePic">699</x:Double>
+		<x:Double x:Key="MinHeightForLargePic">700</x:Double>
 	</UserControl.Resources>
 	<UserControl.Styles>
 		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -75,8 +75,7 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
 						<Label Content="{x:Static lc:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"
-							                 Text="{Binding BuildingLink.ROMcore}"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static lc:resMainView.tipSubSys}"
 									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
@@ -242,10 +241,10 @@
 							</StackPanel>
 
 							<!-- pic256 -->
-							<Viewbox Classes.collapsed="{Binding Height, 
+							<Viewbox Classes.collapsed="{Binding ParentWindow.Height, 
 							         Converter={StaticResource NumberLowerThanConverter},
 							         ConverterParameter={StaticResource MinHeightForLargePic},
-							         RelativeSource={RelativeSource AncestorType=vw:MainWindow}}">
+							         RelativeSource={RelativeSource AncestorType=vw:MainView}}">
 								<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
 								<Viewbox.Styles>
 									<Style Selector="Viewbox">
