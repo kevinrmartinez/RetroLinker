@@ -10,7 +10,7 @@
     <AssemblyName>RetroLinker</AssemblyName>
     <Description>A .NET GUI application to help create desktop links of games running on RetroArch.</Description>
     <VersionPrefix>0.8.1</VersionPrefix>
-    <!--<VersionSuffix>dev</VersionSuffix>-->
+    <VersionSuffix>dev</VersionSuffix>
     <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release;ReleaseAoT</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -31,7 +31,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
   </ItemGroup>
 
   <ItemGroup>

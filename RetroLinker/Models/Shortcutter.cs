@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-//using RetroLinker.Translations;
 
 namespace RetroLinker.Models
 {
@@ -292,7 +291,7 @@ namespace RetroLinker.Models
     public record struct ShortcutOutputHelper
     {
         public readonly string RaCore;
-        public readonly List<ShortcutterOutput> Outputs;
+        public readonly IReadOnlyList<ShortcutterOutput> Outputs;
         public readonly bool TileIcoAllUsers;
 
         public ShortcutOutputHelper(in Shortcutter originalShortcut) {

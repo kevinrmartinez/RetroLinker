@@ -433,18 +433,18 @@ public partial class MainView : UserControl
         }
         else
         {
-            if ((shortcutHelper.Outputs.Count > 0) && shortcutHelper.Outputs.First().CustomEntryName) {
-                return shortcutHelper.Outputs.First();
+            const int indexZero = 0;
+            if ((shortcutHelper.Outputs.Count > 0) && shortcutHelper.Outputs[indexZero].CustomEntryName) 
+                return shortcutHelper.Outputs[indexZero];
+
+            if (Settings.AlwaysAskOutput) {
+                return ShortcutterOutput.RebuildOutputWithFriendly(shortcutHelper.Outputs[indexZero], DesktopOS,
+                    shortcutHelper.RaCore);
             }
-            else
-            {
-                if (!Settings.AlwaysAskOutput) {
-                    var outputPathStr = FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS),
-                        Settings.DEFLinkOutput);
-                    return new ShortcutterOutput(outputPathStr, shortcutHelper.RaCore);
-                }
-                else return ShortcutterOutput.RebuildOutputWithFriendly(shortcutHelper.Outputs.First(), DesktopOS, shortcutHelper.RaCore);
-            }
+            
+            var outputPathStr = FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS),
+                Settings.DEFLinkOutput);
+            return new ShortcutterOutput(outputPathStr, shortcutHelper.RaCore);
         }
     }
 

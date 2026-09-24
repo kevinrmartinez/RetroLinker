@@ -8,7 +8,7 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AssemblyName>RetroLinkerLib</AssemblyName>
     <VersionPrefix>0.8.1</VersionPrefix>
-    <!--<VersionSuffix>dev</VersionSuffix>-->
+    <VersionSuffix>dev</VersionSuffix>
     <NoWarn>CA1416</NoWarn>
     <!-- Required to use the LibraryImport attribute -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -33,10 +33,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.2" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.17.1" />
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="15.0.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
     <PackageReference Include="Optris.Icons.Avalonia.FontAwesome7" Version="12.0.7" />
     <PackageReference Include="SharpShellLink" Version="2.0.3" />

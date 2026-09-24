@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 
 namespace RetroLinker.Models;
 
@@ -25,11 +24,10 @@ public static class JsonHelper
 
     // == Settings ==
     private static readonly SettingsSerializerContext SettingsContext = new(DefaultOptions);
-    private static readonly JsonTypeInfo<Settings> SettingsTypesInfo = SettingsContext.Settings;
     
-    private static string Serialize(Settings settingsToSerialize) => JsonSerializer.Serialize(settingsToSerialize, SettingsTypesInfo);
+    private static string Serialize(Settings settingsToSerialize) => JsonSerializer.Serialize(settingsToSerialize, SettingsContext.Settings);
     
-    private static Settings? Deserialize(string json) => JsonSerializer.Deserialize(json, SettingsTypesInfo);
+    private static Settings? Deserialize(string json) => JsonSerializer.Deserialize(json, SettingsContext.Settings);
     
 
     // Proxies to always handle De/Serialization exceptions, and other quirks
