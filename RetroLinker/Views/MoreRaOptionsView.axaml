@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vw="using:RetroLinker.Views"
+             xmlns:cc="clr-namespace:RetroLinker.Styles"
+             xmlns:lc="clr-namespace:RetroLinker.Translations"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="RetroLinker.Views.MoreRaOptionsView"
+             x:DataType="vw:MoreRaOptionsView"
+             x:CompileBindings="True">
+    
+    <UserControl.Styles>
+        <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
+    </UserControl.Styles>
+    
+    <DockPanel Margin="3">
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Spacing="4">
+            <Rectangle Height="10"/>
+            <Grid ColumnDefinitions="*,*">
+                <StackPanel Grid.Column="0" DockPanel.Dock="Left" Orientation="Vertical" Margin="1,0">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <ToggleButton Classes="LockToggle"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <ToggleButton Classes="LockToggle"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="1,0">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <ToggleButton Classes="LockToggle"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <ToggleButton Classes="LockToggle"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            
+            <DockPanel>
+                <StackPanel Orientation="Horizontal">
+                    <ToggleButton Classes="LockToggle"/>
+                    <Label Content="Log File:"/>
+                </StackPanel>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="browseFile"/>
+                <TextBox DockPanel.Dock="Right" HorizontalAlignment="Stretch"></TextBox>
+            </DockPanel>
+            
+            <Rectangle Height="10"/>
+            <Label Content="Environment Variables" FontWeight="Bold"/>
+            <Border BorderThickness="1" CornerRadius="6" 
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+                <StackPanel Orientation="Vertical" Spacing="2" Margin="2">
+                    <ItemsControl x:Name="listEnvVars">
+                        ssss
+                        ddddd
+                        ffffff
+                        ggggggg
+                    </ItemsControl>
+                    <Rectangle StrokeThickness="1" Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    <DockPanel HorizontalSpacing="2">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Classes="textbox_inline browseFolder"/>
+                            <Button Classes="textbox_inline check"/>
+                        </StackPanel>
+                        <ComboBox IsEditable="True" MinWidth="130"/>
+                        <TextBox/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        
+        <Panel DockPanel.Dock="Bottom">
+            <cc:ViewControlButton ButtonFunction="Save" Classes="ExtraControl" VerticalAlignment="Bottom"/>
+        </Panel>
+    </DockPanel>
+</UserControl>

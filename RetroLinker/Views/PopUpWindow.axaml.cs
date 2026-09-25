@@ -33,11 +33,60 @@ public partial class PopUpWindow : Window
         PopCC1.Content = new RenameEntryView(this);
     }
 
-    public PopUpWindow(bool isDesigner) => InitializeComponent();
+    public PopUpWindow(bool isDesigner) => InitializeComponent(); // <= For Designer
 
-    public void RenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput>outputs)
+    public PopUpWindow(PopUpWindowType popUpWindowType, IMainViewPopUp popUpParams) : this(isDesigner: false)
     {
-        Title = Translations.resMainExtras.titleEntryName;
-        PopCC1.Content = new RenameEntryView(this, givenPath, givenCore, outputs);
+        switch (popUpWindowType)
+        {
+            case PopUpWindowType.MoreRaOptions:
+                MoreOptionsPopUp(popUpParams);
+                break;
+            case PopUpWindowType.RenameLinux:
+                RenamePopUp(popUpParams);
+                break;
+            default:
+                break;
+        }
     }
+
+    private void MoreOptionsPopUp(IMainViewPopUp popUpParams)
+    {
+        if (popUpParams is not StdPopUpParams stdPopUpParams) return;
+    }
+
+    private void RenamePopUp(IMainViewPopUp popUpParams) {
+        if (popUpParams is not RenamePopUpParams renameParams) return;
+        Title = Translations.resMainExtras.titleEntryName;
+        PopCC1.Content = new RenameEntryView(this, renameParams);
+        // TODO: Adjust window size
+    }
+}
+
+public enum PopUpWindowType {
+    MoreRaOptions, RenameLinux
+}
+
+public interface IMainViewPopUp
+{
+    MainView MainViewRef { get; }
+}
+
+public class RenamePopUpParams(
+    MainView mainView,
+    string givenPath,
+    string? givenCore,
+    List<ShortcutterOutput> outputs)
+    : IMainViewPopUp
+{
+    public MainView MainViewRef { get; } = mainView;
+    public string GivenPath { get; } = givenPath;
+    public string? GivenCore { get; } = givenCore;
+    public IReadOnlyList<ShortcutterOutput> Outputs { get; } = outputs;
+}
+
+public class StdPopUpParams(MainView mainView) 
+    : IMainViewPopUp
+{
+    public MainView MainViewRef { get; } =  mainView;
 }

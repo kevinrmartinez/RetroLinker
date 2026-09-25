@@ -364,8 +364,8 @@ public partial class MainView : UserControl
     
     // Pop-ups
     async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs) {
-        var popupWindow = new PopUpWindow();
-        popupWindow.RenamePopUp(givenPath, givenCore, outputs);
+        var renameParams = new RenamePopUpParams(this, givenPath, givenCore, outputs);
+        var popupWindow = new PopUpWindow(PopUpWindowType.RenameLinux, renameParams);
         return await popupWindow.ShowDialog<List<ShortcutterOutput>?>(ParentWindow) ?? new List<ShortcutterOutput>();
     }
     

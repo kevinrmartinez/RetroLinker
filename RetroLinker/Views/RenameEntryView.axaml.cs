@@ -50,15 +50,15 @@ public partial class RenameEntryView : UserControl
         Outputs = new List<ShortcutterOutput>();
     }
     
-    public RenameEntryView(PopUpWindow parentWindow, string givenPath, string? givenCore, List<ShortcutterOutput> outputs)
+    public RenameEntryView(PopUpWindow parentWindow, RenamePopUpParams popUpParams)
     {
         InitializeComponent();
         _popUpWindow = parentWindow;
         EntryExt = FileOps.GetOutputExt(false);
-        GivenPath = givenPath;
+        GivenPath = popUpParams.GivenPath;
         GivenName = FileOps.GetFileNameNoExtFromPath(GivenPath);
-        CurrentCore = givenCore;
-        Outputs = outputs;
+        CurrentCore = popUpParams.GivenCore;
+        Outputs = popUpParams.Outputs as List<ShortcutterOutput> ?? new List<ShortcutterOutput>();
         
         CustomFilename = false;
         txtFriendlyName.Text = GivenName;
