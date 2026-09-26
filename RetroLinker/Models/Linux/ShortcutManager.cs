@@ -54,7 +54,7 @@ public static class ShortcutManager
         shortcut.Add("Name=" + link.FriendlyName);
         // shortcut.Add(notify);
         
-        shortcut.Add($"Terminal={link.Verbose.ToString().ToLower()}");
+        shortcut.Add($"Terminal={link.RaVerbose.ToString().ToLower()}");
 
         shortcut.Add(LinkType);
 

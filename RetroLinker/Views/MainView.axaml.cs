@@ -479,7 +479,7 @@ public partial class MainView : UserControl
                         string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir))
                             ? outputLink.RAdir
                             : outputLink.ROMdir;
-                        if (ROMIcoSavAUX == CommandManager.contentless) ROMIcoSavAUX = outputLink.ROMcore;
+                        if (ROMIcoSavAUX == CommandManager.Contentless) ROMIcoSavAUX = outputLink.ROMcore;
                         if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
                         var newPath = Settings.IcoSavPath switch
                         {
@@ -578,7 +578,7 @@ public partial class MainView : UserControl
             outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
             
             // Validating contentless or not
-            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.contentless : outputLink.ROMdir;
+            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.Contentless : outputLink.ROMdir;
             
             // Validate there is a core
             outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;

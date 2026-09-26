@@ -24,7 +24,7 @@ namespace RetroLinker.Models
 {
     public static class CommandManager
     {
-        public const string contentless = "Contentless";
+        public const string Contentless = "Contentless";
         private const char optValueSeparator = '=';
         private const string verbose = "-v ";
         private const string fullscreen = "-f ";
@@ -50,7 +50,7 @@ namespace RetroLinker.Models
         public static SoftPatch NoPatch = new("no", string.Empty,  ROMPatchType.NoPatch);
         public static SoftPatch ExNoPatch = new("explicit-no", NpOpt, ROMPatchType.ExNoPatch);
 
-        public static string CommandBuilder(Shortcutter shortcut)
+        public static string CommandBuilder(Shortcutter shortcut) // TODO: Receive 'IUserLinkParameters'
         {
             var command = string.Empty;
             
@@ -58,7 +58,7 @@ namespace RetroLinker.Models
             if (!string.IsNullOrEmpty(shortcut.CONFappend)) command += $"{shortcut.CONFappend} ";
             
             command += $"-L {shortcut.ROMcore}";
-            if (shortcut.ROMdir != contentless) {
+            if (shortcut.ROMdir != Contentless) {
                 command += $" {shortcut.ROMdir}";
                 command += $" {shortcut.PatchArg}";
             }
