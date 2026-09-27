@@ -34,6 +34,16 @@ public static class DesktopEntry
         return DesktopEntryName(friendlyName, core);
     }
     
+    public static string RenameForDesktopEntry(string linkPath, string? core, out string friendlyName)
+    {
+        _ = FileOps.SeparateFileNameFromPath(linkPath, out friendlyName, out var fileExt);
+        var newFileName = StdDesktopEntry(friendlyName, core);
+        newFileName += fileExt;
+        var dir = FileOps.GetDirFromPath(linkPath);
+        System.ArgumentException.ThrowIfNullOrEmpty(dir);
+        return FileOps.CombineMultipleInputs(dir, newFileName);
+    }
+    
     private static string DesktopEntryName(string fileName, string core)
     {
         const string prefix = "retroarch.";

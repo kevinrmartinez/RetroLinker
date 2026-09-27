@@ -127,7 +127,7 @@ namespace RetroLinker.Models
         
         #region Link Output
         // Link Creation - OS selection
-        public async Task<List<ShortcutterResult>> BuildShortcut(bool os)
+        public async Task<List<LinkWriterResult>> BuildShortcut(bool os)
         {
             var cachedSettings = SettingsOps.GetCachedSettings();
             // Windows Setup
@@ -140,10 +140,10 @@ namespace RetroLinker.Models
             return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
         }
 
-        private async Task<ShortcutterResult> CreateShortcut(LinkParameters outputParameters,
+        private async Task<LinkWriterResult> CreateShortcut(LinkParameters outputParameters,
             System.Func<LinkParameters, Task> osCreateShortcut)
         {
-            var result = new ShortcutterResult(outputParameters.OutputPath);
+            var result = new LinkWriterResult(outputParameters.OutputPath);
             Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
             try {
                 await osCreateShortcut(outputParameters);
@@ -160,7 +160,7 @@ namespace RetroLinker.Models
         // == Windows ==
         private enum WindowsBuildOptions { Vbs, TileIco }
 
-        private Dictionary<WindowsBuildOptions, System.Func<Task<List<ShortcutterResult>>>> _windowsBuilder = new();
+        private Dictionary<WindowsBuildOptions, System.Func<Task<List<LinkWriterResult>>>> _windowsBuilder = new();
         
         [SupportedOSPlatform(App.PlatformWin)]
         private void SetupWindowsBuilder() {
@@ -171,16 +171,16 @@ namespace RetroLinker.Models
         }
         
         [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<ShortcutterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
+        private async Task<List<LinkWriterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
             SetupWindowsBuilder();
             var builder = _windowsBuilder[builderOpt];
             return await builder();
         }
 
         [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<ShortcutterResult>> BuildWinShortcut_Ssl()
+        private async Task<List<LinkWriterResult>> BuildWinShortcut_Ssl()
         {
-            var resultList = new List<ShortcutterResult>();
+            var resultList = new List<LinkWriterResult>();
             if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
             foreach (var output in OutputPaths) {
                 var param = new WindowsLinkParameters(this, output);
@@ -191,9 +191,9 @@ namespace RetroLinker.Models
         }
 
         [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<ShortcutterResult>> BuildWinShortcut_TileIco()
+        private async Task<List<LinkWriterResult>> BuildWinShortcut_TileIco()
         {
-            var results = new List<ShortcutterResult>();
+            var results = new List<LinkWriterResult>();
             var tileIcoOutput = OutputPaths.First();
             var param = new WindowsLinkParameters(this, tileIcoOutput);
             var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateTileIcoShortcut);
@@ -206,9 +206,9 @@ namespace RetroLinker.Models
 
         // == Linux ==
         [SupportedOSPlatform(App.PlatformLin)]
-        private async Task<List<ShortcutterResult>> BuildLinShorcut()
+        private async Task<List<LinkWriterResult>> BuildLinShorcut()
         {
-            var resultList = new List<ShortcutterResult>();
+            var resultList = new List<LinkWriterResult>();
             if (string.IsNullOrEmpty(ICONfile)) ICONfile = FileOps.DotDesktopRAIcon;
             foreach (var output in OutputPaths) {
                 var param = new LinuxLinkParameters(this, output);
@@ -221,7 +221,7 @@ namespace RetroLinker.Models
     }
 
 
-    public class ShortcutterOutput
+    public class ShortcutterOutputttt
     {
         // REWRITE: Revise whole class
         public string FullPath { get; }
@@ -231,7 +231,7 @@ namespace RetroLinker.Models
         public bool ValidOutput { get; private set; }
 
         // Constructors
-        public ShortcutterOutput()
+        public ShortcutterOutputttt()
         {
             const string NA = "N/A";
             FullPath = NA;
@@ -241,7 +241,7 @@ namespace RetroLinker.Models
             ValidOutput = false;
         }
         
-        public ShortcutterOutput(string fullPath)
+        public ShortcutterOutputttt(string fullPath)
         {
             FullPath = fullPath;
             FriendlyName = FileOps.GetFileNameNoExtFromPath(fullPath);
@@ -250,7 +250,7 @@ namespace RetroLinker.Models
             ValidOutput = true;
         }
         
-        public ShortcutterOutput(string fullPath, string? romCore)
+        public ShortcutterOutputttt(string fullPath, string? romCore)
         {
             var outputNames = FileOps.DesktopEntryArray(fullPath, romCore);
             FullPath = outputNames[0];
@@ -260,7 +260,7 @@ namespace RetroLinker.Models
             ValidOutput = true;
         }
 
-        public ShortcutterOutput(string fullPath, string friendlyName, string fileName)
+        public ShortcutterOutputttt(string fullPath, string friendlyName, string fileName)
         {
             FullPath = fullPath;
             FriendlyName = friendlyName;
@@ -268,7 +268,7 @@ namespace RetroLinker.Models
             ValidOutput = true;
         }
 
-        public ShortcutterOutput(ShortcutterOutput primeOutput, string copyOutput)
+        public ShortcutterOutputttt(ShortcutterOutputttt primeOutput, string copyOutput)
         {
             FriendlyName = primeOutput.FriendlyName;
             FileName = primeOutput.FileName;
@@ -277,13 +277,13 @@ namespace RetroLinker.Models
         }
         
         // Methods
-        public static ShortcutterOutput RebuildOutputWithFriendly(ShortcutterOutput originalOutput, bool desktopOs, string? romCore)
+        public static ShortcutterOutputttt RebuildOutputWithFriendly(ShortcutterOutputttt originalOutput, bool desktopOs, string? romCore)
         {
             // REWRITE: reorganize constructors along with this method
             var originalDir = FileOps.GetDirFromPath(originalOutput.FullPath)!;
             var newFileName = originalOutput.FriendlyName + FileOps.GetOutputExt(desktopOs);
-            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName))
-                    : new ShortcutterOutput(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
+            return (string.IsNullOrEmpty(romCore)) ? new ShortcutterOutputttt(FileOps.CombineMultipleInputs(originalDir, newFileName))
+                    : new ShortcutterOutputttt(FileOps.CombineMultipleInputs(originalDir, newFileName), romCore);
         }
     }
 }

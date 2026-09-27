@@ -50,26 +50,26 @@ namespace RetroLinker.Models
         public static SoftPatch NoPatch = new("no", string.Empty,  ROMPatchType.NoPatch);
         public static SoftPatch ExNoPatch = new("explicit-no", NpOpt, ROMPatchType.ExNoPatch);
 
-        public static string CommandBuilder(Shortcutter shortcut) // TODO: Receive 'IUserLinkParameters'
+        public static string CommandBuilder(IUserLinkParameters link)
         {
             var command = string.Empty;
             
-            if (!string.IsNullOrEmpty(shortcut.CONFfile)) command += $"-c {shortcut.CONFfile} ";
-            if (!string.IsNullOrEmpty(shortcut.CONFappend)) command += $"{shortcut.CONFappend} ";
+            if (!string.IsNullOrEmpty(link.RaConfig)) command += $"-c {link.RaConfig} ";
+            if (!string.IsNullOrEmpty(link.RaAppendedConfig)) command += $"{link.RaAppendedConfig} ";
             
-            command += $"-L {shortcut.ROMcore}";
-            if (shortcut.ROMdir != Contentless) {
-                command += $" {shortcut.ROMdir}";
-                command += $" {shortcut.PatchArg}";
+            command += $"-L {link.RaCore}";
+            if (link.RaRom != Contentless) {
+                command += $" {link.RaRom}";
+                command += $" {link.RaRomPatch}";
             }
             
             // Subsystem always goes last (Because I say so :p)
-            if (!string.IsNullOrEmpty(shortcut.SubsysArg)) command += $" {shortcut.SubsysArg} "; 
+            if (!string.IsNullOrEmpty(link.RaCoreSubsystem)) command += $" {link.RaCoreSubsystem} "; 
             
-            if (shortcut.AccessibilityB) command = command.Insert(0, accessibility);
-            if (shortcut.MenuOnErrorB)   command = command.Insert(0, menuOnError);
-            if (shortcut.FullscreenB)    command = command.Insert(0, fullscreen);
-            if (shortcut.VerboseB)       command = command.Insert(0, verbose);
+            if (link.RaAccessibility) command = command.Insert(0, accessibility);
+            if (link.RaMenuOnError)   command = command.Insert(0, menuOnError);
+            if (link.RaFullscreen)    command = command.Insert(0, fullscreen);
+            if (link.RaVerbose)       command = command.Insert(0, verbose);
 
             return command.TrimEnd();
         }

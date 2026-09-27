@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 
 namespace RetroLinker.Models;
 
@@ -57,6 +58,7 @@ public interface IUserLinkParameters
     public bool RaMenuOnError { get; set; }
     public bool RaAccessibility { get; set; }
     public bool RaVerbose { get; set; }
+    public bool? CustomEntryName { get; set; }
 }
 
 public interface IWindowsLinkParameters : ILinkParametersBase
@@ -93,15 +95,17 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public bool RaVerbose { get; set => SetAndNotify(value, ref field); }
     public string? Description { get; set => SetAndNotify(value, ref field); }
     public string IconPath { get; set => SetAndNotify(value, ref field); }
-    public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
-    public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
-    public string OutputPath { get; set => SetAndNotify(value, ref field); }
-    public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
     public bool TileIcoNameVisible { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoNameDark { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoAllUsers { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoOverwrite { get; set => SetAndNotify(value, ref field); }
     public string TileIcoImagePath { get; set => SetAndNotify(value, ref field); }
+    
+    public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
+    public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
+    public bool? CustomEntryName { get; set => SetAndNotify(value, ref field); }
+    public string OutputPath { get; private set => SetAndNotify(value, ref field); }
+    public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
     
     public string RaArguments { get; }
     public string? RaWorkDir { get; }
@@ -159,6 +163,8 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         OutputFileName = linkParam.OutputFileName;
         OutputPath = linkParam.OutputPath;      // <= main output (the one in main view)
         ObservableEnvironmentVariables = new(linkParam.EnvironmentVariables);
+
+        CustomEntryName = (FriendlyName != FileOps.GetFileNameNoExtFromPath(OutputFileName));   // <= Only set on Linux, null on other OSs
         
         var windowsParam =  linkParam as IWindowsLinkParameters;
         var linuxParam =  linkParam as ILinuxLinkParameters;
@@ -178,21 +184,21 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         field = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+    
+    // TODO: Make modifier methods for 'OutputPath'
+    public void SetOutputPath(string fullPath) {
+        OutputPath = fullPath;
+        OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
+        FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
+    }
+    
+    public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
+        SetOutputPath(fullPath);
+        FriendlyName = friendlyName;
+    }
 }
 
 // Output Builders
-public record struct ShortcutOutputHelper
-{
-    public readonly string RaCore;
-    public readonly IReadOnlyList<ShortcutterOutput> Outputs;
-    public readonly bool TileIcoAllUsers;
-
-    public ShortcutOutputHelper(in Shortcutter originalShortcut) {
-        RaCore = originalShortcut.ROMcore;
-        Outputs = originalShortcut.OutputPaths;
-        TileIcoAllUsers = originalShortcut.TileIcoAllUsers;
-    }
-}
 
 public class LinkWriter : IShortcutBase
 {
@@ -203,9 +209,9 @@ public class LinkWriter : IShortcutBase
     public string IconPath { get; set; }
     public string FriendlyName { get; private set; }
     public string OutputFileName { get; private set; }
-    public string OutputPath { get; set; }
+    public string OutputPath { get; private set; }
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
-    public string? RaWorkDir { get; private set; }
+    public string? RaWorkDir { get; }
     public bool TileIcoNameVisible { get; set; }
     public bool TileIcoNameDark { get; set; }
     public bool TileIcoAllUsers { get; set; }
@@ -220,7 +226,7 @@ public class LinkWriter : IShortcutBase
     {
         // TODO: validation and stuff
         RaExecutable = builder.RaExecutable;
-        RaArguments = builder.RaArguments; // <= process arguments
+        RaArguments = CommandManager.CommandBuilder(builder);
         Description = builder.Description;
         IconPath = builder.IconPath;
         FriendlyName = builder.FriendlyName;
@@ -234,11 +240,49 @@ public class LinkWriter : IShortcutBase
         TileIcoOverwrite = builder.TileIcoOverwrite;
         TileIcoImagePath = builder.TileIcoImagePath;
         RaVerbose = builder.RaVerbose;
+        
+        foreach (var copyDirectory in SettingsOps.GetCachedSettings().SavedCopyPaths)
+            OutputPaths.Add(GetNewOutputPath(copyDirectory));
     }
     
     // TODO: Make modifier methods for 'OutputPath'
+    public string GetNewOutputPath(string outputDirectory) 
+        => FileOps.CombineMultipleInputs(outputDirectory, OutputFileName);
     
-    // Pass the file writing task to each 'OsParameters' Class
+    
+    
+    /// <summary>
+    /// Finalizes the object and build all shortcut files for the current OS.
+    /// </summary>
+    /// <param name="os">The OS identifier</param>
+    /// <returns>A list of <see cref="LinkWriterResult"/>.</returns>
+    public async Task<List<LinkWriterResult>> BuildShortcut(bool os) 
+    {
+        var results = new List<LinkWriterResult>();
+        var outputPath = OutputPath;
+        try
+        {
+            // RaArguments was set on constructor
+            System.ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
+            var settings = SettingsOps.GetCachedSettings();
+            var outputList = settings.SavedCopyPaths;
+            LinkParameters parameters = (os) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
+            results.Add(await parameters.CreateOsShortcut());
+            if (settings.MakeLinkCopy) {
+                foreach (var _outputPath in OutputPaths) {
+                    parameters.UpdateOutputPath(_outputPath);
+                    outputPath = parameters.OutputPath;             // <= Trying to keep track in case of an exception
+                    results.Add(await parameters.CreateOsShortcut());
+                }
+            }
+        }
+        catch (System.Exception ex) {
+            var error = new LinkWriterResult(outputPath);
+            error.ResultFailure(ex.Message);
+            results.Add(error);
+        }
+        return results;
+    }
 }
 
 public abstract class LinkParameters : ILinkParametersBase
@@ -246,11 +290,35 @@ public abstract class LinkParameters : ILinkParametersBase
     public string RaExecutable { get; protected init; } = string.Empty;
     public string RaArguments { get; protected init; } = string.Empty;
     public string? Description { get; protected init; }
-    public string IconPath { get; protected init; } = string.Empty;
+    public string IconPath { get; protected set; } = string.Empty;
     public string FriendlyName { get; protected init; } = string.Empty;
     public string OutputFileName { get; protected init; } = string.Empty;
-    public string OutputPath { get; protected init; } = string.Empty;
+    public string OutputPath { get; protected set; } = string.Empty;
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; protected init; } = new List<EnvironmentVariable>();
+
+    /// <summary>
+    /// An OS-agnostic command to write the shortcut to file
+    /// </summary>
+    /// <returns>A <see cref="LinkWriterResult"/> indicating if the file was whether written successfully or not.</returns>
+    public abstract Task<LinkWriterResult> CreateOsShortcut();
+
+    public virtual void UpdateOutputPath(string outputPath) => OutputPath = outputPath;
+    
+    protected virtual async Task<LinkWriterResult> CreateShortcut(System.Func<LinkParameters, Task> osCreateShortcut)
+    {
+        var result = new LinkWriterResult(OutputPath);
+        Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
+        try {
+            await osCreateShortcut(this);
+            result.ResultSuccess();
+        }
+        catch (System.Exception ex) {
+            Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
+            Logger.LogErro(ex);
+            result.ResultFailure(ex.Message);
+        }
+        return result;
+    }
 }
 
 [SupportedOSPlatform(App.PlatformWin)]
@@ -301,6 +369,30 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         OutputPath = linkPath;
         TileIcoImagePath = string.Empty; // <= It can be done, but this app can't handle all the things a Tile Icon has  
     }
+
+    private int _outputCount = 0;
+    private enum WindowsBuildOptions { Shell, TileIco }
+
+    public override async Task<LinkWriterResult> CreateOsShortcut()
+    {
+        var buildOption = (SettingsOps.GetCachedSettings().TileIcoPath is not null && _outputCount < 1)    // TODO: Test 
+            ? WindowsBuildOptions.TileIco : WindowsBuildOptions.Shell;
+        
+        _outputCount++;
+        return buildOption switch {
+            WindowsBuildOptions.Shell => await BuildWinShortcut_Ssl(),
+            WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco(),
+            _ => throw new System.ArgumentOutOfRangeException(nameof(buildOption), buildOption, null)
+        };
+    }
+
+    private async Task<LinkWriterResult> BuildWinShortcut_Ssl() {
+        if (string.IsNullOrEmpty(IconPath)) IconPath = RaExecutable;
+        return await CreateShortcut(Windows.ShortcutManager.CreateShortcut);
+    }
+
+    private async Task<LinkWriterResult> BuildWinShortcut_TileIco() 
+        => await CreateShortcut(Windows.ShortcutManager.CreateTileIcoShortcut); 
 }
 
 [SupportedOSPlatform(App.PlatformLin)]
@@ -321,9 +413,18 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
     }
     
     // PENDING: Constructor for reading a file
+
+    public override async Task<LinkWriterResult> CreateOsShortcut() {
+        if (string.IsNullOrEmpty(IconPath)) IconPath = FileOps.DotDesktopRAIcon;
+        return await CreateShortcut(Linux.ShortcutManager.CreateShortcut);
+    }
 }
 
-public record struct ShortcutterResult(string OutputPath)
+/// <summary>
+/// A simpe structure to inform if the Link was written correctly or not.
+/// </summary>
+/// <param name="OutputPath">The full path of link being handled.</param>
+public record struct LinkWriterResult(string OutputPath)
 {
     public string OutputPath { get; } = OutputPath;
     public string? Message { get; private set; }

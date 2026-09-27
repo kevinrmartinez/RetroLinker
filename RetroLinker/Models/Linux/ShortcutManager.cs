@@ -69,7 +69,7 @@ public static class ShortcutManager
         string fullOutputString = string.Concat(shortcut);
         var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
         
-        await FileOps.WriteDesktopEntry(outputFile, outputBytes);
+        await FileOps.WriteAllBytesToFileAsync(outputFile, outputBytes);
         // If file write is successful (doesn't throw), set execution permissions
         _ = SetExecPermissions(outputFile);
     }

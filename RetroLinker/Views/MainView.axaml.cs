@@ -410,41 +410,43 @@ public partial class MainView : UserControl
     
     void ResetAfterExecute()
     {
-        if (BuildingLink.OutputPaths.Count == 0 && PreviousOutput.ValidOutput)
-            BuildingLink.OutputPaths.Add(
-                ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, 
-                    DesktopOS, 
-                    string.Empty));
+        // if (BuildingLink.OutputPaths.Count == 0 && PreviousOutput.ValidOutput)
+        //     BuildingLink.OutputPaths.Add(
+        //         ShortcutterOutput.RebuildOutputWithFriendly(PreviousOutput, 
+        //             DesktopOS, 
+        //             string.Empty));
         
         LockControls(false);
     }
 
-    private ShortcutterOutput HandleLinkOutput(string userInput, ShortcutOutputHelper shortcutHelper)
+    private void HandleLinkOutput(string userInput, UserLinkBuilder linkBuilder)
     {
         if (DesktopOS)
         {
             var outDirectory = (Settings.TileIcoPath is null)
                 ? Settings.DEFLinkOutput
-                : FileOps.TileIconOutDirs[shortcutHelper.TileIcoAllUsers];
+                : FileOps.TileIconOutDirs[linkBuilder.TileIcoAllUsers];
             var outputPathStr = (IsRenameInactive())
                 ? userInput
-                : FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS), outDirectory);
-            return new ShortcutterOutput(outputPathStr);
+                : FileOps.CombineMultipleInputs(outDirectory, userInput +  FileOps.GetOutputExt(DesktopOS));
+            linkBuilder.SetOutputPath(outputPathStr);
         }
         else
         {
-            const int indexZero = 0;
-            if ((shortcutHelper.Outputs.Count > 0) && shortcutHelper.Outputs[indexZero].CustomEntryName) 
-                return shortcutHelper.Outputs[indexZero];
+            if (linkBuilder.CustomEntryName ?? false) return;
 
+            string outputPath;
+            string friendlyName;
             if (Settings.AlwaysAskOutput) {
-                return ShortcutterOutput.RebuildOutputWithFriendly(shortcutHelper.Outputs[indexZero], DesktopOS,
-                    shortcutHelper.RaCore);
+                // TODO: Test
+                outputPath = LinuxDesktopEntry.RenameForDesktopEntry(userInput, linkBuilder.RaCore, out friendlyName);
             }
-            
-            var outputPathStr = FileOps.GetDefinedLinkPath(userInput + FileOps.GetOutputExt(DesktopOS),
-                Settings.DEFLinkOutput);
-            return new ShortcutterOutput(outputPathStr, shortcutHelper.RaCore);
+            else {
+                // TODO: Test
+                var outputPathStr = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, userInput +  FileOps.GetOutputExt(DesktopOS));
+                outputPath = LinuxDesktopEntry.RenameForDesktopEntry(outputPathStr, linkBuilder.RaCore,  out friendlyName);
+            }
+            linkBuilder.SetOutputPathAndFriendlyName(outputPath, friendlyName);
         }
     }
 
@@ -516,7 +518,7 @@ public partial class MainView : UserControl
         }
     }
 
-    private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<ShortcutterResult> results)
+    private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<LinkWriterResult> results)
     {
         switch (results.Count)
         {
@@ -571,6 +573,7 @@ public partial class MainView : UserControl
     {
         try {
             LockControls(true);
+            // TODO: Remake with new shortcut object
             var outputLink = (Shortcutter)BuildingLink.Clone();
             BuildingLink.OutputPaths.Clear();
             

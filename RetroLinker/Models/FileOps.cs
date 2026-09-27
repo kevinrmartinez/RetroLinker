@@ -381,6 +381,18 @@ namespace RetroLinker.Models
             return (fileExt is ".txt" or ".cfg");
         }
         
+        public static string SeparateFileNameFromPath(string path, out string fileNameNoExt, out string fileExt)
+        {
+            // File Name Without Extension
+            fileNameNoExt = GetFileNameNoExtFromPath(path);
+                
+            // Extension
+            fileExt = GetFileExtFromPath(path);
+            
+            // File Name
+            return GetFileNameFromPath(path);
+        }
+        
         #endregion
 
         #region ICONS
@@ -508,37 +520,6 @@ namespace RetroLinker.Models
         #endregion
 
         #region Linux Only Ops
-
-        private static string[] SeparateFileNameFromPath(string path)
-        {
-            return
-            [
-                // File Full Path
-                path,
-                
-                // File Name Without Extension
-                GetFileNameNoExtFromPath(path),
-                
-                // File Name
-                GetFileNameFromPath(path),
-                
-                // Extension
-                GetFileExtFromPath(path)
-            ];
-        }
-        
-        public static string[] DesktopEntryArray(string LinkDir, string? core)
-        {
-            // TODO: Return a struct
-            var EntryName = SeparateFileNameFromPath(LinkDir);
-            EntryName[2] = DesktopEntry.StdDesktopEntry(EntryName[1], core);
-            EntryName[2] += EntryName[3];
-            EntryName[0] = Path.Combine(Path.GetDirectoryName(EntryName[0])!, EntryName[2]);
-            return EntryName;
-        }
-        
-        public static async Task WriteDesktopEntry(string outputFile, byte[] fileBytes) => await File.WriteAllBytesAsync(outputFile, fileBytes);
-
         
         public static void MakeLinuxFileExecutable(string filePath)
         {
