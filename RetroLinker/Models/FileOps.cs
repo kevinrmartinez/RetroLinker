@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using RetroLinker.Models.Linux;
 
@@ -366,16 +368,6 @@ namespace RetroLinker.Models
             File.WriteAllText(destFile, streamReader.ReadToEnd());
         }
 
-        public static ShortcutterOutput[] GetLinkCopyPaths(List<string> linkCopyList, ShortcutterOutput linkOutputBase)
-        {
-            var linkCopies = new ShortcutterOutput[linkCopyList.Count];
-            for (int i = 0; i < linkCopies.Length; i++)
-            {
-                linkCopies[i] = new ShortcutterOutput(linkOutputBase, linkCopyList[i]);
-            }
-            return linkCopies;
-        }
-
         public static bool IsConfigFile(string filePath, out string fileExt) {
             fileExt = GetFileExtFromPath(filePath);
             return (fileExt is ".txt" or ".cfg");
@@ -482,12 +474,13 @@ namespace RetroLinker.Models
             return newPath;
         }
 
-        public static string ChangeIcoNameToLinkName(Shortcutter linkObj)
+        public static string ChangeIcoNameToLinkName(IShortcutBase linkObj)
         {
-            var iconFilePath = linkObj.ICONfile;
-            string iconPath = GetDirFromPath(iconFilePath)!;
-            string linkName = Path.ChangeExtension(linkObj.OutputPaths[0].FileName, ".ico");
-            string newIconPath = Path.Combine(iconPath, linkName);
+            var iconFilePath = linkObj.IconPath;
+            var iconDir = GetDirFromPath(iconFilePath);
+            ArgumentException.ThrowIfNullOrEmpty(iconDir);
+            var linkName = Path.ChangeExtension(linkObj.OutputFileName, ".ico");
+            var newIconPath = Path.Combine(iconDir, linkName);
             
             File.Copy(iconFilePath, newIconPath, true);
             File.Delete(iconFilePath);
@@ -521,13 +514,13 @@ namespace RetroLinker.Models
 
         #region Linux Only Ops
         
+        [UnsupportedOSPlatform(App.PlatformWin)]
         public static void MakeLinuxFileExecutable(string filePath)
         {
             // Freaking bit magic: https://aaronbos.dev/posts/csharp-flags-enum
             // |= Adds file mode to existing ones
             // &= idk, it cleared all file modes and only left added one
             // -= Removes file mode from existing ones
-            if (OperatingSystem.IsWindows()) return;    // <= To suppress CA1416
             var fileInfo = new FileInfo(filePath);
             fileInfo.UnixFileMode |= UnixFileMode.UserExecute | UnixFileMode.GroupExecute;
         }

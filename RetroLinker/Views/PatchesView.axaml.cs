@@ -50,9 +50,9 @@ public partial class PatchesView : UserControl
         InitializeComponent();
         
         _parentWindow = mainWindow;
-        var buildingLink = _parentWindow.PermaView?.BuildingLink ?? new Shortcutter();
-        CoreContent = buildingLink.ROMdir;
-        _patchString = buildingLink.PatchArg;
+        IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
+        CoreContent = buildingLink.RaRom;
+        _patchString = buildingLink.RaRomPatch;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
         DataContext = this;

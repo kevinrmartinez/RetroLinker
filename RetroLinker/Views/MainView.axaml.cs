@@ -45,7 +45,7 @@ public partial class MainView : UserControl
     
     // Props
     public Settings Settings { get; private set; }
-    public Shortcutter BuildingLink { get; } = new();
+    public UserLinkBuilder BuildingLink { get; } = new();
     public string PatchArg {
         get;
         set => field = SetPatchArg(value);
@@ -64,6 +64,7 @@ public partial class MainView : UserControl
     }
     
     public string? FixedOutputDir { get; private set; }
+    [System.Obsolete("Replace with Binding of BuildingLink.OutputFileName")]
     public string? FixedOutputName { get; private set; }
     
     
@@ -96,10 +97,9 @@ public partial class MainView : UserControl
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
-    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetNAimage()));
+    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetNAimage())); // TODO: Test binding on this
     private IconsItems? IconItemSET;
     private bool LinkCustomName;
-    private ShortcutterOutput PreviousOutput = new();
 
     // TODO: This has to be a enum or something, as it needs to include macOS. And move to App. (>=0.10)
     //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
@@ -218,11 +218,12 @@ public partial class MainView : UserControl
     
     private string SetPatchArg(string value)
     {
-        BuildingLink.PatchArg = value;
+        // TODO: use binding, and make the resolve on the getter
+        BuildingLink.RaRomPatch = value;
         var newValue = string.Empty;
         if (!string.IsNullOrWhiteSpace(value))
         {
-            var (path, patch) = CommandManager.ResolveSoftPatchingArg(BuildingLink.PatchArg);
+            var (path, patch) = CommandManager.ResolveSoftPatchingArg(value);
             if (patch.PatchType is ROMPatchType.ExNoPatch) path = patch.Option;
             newValue = path;
         }
@@ -235,13 +236,13 @@ public partial class MainView : UserControl
         noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
             ? CommandManager.GetArgumentNoOption(value) 
             : string.Empty;
-        BuildingLink.SubsysArg = value;
+        BuildingLink.RaCoreSubsystem = value;
         return value;
     }
 
     private string SetCONFappend(string value)
     {
-        BuildingLink.CONFappend = value;
+        BuildingLink.RaAppendedConfig = value;
         noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
             ? CommandManager.GetArgumentNoOption(value) 
             : string.Empty;
@@ -291,8 +292,9 @@ public partial class MainView : UserControl
 
     void ApplySettingsToControls()
     {
+        // TODO: If done after first load, these line bellow could override whatever the user has set
         if (!string.IsNullOrEmpty(Settings.DEFRADir)) txtRADir.Text = Settings.DEFRADir;
-        BuildingLink.RAdir = Settings.DEFRADir;
+        BuildingLink.RaExecutable = Settings.DEFRADir;
         if (!_isDesingner && !ParentWindow.IsDesigner) {
             Operations.SetROMParentStorageFolder(Settings.DEFROMPath, ParentWindow);
             Operations.SetIconParentStorageFolder(Settings.IconParentPath, ParentWindow);
@@ -334,6 +336,7 @@ public partial class MainView : UserControl
         FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
     }
 
+    [System.Obsolete("Stop doing this, make all props report their changes.")]
     void UpdateContext() {
         DataContext = null;
         DataContext = this;
@@ -363,10 +366,10 @@ public partial class MainView : UserControl
     }
     
     // Pop-ups
-    async Task<List<ShortcutterOutput>> ResolveRenamePopUp(string givenPath, string? givenCore, List<ShortcutterOutput> outputs) {
-        var renameParams = new RenamePopUpParams(this, givenPath, givenCore, outputs);
+    async Task<RenamePopUpHelper> ResolveRenamePopUp(string givenPath, string? givenCore) {
+        var renameParams = new RenamePopUpHelper(givenPath, givenCore);
         var popupWindow = new PopUpWindow(PopUpWindowType.RenameLinux, renameParams);
-        return await popupWindow.ShowDialog<List<ShortcutterOutput>?>(ParentWindow) ?? new List<ShortcutterOutput>();
+        return await popupWindow.ShowDialog<RenamePopUpHelper?>(ParentWindow) ?? renameParams;
     }
     
     async Task<bool> OverwriteFilePopUp(string pathToFile)
@@ -450,11 +453,12 @@ public partial class MainView : UserControl
         }
     }
 
-    private async Task HandleFinalIcon(Shortcutter outputLink)
+    // TODO: This should ONLY alter the icon paths, image conversion should be done later
+    private async Task HandleFinalIcon(UserLinkBuilder outputLink)
     {
         // 'outputLink.ICONfile' is set when the comboBox changes, this is done in case of conversions and copy
         void UpdateUserIcon(string newPath) {
-            outputLink.ICONfile = newPath;
+            outputLink.IconPath = newPath;
 
             if (IconItemSET is not { ConversionRequired: true, comboIconIndex: { } index }) return;
             // This is for the sake of compatibility with my old code; it will be tighter when Binding is implemented 
@@ -466,7 +470,7 @@ public partial class MainView : UserControl
             comboICONDir.SelectedIndex = index;
         }
             
-        if (comboICONDir.SelectedIndex == 0) outputLink.ICONfile = string.Empty; // RA binary icon (Default)
+        if (comboICONDir.SelectedIndex == 0) outputLink.IconPath = string.Empty; // RA binary icon (Default)
         else
         {
             if (DesktopOS)
@@ -474,20 +478,20 @@ public partial class MainView : UserControl
                 // If it's Windows, the images may need to be converted to .ico
                 if (IconItemSET is { ConversionRequired: true })
                 {
-                    outputLink.TileIcoImage = IconItemSET.FilePath; // Pass the original image as the image for the Tile Icon
-                    outputLink.ICONfile = FileOps.SaveWinIco(IconItemSET);
-                    if (!FileOps.IsFileWinPE(outputLink.ICONfile))
+                    outputLink.TileIcoImagePath = IconItemSET.FilePath; // Pass the original image as the image for the Tile Icon
+                    outputLink.IconPath = FileOps.SaveWinIco(IconItemSET);
+                    if (!FileOps.IsFileWinPE(outputLink.IconPath))
                     {
-                        string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.ROMdir))
-                            ? outputLink.RAdir
-                            : outputLink.ROMdir;
-                        if (ROMIcoSavAUX == CommandManager.Contentless) ROMIcoSavAUX = outputLink.ROMcore;
+                        string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.RaRom))
+                            ? outputLink.RaExecutable
+                            : outputLink.RaRom;
+                        if (ROMIcoSavAUX == CommandManager.Contentless) ROMIcoSavAUX = outputLink.RaCore;
                         if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
                         var newPath = Settings.IcoSavPath switch
                         {
-                            SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(outputLink.ICONfile, ROMIcoSavAUX),
-                            SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(outputLink.ICONfile, outputLink.RAdir),
-                            _ => FileOps.CpyIconToUsrSet(outputLink.ICONfile)
+                            SettingsOps.IcoSavROM => FileOps.CpyIconToCustomSet(outputLink.IconPath, ROMIcoSavAUX),
+                            SettingsOps.IcoSavRA => FileOps.CpyIconToCustomSet(outputLink.IconPath, outputLink.RaExecutable),
+                            _ => FileOps.CpyIconToUsrSet(outputLink.IconPath)
                         };
                         UpdateUserIcon(newPath);
                     }
@@ -497,7 +501,7 @@ public partial class MainView : UserControl
                 {
                     var imagePath = string.Empty;
                     try {
-                        imagePath = await IconProc.ResolveImageForTileico(outputLink.ICONfile, outputLink.TileIcoImage, IconItemSET);
+                        imagePath = await IconProc.ResolveImageForTileico(outputLink.IconPath, outputLink.TileIcoImagePath, IconItemSET);
                         System.ArgumentException.ThrowIfNullOrEmpty(imagePath);
                     }
                     catch (System.Exception ex)
@@ -508,13 +512,13 @@ public partial class MainView : UserControl
                         Logger.LogDebg(ms.ToString("G"));
                         Logger.LogErro(ex);
                     }
-                    outputLink.TileIcoImage = imagePath;
+                    outputLink.TileIcoImagePath = imagePath;
                 }
             }
             // If it's Linux, no conversion is required
 
             // In case of 'CpyUserIcon = true', but it'll be ignored if Tileico is in use 
-            if (Settings.TileIcoPath is null && Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.ICONfile));
+            if (Settings.TileIcoPath is null && Settings.CpyUserIcon) UpdateUserIcon(FileOps.CpyIconToUsrSet(outputLink.IconPath));
         }
     }
 
@@ -574,81 +578,52 @@ public partial class MainView : UserControl
         try {
             LockControls(true);
             // TODO: Remake with new shortcut object
-            var outputLink = (Shortcutter)BuildingLink.Clone();
-            BuildingLink.OutputPaths.Clear();
             
             // Validate there's an executable (Linux)
-            outputLink.RAdir = ValidateLINBin(outputLink.RAdir);
+            BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
             
             // Validating contentless or not
-            outputLink.ROMdir = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.Contentless : outputLink.ROMdir;
+            BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.Contentless : BuildingLink.RaRom;
             
             // Validate there is a core
-            outputLink.ROMcore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
+            BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
             
             // Checkboxes!
-            outputLink.VerboseB = chkVerb.IsChecked.GetValueOrDefault();
-            outputLink.FullscreenB = chkFull.IsChecked.GetValueOrDefault();
-            outputLink.MenuOnErrorB = chkMenuOnError.IsChecked.GetValueOrDefault();
-            outputLink.AccessibilityB = chkAccessi.IsChecked.GetValueOrDefault();
+            BuildingLink.RaVerbose = chkVerb.IsChecked.GetValueOrDefault();
+            BuildingLink.RaFullscreen = chkFull.IsChecked.GetValueOrDefault();
+            BuildingLink.RaMenuOnError = chkMenuOnError.IsChecked.GetValueOrDefault();
+            BuildingLink.RaAccessibility = chkAccessi.IsChecked.GetValueOrDefault();
             
             // Link handling
             var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
-            if (!string.IsNullOrWhiteSpace(linkDir))
-            {
-                var outputPath = HandleLinkOutput(linkDir, new ShortcutOutputHelper(outputLink));
-                if (outputLink.OutputPaths.Count == 0) outputLink.OutputPaths.Add(outputPath);
-                else if (outputLink.OutputPaths.First().FullPath != outputPath.FullPath)
-                {
-                    // This is just to not use fixed array positions...
-                    // Alternative: OutputLink.OutputPaths[0] = outputPath;
-                    var oldOutputIndex = outputLink.OutputPaths.IndexOf(outputLink.OutputPaths.First());
-                    outputLink.OutputPaths[oldOutputIndex] = outputPath;
-                }
-            }
+            if (!string.IsNullOrWhiteSpace(linkDir)) HandleLinkOutput(linkDir, BuildingLink);
             
             // Include a link description, if any
             // outputLink.Desc = txtDesc.Text;
             
             // Icons handling
-            await HandleFinalIcon(outputLink);
+            await HandleFinalIcon(BuildingLink);
 
             // REQUIRED FIELDS CHECKS
             PopUpGenericContent popUpContent;
             GenericPopUpType popUpType;
-            var outputIsValid = false;
-            if (outputLink.OutputPaths.Count > 0)
-                if (outputLink.OutputPaths.First().ValidOutput) outputIsValid = true;
-            if ((!string.IsNullOrEmpty(outputLink.RAdir))
-                && (!string.IsNullOrEmpty(outputLink.ROMdir))
-                && (!string.IsNullOrEmpty(outputLink.ROMcore))
-                && (outputIsValid))
+            if ((!string.IsNullOrEmpty(BuildingLink.RaExecutable))
+                && (!string.IsNullOrEmpty(BuildingLink.RaRom))
+                && (!string.IsNullOrEmpty(BuildingLink.RaCore))
+                && (!string.IsNullOrEmpty(BuildingLink.OutputPath)))
             {
                 Logger.LogDebg("All fields for link creation have been accepted.");
+                var outputLink = new LinkWriter(BuildingLink);
                 
                 // Check for overwriting
                 if (!IsRenameInactive()) {
                     // If the user selects no, the execution is canceled
-                    var overwriteResult = await OverwriteFilePopUp(outputLink.OutputPaths.First().FullPath);
+                    var overwriteResult = await OverwriteFilePopUp(outputLink.OutputPath);
                     if (!overwriteResult) {
                         ResetAfterExecute();
                         return;
                     }
                 }
-                
-                // Double quotes for directories that are parameters ->
-                // -> for the ROM file
-                if (!chkContentless.IsChecked.GetValueOrDefault()) 
-                { outputLink.ROMdir = Utils.PutPathBetweenQuotes(outputLink.ROMdir); }
-
-                // -> for the config file
-                if (!string.IsNullOrEmpty(outputLink.CONFfile)) 
-                { outputLink.CONFfile = Utils.PutPathBetweenQuotes(outputLink.CONFfile); }
-
-                // Link Copies handling
-                if (Settings.MakeLinkCopy)
-                    outputLink.OutputPaths.AddRange(FileOps.GetLinkCopyPaths(SettingsOps.LinkCopyPaths, outputLink.OutputPaths.First()));
-                PreviousOutput = outputLink.OutputPaths.First();
                 
                 // Create Shortcuts
                 var opsResult = await outputLink.BuildShortcut(DesktopOS);
@@ -745,7 +720,7 @@ public partial class MainView : UserControl
         if (selectedIndex > 0)
         {   // Fill the PictureBoxes with the icons provided by the user
             IconItemSET = IconProc.IconItemsList.Find(item => item.comboIconIndex == selectedIndex)!;
-            BuildingLink.ICONfile = IconItemSET.FilePath;
+            BuildingLink.IconPath = IconItemSET.FilePath;
             
             if (IconItemSET.IconStream != null) {
                 IconItemSET.IconStream.Position = 0;
@@ -754,7 +729,7 @@ public partial class MainView : UserControl
             }
             else {
                 try {
-                    FillIconBoxes(BuildingLink.ICONfile);
+                    FillIconBoxes(BuildingLink.IconPath);
                     panelIconNoImage.IsVisible = false;
                 }
                 catch {
@@ -773,8 +748,9 @@ public partial class MainView : UserControl
     
     #region RADirectory Controls
 
+    [System.Obsolete("Replace with binding?")]
     void RADirSet(string filePath) {
-        BuildingLink.RAdir = filePath;
+        BuildingLink.RaExecutable = filePath;
         txtRADir.Text = filePath;
     }
 
@@ -804,8 +780,9 @@ public partial class MainView : UserControl
 
     #region ROM Controls
 
+    [System.Obsolete("Replace with binding?")]
     void ROMDir_Set(string filePath) {
-        BuildingLink.ROMdir = filePath;
+        BuildingLink.RaRom = filePath;
         txtROMDir.Text = filePath;
     }
     
@@ -840,12 +817,10 @@ public partial class MainView : UserControl
         if (sender is not AutoCompleteBox combo) return;
         if (string.IsNullOrWhiteSpace(txtLINKRename.Text) || DesktopOS || LinkCustomName) return;
         
-        string newFile;
-        string? outputDir;
         if (IsRenameInactive())
         {
-            newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.OutputPaths.First().FriendlyName + FileOps.GetOutputExt(false), combo.Text);
-            outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPaths.First().FullPath);
+            var newFile = LinuxDesktopEntry.StdDesktopEntry(BuildingLink.FriendlyName + FileOps.GetOutputExt(false), combo.Text);
+            var outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
@@ -885,9 +860,10 @@ public partial class MainView : UserControl
     
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
     
+    [System.Obsolete("Replace with binding?")]
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        BuildingLink.CONFfile = comboConfig.SelectedIndex switch {
+        BuildingLink.RaConfig = comboConfig.SelectedIndex switch {
             -1 => null,
             0 => string.Empty,
             _ => (string)comboConfig.SelectedItem!
@@ -901,7 +877,7 @@ public partial class MainView : UserControl
 
     #region LinkPath Controls
     private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) {
-        Logger.LogDebg("COMING SOON");
+        throw new System.NotImplementedException();
     }
 
     async void btnLINKDir_ClickAsync(TextBox textBox)
@@ -917,9 +893,11 @@ public partial class MainView : UserControl
                 LinkCustomName = false;
                 if (!DesktopOS)
                 {
-                    BuildingLink.OutputPaths = await ResolveRenamePopUp(file, comboCore.Text, BuildingLink.OutputPaths);
-                    LinkCustomName = BuildingLink.OutputPaths.First().CustomEntryName;
-                    file = BuildingLink.OutputPaths.First().FullPath;
+                    var helper = await ResolveRenamePopUp(file, comboCore.Text);
+                    if (!helper.ValidOutput) throw new System.Exception("Output path could not be resolved.");
+                    BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
+                    BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
+                    file = BuildingLink.OutputPath;
                 }
 
                 textBox.Text = file;
@@ -953,12 +931,13 @@ public partial class MainView : UserControl
                 ? LinuxDesktopEntry.NamePlaceHolder
                 : textBox.Text + FileOps.GetOutputExt(DesktopOS);
             var fullPath = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, properFileName);
-            BuildingLink.OutputPaths = await ResolveRenamePopUp(fullPath, comboCore.Text, BuildingLink.OutputPaths);
-            if (BuildingLink.OutputPaths.Count == 0) return;
-        
-            LinkCustomName = BuildingLink.OutputPaths.First().CustomEntryName;
-            textBox.Text = BuildingLink.OutputPaths.First().FriendlyName;
-            FixedOutputName = BuildingLink.OutputPaths.First().FileName;
+            var helper = await ResolveRenamePopUp(fullPath, comboCore.Text);
+            if (!helper.ValidOutput) return;
+            
+            BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
+            BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
+            textBox.Text = BuildingLink.FriendlyName;
+            FixedOutputName = BuildingLink.OutputFileName;
         }
         catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -974,8 +953,7 @@ public partial class MainView : UserControl
     {
         if (sender is not TextBox textBox) return;
         if (IsRenameInactive()) return;
-        if (BuildingLink.OutputPaths.Count > 0)
-            if (BuildingLink.OutputPaths.First().CustomEntryName) return;
+        if (LinkCustomName) return;
         FixedOutputName = (!string.IsNullOrWhiteSpace(textBox.Text)) 
             ? UpdateFixedLinkName(textBox.Text, comboCore.Text) : null;
         UpdateContext();
@@ -1082,6 +1060,10 @@ public partial class MainView : UserControl
     #endregion
     
     // CLOSING
+    public void DisposeResources() {
+        ICONimage.Dispose();
+    }
+    
     void View1_Unloaded(object sender, RoutedEventArgs e)
     {
         // Save new configs
@@ -1090,9 +1072,5 @@ public partial class MainView : UserControl
             ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) 
             || !Settings.Equals(cachedSettings)
         ) SettingsOps.WriteSettings(Settings);
-    }
-
-    public void DisposeResources() {
-        ICONimage.Dispose();
     }
 }

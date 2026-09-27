@@ -17,6 +17,7 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -30,7 +31,7 @@ public partial class PopUpWindow : Window
     {
         // Constructor for Designer
         InitializeComponent();
-        PopCC1.Content = new RenameEntryView(this);
+        PopCC1.Content = "Blup";
     }
 
     public PopUpWindow(bool isDesigner) => InitializeComponent(); // <= For Designer
@@ -56,7 +57,7 @@ public partial class PopUpWindow : Window
     }
 
     private void RenamePopUp(IMainViewPopUp popUpParams) {
-        if (popUpParams is not RenamePopUpParams renameParams) return;
+        if (popUpParams is not RenamePopUpHelper renameParams) return;
         Title = Translations.resMainExtras.titleEntryName;
         PopCC1.Content = new RenameEntryView(this, renameParams);
         // TODO: Adjust window size
@@ -67,26 +68,23 @@ public enum PopUpWindowType {
     MoreRaOptions, RenameLinux
 }
 
-public interface IMainViewPopUp
-{
-    MainView MainViewRef { get; }
-}
+public interface IMainViewPopUp;
 
-public class RenamePopUpParams(
-    MainView mainView,
-    string givenPath,
-    string? givenCore,
-    List<ShortcutterOutput> outputs)
-    : IMainViewPopUp
+public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp
 {
-    public MainView MainViewRef { get; } = mainView;
     public string GivenPath { get; } = givenPath;
+    public string GivenName { get; } = FileOps.GetFileNameNoExtFromPath(givenPath);
     public string? GivenCore { get; } = givenCore;
-    public IReadOnlyList<ShortcutterOutput> Outputs { get; } = outputs;
+    
+    public string? NewPath { get; set; } = null;
+    public string? NewFriendlyName { get; set; } = null;
+    public bool CustomEntry { get; set; } = false;
+    
+    [MemberNotNullWhen(true, nameof(NewPath), nameof(NewFriendlyName))]
+    public bool ValidOutput { get; set; } = false;
 }
 
-public class StdPopUpParams(MainView mainView) 
-    : IMainViewPopUp
+public class StdPopUpParams(IShortcutBase linkObject) : IMainViewPopUp
 {
-    public MainView MainViewRef { get; } =  mainView;
+    public IShortcutBase LinkObject { get; } =  linkObject;
 }

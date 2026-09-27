@@ -16,12 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace RetroLinker.Models
 {
+    // TODO: Re-implement with CommandLineParser
     public static class CommandManager
     {
         public const string Contentless = "Contentless";
@@ -54,12 +54,12 @@ namespace RetroLinker.Models
         {
             var command = string.Empty;
             
-            if (!string.IsNullOrEmpty(link.RaConfig)) command += $"-c {link.RaConfig} ";
+            if (!string.IsNullOrEmpty(link.RaConfig)) command += $"-c \"{link.RaConfig}\" ";
             if (!string.IsNullOrEmpty(link.RaAppendedConfig)) command += $"{link.RaAppendedConfig} ";
             
             command += $"-L {link.RaCore}";
             if (link.RaRom != Contentless) {
-                command += $" {link.RaRom}";
+                command += $" \"{link.RaRom}\"";
                 command += $" {link.RaRomPatch}";
             }
             
@@ -177,16 +177,6 @@ namespace RetroLinker.Models
                 fixedArgs.Add(Utils.PutPathBetweenQuotes(subsysArg));
             arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
             return arg;
-        }
-
-        public static void TestSubsystemArg()
-        {
-            var testValue = "--subsystem=abc path/to/rom1.bin path/to/rom2.bin path/to/rom3.bin";
-            (var res1, var res2) = ResolveSubsystemArg(testValue);
-            Console.WriteLine(nameof(res1));
-            Console.WriteLine(res1);
-            Console.WriteLine(nameof(res2));
-            res2.ForEach(Console.WriteLine);
         }
     }
     

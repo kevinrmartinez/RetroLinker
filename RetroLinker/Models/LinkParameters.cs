@@ -46,21 +46,6 @@ public interface ILinkParametersBase
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 }
 
-public interface IUserLinkParameters
-{
-    public string RaRom { get; set; }
-    public string RaRomPatch { get; set; }
-    public string RaCore { get; set; }
-    public string RaCoreSubsystem { get; set; }
-    public string RaConfig { get; set; }
-    public string RaAppendedConfig { get; set; }
-    public bool RaFullscreen { get; set; }
-    public bool RaMenuOnError { get; set; }
-    public bool RaAccessibility { get; set; }
-    public bool RaVerbose { get; set; }
-    public bool? CustomEntryName { get; set; }
-}
-
 public interface IWindowsLinkParameters : ILinkParametersBase
 {
     public string? RaWorkDir { get; }
@@ -76,6 +61,23 @@ public interface ILinuxLinkParameters : ILinkParametersBase
     public bool RaVerbose { get; }
 }
 
+public interface IUserLinkParameters
+{
+    // TODO: Optional stuff may be null
+    public string RaRom { get; set; }
+    public string RaRomName => FileOps.GetFileNameNoExtFromPath(RaRom);
+    public string RaRomPatch { get; set; }
+    public string RaCore { get; set; }
+    public string RaCoreSubsystem { get; set; }
+    public string? RaConfig { get; set; }
+    public string RaAppendedConfig { get; set; }
+    public bool RaFullscreen { get; set; }
+    public bool RaMenuOnError { get; set; }
+    public bool RaAccessibility { get; set; }
+    public bool RaVerbose { get; set; }
+    public bool? CustomEntryName { get; set; }
+}
+
 public interface IShortcutBase : IWindowsLinkParameters, ILinuxLinkParameters;
 
 // == Classes ==
@@ -87,7 +89,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public string RaRomPatch { get; set => SetAndNotify(value, ref field); }
     public string RaCore { get; set => SetAndNotify(value, ref field); }
     public string RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
-    public string RaConfig { get; set => SetAndNotify(value, ref field); }
+    public string? RaConfig { get; set => SetAndNotify(value, ref field); }
     public string RaAppendedConfig { get; set => SetAndNotify(value, ref field); }
     public bool RaFullscreen { get; set => SetAndNotify(value, ref field); }
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
@@ -249,6 +251,16 @@ public class LinkWriter : IShortcutBase
     public string GetNewOutputPath(string outputDirectory) 
         => FileOps.CombineMultipleInputs(outputDirectory, OutputFileName);
     
+    public void SetOutputPath(string fullPath) {
+        OutputPath = fullPath;
+        OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
+        FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
+    }
+    
+    public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
+        SetOutputPath(fullPath);
+        FriendlyName = friendlyName;
+    }
     
     
     /// <summary>
@@ -265,12 +277,12 @@ public class LinkWriter : IShortcutBase
             // RaArguments was set on constructor
             System.ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
             var settings = SettingsOps.GetCachedSettings();
-            var outputList = settings.SavedCopyPaths;
+            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
             LinkParameters parameters = (os) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
             results.Add(await parameters.CreateOsShortcut());
             if (settings.MakeLinkCopy) {
-                foreach (var _outputPath in OutputPaths) {
-                    parameters.UpdateOutputPath(_outputPath);
+                foreach (var path in OutputPaths) {
+                    parameters.UpdateOutputPath(path);
                     outputPath = parameters.OutputPath;             // <= Trying to keep track in case of an exception
                     results.Add(await parameters.CreateOsShortcut());
                 }
@@ -370,7 +382,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         TileIcoImagePath = string.Empty; // <= It can be done, but this app can't handle all the things a Tile Icon has  
     }
 
-    private int _outputCount = 0;
+    private int _outputCount;
     private enum WindowsBuildOptions { Shell, TileIco }
 
     public override async Task<LinkWriterResult> CreateOsShortcut()

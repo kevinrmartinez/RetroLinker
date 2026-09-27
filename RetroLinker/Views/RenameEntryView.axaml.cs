@@ -31,49 +31,25 @@ public partial class RenameEntryView : UserControl
         // Constructor for Designer
         InitializeComponent();
         _popUpWindow = new PopUpWindow(true);
-        EntryExt = FileOps.GetOutputExt(false);
-        GivenPath = "designer.txt";
-        GivenName = NamePlaceHolder;
-        CurrentCore = "mesen";
-        Outputs = new List<ShortcutterOutput>();
+        _helper = new RenamePopUpHelper("designer.txt", "mesen");
+        _entryExt = FileOps.GetOutputExt(false);
     }
     
-    public RenameEntryView(PopUpWindow parentWindow)
-    {
-        // Constructor for Designer
-        InitializeComponent();
-        _popUpWindow = parentWindow;
-        EntryExt = FileOps.GetOutputExt(false);
-        GivenPath = "designer.txt";
-        GivenName = NamePlaceHolder;
-        CurrentCore = "mesen";
-        Outputs = new List<ShortcutterOutput>();
-    }
-    
-    public RenameEntryView(PopUpWindow parentWindow, RenamePopUpParams popUpParams)
+    public RenameEntryView(PopUpWindow parentWindow, RenamePopUpHelper popUpParams)
     {
         InitializeComponent();
         _popUpWindow = parentWindow;
-        EntryExt = FileOps.GetOutputExt(false);
-        GivenPath = popUpParams.GivenPath;
-        GivenName = FileOps.GetFileNameNoExtFromPath(GivenPath);
-        CurrentCore = popUpParams.GivenCore;
-        Outputs = popUpParams.Outputs as List<ShortcutterOutput> ?? new List<ShortcutterOutput>();
+        _helper = popUpParams;
+        _entryExt = FileOps.GetOutputExt(false);
         
-        CustomFilename = false;
-        txtFriendlyName.Text = GivenName;
-        lblExt.Content = EntryExt;
+        txtFriendlyName.Text = _helper.GivenName;
+        lblExt.Content = _entryExt;
     }
     
     // FIELDS
     private readonly PopUpWindow _popUpWindow;
-    private string EntryExt;
-    private string GivenPath;
-    private string GivenName;
-    private string? CurrentCore;
-    private bool CustomFilename;
-    private ShortcutterOutput NewName = new();
-    private List<ShortcutterOutput> Outputs;
+    private readonly RenamePopUpHelper _helper;
+    private readonly string _entryExt;
     
     private const string NamePlaceHolder = DesktopEntry.NamePlaceHolder;
     
@@ -81,17 +57,12 @@ public partial class RenameEntryView : UserControl
     #region Functions
 
     private void UpdateFilename() {
-        if (CustomFilename) return;
-        txtFileName.Text = DesktopEntry.StdDesktopEntry(txtFriendlyName.Text, CurrentCore);
+        if (_helper.CustomEntry) return;
+        txtFileName.Text = DesktopEntry.StdDesktopEntry(txtFriendlyName.Text, _helper.GivenCore);
     }
 
-    private List<ShortcutterOutput> ResolveOutput() {
-        if (Outputs.Count > 0) Outputs[0] = NewName;
-        else Outputs.Add(NewName);
-        return Outputs;
-    }
-
-    private bool AreBoxesEmpty() => string.IsNullOrWhiteSpace(txtFriendlyName.Text) || string.IsNullOrWhiteSpace(txtFileName.Text);
+    private bool AreBoxesEmpty() 
+        => string.IsNullOrWhiteSpace(txtFriendlyName.Text) || string.IsNullOrWhiteSpace(txtFileName.Text);
 
     private void LockButton(bool isLock) => btnNameApply.IsEnabled = !isLock;
 
@@ -106,34 +77,36 @@ public partial class RenameEntryView : UserControl
     }
     
     private void TxtFileName_OnTextChanged(object? sender, TextChangedEventArgs e) {
-        if (sender is not TextBox _txtFileName) return;
-        if (!_txtFileName.IsReadOnly) LockButton(AreBoxesEmpty());
+        if (sender is not TextBox textBox) return;
+        if (!textBox.IsReadOnly) LockButton(AreBoxesEmpty());
     }
     
     private void ChkCustomFilename_OnIsCheckedChanged(object? sender, RoutedEventArgs e) {
-        CustomFilename = chkCustomFilename.IsChecked.GetValueOrDefault();
-        txtFileName.IsReadOnly = !CustomFilename;
+        _helper.CustomEntry = chkCustomFilename.IsChecked.GetValueOrDefault();
+        txtFileName.IsReadOnly = !_helper.CustomEntry;
         UpdateFilename();
     }
     
-    private void BtnClear_OnClick(object? sender, RoutedEventArgs e) {
+    private void BtnRestore_OnClick(object? sender, RoutedEventArgs e) {
         chkCustomFilename.IsChecked = false;
-        txtFriendlyName.Text = GivenName;
+        txtFriendlyName.Text = _helper.GivenName;
     }
 
     private void BtnNameApply_OnClick(object? sender, RoutedEventArgs e)
     {
         var friendlyName = txtFriendlyName.Text ?? NamePlaceHolder;
         var cusFileName = txtFileName.Text;
-        if (!string.IsNullOrWhiteSpace(cusFileName)) cusFileName += EntryExt;
-        var fileName = (CustomFilename) 
+        if (!string.IsNullOrWhiteSpace(cusFileName)) cusFileName += _entryExt;
+        var fileName = (_helper.CustomEntry) 
             ? cusFileName ?? NamePlaceHolder 
-            : DesktopEntry.StdDesktopEntry(friendlyName + EntryExt, CurrentCore);
-        var newDir = FileOps.GetDirFromPath(GivenPath) ?? FileOps.BaseDir;
+            : DesktopEntry.StdDesktopEntry(friendlyName + _entryExt, _helper.GivenCore);
+        var newDir = FileOps.GetDirFromPath(_helper.GivenPath) ?? FileOps.BaseDir;
         var newPath = FileOps.CombineMultipleInputs(newDir, fileName);
-        NewName = new ShortcutterOutput(newPath, friendlyName, fileName);
-        NewName.CustomEntryName = CustomFilename;
-        _popUpWindow.Close(ResolveOutput());
+        
+        _helper.NewPath = newPath;
+        _helper.NewFriendlyName = friendlyName;
+        _helper.ValidOutput = true;
+        _popUpWindow.Close(_helper);
     }
     #endregion
 
@@ -143,10 +116,15 @@ public partial class RenameEntryView : UserControl
     // On Close
     private void View_OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        if (NewName.ValidOutput) return;
-        if (GivenName == NamePlaceHolder) return;
-        NewName = new ShortcutterOutput(GivenPath, CurrentCore);
-        _popUpWindow.Close(ResolveOutput());
+        if (_helper.ValidOutput) return;
+        if (_helper.GivenName == NamePlaceHolder) return;
+        
+        var fileName = DesktopEntry.StdDesktopEntry(_helper.GivenName + _entryExt, _helper.GivenCore);
+        var newDir = FileOps.GetDirFromPath(_helper.GivenPath) ?? FileOps.BaseDir;
+        _helper.NewPath = FileOps.CombineMultipleInputs(newDir, fileName);
+        _helper.NewFriendlyName = _helper.GivenName;
+        _helper.ValidOutput = true;
+        _popUpWindow.Close(_helper);
     }
 
     #endregion

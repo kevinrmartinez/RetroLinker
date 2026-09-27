@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace RetroLinker.Models
 {
-    public class Shortcutter : System.ICloneable
+    public class Shortcutterr : System.ICloneable
     {
         // TODO: Revise the names and setter of the properties (0.9)
         #region Object
@@ -56,7 +56,7 @@ namespace RetroLinker.Models
         public string ICONfile { get; set; }   // 6
         public string Command { get; private set; }     // 7
         public string? Desc { get; set; }       // 8
-        public List<ShortcutterOutput> OutputPaths { get; set; }    // 9
+        // public List<ShortcutterOutput> OutputPaths { get; set; }    // 9
         public bool VerboseB { get; set; }      // 10
         public bool FullscreenB { get; set; }   // 11
         public bool AccessibilityB { get; set; }// 12
@@ -77,7 +77,7 @@ namespace RetroLinker.Models
         
         
         
-        public Shortcutter()
+        public Shortcutterr()
         {
             RAdir = string.Empty;
             RApath = string.Empty;
@@ -85,7 +85,7 @@ namespace RetroLinker.Models
             ROMcore = string.Empty;
             ICONfile = string.Empty;
             Command = string.Empty;
-            OutputPaths = new List<ShortcutterOutput>();
+            // OutputPaths = new List<ShortcutterOutput>();
             VerboseB = false;
             FullscreenB = false;
             AccessibilityB = false;
@@ -99,8 +99,8 @@ namespace RetroLinker.Models
 
         public object Clone()
         {
-            var newShortcut = (Shortcutter)this.MemberwiseClone();
-            newShortcut.OutputPaths = new List<ShortcutterOutput>(OutputPaths);
+            var newShortcut = (Shortcutterr)this.MemberwiseClone();
+            // newShortcut.OutputPaths = new List<ShortcutterOutput>(OutputPaths);
             return newShortcut;
         }
 
@@ -126,97 +126,97 @@ namespace RetroLinker.Models
 
         
         #region Link Output
-        // Link Creation - OS selection
-        public async Task<List<LinkWriterResult>> BuildShortcut(bool os)
-        {
-            var cachedSettings = SettingsOps.GetCachedSettings();
-            // Windows Setup
-            var winBuilderOpt = WindowsBuildOptions.Vbs;
-            if (cachedSettings.TileIcoPath is not null) winBuilderOpt = WindowsBuildOptions.TileIco;
-            
-            // Building the arguments
-            Command = CommandManager.CommandBuilder(this);
-            // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
-            return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
-        }
-
-        private async Task<LinkWriterResult> CreateShortcut(LinkParameters outputParameters,
-            System.Func<LinkParameters, Task> osCreateShortcut)
-        {
-            var result = new LinkWriterResult(outputParameters.OutputPath);
-            Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
-            try {
-                await osCreateShortcut(outputParameters);
-                result.ResultSuccess();
-            }
-            catch (System.Exception ex) {
-                Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
-                Logger.LogErro(ex);
-                result.ResultFailure(ex.Message);
-            }
-            return result;
-        }
-        
-        // == Windows ==
-        private enum WindowsBuildOptions { Vbs, TileIco }
-
-        private Dictionary<WindowsBuildOptions, System.Func<Task<List<LinkWriterResult>>>> _windowsBuilder = new();
-        
-        [SupportedOSPlatform(App.PlatformWin)]
-        private void SetupWindowsBuilder() {
-            _windowsBuilder = new() {
-                { WindowsBuildOptions.Vbs, BuildWinShortcut_Ssl },
-                { WindowsBuildOptions.TileIco, BuildWinShortcut_TileIco }
-            };
-        }
-        
-        [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<LinkWriterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
-            SetupWindowsBuilder();
-            var builder = _windowsBuilder[builderOpt];
-            return await builder();
-        }
-
-        [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<LinkWriterResult>> BuildWinShortcut_Ssl()
-        {
-            var resultList = new List<LinkWriterResult>();
-            if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
-            foreach (var output in OutputPaths) {
-                var param = new WindowsLinkParameters(this, output);
-                var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateShortcut);
-                resultList.Add(linkResult);
-            }
-            return resultList;
-        }
-
-        [SupportedOSPlatform(App.PlatformWin)]
-        private async Task<List<LinkWriterResult>> BuildWinShortcut_TileIco()
-        {
-            var results = new List<LinkWriterResult>();
-            var tileIcoOutput = OutputPaths.First();
-            var param = new WindowsLinkParameters(this, tileIcoOutput);
-            var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateTileIcoShortcut);
-            results.Add(linkResult);
-            OutputPaths.Remove(tileIcoOutput);
-            if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Ssl());
-            return results;
-        }
-        
-
-        // == Linux ==
-        [SupportedOSPlatform(App.PlatformLin)]
-        private async Task<List<LinkWriterResult>> BuildLinShorcut()
-        {
-            var resultList = new List<LinkWriterResult>();
-            if (string.IsNullOrEmpty(ICONfile)) ICONfile = FileOps.DotDesktopRAIcon;
-            foreach (var output in OutputPaths) {
-                var param = new LinuxLinkParameters(this, output);
-                var linkResult = await CreateShortcut(param, Linux.ShortcutManager.CreateShortcut);
-                resultList.Add(linkResult);
-            }
-            return resultList;
-        }
+        // // Link Creation - OS selection
+        // public async Task<List<LinkWriterResult>> BuildShortcut(bool os)
+        // {
+        //     var cachedSettings = SettingsOps.GetCachedSettings();
+        //     // Windows Setup
+        //     var winBuilderOpt = WindowsBuildOptions.Vbs;
+        //     if (cachedSettings.TileIcoPath is not null) winBuilderOpt = WindowsBuildOptions.TileIco;
+        //     
+        //     // Building the arguments
+        //     Command = CommandManager.CommandBuilder(this);
+        //    
+        //     return (os) ? await BuildWinShortcut(winBuilderOpt) : await BuildLinShorcut();
+        // }
+        //
+        // private async Task<LinkWriterResult> CreateShortcut(LinkParameters outputParameters,
+        //     System.Func<LinkParameters, Task> osCreateShortcut)
+        // {
+        //     var result = new LinkWriterResult(outputParameters.OutputPath);
+        //     Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
+        //     try {
+        //         await osCreateShortcut(outputParameters);
+        //         result.ResultSuccess();
+        //     }
+        //     catch (System.Exception ex) {
+        //         Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
+        //         Logger.LogErro(ex);
+        //         result.ResultFailure(ex.Message);
+        //     }
+        //     return result;
+        // }
+        //
+        // // == Windows ==
+        // private enum WindowsBuildOptions { Vbs, TileIco }
+        //
+        // private Dictionary<WindowsBuildOptions, System.Func<Task<List<LinkWriterResult>>>> _windowsBuilder = new();
+        //
+        // [SupportedOSPlatform(App.PlatformWin)]
+        // private void SetupWindowsBuilder() {
+        //     _windowsBuilder = new() {
+        //         { WindowsBuildOptions.Vbs, BuildWinShortcut_Ssl },
+        //         { WindowsBuildOptions.TileIco, BuildWinShortcut_TileIco }
+        //     };
+        // }
+        //
+        // [SupportedOSPlatform(App.PlatformWin)]
+        // private async Task<List<LinkWriterResult>> BuildWinShortcut(WindowsBuildOptions builderOpt) {
+        //     SetupWindowsBuilder();
+        //     var builder = _windowsBuilder[builderOpt];
+        //     return await builder();
+        // }
+        //
+        // [SupportedOSPlatform(App.PlatformWin)]
+        // private async Task<List<LinkWriterResult>> BuildWinShortcut_Ssl()
+        // {
+        //     var resultList = new List<LinkWriterResult>();
+        //     if (string.IsNullOrEmpty(ICONfile)) ICONfile = RAdir;
+        //     foreach (var output in OutputPaths) {
+        //         var param = new WindowsLinkParameters(this, output);
+        //         var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateShortcut);
+        //         resultList.Add(linkResult);
+        //     }
+        //     return resultList;
+        // }
+        //
+        // [SupportedOSPlatform(App.PlatformWin)]
+        // private async Task<List<LinkWriterResult>> BuildWinShortcut_TileIco()
+        // {
+        //     var results = new List<LinkWriterResult>();
+        //     var tileIcoOutput = OutputPaths.First();
+        //     var param = new WindowsLinkParameters(this, tileIcoOutput);
+        //     var linkResult = await CreateShortcut(param, Windows.ShortcutManager.CreateTileIcoShortcut);
+        //     results.Add(linkResult);
+        //     OutputPaths.Remove(tileIcoOutput);
+        //     if (OutputPaths.Count > 0) results.AddRange(await BuildWinShortcut_Ssl());
+        //     return results;
+        // }
+        //
+        //
+        // // == Linux ==
+        // [SupportedOSPlatform(App.PlatformLin)]
+        // private async Task<List<LinkWriterResult>> BuildLinShorcut()
+        // {
+        //     var resultList = new List<LinkWriterResult>();
+        //     if (string.IsNullOrEmpty(ICONfile)) ICONfile = FileOps.DotDesktopRAIcon;
+        //     foreach (var output in OutputPaths) {
+        //         var param = new LinuxLinkParameters(this, output);
+        //         var linkResult = await CreateShortcut(param, Linux.ShortcutManager.CreateShortcut);
+        //         resultList.Add(linkResult);
+        //     }
+        //     return resultList;
+        // }
         #endregion
     }
 
@@ -252,10 +252,10 @@ namespace RetroLinker.Models
         
         public ShortcutterOutputttt(string fullPath, string? romCore)
         {
-            var outputNames = FileOps.DesktopEntryArray(fullPath, romCore);
-            FullPath = outputNames[0];
-            FriendlyName = outputNames[1];
-            FileName = outputNames[2];
+            // var outputNames = FileOps.DesktopEntryArray(fullPath, romCore);
+            // FullPath = outputNames[0];
+            // FriendlyName = outputNames[1];
+            // FileName = outputNames[2];
             CustomEntryName = false;
             ValidOutput = true;
         }

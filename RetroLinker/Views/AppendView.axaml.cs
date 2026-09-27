@@ -47,7 +47,7 @@ public partial class AppendView : UserControl
         _parentWindow = mainWindow;
         var appendConfigFiles = new List<string>();
         try {
-            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.CONFappend ?? string.Empty);
+            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.RaAppendedConfig ?? string.Empty);
         }
         catch (System.ArgumentNullException) {
             // Ignore

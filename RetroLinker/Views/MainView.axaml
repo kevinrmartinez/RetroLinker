@@ -197,7 +197,7 @@
 						                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
 					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static lc:resMainView.txtDesc_mark}" 
-					         Text="{Binding BuildingLink.Desc}" ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
+					         Text="{Binding BuildingLink.Description}" ToolTip.Tip="{x:Static lc:resMainView.tipDesc}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->
