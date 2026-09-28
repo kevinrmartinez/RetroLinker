@@ -60,7 +60,12 @@ public partial class PopUpWindow : Window
         if (popUpParams is not RenamePopUpHelper renameParams) return;
         Title = Translations.resMainExtras.titleEntryName;
         PopCC1.Content = new RenameEntryView(this, renameParams);
-        // TODO: Adjust window size
+        SizeToContent = SizeToContent.Height;
+        Width = 600;
+        MinWidth = 450;
+        MaxWidth = 700;
+        MinHeight = 130;
+        MaxHeight = 200;
     }
 }
 

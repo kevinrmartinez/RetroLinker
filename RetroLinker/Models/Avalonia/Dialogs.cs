@@ -159,7 +159,7 @@ public static class PopUpDialogOps
         Logger.LogErro(exception);
         var content = new PopUpGenericContent(exception.Message,  customTitle, customHeader);
         await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
-        // TODO: Return Critical error when a assembly is not found (0.9)
+        // TODO: Return Critical error when a assembly is not found; should throw for the App error handler (0.9)
         // if (exception is System.IO.FileNotFoundException fnf && fnf.Message.Contains("assembly", System.StringComparison.OrdinalIgnoreCase)) { }
     }
     

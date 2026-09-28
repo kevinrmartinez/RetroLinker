@@ -218,7 +218,7 @@ public partial class MainView : UserControl
     
     private string SetPatchArg(string value)
     {
-        // TODO: use binding, and make the resolve on the getter
+        // TODO: See a way to update this
         BuildingLink.RaRomPatch = value;
         var newValue = string.Empty;
         if (!string.IsNullOrWhiteSpace(value))
@@ -441,11 +441,13 @@ public partial class MainView : UserControl
             string outputPath;
             string friendlyName;
             if (Settings.AlwaysAskOutput) {
-                // TODO: Test
-                outputPath = LinuxDesktopEntry.RenameForDesktopEntry(userInput, linkBuilder.RaCore, out friendlyName);
+                friendlyName = linkBuilder.FriendlyName;
+                var correctedFileName = LinuxDesktopEntry.StdDesktopEntry(friendlyName, linkBuilder.RaCore) 
+                                      + FileOps.GetOutputExt(DesktopOS);
+                outputPath = (correctedFileName == linkBuilder.OutputFileName) 
+                    ? linkBuilder.OutputPath : FileOps.CombineMultipleInputs(linkBuilder.OutputDir, correctedFileName); 
             }
             else {
-                // TODO: Test
                 var outputPathStr = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, userInput +  FileOps.GetOutputExt(DesktopOS));
                 outputPath = LinuxDesktopEntry.RenameForDesktopEntry(outputPathStr, linkBuilder.RaCore,  out friendlyName);
             }
@@ -577,7 +579,6 @@ public partial class MainView : UserControl
     {
         try {
             LockControls(true);
-            // TODO: Remake with new shortcut object
             
             // Validate there's an executable (Linux)
             BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);

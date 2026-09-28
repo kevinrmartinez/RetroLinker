@@ -43,7 +43,12 @@ public interface ILinkParametersBase
     public string FriendlyName { get; }
     public string OutputFileName { get; }
     public string OutputPath { get; }
+    public string OutputDir => GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
+
+    protected static string GetOutputDir(ILinkParametersBase l) {
+        return FileOps.GetDirFromPath(l.OutputPath) ?? string.Empty;
+    }
 }
 
 public interface IWindowsLinkParameters : ILinkParametersBase
@@ -65,7 +70,7 @@ public interface IUserLinkParameters
 {
     // TODO: Optional stuff may be null
     public string RaRom { get; set; }
-    public string RaRomName => FileOps.GetFileNameNoExtFromPath(RaRom);
+    public string RaRomName => GetRomName(this);
     public string RaRomPatch { get; set; }
     public string RaCore { get; set; }
     public string RaCoreSubsystem { get; set; }
@@ -75,7 +80,10 @@ public interface IUserLinkParameters
     public bool RaMenuOnError { get; set; }
     public bool RaAccessibility { get; set; }
     public bool RaVerbose { get; set; }
+    public string? RaLogFile { get; set; }
     public bool? CustomEntryName { get; set; }
+
+    protected static string GetRomName(IUserLinkParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
 }
 
 public interface IShortcutBase : IWindowsLinkParameters, ILinuxLinkParameters;
@@ -95,6 +103,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
     public bool RaAccessibility { get; set => SetAndNotify(value, ref field); }
     public bool RaVerbose { get; set => SetAndNotify(value, ref field); }
+    public string? RaLogFile { get; set => SetAndNotify(value, ref field); }
     public string? Description { get; set => SetAndNotify(value, ref field); }
     public string IconPath { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoNameVisible { get; set => SetAndNotify(value, ref field); }
@@ -107,6 +116,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
     public bool? CustomEntryName { get; set => SetAndNotify(value, ref field); }
     public string OutputPath { get; private set => SetAndNotify(value, ref field); }
+    public string OutputDir => ILinkParametersBase.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
     
     public string RaArguments { get; }
@@ -138,7 +148,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         OutputFileName = string.Empty;
         OutputPath = string.Empty;
         ObservableEnvironmentVariables = new();
-        RaWorkDir = string.Empty;
+        // RaWorkDir = string.Empty;
         TileIcoImagePath = string.Empty;
     }
     
@@ -187,7 +197,6 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     
-    // TODO: Make modifier methods for 'OutputPath'
     public void SetOutputPath(string fullPath) {
         OutputPath = fullPath;
         OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
@@ -226,7 +235,6 @@ public class LinkWriter : IShortcutBase
 
     public LinkWriter(UserLinkBuilder builder)
     {
-        // TODO: validation and stuff
         RaExecutable = builder.RaExecutable;
         RaArguments = CommandManager.CommandBuilder(builder);
         Description = builder.Description;
@@ -247,7 +255,6 @@ public class LinkWriter : IShortcutBase
             OutputPaths.Add(GetNewOutputPath(copyDirectory));
     }
     
-    // TODO: Make modifier methods for 'OutputPath'
     public string GetNewOutputPath(string outputDirectory) 
         => FileOps.CombineMultipleInputs(outputDirectory, OutputFileName);
     
@@ -363,7 +370,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
 
     public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
     {
-        // TODO: It wouldn't make sense for CommandLineArguments to be empty, if that is the case the method should throw 
+        System.ArgumentException.ThrowIfNullOrEmpty(shortcut.StringData?.CommandLineArguments);
         // TODO: if target path is cmd, then the environment variables are set
         //  And our target is actually inside CommandLineArguments
         string targetPath;
@@ -373,9 +380,9 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         else throw new System.ArgumentException("Can't get target from shortcut");
             
         RaExecutable = targetPath;
-        RaArguments = shortcut.StringData?.CommandLineArguments ?? string.Empty;
-        Description = shortcut.StringData?.NameString;
-        IconPath = shortcut.StringData?.IconLocation ?? string.Empty;
+        RaArguments = shortcut.StringData.CommandLineArguments;
+        Description = shortcut.StringData.NameString;
+        IconPath = shortcut.StringData.IconLocation;
         OutputFileName = shortcut.LinkTargetIDList?.DisplayName ?? FileOps.GetFileNameFromPath(linkPath);
         FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
         OutputPath = linkPath;
@@ -387,7 +394,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
 
     public override async Task<LinkWriterResult> CreateOsShortcut()
     {
-        var buildOption = (SettingsOps.GetCachedSettings().TileIcoPath is not null && _outputCount < 1)    // TODO: Test 
+        var buildOption = (SettingsOps.GetCachedSettings().TileIcoPath is not null && _outputCount < 1) 
             ? WindowsBuildOptions.TileIco : WindowsBuildOptions.Shell;
         
         _outputCount++;
