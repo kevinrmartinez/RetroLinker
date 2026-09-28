@@ -117,8 +117,8 @@
         </Border>
 
         <!-- Windows Menu tile icon -->
-        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
-            <!--  -->
+        <Border x:Name="borderTemp" Classes="SettingCatg" >
+            <!-- IsVisible="{Binding DesktopOS}" -->
             <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
                 <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}"/>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
@@ -126,6 +126,7 @@
                 
                 <!-- TODO: These two TextBlocks break the program on runtime after Avalonia 12.1.3 -->
                 <!--  When the border 'IsVisible' is bound to a prop -->
+                <!--  Waiting on https://github.com/AvaloniaUI/Avalonia/issues/22339 -->
                 <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static lc:resSettingsWindow.blcTileIco1}">
                     <Rectangle Width="2"/>
                     <cc:IconFontWithTip IconValue="fa7-image" ToolTip.Placement="Left">

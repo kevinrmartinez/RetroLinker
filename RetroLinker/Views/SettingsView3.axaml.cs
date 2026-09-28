@@ -80,6 +80,8 @@ namespace RetroLinker.Views
                 comboaddLinkCopy.ItemsSource = candidateCopiesPath;
                 comboaddLinkCopy.SelectedIndex = 0;
                 comboUseDefaultIcoSavPath.ItemsSource = defIcoSavPathList;
+
+                borderTemp.IsVisible = DesktopOS;
                 
                 FirstTimeLoad = false;
             }
