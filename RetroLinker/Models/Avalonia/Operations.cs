@@ -56,7 +56,7 @@ public static class Operations
     
     public static Uri GetDefaultIcon() => new(DEFicon1);
 
-    public static Uri GetNAimage() => new(NaN);
+    public static Uri GetMissingImage() => new(NaN);
     
     public static AvaloniaBitmap GetBitmap(string path) => new(path);
 
@@ -74,9 +74,9 @@ public static class Operations
         {
             DesktopFolder = await GetStorageFolder(FileOps.UserDesktop, topLevel);
             var dbgOut = (DesktopFolder is null)
-                ? $"DesktopStorageFolder remained null. Attempted dir: \"{FileOps.UserDesktop}\""
-                : $"DesktopStorageFolder set to: \"{DesktopFolder.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);
+                ? $"{nameof(DesktopFolder)} remained null. Attempted dir: \"{FileOps.UserDesktop}\""
+                : $"{nameof(DesktopFolder)} set to: \"{DesktopFolder.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
         }
         catch (Exception ex) {
             Logger.LogErro(ex);
@@ -91,9 +91,9 @@ public static class Operations
             if (string.IsNullOrWhiteSpace(dir)) return;
             ROMParentDir = await GetStorageFolder(dir, topLevel);
             var dbgOut = (ROMParentDir is null)
-                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir}\""
-                : $"ROMPadreStorageFolder set to: \"{ROMParentDir.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);
+                ? $"{nameof(ROMParentDir)} remained null. Attempted dir:\"{dir}\""
+                : $"{nameof(ROMParentDir)} set to: \"{ROMParentDir.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
         }
         catch (Exception ex) {
             Logger.LogErro(ex);
@@ -108,9 +108,9 @@ public static class Operations
             if (string.IsNullOrWhiteSpace(dir)) return;
             IconParentDir = await GetStorageFolder(dir, topLevel);
             var dbgOut = (IconParentDir is null)
-                ? $"ROMPadreStorageFolder remained null. Attempted dir:\"{dir}\""
-                : $"ROMPadreStorageFolder set to: \"{IconParentDir.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);
+                ? $"{nameof(IconParentDir)} remained null. Attempted dir:\"{dir}\""
+                : $"{nameof(IconParentDir)} set to: \"{IconParentDir.Path.LocalPath}\"";
+            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
         }
         catch (Exception ex) {
             Logger.LogErro(ex);

@@ -46,9 +46,7 @@ public interface ILinkParametersBase
     public string OutputDir => GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
-    protected static string GetOutputDir(ILinkParametersBase l) {
-        return FileOps.GetDirFromPath(l.OutputPath) ?? string.Empty;
-    }
+    protected static string GetOutputDir(ILinkParametersBase l) => FileOps.GetDirFromPath(l.OutputPath) ?? string.Empty;
 }
 
 public interface IWindowsLinkParameters : ILinkParametersBase
@@ -58,7 +56,7 @@ public interface IWindowsLinkParameters : ILinkParametersBase
     public bool TileIcoNameDark { get; }
     public bool TileIcoAllUsers { get; }
     public bool TileIcoOverwrite { get; }
-    public string TileIcoImagePath { get; }
+    public string? TileIcoImagePath { get; }
 }
 
 public interface ILinuxLinkParameters : ILinkParametersBase
@@ -110,7 +108,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public bool TileIcoNameDark { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoAllUsers { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoOverwrite { get; set => SetAndNotify(value, ref field); }
-    public string TileIcoImagePath { get; set => SetAndNotify(value, ref field); }
+    public string? TileIcoImagePath { get; set => SetAndNotify(value, ref field); }
     
     public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
     public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
@@ -149,7 +147,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         OutputPath = string.Empty;
         ObservableEnvironmentVariables = new();
         // RaWorkDir = string.Empty;
-        TileIcoImagePath = string.Empty;
+        // TileIcoImagePath = string.Empty;
     }
     
     public UserLinkBuilder(ILinkParametersBase linkParam)
@@ -185,7 +183,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         TileIcoNameDark = windowsParam?.TileIcoNameDark ?? false;
         TileIcoAllUsers = windowsParam?.TileIcoAllUsers ?? false;
         TileIcoOverwrite = windowsParam?.TileIcoOverwrite ?? false;
-        TileIcoImagePath = windowsParam?.TileIcoImagePath ?? string.Empty;
+        TileIcoImagePath = windowsParam?.TileIcoImagePath;
         RaVerbose = linuxParam?.RaVerbose ?? false;
     }
     
@@ -227,7 +225,7 @@ public class LinkWriter : IShortcutBase
     public bool TileIcoNameDark { get; set; }
     public bool TileIcoAllUsers { get; set; }
     public bool TileIcoOverwrite { get; set; }
-    public string TileIcoImagePath { get; set; }
+    public string? TileIcoImagePath { get; set; }
     public bool RaVerbose { get; set; }
     public List<string> OutputPaths { get; } = new();
 
@@ -348,7 +346,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     public bool TileIcoNameDark { get; init; }
     public bool TileIcoAllUsers { get; init; }
     public bool TileIcoOverwrite { get; init; }
-    public string TileIcoImagePath { get; init; }
+    public string? TileIcoImagePath { get; init; }
     
     public WindowsLinkParameters(LinkWriter linkWriter)
     {

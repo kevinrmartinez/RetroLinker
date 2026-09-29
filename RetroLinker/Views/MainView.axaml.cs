@@ -97,7 +97,7 @@ public partial class MainView : UserControl
     // private string DefLinRAIcon;
     private int PrevConfigsCount;
     private int PreloadedIconsCount;
-    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetNAimage())); // TODO: Test binding on this
+    private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetMissingImage())); // TODO: Test binding on this
     private IconsItems? IconItemSET;
     private bool LinkCustomName;
 
@@ -734,7 +734,7 @@ public partial class MainView : UserControl
                     panelIconNoImage.IsVisible = false;
                 }
                 catch {
-                    AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(Operations.GetNAimage()));
+                    AvaloniaBitmap bitmap = new(AvaloniaAssetLoader.Open(Operations.GetMissingImage()));
                     FillIconBoxes(bitmap);
                     panelIconNoImage.IsVisible = true;
                 } 

@@ -17,7 +17,9 @@
 */
 
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using MsBox.Avalonia;
@@ -129,6 +131,25 @@ public static class PopUpDialogOps
         return await msBox.ShowWindowDialogAsync(msboxOwner);
     }
     
+    // App extension
+    public static async Task PopUpCriticalError(this App app, System.Exception exception)
+    {
+        Logger.LogCrit($"{nameof(app)} has re-threw a critical exception:");
+        Logger.LogCrit(exception);
+        
+        var applicationLifetime = app.ApplicationLifetime;
+        if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;;
+        var msBoxParams = new MessageBoxStandardParams()
+        {
+            Icon = Icon.Stop,
+            ContentTitle = "Critical Error",
+            ContentHeader = "Execution has stopped due to a critical error",
+            ContentMessage = exception.Message,
+            ButtonDefinitions = ButtonEnum.Ok,
+            EnterDefaultButton = ClickEnum.Ok
+        };
+        await mainWindow.PopUpMessageBox<ButtonResult>(msBoxParams);
+    }
     
     // Window extensions
     public static async Task<T> PopUpMessageBox<T>(this Window window, AbstractMessageBoxParams someParams) {
@@ -156,11 +177,17 @@ public static class PopUpDialogOps
     
     public static async Task PopUpGenericError(this Window window, System.Exception exception, string? customTitle = null,  string? customHeader = null)
     {
+        var missingComponentEx = (exception is System.IO.FileNotFoundException fnf) && (fnf.Message.Contains("assembly", System.StringComparison.OrdinalIgnoreCase));
+        if (!missingComponentEx) missingComponentEx = (exception is System.DllNotFoundException) || (exception.InnerException is System.DllNotFoundException);
+        if (missingComponentEx)
+        {
+            if (Application.Current is not App app) throw exception;
+            await app.ShowCriticalAndQuit(exception);
+            return; // The app is dead at this point
+        }
         Logger.LogErro(exception);
         var content = new PopUpGenericContent(exception.Message,  customTitle, customHeader);
         await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
-        // TODO: Return Critical error when a assembly is not found; should throw for the App error handler (0.9)
-        // if (exception is System.IO.FileNotFoundException fnf && fnf.Message.Contains("assembly", System.StringComparison.OrdinalIgnoreCase)) { }
     }
     
     

@@ -17,10 +17,13 @@
 */
 
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Views;
 
 namespace RetroLinker;
@@ -46,7 +49,7 @@ public class App : Application
             Args = desktop.Args;
             desktop.MainWindow = new MainWindow(false)
             {
-                Title = $"{LocalInformation.Name} v{LocalInformation.Version}",
+                Title = LocalInformation.ToString(),
                 DataContext = null,
             };
         }
@@ -56,8 +59,8 @@ public class App : Application
             // {
             //     DataContext = new MainViewModel()
             // };
-            Logger.LogCrit($"{nameof(App)}.{nameof(OnFrameworkInitializationCompleted)}");
-            Logger.LogCrit($"Type of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
+            Logger.LogCrit($"On '{nameof(App)}.{nameof(OnFrameworkInitializationCompleted)}'");
+            Logger.LogCrit($"\tType of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -69,11 +72,20 @@ public class App : Application
         Logger.LogDebg("'AppInfo' has been set with the following properties:\n" + LocalInformation.ToStringLines());
     }
 
-    private void CompleteStartup() {
+    private void CompleteStartup()
+    {
+        Dispatcher.UnhandledException += App_OnUnhandledException;
         LanguageManager.FixLocale(LanguageManager.ENLocale);
         UpdateLicenseUri();
     }
-    
+
+    private Exception? _catchException;
+    private async void App_OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+        e.Handled = true;
+        _catchException = e.Exception;
+        await Dispatcher.UIThread.InvokeAsync(ShowCriticalAndQuit, DispatcherPriority.MaxValue);
+    }
+
     private void UpdateLicenseUri()
     {
         if (Current is not { } app) return;
@@ -99,5 +111,28 @@ public class App : Application
         }
         
         app.Resources["LicenseUri"] = localLicenseUri;
+    }
+
+    private async Task ShowCriticalAndQuit()
+    {
+        try
+        {
+            if (_catchException is not { } criticalException) {
+                var errMess = $"'{nameof(ShowCriticalAndQuit)}' was called, but '{nameof(_catchException)}' is not set!";
+                throw new ArgumentException(errMess);
+            }
+            await this.PopUpCriticalError(criticalException);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogCrit("An error occured while trying to show a critical message:");
+            Logger.LogCrit(ex);
+        }
+        finally { Environment.Exit(1); }
+    }
+
+    public async Task ShowCriticalAndQuit(Exception criticalException) {
+        _catchException = criticalException;
+        await ShowCriticalAndQuit();
     }
 }
