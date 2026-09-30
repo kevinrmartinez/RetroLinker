@@ -69,17 +69,18 @@ public interface IUserLinkParameters
     // TODO: Optional stuff may be null
     public string RaRom { get; set; }
     public string RaRomName => GetRomName(this);
-    public string RaRomPatch { get; set; }
+    public string? RaRomPatch { get; set; }
     public string RaCore { get; set; }
-    public string RaCoreSubsystem { get; set; }
+    public string? RaCoreSubsystem { get; set; }
     public string? RaConfig { get; set; }
-    public string RaAppendedConfig { get; set; }
+    public string? RaAppendedConfig { get; set; }
     public bool RaFullscreen { get; set; }
     public bool RaMenuOnError { get; set; }
     public bool RaAccessibility { get; set; }
     public bool RaVerbose { get; set; }
     public string? RaLogFile { get; set; }
     public bool? CustomEntryName { get; set; }
+    public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
     protected static string GetRomName(IUserLinkParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
 }
@@ -92,11 +93,11 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
 {
     public string RaExecutable { get; set => SetAndNotify(value, ref field); }
     public string RaRom { get; set => SetAndNotify(value, ref field); }
-    public string RaRomPatch { get; set => SetAndNotify(value, ref field); }
+    public string? RaRomPatch { get; set => SetAndNotify(value, ref field); }
     public string RaCore { get; set => SetAndNotify(value, ref field); }
-    public string RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
+    public string? RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
     public string? RaConfig { get; set => SetAndNotify(value, ref field); }
-    public string RaAppendedConfig { get; set => SetAndNotify(value, ref field); }
+    public string? RaAppendedConfig { get; set => SetAndNotify(value, ref field); }
     public bool RaFullscreen { get; set => SetAndNotify(value, ref field); }
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
     public bool RaAccessibility { get; set => SetAndNotify(value, ref field); }
@@ -135,10 +136,10 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         RaCoreSubsystem = string.Empty;
         RaConfig = string.Empty;
         RaAppendedConfig = string.Empty;
-        RaFullscreen = true; 
-        RaMenuOnError = true;
-        RaAccessibility = true;
-        RaVerbose = true;
+        // RaFullscreen = true; 
+        // RaMenuOnError = true;
+        // RaAccessibility = true;
+        // RaVerbose = true;
         
         Description = string.Empty;
         IconPath = string.Empty;

@@ -104,20 +104,17 @@
 
 				<!-- ROW4 - Link Save Directory & other Parameters -->
 				<StackPanel Name="panelLINKDir" Grid.Row="4">
-					<Grid ColumnDefinitions="Auto, *, Auto">
-						<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,10,0,0" Spacing="6">
-							<StackPanel Orientation="Horizontal" Spacing="12">
-								<CheckBox Name="chkFull" Content="{x:Static lc:resMainView.chkFull}"/>
-								<CheckBox Name="chkVerb" Content="{x:Static lc:resMainView.chkVerb}"/>
-							</StackPanel>
-							<StackPanel Orientation="Horizontal" Spacing="12">
-								<CheckBox Name="chkAccessi" Content="{x:Static lc:resMainView.chkAccessi}"/>
-								<CheckBox Name="chkMenuOnError" Content="{x:Static lc:resMainView.chkMenuOnError}"/>
-							</StackPanel>
-						</StackPanel>
-						<Button Name="btnMoreParams" Grid.Column="2" Margin="0,10,5,0" IsEnabled="False"
-						        Content="{x:Static lc:resMainView.btnMoreParams}" Click="BtnMoreParams_OnClick"/>
-					</Grid>
+					<Rectangle Height="8"/>
+					
+					<DockPanel Margin="3,0" HorizontalSpacing="6">
+						<Button Name="btnMoreParams" DockPanel.Dock="Right" Content="{x:Static lc:resMainView.btnMoreParams}" 
+						        Click="BtnMoreParams_OnClick"/>
+						<CheckBox Name="chkFull" VerticalAlignment="Center" Content="{x:Static lc:resMainView.chkFull}"
+						          IsChecked="{Binding BuildingLink.RaFullscreen}"/>
+						<CheckBox Name="chkAccessi" VerticalAlignment="Center" Content="{x:Static lc:resMainView.chkAccessi}"
+						          IsChecked="{Binding BuildingLink.RaAccessibility}"/>
+						
+					</DockPanel>
 					
 					<StackPanel Orientation="Vertical">
 						<!-- Select Link Output -->

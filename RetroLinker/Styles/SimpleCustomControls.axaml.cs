@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -31,10 +32,20 @@ using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
 
+public static class DummyData
+{
+    public static ObservableCollection<EnvironmentVariable> DummyEnvVars { get; } = new()
+    {
+        new EnvironmentVariable("Key_A", "Value_A"),
+        new EnvironmentVariable("Key_B", "Value_B"),
+        new EnvironmentVariable("LongKey_A", "LongValue_A"),
+    };
+}
+
 // All this file requires some documentation!!
 public class LinkCopyItemGrid
 {
-    // TODO: Reimplement using DataTemplates (>=0.9)
+    // TODO: Reimplement using DataTemplates (>=0.10)
     
     // Link Copy ListItem
     public Grid NewItemGrid { get; private set; }
@@ -73,7 +84,7 @@ public class LinkCopyItemGrid
 
 public static class LocaleComboItem
 {
-    // TODO: Reimplement using DataTemplates (>=0.9)
+    // TODO: Reimplement using DataTemplates (>=0.10)
     public static ComboBoxItem GetLocaleComboItem(LanguageItem locale)
     {
         var item = new ComboBoxItem()
@@ -146,7 +157,7 @@ public class ViewControlButton : Button
         RefreshContent();
     }
 
-    // TODO: Reimplement using DataTemplates (>=0.9)
+    // TODO: Reimplement using DataTemplates (>=0.10)
     private StackPanel GetContent()
     {
         var icon = new ProjektankerIcon()

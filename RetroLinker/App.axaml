@@ -18,6 +18,8 @@
         
         <!-- TODO: Add globally fixed colors (Resources) (0.9) -->
         <!-- https://docs.avaloniaui.net/docs/app-development/resources -->
+        
+        <!-- Misc Resources -->
         <x:String x:Key="FounderName">kevinrmartinez</x:String>
         <x:Uri x:Key="LicenseUri">https://www.gnu.org/licenses/gpl-3.0.en.html</x:Uri>
         <x:Uri x:Key="FounderUrl">https://github.com/kevinrmartinez</x:Uri>

@@ -21,53 +21,53 @@
                 <StackPanel Grid.Column="0" DockPanel.Dock="Left" Orientation="Vertical" Margin="1,0">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"
+                                  IsChecked="{Binding LinkParameters.RaFullscreen}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkVerb}"
+                                  IsChecked="{Binding LinkParameters.RaVerbose}"/>
                     </StackPanel>
                 </StackPanel>
                 
                 <StackPanel Grid.Column="1" Orientation="Vertical" Margin="1,0">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkAccessi}"
+                                  IsChecked="{Binding LinkParameters.RaAccessibility}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"/>
+                        <CheckBox Content="{x:Static lc:resMainView.chkMenuOnError}"
+                                  IsChecked="{Binding LinkParameters.RaMenuOnError}"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
             
             <DockPanel>
-                <StackPanel Orientation="Horizontal">
+                <!-- TODO: Localize -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                     <ToggleButton Classes="LockToggle"/>
-                    <Label Content="Log File:"/>
+                    <Label VerticalAlignment="Center" Content="Log File:"/>
                 </StackPanel>
-                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="browseFile"/>
-                <TextBox DockPanel.Dock="Right" HorizontalAlignment="Stretch"></TextBox>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile"/>
+                <TextBox Text="{Binding LinkParameters.RaLogFile}"/>
             </DockPanel>
             
-            <Rectangle Height="10"/>
+            <Rectangle Height="20"/>
             <Label Content="Environment Variables" FontWeight="Bold"/>
             <Border BorderThickness="1" CornerRadius="6" 
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                 <StackPanel Orientation="Vertical" Spacing="2" Margin="2">
-                    <ItemsControl x:Name="listEnvVars">
-                        ssss
-                        ddddd
-                        ffffff
-                        ggggggg
-                    </ItemsControl>
+                    <ItemsControl x:Name="listEnvVars" ItemsSource="{Binding LinkParameters.EnvironmentVariables}"/>
                     <Rectangle StrokeThickness="1" Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     <DockPanel HorizontalSpacing="2">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                             <Button Classes="textbox_inline browseFolder"/>
                             <Button Classes="textbox_inline check"/>
                         </StackPanel>
-                        <ComboBox IsEditable="True" MinWidth="130"/>
+                        <ComboBox IsEditable="True" MinWidth="170"/>
                         <TextBox/>
                     </DockPanel>
                 </StackPanel>

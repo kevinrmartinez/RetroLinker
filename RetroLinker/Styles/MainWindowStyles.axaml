@@ -1,12 +1,16 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="https://github.com/projektanker/icons.avalonia">
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:v="clr-namespace:RetroLinker.Views"
+        xmlns:s="clr-namespace:RetroLinker.Styles"
+        xmlns:m="clr-namespace:RetroLinker.Models">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
             <StackPanel Orientation="Vertical">
                 <Label Content="Cores" Classes="ReqField"/>
                 <ToggleButton Classes="LockToggle"/>
+                <ItemsControl x:Name="listEnvVars" ItemsSource="{x:Static s:DummyData.DummyEnvVars}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -61,8 +65,24 @@
     
     <!-- Env -->
     <Style Selector="ItemsControl#listEnvVars">
+        <Setter Property="ItemTemplate">
+            <DataTemplate DataType="m:EnvironmentVariable">
+                <Border Margin="2,3" BorderThickness="0,0,0,1" BorderBrush="Gray" 
+                        CornerRadius="6" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+                    <DockPanel Margin="4">
+                        <Label DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalContentAlignment="Right" MinWidth="170" 
+                               Content="{Binding Key}" ToolTip.Tip="{Binding $self.Content}"/>
+                        <Button DockPanel.Dock="Right" Classes="textbox_inline trash" 
+                                Tag="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding $self}" Command="{x:Static v:GlobalCommands.TrashFromListCommand}"/>
+                        <TextBox IsReadOnly="True" Text="{Binding Value}" ToolTip.Tip="{Binding $self.Text}"/>
+                    </DockPanel>
+                </Border>
+            </DataTemplate>
+        </Setter>
+        
         <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundBaseLowBrush}"/>
     </Style>
     
     <!-- == Extra Views == -->

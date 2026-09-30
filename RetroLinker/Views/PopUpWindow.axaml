@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="RetroLinker.Views.PopUpWindow"
-        Title="PopUpWindow">
+        WindowStartupLocation="CenterOwner" CanMaximize="False"
+        Title="PopUpWindow" Icon="/Assets/avalonia-logo.ico">
     <ContentControl Name="PopCC1"/>
 </Window>

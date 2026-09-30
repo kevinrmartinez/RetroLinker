@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
@@ -53,7 +54,15 @@ public partial class PopUpWindow : Window
 
     private void MoreOptionsPopUp(IMainViewPopUp popUpParams)
     {
-        if (popUpParams is not StdPopUpParams stdPopUpParams) return;
+        if (popUpParams is not MoreOptPopUpHelper moreOptParams) return;
+        Title = "More shortcut options";    // TODO: Localize 
+        PopCC1.Content = new MoreRaOptionsView(this, moreOptParams);
+        SizeToContent = SizeToContent.Height;
+        Width = 500;
+        MinWidth = 400;
+        MaxWidth = 800;
+        MinHeight = 500;
+        MaxHeight = double.PositiveInfinity;
     }
 
     private void RenamePopUp(IMainViewPopUp popUpParams) {
@@ -89,7 +98,7 @@ public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewP
     public bool ValidOutput { get; set; } = false;
 }
 
-public class StdPopUpParams(IShortcutBase linkObject) : IMainViewPopUp
+public class MoreOptPopUpHelper(IUserLinkParameters linkObject) : IMainViewPopUp
 {
-    public IShortcutBase LinkObject { get; } =  linkObject;
+    public IUserLinkParameters LinkObject { get; } =  linkObject;
 }

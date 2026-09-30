@@ -9,7 +9,7 @@
         x:Class="RetroLinker.Views.SettingsWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="{x:Static lc:resSettingsWindow.wndTitle}"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="CenterOwner"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
 	
 	<Window.Styles>

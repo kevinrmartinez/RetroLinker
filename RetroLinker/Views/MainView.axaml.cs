@@ -589,12 +589,6 @@ public partial class MainView : UserControl
             // Validate there is a core
             BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
             
-            // Checkboxes!
-            BuildingLink.RaVerbose = chkVerb.IsChecked.GetValueOrDefault();
-            BuildingLink.RaFullscreen = chkFull.IsChecked.GetValueOrDefault();
-            BuildingLink.RaMenuOnError = chkMenuOnError.IsChecked.GetValueOrDefault();
-            BuildingLink.RaAccessibility = chkAccessi.IsChecked.GetValueOrDefault();
-            
             // Link handling
             var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
             if (!string.IsNullOrWhiteSpace(linkDir)) HandleLinkOutput(linkDir, BuildingLink);
@@ -877,9 +871,14 @@ public partial class MainView : UserControl
     #endregion
 
     #region LinkPath Controls
-    private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) {
-        throw new System.NotImplementedException();
+
+    private async void BtnMoreParams_OnClickAsync() {
+        var param = new MoreOptPopUpHelper(BuildingLink);
+        var popUp = new PopUpWindow(PopUpWindowType.MoreRaOptions, param);
+        await popUp.ShowDialog(ParentWindow);
     }
+    
+    private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) => BtnMoreParams_OnClickAsync();
 
     async void btnLINKDir_ClickAsync(TextBox textBox)
     {

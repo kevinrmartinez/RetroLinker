@@ -163,6 +163,8 @@ internal readonly struct TileicoArgument
 
 internal class TileicoArgumentList : List<TileicoArgument>
 {
+    // TODO: replace with HashSet
+    
     /// <summary>Adds an object to the end of the <see cref="List{TileicoArgument}" />.</summary>
     /// <param name="item">The <see cref="TileicoArgument"/> to be added to the end of the <see cref="List{TileicoArgument}" />. If an element with the same '<see cref="TileicoArgument.Option"/>' member already exist, then <paramref name="item"/> won't be added.</param>
     public new void Add(TileicoArgument item) {
