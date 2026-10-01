@@ -101,7 +101,7 @@ public partial class AboutWindow : Window
         }
         catch (Exception ex)
         {
-            Logger.LogErro($"{nameof(AboutWindow)}.{nameof(GetLiberationMonoUri)}:)");
+            // Logger.LogErro($"{nameof(AboutWindow)}.{nameof(GetLiberationMonoUri)}:)");
             Logger.LogErro(ex);
             return new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
@@ -109,6 +109,3 @@ public partial class AboutWindow : Window
 
     private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
 }
-
-public record Contributor(string DisplayName, Uri? OnlinePageUrl);
-public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);

@@ -112,6 +112,7 @@ public partial class MainView : UserControl
     #region LOAD OPS
     void CompleteSetup()
     {
+        BuildingLink.RestoreRemembered(Settings.UserChoices);
         if (!DesktopOS) Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
         
         // Implement an Event for theme handling
@@ -872,10 +873,17 @@ public partial class MainView : UserControl
 
     #region LinkPath Controls
 
-    private async void BtnMoreParams_OnClickAsync() {
-        var param = new MoreOptPopUpHelper(BuildingLink);
-        var popUp = new PopUpWindow(PopUpWindowType.MoreRaOptions, param);
-        await popUp.ShowDialog(ParentWindow);
+    private async void BtnMoreParams_OnClickAsync() 
+    {
+        try
+        {
+            LockControls(true);
+            var param = new MoreOptPopUpHelper(BuildingLink, Settings);
+            var popUp = new PopUpWindow(PopUpWindowType.MoreRaOptions, param);
+            await popUp.ShowDialog(ParentWindow);
+        }
+        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        finally { LockControls(false); }
     }
     
     private void BtnMoreParams_OnClick(object? sender, RoutedEventArgs e) => BtnMoreParams_OnClickAsync();

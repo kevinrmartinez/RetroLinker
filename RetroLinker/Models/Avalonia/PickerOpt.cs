@@ -68,7 +68,7 @@ namespace RetroLinker.Models.Avalonia
                 case OpenOpts.RAroms:
                     options.Title = resAvaloniaOps.dlgFileRAroms;
                     options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    if (Operations.ROMParentDir is not null) options.SuggestedStartLocation = Operations.ROMParentDir;
+                    options.SuggestedStartLocation = Operations.ROMParentDir;
                     break;
 
                 // RetroArch config
@@ -81,7 +81,7 @@ namespace RetroLinker.Models.Avalonia
                 case OpenOpts.WINico:
                     options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes;
-                    if (Operations.IconParentDir is not null) options.SuggestedStartLocation = Operations.IconParentDir;
+                    options.SuggestedStartLocation = Operations.IconParentDir;
                     break;
 
                 // Linux executable
@@ -94,12 +94,13 @@ namespace RetroLinker.Models.Avalonia
                 case OpenOpts.LINico:
                     options.Title = resAvaloniaOps.dlgFileIcon;
                     options.FileTypeFilter = ICONfileTypes2;
-                    if (Operations.IconParentDir is not null) options.SuggestedStartLocation = Operations.IconParentDir;
+                    options.SuggestedStartLocation = Operations.IconParentDir;
                     break;
 
-                // This part should never happen...
+                // Other
                 default:
                     options.Title = resAvaloniaOps.dlgFileInFallback;
+                    options.FileTypeFilter = [FilePickerFileTypes.All];
                     break;
             }
             return options;
@@ -153,8 +154,8 @@ namespace RetroLinker.Models.Avalonia
         }
     }
     
-    public enum OpenOpts { WinExe, RAroms, RAcfg, WINico, LinBin, LINico }
-    public enum OpenFolderOpts {UserAssets, ROMParent, IconParent, IcoOutput, LinkCopy, DefOutput}
+    public enum OpenOpts { Other, WinExe, RAroms, RAcfg, WINico, LinBin, LINico }
+    public enum OpenFolderOpts { Other, UserAssets, ROMParent, IconParent, IcoOutput, LinkCopy, DefOutput }
     public enum SaveOpts { WINlnk, LINdesktop }
     public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
 }

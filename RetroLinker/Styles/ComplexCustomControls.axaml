@@ -121,8 +121,8 @@
                     <Rectangle Grid.Row="1"/>
                     <!-- Controls for Append Paths List -->
                     <StackPanel Grid.Row="2">
-                        <Button x:Name="PART_ButtonClr" Content="⌫" ToolTip.Tip="{x:Static lc:resGeneric.btnClear}"/>
-                        <Button x:Name="PART_ButtonAdd" Content="+" ToolTip.Tip="{x:Static lc:resGeneric.btnAdd}"/>
+                        <Button x:Name="PART_ButtonClr" Classes="clear_text"/>
+                        <Button x:Name="PART_ButtonAdd" Classes="add"/>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>
@@ -160,14 +160,15 @@
                     <Setter Property="FontSize" Value="24"/>
                     <Setter Property="CornerRadius" Value="8"/>
                     
-                    <Style Selector="^#PART_ButtonClr">
-                        <Setter Property="i:Attached.Icon" Value="fa7-eraser"/>
-                        <Setter Property="Foreground" Value="Firebrick"/>
-                    </Style>
-                    <Style Selector="^#PART_ButtonAdd">
-                        <Setter Property="i:Attached.Icon" Value="fa7-plus"/>
-                        <Setter Property="Foreground" Value="ForestGreen"/>
-                    </Style>
+                    <!-- <Style Selector="^#PART_ButtonClr"> -->
+                    <!--     <Setter Property="i:Attached.Icon" Value="fa7-eraser"/> -->
+                    <!--     <Setter Property="Foreground" Value="Firebrick"/> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^#PART_ButtonAdd"> -->
+                    <!--     <Setter Property="i:Attached.Icon" Value="fa7-plus"/> -->
+                    <!--     <Setter Property="Foreground" Value="ForestGreen"/> -->
+                    <!--     <Setter /> -->
+                    <!-- </Style> -->
                 </Style>
                 
             </Style>

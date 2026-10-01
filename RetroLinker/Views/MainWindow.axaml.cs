@@ -128,8 +128,3 @@ public partial class MainWindow : Window
         }
     }
 }
-
-public enum MainViewTypes
-{ MainView, PatchesView, SubsysView, AppendView }
-
-public enum TextBoxActions { Restore, Clear }

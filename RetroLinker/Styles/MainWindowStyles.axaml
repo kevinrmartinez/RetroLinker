@@ -1,21 +1,25 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:v="clr-namespace:RetroLinker.Views"
-        xmlns:s="clr-namespace:RetroLinker.Styles"
-        xmlns:m="clr-namespace:RetroLinker.Models">
+        xmlns:vw="clr-namespace:RetroLinker.Views"
+        xmlns:st="clr-namespace:RetroLinker.Styles"
+        xmlns:md="clr-namespace:RetroLinker.Models">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
             <StackPanel Orientation="Vertical">
                 <Label Content="Cores" Classes="ReqField"/>
                 <ToggleButton Classes="LockToggle"/>
-                <ItemsControl x:Name="listEnvVars" ItemsSource="{x:Static s:DummyData.DummyEnvVars}"/>
+                <ItemsControl x:Name="listEnvVars" ItemsSource="{x:Static st:DummyData.DummyEnvVars}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
     
     <StyleInclude Source="ComplexCustomControls.axaml"/>
+    
+    <Styles.Resources>
+        <x:Double x:Key="VariableMinWidth">170</x:Double>
+    </Styles.Resources>
     
     <!-- Main View Body -->
     
@@ -66,15 +70,16 @@
     <!-- Env -->
     <Style Selector="ItemsControl#listEnvVars">
         <Setter Property="ItemTemplate">
-            <DataTemplate DataType="m:EnvironmentVariable">
+            <DataTemplate DataType="md:EnvironmentVariable">
                 <Border Margin="2,3" BorderThickness="0,0,0,1" BorderBrush="Gray" 
                         CornerRadius="6" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
-                    <DockPanel Margin="4">
-                        <Label DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalContentAlignment="Right" MinWidth="170" 
-                               Content="{Binding Key}" ToolTip.Tip="{Binding $self.Content}"/>
+                    <DockPanel Margin="4" HorizontalSpacing="2">
+                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" TextAlignment="Right"
+                               MinWidth="{StaticResource VariableMinWidth}" 
+                               Text="{Binding Key}" ToolTip.Tip="{Binding $self.Text}"/>
                         <Button DockPanel.Dock="Right" Classes="textbox_inline trash" 
                                 Tag="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding $self}" Command="{x:Static v:GlobalCommands.TrashFromListCommand}"/>
+                                CommandParameter="{Binding $self}" Command="{x:Static vw:GlobalCommands.TrashFromListCommand}"/>
                         <TextBox IsReadOnly="True" Text="{Binding Value}" ToolTip.Tip="{Binding $self.Text}"/>
                     </DockPanel>
                 </Border>
@@ -83,6 +88,24 @@
         
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundBaseLowBrush}"/>
+    </Style>
+    
+    <Style Selector="Viewbox.Expandable">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Width" Duration="0:00:00.27" Easing="CubicEaseOut"/>
+                <DoubleTransition Property="Height" Duration="0:00:00.27" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    
+        <Setter Property="Width" Value="0"/>
+        <Setter Property="Height" Value="0"/>
+        <Style Selector="^.Expanded">
+            <!-- If both of these are unset (set to NaN), it breaks the transition -->
+            <!-- Solution inspired by https://deepwiki.com/AvaloniaCommunity/Material.Avalonia/4.3-animations-and-transitions#control-style-integration-examples -->
+            <Setter Property="Width" Value="{x:Static x:Double.NaN}"/>
+            <Setter Property="Height" Value="{Binding $self.Tag}"/>
+        </Style>
     </Style>
     
     <!-- == Extra Views == -->

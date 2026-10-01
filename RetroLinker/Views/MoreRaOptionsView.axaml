@@ -3,12 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vw="using:RetroLinker.Views"
-             xmlns:cc="clr-namespace:RetroLinker.Styles"
-             xmlns:lc="clr-namespace:RetroLinker.Translations"
+             xmlns:st="clr-namespace:RetroLinker.Styles"
+             xmlns:tl="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
              x:Class="RetroLinker.Views.MoreRaOptionsView"
              x:DataType="vw:MoreRaOptionsView"
-             x:CompileBindings="True">
+             x:CompileBindings="True"
+             NewEnvVar_Valid="{Binding NewEnvVar_Key, 
+             Converter={x:Static StringConverters.IsNotNullOrEmpty}, Mode=OneWay}">
     
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -21,12 +23,12 @@
                 <StackPanel Grid.Column="0" DockPanel.Dock="Left" Orientation="Vertical" Margin="1,0">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkFull}"
+                        <CheckBox Content="{x:Static tl:resMainView.chkFull}"
                                   IsChecked="{Binding LinkParameters.RaFullscreen}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkVerb}"
+                        <CheckBox Content="{x:Static tl:resMainView.chkVerb}"
                                   IsChecked="{Binding LinkParameters.RaVerbose}"/>
                     </StackPanel>
                 </StackPanel>
@@ -34,12 +36,12 @@
                 <StackPanel Grid.Column="1" Orientation="Vertical" Margin="1,0">
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkAccessi}"
+                        <CheckBox Content="{x:Static tl:resMainView.chkAccessi}"
                                   IsChecked="{Binding LinkParameters.RaAccessibility}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static lc:resMainView.chkMenuOnError}"
+                        <CheckBox Content="{x:Static tl:resMainView.chkMenuOnError}"
                                   IsChecked="{Binding LinkParameters.RaMenuOnError}"/>
                     </StackPanel>
                 </StackPanel>
@@ -51,8 +53,11 @@
                     <ToggleButton Classes="LockToggle"/>
                     <Label VerticalAlignment="Center" Content="Log File:"/>
                 </StackPanel>
-                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile"/>
-                <TextBox Text="{Binding LinkParameters.RaLogFile}"/>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline clear_text" 
+                        CommandParameter="{x:Static vw:TextBoxActions.Clear}" Click="BtnRaLogFile_OnClick"/>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile" 
+                        CommandParameter="{Binding #txtRaLogFile}" Click="BtnRaLogFile_OnClick"/>
+                <TextBox x:Name="txtRaLogFile" Text="{Binding LinkParameters.RaLogFile}"/>
             </DockPanel>
             
             <Rectangle Height="20"/>
@@ -63,19 +68,32 @@
                     <ItemsControl x:Name="listEnvVars" ItemsSource="{Binding LinkParameters.EnvironmentVariables}"/>
                     <Rectangle StrokeThickness="1" Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
                     <DockPanel HorizontalSpacing="2">
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Classes="textbox_inline browseFolder"/>
-                            <Button Classes="textbox_inline check"/>
-                        </StackPanel>
-                        <ComboBox IsEditable="True" MinWidth="170"/>
-                        <TextBox/>
+                        <Button DockPanel.Dock="Right" Classes="textbox_inline browseFolder" CommandParameter="{x:Static vw:TextBoxActions.Browse}"
+                                Click="BtnEnvVars_OnClick"/>
+                        <ComboBox PlaceholderText="VARIABLE" IsEditable="True" MinWidth="{StaticResource VariableMinWidth}"
+                                  SelectedItem="{Binding NewEnvVar_Key}"
+                                  Text="{Binding NewEnvVar_Key}"/>
+                        <TextBox PlaceholderText="/path/to/directory" Text="{Binding NewEnvVar_Value}"/>
                     </DockPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Viewbox HorizontalAlignment="Right" Classes="Expandable" Tag="{Binding #btnClearList.Bounds.Height}"
+                                 Classes.Expanded="{Binding NewEnvVar_Valid, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Classes="textbox_inline add" CommandParameter="{x:Static vw:UserListActions.Add}"
+                                        Click="BtnEnvVars_OnClick"/>
+                                <Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+                                        Click="BtnEnvVars_OnClick"/>
+                            </StackPanel>
+                        </Viewbox>
+                        <Button x:Name="btnClearList" Classes="textbox_inline clear_list" CommandParameter="{x:Static vw:UserListActions.Clear}"
+                                Click="BtnEnvVars_OnClick"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>
         
         <Panel DockPanel.Dock="Bottom">
-            <cc:ViewControlButton ButtonFunction="Save" Classes="ExtraControl" VerticalAlignment="Bottom"/>
+            <st:ViewControlButton ButtonFunction="Save" Classes="ExtraControl" VerticalAlignment="Bottom" Click="BtnExit_OnClick"/>
         </Panel>
     </DockPanel>
 </UserControl>

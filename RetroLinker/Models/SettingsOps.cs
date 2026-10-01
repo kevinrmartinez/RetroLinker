@@ -95,6 +95,7 @@ namespace RetroLinker.Models
         public string LanguageLocale { get; set; } = DefaultLanguage;
         public List<string> SavedConfigs { get; set; } = new();
         public List<string> SavedCopyPaths { get; set; } = new();
+        public RememberedUserChoices UserChoices { get; } = new();
         
         private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
@@ -113,6 +114,15 @@ namespace RetroLinker.Models
             var object64 = Utils.GenerateBase64(jsonString);
             return object64;
         }
+    }
+
+    public class RememberedUserChoices
+    {
+        public bool? StoredRaFullscreen { get; set; }
+        public bool? StoredRaMenuOnError { get; set; }
+        public bool? StoredRaAccessibility { get; set; }
+        public bool? StoredVerbose { get; set; }
+        public string? StoredRaLogFile { get; set; }
     }
     
     [JsonSerializable(typeof(Settings))]

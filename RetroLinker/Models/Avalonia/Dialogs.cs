@@ -65,7 +65,7 @@ public static class FileDialogOps
                 OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
                 OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
                 OpenFolderOpts.DefOutput => resAvaloniaOps.dlgFolderDefOutput,
-                // This option shouldn't happen
+                // Other
                 _ => resAvaloniaOps.dlgFolderFallback
             },
         };

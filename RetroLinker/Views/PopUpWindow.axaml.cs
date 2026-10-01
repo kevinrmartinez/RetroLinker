@@ -77,28 +77,3 @@ public partial class PopUpWindow : Window
         MaxHeight = 200;
     }
 }
-
-public enum PopUpWindowType {
-    MoreRaOptions, RenameLinux
-}
-
-public interface IMainViewPopUp;
-
-public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp
-{
-    public string GivenPath { get; } = givenPath;
-    public string GivenName { get; } = FileOps.GetFileNameNoExtFromPath(givenPath);
-    public string? GivenCore { get; } = givenCore;
-    
-    public string? NewPath { get; set; } = null;
-    public string? NewFriendlyName { get; set; } = null;
-    public bool CustomEntry { get; set; } = false;
-    
-    [MemberNotNullWhen(true, nameof(NewPath), nameof(NewFriendlyName))]
-    public bool ValidOutput { get; set; } = false;
-}
-
-public class MoreOptPopUpHelper(IUserLinkParameters linkObject) : IMainViewPopUp
-{
-    public IUserLinkParameters LinkObject { get; } =  linkObject;
-}

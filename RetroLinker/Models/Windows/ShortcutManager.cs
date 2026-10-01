@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
@@ -50,30 +51,32 @@ public static class ShortcutManager
     public static async Task CreateTileIcoShortcut(LinkParameters linkBase)
     {
         var link = (WindowsLinkParameters)linkBase;
-        var tileIcoArguments = new TileicoArgumentList();
+        var tileIcoArguments = new HashSet<TileicoArgument>();
         TileIcoOptions? tileIcoNameOpt = null;
         if (link.TileIcoNameVisible) {
             tileIcoNameOpt = link.TileIcoNameDark ? TileIcoOptions.name_on_tile_dark : TileIcoOptions.name_on_tile_light;
         }
         
+        // Tileico commands
         tileIcoArguments.Add(new(TileIcoCommands.create, TileIcoSubCommands.custom));
-        tileIcoArguments.AddRange([
-            new(TileIcoOptions.name, link.FriendlyName),
-            new(TileIcoOptions.target, link.RaExecutable),
-            new(TileIcoOptions.arguments, link.RaArguments),
-            new(TileIcoOptions.icon, link.IconPath),
-            new(TileIcoOptions.all_users, link.TileIcoAllUsers),
-            new(TileIcoOptions.overwrite, link.TileIcoOverwrite)
-        ]);
+        // Tileico arguments
+        tileIcoArguments.Add(new(TileIcoOptions.name, link.FriendlyName));
+        tileIcoArguments.Add(new(TileIcoOptions.target, link.RaExecutable));
+        tileIcoArguments.Add(new(TileIcoOptions.arguments, link.RaArguments));
+        tileIcoArguments.Add(new(TileIcoOptions.icon, link.IconPath));
+        tileIcoArguments.Add(new(TileIcoOptions.all_users, link.TileIcoAllUsers));
+        tileIcoArguments.Add(new(TileIcoOptions.overwrite, link.TileIcoOverwrite));
+        
         if (!string.IsNullOrEmpty(link.TileIcoImagePath)) 
             tileIcoArguments.Add(new(TileIcoOptions.image, link.TileIcoImagePath));
         if (tileIcoNameOpt is { } opt) 
             tileIcoArguments.Add(new TileicoArgument(opt, true));
         
+        // Execute Tileico
         await ExecuteTileIco(tileIcoArguments);
     }
     
-    private static async Task ExecuteTileIco(TileicoArgumentList args)
+    private static async Task ExecuteTileIco(HashSet<TileicoArgument> args)
     {
         var tileIcoPath = SettingsOps.GetCachedSettings().TileIcoPath;
         ArgumentException.ThrowIfNullOrEmpty(tileIcoPath);
@@ -123,7 +126,7 @@ internal enum TileIcoOptions
     name_on_tile_dark
 }
 
-internal readonly struct TileicoArgument 
+internal readonly struct TileicoArgument : IEquatable<TileicoArgument>
 {
     public readonly string Option;
     public readonly string Value;
@@ -156,26 +159,9 @@ internal readonly struct TileicoArgument
 
     private static string EnumToString(Enum value) => value.ToString("G").Replace('_', '-');
 
+    public bool Equals(TileicoArgument other) {
+        return Option == other.Option;
+    }
+    public override int GetHashCode() => Option.GetHashCode();
     public override string ToString() => $"{Option} {Value}";
-    
-    public bool SameArgument(TileicoArgument other) => (Option == other.Option);
-}
-
-internal class TileicoArgumentList : List<TileicoArgument>
-{
-    // TODO: replace with HashSet
-    
-    /// <summary>Adds an object to the end of the <see cref="List{TileicoArgument}" />.</summary>
-    /// <param name="item">The <see cref="TileicoArgument"/> to be added to the end of the <see cref="List{TileicoArgument}" />. If an element with the same '<see cref="TileicoArgument.Option"/>' member already exist, then <paramref name="item"/> won't be added.</param>
-    public new void Add(TileicoArgument item) {
-        if (!this.Any(i => i.SameArgument(item))) base.Add(item);
-    }
-
-    /// <summary>Adds the elements of the specified collection to the end of the <see cref="List{TileicoArgument}" />.</summary>
-    /// <param name="collection">The collection whose elements should be added to the end of the <see cref="List{TileicoArgument}" />.</param>
-    /// <remarks>The object to add is conditioned, see <see cref="Add"/>.</remarks>
-    public new void AddRange(IEnumerable<TileicoArgument> collection) {
-        // I believe this is expensive in the long run, but it is called with very few (~10 at most) elements in practice
-        foreach (var item in collection) Add(item);
-    }
 }

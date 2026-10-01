@@ -10,6 +10,8 @@
                     <Button Classes="check"/>
                     <Button Classes="trash"/>
                     <Button Classes="clear_text"/>
+                    <Button Classes="add"/>
+                    <Button Classes="clear_list"/>
                     <Button Classes="restore"/>
                     <Button Classes="browseFolder"/>
                     <Button Classes="browseFile"/>
@@ -39,6 +41,18 @@
     <Style Selector="Button.clear_text">
         <Setter Property="i:Attached.Icon" Value="fa7-delete-left"/>
         <Setter Property="Foreground" Value="Firebrick"/>
+    </Style>
+    
+    <Style Selector="Button.add">
+        <Setter Property="i:Attached.Icon" Value="fa7-plus"/>
+        <Setter Property="Foreground" Value="ForestGreen"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.btnAdd}"/>
+    </Style>
+    
+    <Style Selector="Button.clear_list">
+        <Setter Property="i:Attached.Icon" Value="fa7-eraser"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.btnClear}"/>
     </Style>
     
     <Style Selector="Button.restore">

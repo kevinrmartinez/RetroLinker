@@ -66,7 +66,6 @@ public interface ILinuxLinkParameters : ILinkParametersBase
 
 public interface IUserLinkParameters
 {
-    // TODO: Optional stuff may be null
     public string RaRom { get; set; }
     public string RaRomName => GetRomName(this);
     public string? RaRomPatch { get; set; }
@@ -83,6 +82,10 @@ public interface IUserLinkParameters
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
     protected static string GetRomName(IUserLinkParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
+
+    public bool AddEnvironmentVariable(EnvironmentVariable envVar);
+    public bool RemoveEnvironmentVariable(EnvironmentVariable envVar);
+    public bool ClearEnvironmentVariables();
 }
 
 public interface IShortcutBase : IWindowsLinkParameters, ILinuxLinkParameters;
@@ -111,17 +114,18 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public bool TileIcoOverwrite { get; set => SetAndNotify(value, ref field); }
     public string? TileIcoImagePath { get; set => SetAndNotify(value, ref field); }
     
+    public bool? CustomEntryName { get; set => SetAndNotify(value, ref field); }
     public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
     public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
-    public bool? CustomEntryName { get; set => SetAndNotify(value, ref field); }
     public string OutputPath { get; private set => SetAndNotify(value, ref field); }
     public string OutputDir => ILinkParametersBase.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
     
+    private ObservableCollection<EnvironmentVariable> ObservableEnvironmentVariables { get; set => SetAndNotify(value, ref field); }
+    
+    // These two are required by the contract, but not used here
     public string RaArguments { get; }
     public string? RaWorkDir { get; }
-    
-    private ObservableCollection<EnvironmentVariable> ObservableEnvironmentVariables { get; set => SetAndNotify(value, ref field); }
     
     // private ShortcutBuilder() {}
 
@@ -136,10 +140,6 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         RaCoreSubsystem = string.Empty;
         RaConfig = string.Empty;
         RaAppendedConfig = string.Empty;
-        // RaFullscreen = true; 
-        // RaMenuOnError = true;
-        // RaAccessibility = true;
-        // RaVerbose = true;
         
         Description = string.Empty;
         IconPath = string.Empty;
@@ -155,8 +155,8 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     {
         RaExecutable = linkParam.RaExecutable;
         
-        // TODO
-        RaArguments = linkParam.RaArguments; // <= parse arguments
+        // TODO: parse arguments
+        RaArguments = linkParam.RaArguments;
         RaRom = string.Empty;
         RaRomPatch = string.Empty;
         RaCore = string.Empty;
@@ -175,7 +175,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         OutputPath = linkParam.OutputPath;      // <= main output (the one in main view)
         ObservableEnvironmentVariables = new(linkParam.EnvironmentVariables);
 
-        CustomEntryName = (FriendlyName != FileOps.GetFileNameNoExtFromPath(OutputFileName));   // <= Only set on Linux, null on other OSs
+        CustomEntryName = false;   // <= Only set on Linux, null on other OSs; TODO: Should reverse the Desktop Entry naming convention
         
         var windowsParam =  linkParam as IWindowsLinkParameters;
         var linuxParam =  linkParam as ILinuxLinkParameters;
@@ -196,6 +196,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     
+    /* == Class Methods == */
     public void SetOutputPath(string fullPath) {
         OutputPath = fullPath;
         OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
@@ -205,6 +206,30 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
         SetOutputPath(fullPath);
         FriendlyName = friendlyName;
+    }
+
+    public bool AddEnvironmentVariable(EnvironmentVariable envVar) {
+        ObservableEnvironmentVariables.Add(envVar);
+        return true;
+    }
+
+    public bool RemoveEnvironmentVariable(EnvironmentVariable envVar) {
+        ObservableEnvironmentVariables.Remove(envVar);
+        return true;
+    }
+
+    public bool ClearEnvironmentVariables() {
+        ObservableEnvironmentVariables.Clear();
+        return true;
+    }
+
+    public void RestoreRemembered(RememberedUserChoices userChoices)
+    {
+        RaFullscreen = userChoices.StoredRaFullscreen.GetValueOrDefault(); 
+        RaMenuOnError = userChoices.StoredRaMenuOnError.GetValueOrDefault();
+        RaAccessibility = userChoices.StoredRaAccessibility.GetValueOrDefault();
+        RaVerbose = userChoices.StoredVerbose.GetValueOrDefault();
+        RaLogFile = userChoices.StoredRaLogFile;
     }
 }
 
@@ -228,6 +253,7 @@ public class LinkWriter : IShortcutBase
     public bool TileIcoOverwrite { get; set; }
     public string? TileIcoImagePath { get; set; }
     public bool RaVerbose { get; set; }
+    
     public List<string> OutputPaths { get; } = new();
 
     // private LinkWriter() { }
@@ -313,6 +339,7 @@ public abstract class LinkParameters : ILinkParametersBase
     public string OutputFileName { get; protected init; } = string.Empty;
     public string OutputPath { get; protected set; } = string.Empty;
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; protected init; } = new List<EnvironmentVariable>();
+    public HashSet<EnvironmentVariable> HashedEnvironmentVariables { get; } = new();
 
     /// <summary>
     /// An OS-agnostic command to write the shortcut to file
@@ -321,6 +348,12 @@ public abstract class LinkParameters : ILinkParametersBase
     public abstract Task<LinkWriterResult> CreateOsShortcut();
 
     public virtual void UpdateOutputPath(string outputPath) => OutputPath = outputPath;
+
+    protected void UpdateHashedVariables() {
+        HashedEnvironmentVariables.Clear();
+        foreach (var variable in EnvironmentVariables)  // Trace failed additions
+            HashedEnvironmentVariables.Add(variable);
+    }
     
     protected virtual async Task<LinkWriterResult> CreateShortcut(System.Func<LinkParameters, Task> osCreateShortcut)
     {
@@ -365,6 +398,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         TileIcoAllUsers = linkWriter.TileIcoAllUsers;
         TileIcoOverwrite = linkWriter.TileIcoOverwrite;
         TileIcoImagePath = linkWriter.TileIcoImagePath;
+        UpdateHashedVariables();
     }
 
     public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
@@ -428,6 +462,7 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
         FriendlyName = linkWriter.FriendlyName;
         OutputPath = linkWriter.OutputPath;
         EnvironmentVariables = linkWriter.EnvironmentVariables;
+        UpdateHashedVariables();
     }
     
     // PENDING: Constructor for reading a file
