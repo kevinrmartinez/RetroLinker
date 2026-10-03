@@ -1,8 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:ctrl="clr-namespace:RetroLinker.Styles"
-        xmlns:lc="clr-namespace:RetroLinker.Translations">
+        xmlns:st="clr-namespace:RetroLinker.Styles"
+        xmlns:tl="clr-namespace:RetroLinker.Translations">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Orientation="Vertical">
@@ -15,9 +15,12 @@
                     <Button Classes="restore"/>
                     <Button Classes="browseFolder"/>
                     <Button Classes="browseFile"/>
-                    <ctrl:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
+                    <ToggleButton Classes="LockToggle"/>
+                    <st:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
                 </StackPanel>
-                <ctrl:ViewControlButton Classes="ExtraControl"/>
+                <st:CheckBoxWithLock Text="biiiiiii"/>
+                <st:TextBoxWithLock Label="LOL" Text="bibibi"/>
+                <st:ViewControlButton Classes="ExtraControl"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -46,13 +49,13 @@
     <Style Selector="Button.add">
         <Setter Property="i:Attached.Icon" Value="fa7-plus"/>
         <Setter Property="Foreground" Value="ForestGreen"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.btnAdd}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static tl:resGeneric.btnAdd}"/>
     </Style>
     
     <Style Selector="Button.clear_list">
         <Setter Property="i:Attached.Icon" Value="fa7-eraser"/>
         <Setter Property="Foreground" Value="Firebrick"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.btnClear}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static tl:resGeneric.btnClear}"/>
     </Style>
     
     <Style Selector="Button.restore">
@@ -62,15 +65,15 @@
     
     <Style Selector="Button.browseFolder">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-closed"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFolder}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static tl:resGeneric.tipBrowseFolder}"/>
     </Style>
     
     <Style Selector="Button.browseFile">
         <Setter Property="i:Attached.Icon" Value="fa7-folder-open"/>
-        <Setter Property="ToolTip.Tip" Value="{x:Static lc:resGeneric.tipBrowseFile}"/>
+        <Setter Property="ToolTip.Tip" Value="{x:Static tl:resGeneric.tipBrowseFile}"/>
     </Style>
     
-    <Style Selector="ctrl|IconFontWithTip">
+    <Style Selector="st|IconFontWithTip">
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel Margin="0" Background="Transparent" ToolTip.Tip="{TemplateBinding Tip}">
@@ -79,6 +82,57 @@
                 </Panel>
             </ControlTemplate>
         </Setter>
+    </Style>
+    
+    <Style Selector="ToggleButton.LockToggle">
+        <Setter Property="Content">
+            <Template>
+                <!-- The Binding here is a Hack -->
+                <i:Icon x:Name="PART_Icon"  Value="{Binding Tag, RelativeSource={RelativeSource AncestorType=ToggleButton}}"/>
+            </Template>
+        </Setter>
+        
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Tag" Value="fa7-lock-open"/>
+        <Style Selector="^:checked">
+            <Setter Property="Tag" Value="fa7-lock"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="st|CheckBoxWithLock">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel x:Name="PART_Panel">
+                    <ToggleButton x:Name="PART_Lock" Classes="LockToggle" 
+                                  IsChecked="{TemplateBinding IsLocked, Mode=TwoWay}"/>
+                    <CheckBox x:Name="PART_CheckBox" Content="{TemplateBinding Text}"
+                              IsChecked="{TemplateBinding IsChecked, Mode=TwoWay}"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ StackPanel#PART_Panel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="2"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="st|TextBoxWithLock">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel x:Name="PART_DockPanel">
+                    <ToggleButton x:Name="PART_Lock" DockPanel.Dock="Left" Classes="LockToggle" 
+                                  IsChecked="{TemplateBinding IsLocked, Mode=TwoWay}"/>
+                    <Label x:Name="PART_Label" DockPanel.Dock="Left" Content="{TemplateBinding Label}"/>
+                    <TextBox x:Name="PART_TextBox" Text="{TemplateBinding Text, Mode=TwoWay}"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ Label#PART_Label">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </Style>
     
     <Style Selector="Button.ExtraControl">
@@ -101,4 +155,5 @@
             </Style>
         </Style>
     </Style>
+    
 </Styles>

@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
@@ -261,5 +262,160 @@ public class IconFontWithTip : UserControl
     // Constructor
     public IconFontWithTip() {
         InitializeIfNeeded();
+    }
+}
+
+[TemplatePart("PART_CheckBox", typeof(CheckBox), IsRequired = true)]
+[TemplatePart("PART_Lock", typeof(ToggleButton), IsRequired = true)]
+public class CheckBoxWithLock : UserControl
+{
+    /* == Avalonia Properties == */
+    /* - Text */
+    public static readonly DirectProperty<CheckBoxWithLock, string?> TextProperty =
+        AvaloniaProperty.RegisterDirect<CheckBoxWithLock, string?>(
+            nameof(Text),
+            c => c.Text,
+            (c, v) => c.Text = v);
+
+    public string? Text { get; set => SetAndRaise(TextProperty, ref field, value); }
+    
+    /* - Checked */
+    public static readonly DirectProperty<CheckBoxWithLock, bool> IsCheckedProperty =
+        AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool>(
+            nameof(IsChecked),
+            c => c.IsChecked,
+            (c, v) => c.IsChecked = v);
+
+    public bool IsChecked { get; set => UpdateLockedValueOut(IsCheckedProperty, ref field, value); }
+    
+    /* - Locked */
+    public static readonly DirectProperty<CheckBoxWithLock, bool> IsLockedProperty =
+        AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool>(
+            nameof(IsLocked),
+            c => c.IsLocked,
+            (c, v) => c.IsLocked = v);
+
+    public bool IsLocked { get; set => UpdateLockedValueOut(IsLockedProperty, ref field, value); }
+    
+    /* - Locked Value */
+    public static readonly DirectProperty<CheckBoxWithLock, bool?> LockedValueInProperty =
+        AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool?>(
+            nameof(LockedValueIn),
+            c => c.LockedValueIn,
+            (c, v) => c.LockedValueIn = v);
+    /// <summary>
+    /// Set the lock status on Control creation
+    /// </summary>
+    /// <remarks>Should only be Bind using <see cref="BindingMode.OneTime"/>!</remarks>
+    public bool? LockedValueIn { get; set => UpdateLockedValueIn(LockedValueInProperty, ref field, value); }
+    
+    public static readonly DirectProperty<CheckBoxWithLock, bool?> LockedValueOutProperty =
+        AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool?>(
+            nameof(LockedValueOut),
+            c => c.LockedValueOut,
+            (c, v) => c.LockedValueOut = v);
+    /// <summary>
+    /// Updates the locked value
+    /// </summary>
+    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="BindingMode.OneWayToSource"/>.</remarks>
+    public bool? LockedValueOut { get; set => SetAndRaise(LockedValueOutProperty, ref field, value); }
+    
+    
+    /* == Constructor == */
+    public CheckBoxWithLock() {
+        InitializeIfNeeded();
+    }
+    
+    /* == Class Methods == */
+    private void UpdateLockedValueIn(DirectPropertyBase<bool?> property, ref bool? field, bool? value) {
+        SetAndRaise(property, ref field, value);
+        if (!value.HasValue) IsLocked = false;
+        else {
+            IsChecked = value.Value;
+            IsLocked = true;
+        }
+    }
+
+    private void UpdateLockedValueOut(DirectPropertyBase<bool> property, ref bool field, bool value) {
+        SetAndRaise(property, ref field, value);
+        LockedValueOut = (IsLocked) ? (IsLocked && IsChecked) : null;
+    }
+}
+
+[TemplatePart("PART_TextBox", typeof(TextBox), IsRequired = true)]
+[TemplatePart("PART_Lock", typeof(ToggleButton), IsRequired = true)]
+public class TextBoxWithLock : UserControl
+{
+    /* == Avalonia Properties == */
+    /* - Label */
+    public static readonly DirectProperty<TextBoxWithLock, string?> LabelProperty =
+        AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
+            nameof(Label),
+            c => c.Label,
+            (c, v) => c.Label = v);
+
+    public string? Label { get; set => SetAndRaise(LabelProperty, ref field, value); }
+    
+    /* - Text */
+    public static readonly DirectProperty<TextBoxWithLock, string?> TextProperty =
+        AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
+            nameof(Text),
+            c => c.Text,
+            (c, v) => c.Text = v);
+
+    public string? Text { get; set => SetAndRaise(TextProperty, ref field, value); }
+    
+    /* - Locked */
+    public static readonly DirectProperty<TextBoxWithLock, bool> IsLockedProperty =
+        AvaloniaProperty.RegisterDirect<TextBoxWithLock, bool>(
+            nameof(IsLocked),
+            c => c.IsLocked,
+            (c, v) => c.IsLocked = v);
+
+    public bool IsLocked { get; set => SetAndRaise(IsLockedProperty, ref field, value); }
+    
+    /* - Locked Value */
+    public static readonly DirectProperty<TextBoxWithLock, string?> LockedValueInProperty =
+        AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
+            nameof(LockedValueIn),
+            c => c.LockedValueIn,
+            (c, v) => c.LockedValueIn = v);
+    /// <summary>
+    /// Set the lock status on Control creation
+    /// </summary>
+    /// <remarks>Should only be Bind using <see cref="BindingMode.OneTime"/>!</remarks>
+    public string? LockedValueIn { get; set => UpdateLockedValueIn(LockedValueInProperty, ref field, value); }
+    
+    public static readonly DirectProperty<TextBoxWithLock, string?> LockedValueOutProperty =
+        AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
+            nameof(LockedValueOut),
+            c => c.LockedValueOut,
+            (c, v) => c.LockedValueOut = v);
+    /// <summary>
+    /// Updates the locked value
+    /// </summary>
+    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="BindingMode.OneWayToSource"/>.</remarks>
+    public string? LockedValueOut { get; set => SetAndRaise(LockedValueOutProperty, ref field, value); }
+    
+    
+    /* == Constructor == */
+    public TextBoxWithLock() {
+        InitializeIfNeeded();
+        TextProperty.Changed.AddClassHandler<TextBoxWithLock>((o, e) => {
+            // Kind of a hack
+            if (IsLocked) LockedValueOut = (string?)e.NewValue;
+        });
+        
+        // TODO: Trace this kind of stuff (>=0.10)
+        // LockedValueOutProperty.Changed.AddClassHandler<TextBoxWithLock>((o, e) => {
+        //     Logger.LogDebg("'LockedValueOutProperty' changed: " + e.NewValue);
+        // });
+    }
+    
+    /*  == Class Methods == */
+    private void UpdateLockedValueIn(DirectPropertyBase<string?> property, ref string? field, string? value) {
+        SetAndRaise(property, ref field, value);
+        IsLocked = value is not null;
+        if (IsLocked) Text = value;
     }
 }

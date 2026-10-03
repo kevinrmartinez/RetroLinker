@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vw="using:RetroLinker.Views"
+             xmlns:md="clr-namespace:RetroLinker.Models"
              xmlns:st="clr-namespace:RetroLinker.Styles"
              xmlns:tl="clr-namespace:RetroLinker.Translations"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
              x:Class="RetroLinker.Views.MoreRaOptionsView"
              x:DataType="vw:MoreRaOptionsView"
@@ -21,43 +22,37 @@
             <Rectangle Height="10"/>
             <Grid ColumnDefinitions="*,*">
                 <StackPanel Grid.Column="0" DockPanel.Dock="Left" Orientation="Vertical" Margin="1,0">
-                    <StackPanel Orientation="Horizontal" Spacing="2">
-                        <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static tl:resMainView.chkFull}"
-                                  IsChecked="{Binding LinkParameters.RaFullscreen}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="2">
-                        <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static tl:resMainView.chkVerb}"
-                                  IsChecked="{Binding LinkParameters.RaVerbose}"/>
-                    </StackPanel>
+                    <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkFull}"
+                                         IsChecked="{Binding LinkParameters.RaFullscreen}"
+                                         LockedValueIn="{Binding UserChoices.StoredRaFullscreen, Mode=OneTime}"
+                                         LockedValueOut="{Binding UserChoices.StoredRaFullscreen, Mode=OneWayToSource}"/>
+                    <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkVerb}"
+                                         IsChecked="{Binding LinkParameters.RaVerbose}"
+                                         LockedValueIn="{Binding UserChoices.StoredVerbose, Mode=OneTime}"
+                                         LockedValueOut="{Binding UserChoices.StoredVerbose, Mode=OneWayToSource}"/>
                 </StackPanel>
                 
                 <StackPanel Grid.Column="1" Orientation="Vertical" Margin="1,0">
-                    <StackPanel Orientation="Horizontal" Spacing="2">
-                        <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static tl:resMainView.chkAccessi}"
-                                  IsChecked="{Binding LinkParameters.RaAccessibility}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="2">
-                        <ToggleButton Classes="LockToggle"/>
-                        <CheckBox Content="{x:Static tl:resMainView.chkMenuOnError}"
-                                  IsChecked="{Binding LinkParameters.RaMenuOnError}"/>
-                    </StackPanel>
+                    <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkAccessi}"
+                                         IsChecked="{Binding LinkParameters.RaAccessibility}"
+                                         LockedValueIn="{Binding UserChoices.StoredRaAccessibility, Mode=OneTime}"
+                                         LockedValueOut="{Binding UserChoices.StoredRaAccessibility, Mode=OneWayToSource}"/>
+                    <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkMenuOnError}"
+                                         IsChecked="{Binding LinkParameters.RaMenuOnError}"
+                                         LockedValueIn="{Binding UserChoices.StoredRaMenuOnError, Mode=OneTime}"
+                                         LockedValueOut="{Binding UserChoices.StoredRaMenuOnError, Mode=OneWayToSource}"/>
                 </StackPanel>
             </Grid>
             
             <DockPanel>
                 <!-- TODO: Localize -->
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <ToggleButton Classes="LockToggle"/>
-                    <Label VerticalAlignment="Center" Content="Log File:"/>
-                </StackPanel>
                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline clear_text" 
                         CommandParameter="{x:Static vw:TextBoxActions.Clear}" Click="BtnRaLogFile_OnClick"/>
                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile" 
-                        CommandParameter="{Binding #txtRaLogFile}" Click="BtnRaLogFile_OnClick"/>
-                <TextBox x:Name="txtRaLogFile" Text="{Binding LinkParameters.RaLogFile}"/>
+                        CommandParameter="{Binding #txtLogFile}" Click="BtnRaLogFile_OnClick"/>
+                <st:TextBoxWithLock x:Name="txtLogFile" Label="Log File:" Text="{Binding LinkParameters.RaLogFile}"
+                                    LockedValueIn="{Binding UserChoices.StoredRaLogFile, Mode=OneTime}"
+                                    LockedValueOut="{Binding UserChoices.StoredRaLogFile, Mode=OneWayToSource}"/>
             </DockPanel>
             
             <Rectangle Height="20"/>
@@ -65,16 +60,22 @@
             <Border BorderThickness="1" CornerRadius="6" 
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                 <StackPanel Orientation="Vertical" Spacing="2" Margin="2">
-                    <ItemsControl x:Name="listEnvVars" ItemsSource="{Binding LinkParameters.EnvironmentVariables}"/>
+                    <ItemsControl x:Name="lstEnvVars" ItemsSource="{Binding LinkParameters.EnvironmentVariables}"
+                                  Tag="{Binding HalfWidth, RelativeSource={RelativeSource AncestorType=vw:PopUpWindow}}"
+                                  Loaded="LstEnvVars_ButtonOnLoaded" Button.Click="LstEnvVars_ButtonOnClick"/>
+                    
                     <Rectangle StrokeThickness="1" Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+                    
                     <DockPanel HorizontalSpacing="2">
                         <Button DockPanel.Dock="Right" Classes="textbox_inline browseFolder" CommandParameter="{x:Static vw:TextBoxActions.Browse}"
                                 Click="BtnEnvVars_OnClick"/>
                         <ComboBox PlaceholderText="VARIABLE" IsEditable="True" MinWidth="{StaticResource VariableMinWidth}"
-                                  SelectedItem="{Binding NewEnvVar_Key}"
-                                  Text="{Binding NewEnvVar_Key}"/>
+                                  MaxWidth="{Binding HalfWidth, RelativeSource={RelativeSource AncestorType=vw:PopUpWindow}}"
+                                  Text="{Binding NewEnvVar_Key}"
+                                  ItemsSource="{x:Static md:SettingsOps.RaEnvironmentVariables}"/>
                         <TextBox PlaceholderText="/path/to/directory" Text="{Binding NewEnvVar_Value}"/>
                     </DockPanel>
+                    
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Viewbox HorizontalAlignment="Right" Classes="Expandable" Tag="{Binding #btnClearList.Bounds.Height}"
                                  Classes.Expanded="{Binding NewEnvVar_Valid, Mode=OneWay}">

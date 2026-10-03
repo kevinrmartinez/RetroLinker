@@ -32,6 +32,16 @@ namespace RetroLinker.Models
         
         public static List<string> PrevConfigs { get; set; } = new();
         public static List<string> LinkCopyPaths { get; set; } = new();
+        public static IReadOnlyList<string> RaEnvironmentVariables { get; } = [
+            "LIBRETRO_ASSETS_DIRECTORY",
+            "LIBRETRO_AUTOCONFIG_DIRECTORY",
+            "LIBRETRO_CHEATS_DIRECTORY",
+            "LIBRETRO_DATABASE_DIRECTORY",
+            "LIBRETRO_DIRECTORY",
+            "LIBRETRO_SYSTEM_DIRECTORY",
+            "LIBRETRO_VIDEO_FILTER_DIRECTORY", 
+            "LIBRETRO_VIDEO_SHADER_DIRECTORY"
+        ];
         
         public static Settings GetCachedSettings() => CachedSettings;
         
@@ -123,6 +133,7 @@ namespace RetroLinker.Models
         public bool? StoredRaAccessibility { get; set; }
         public bool? StoredVerbose { get; set; }
         public string? StoredRaLogFile { get; set; }
+        public HashSet<EnvironmentVariable> StoredEnvironmentVariables { get; } = new();
     }
     
     [JsonSerializable(typeof(Settings))]

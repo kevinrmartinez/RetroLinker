@@ -1,28 +1,28 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:lc="clr-namespace:RetroLinker.Translations"
-        xmlns:ctrl="using:RetroLinker.Styles">
+        xmlns:st="clr-namespace:RetroLinker.Styles"
+        xmlns:tl="clr-namespace:RetroLinker.Translations">
         
     
     
     <Design.PreviewWith>
         <Border Padding="0">
             <StackPanel Orientation="Vertical" Spacing="2">
-                <ctrl:MainViewExtensionNotice Width="300" Title="Power:" Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
+                <st:MainViewExtensionNotice Width="300" Title="Power:" Text="/path/to/file/file/file/file/file/file/file/file/file/file/file/file/file/file/file"/>
                 
-                <ctrl:MainWindowHeader Width="300" Title="Testing" Classes="Header">
-                    <ctrl:MainWindowHeader.RightControl>
+                <st:MainWindowHeader Width="300" Title="Testing" Classes="Header">
+                    <st:MainWindowHeader.RightControl>
                         <Label Content="aaa"/>
-                    </ctrl:MainWindowHeader.RightControl>
-                    <ctrl:MainWindowHeader.LeftControl>
+                    </st:MainWindowHeader.RightControl>
+                    <st:MainWindowHeader.LeftControl>
                         <Label Content="bbb"/>
-                    </ctrl:MainWindowHeader.LeftControl>
-                </ctrl:MainWindowHeader>
+                    </st:MainWindowHeader.LeftControl>
+                </st:MainWindowHeader>
                 
-                <ctrl:UserStringList Height="180">
+                <st:UserStringList Height="180">
                     Hello World!
-                </ctrl:UserStringList>
+                </st:UserStringList>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -31,7 +31,7 @@
 
     <!-- ============================================== -->
     <!-- MainViewExtensionNotice -->
-    <Style Selector="ctrl|MainViewExtensionNotice">
+    <Style Selector="st|MainViewExtensionNotice">
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
@@ -73,7 +73,7 @@
     </Style>
     
     <!-- MainWindowHeader -->
-    <Style Selector="ctrl|MainWindowHeader">
+    <Style Selector="st|MainWindowHeader">
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
@@ -92,7 +92,7 @@
         </Setter>
     </Style>
     
-    <Style Selector="ctrl|MainWindowHeader.Header">
+    <Style Selector="st|MainWindowHeader.Header">
         <Style Selector="^ Grid">
             <Setter Property="Height" Value="45"/>
             <Setter Property="Background" Value="Firebrick"/>
@@ -109,7 +109,7 @@
     <!-- https://docs.avaloniaui.net/docs/custom-controls/templated-controls#defining-the-control-theme -->
     <!-- <ControlTheme x:Key="{x:Type controls:UserStringList}" TargetType="controls:UserStringList"></ControlTheme> -->
     
-    <Style Selector="ctrl|UserStringList">
+    <Style Selector="st|UserStringList">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="*,Auto,Auto">
@@ -181,7 +181,7 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0" Text="{Binding $parent.DataContext}"/>
                             <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash" 
-                                    ToolTip.Tip="{x:Static lc:resGeneric.btnDeleteItem}"/>
+                                    ToolTip.Tip="{x:Static tl:resGeneric.btnDeleteItem}"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

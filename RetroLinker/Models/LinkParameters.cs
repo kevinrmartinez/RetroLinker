@@ -230,6 +230,8 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         RaAccessibility = userChoices.StoredRaAccessibility.GetValueOrDefault();
         RaVerbose = userChoices.StoredVerbose.GetValueOrDefault();
         RaLogFile = userChoices.StoredRaLogFile;
+        foreach (var variable in userChoices.StoredEnvironmentVariables)
+            AddEnvironmentVariable(variable);
     }
 }
 

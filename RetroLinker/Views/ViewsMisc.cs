@@ -11,7 +11,7 @@ public enum MainViewTypes
 public enum PopUpWindowType { MoreRaOptions, RenameLinux }
 
 public enum TextBoxActions { Browse, Restore, Clear }
-public enum UserListActions { Add, Remove, Clear }
+public enum UserListActions { Add, Remove, Clear, Lock }
 
 /* == Records == */
 public record Contributor(string DisplayName, System.Uri? OnlinePageUrl);
@@ -21,26 +21,7 @@ public record ThirdParty(string DisplayName, System.Uri OnlinePageUrl, string? C
 public interface IMainViewPopUp;
 
 /* == Static Classes == */
-public static class GlobalCommands
-{
-    public static System.Windows.Input.ICommand TrashFromListCommand { get; }
-        = new MsBox.Avalonia.ViewModels.Commands.RelayCommand(BtnTrashFromList_OnClick);
 
-    private static void BtnTrashFromList_OnClick(object? parameter)
-    {
-        if (parameter is not Button ogButton || ogButton.DataContext is null) return;
-        var valueType = ogButton.DataContext.GetType();
-        if (valueType.IsAssignableTo(typeof(string))) 
-            BtnTrashFromList_OnClick(ogButton, ogButton.DataContext as string);
-        if (valueType.IsAssignableTo(typeof(EnvironmentVariable))) 
-            BtnTrashFromList_OnClick(ogButton, ogButton.DataContext as EnvironmentVariable);
-    }
-    
-    private static void BtnTrashFromList_OnClick<T>(Button ogButton, T value) {
-        if (ogButton.Tag is not ICollection<T> collection) return;
-        collection.Remove(value);
-    }
-}
 
 /* == Dynamic Classes == */
 public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp

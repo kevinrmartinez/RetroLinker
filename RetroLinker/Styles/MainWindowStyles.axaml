@@ -1,16 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:vw="clr-namespace:RetroLinker.Views"
+        xmlns:md="clr-namespace:RetroLinker.Models"
         xmlns:st="clr-namespace:RetroLinker.Styles"
-        xmlns:md="clr-namespace:RetroLinker.Models">
+        xmlns:vw="clr-namespace:RetroLinker.Views">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
             <StackPanel Orientation="Vertical">
                 <Label Content="Cores" Classes="ReqField"/>
-                <ToggleButton Classes="LockToggle"/>
-                <ItemsControl x:Name="listEnvVars" ItemsSource="{x:Static st:DummyData.DummyEnvVars}"/>
+                <ItemsControl x:Name="lstEnvVars" ItemsSource="{x:Static st:DummyData.DummyEnvVars}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -51,43 +50,46 @@
     <!-- SOON -->
     
     <!-- == More Options View == -->
-    <!-- Lock Toggle -->
-    <Style Selector="ToggleButton.LockToggle">
-        <Setter Property="Content">
-            <Template>
-                <i:Icon x:Name="PART_Icon"  Value="{Binding Tag, RelativeSource={RelativeSource AncestorType=ToggleButton}}"/>
-            </Template>
-        </Setter>
-        
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="Padding" Value="4"/>
-        <Setter Property="Tag" Value="fa7-lock-open"/>
-        <Style Selector="^:checked">
-            <Setter Property="Tag" Value="fa7-lock"/>
-        </Style>
-    </Style>
-    
     <!-- Env -->
-    <Style Selector="ItemsControl#listEnvVars">
+    <Style Selector="ItemsControl#lstEnvVars">
         <Setter Property="ItemTemplate">
             <DataTemplate DataType="md:EnvironmentVariable">
-                <Border Margin="2,3" BorderThickness="0,0,0,1" BorderBrush="Gray" 
-                        CornerRadius="6" Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
-                    <DockPanel Margin="4" HorizontalSpacing="2">
-                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" TextAlignment="Right"
-                               MinWidth="{StaticResource VariableMinWidth}" 
-                               Text="{Binding Key}" ToolTip.Tip="{Binding $self.Text}"/>
-                        <Button DockPanel.Dock="Right" Classes="textbox_inline trash" 
+                <Border x:Name="PART_TopBorder">
+                    <Grid x:Name="PART_Grid" ColumnDefinitions="Auto,0.4*,*,Auto">
+                        <ToggleButton x:Name="PART_Lock" Grid.Column="0" Classes="LockToggle" 
+                                      CommandParameter="{x:Static vw:UserListActions.Lock}"/>
+                        <SelectableTextBlock x:Name="PART_TextKey" Grid.Column="1" Text="{Binding Key}" 
+                                             ToolTip.Tip="{Binding $self.Text}"/>
+                        <TextBox x:Name="PART_TextValue" Grid.Column="2" Text="{Binding Value}" 
+                                 ToolTip.Tip="{Binding $self.Text}"/>
+                        <Button x:Name="PART_Trash" Grid.Column="3" Classes="textbox_inline trash" 
                                 Tag="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding $self}" Command="{x:Static vw:GlobalCommands.TrashFromListCommand}"/>
-                        <TextBox IsReadOnly="True" Text="{Binding Value}" ToolTip.Tip="{Binding $self.Text}"/>
-                    </DockPanel>
+                                CommandParameter="{x:Static vw:UserListActions.Remove}" />
+                    </Grid>
                 </Border>
             </DataTemplate>
         </Setter>
         
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Background" Value="{DynamicResource SystemControlPageBackgroundBaseLowBrush}"/>
+        
+        <Style Selector="^ Border#PART_TopBorder">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+            <Setter Property="Margin" Value="2,3"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+        <Style Selector="^ Grid#PART_Grid">
+            <Setter Property="ColumnSpacing" Value="2"/>
+            <Setter Property="Margin" Value="4"/>
+        </Style>
+        <Style Selector="^ ToggleButton#PART_Lock"></Style>
+        <Style Selector="^ SelectableTextBlock#PART_TextKey">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+        </Style>
+        <Style Selector="^ TextBox#PART_TextValue">
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
     </Style>
     
     <Style Selector="Viewbox.Expandable">

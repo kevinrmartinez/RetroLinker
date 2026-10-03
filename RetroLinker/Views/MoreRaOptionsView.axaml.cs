@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
@@ -38,7 +40,7 @@ public partial class MoreRaOptionsView : UserControl
     
     // Normal Props
     public IUserLinkParameters LinkParameters { get; }
-    public Settings CurrentSettings { get; }
+    public RememberedUserChoices UserChoices { get; }
     
     public MoreRaOptionsView()
     {
@@ -46,7 +48,7 @@ public partial class MoreRaOptionsView : UserControl
         InitializeComponent();
         _popUpWindow = new PopUpWindow(isDesigner: true);
         LinkParameters = new UserLinkBuilder();
-        CurrentSettings = new Settings();
+        UserChoices = new RememberedUserChoices();
         /* TO ADD
          * -N, --nodevice=PORT          Disconnects controller device connected to PORT (1 to 16).
            -A, --dualanalog=PORT        Connect a DualAnalog controller to PORT (1 to 16).
@@ -68,13 +70,13 @@ public partial class MoreRaOptionsView : UserControl
         InitializeComponent();
         _popUpWindow = popUpWindow;
         LinkParameters = moreOptParams.LinkObject;
-        CurrentSettings = moreOptParams.SettingsObject;
+        UserChoices = moreOptParams.SettingsObject.UserChoices;
         DataContext = this;
     }
     
     // Fields
     private PopUpWindow _popUpWindow;
-
+    
     private void LockControls(bool value) => ((DockPanel?)Content)?.IsEnabled = !value;
     
     // LogFile
@@ -99,19 +101,51 @@ public partial class MoreRaOptionsView : UserControl
         if (sender is not Button button) return;
         switch (button.CommandParameter)
         {
-            case TextBox:
+            case RetroLinker.Styles.TextBoxWithLock:
                 BtnRaLogFile_OnClickAsync();
                 break;
             case TextBoxActions action:
-                if (action == TextBoxActions.Clear) 
-                    LinkParameters.RaLogFile = null;
+                if (action == TextBoxActions.Clear)
+                    // Binding here is done from the Control to the Object, because the Object doesn't notify
+                    txtLogFile.Text = null;
                 break;
         }
     }
 
+    // EnvVar
     private void ClearNewEnvVars() {
         NewEnvVar_Key = null;
         NewEnvVar_Value = null;
+    }
+
+    private void LstEnvVars_ButtonOnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ItemsControl itemsControl) return;
+        var children = itemsControl.GetLogicalChildren();
+        foreach (var child in children)
+        {
+            if (child is not ContentPresenter presenter) continue;
+            var tb = presenter.FindDescendantOfType<ToggleButton>();
+            var context = tb?.DataContext as EnvironmentVariable;
+            if (tb is null || context is null) continue;
+            tb.IsChecked = UserChoices.StoredEnvironmentVariables.Contains(context);
+        }
+    }
+
+    private void LstEnvVars_ButtonOnClick(object? sender, RoutedEventArgs e)
+    {
+        if (e.Source is Button { DataContext: EnvironmentVariable envVar, CommandParameter: UserListActions action } button) {
+            if (action == UserListActions.Lock) StoreEnvVar(envVar, ((ToggleButton)button).IsChecked.GetValueOrDefault());
+            else if (action == UserListActions.Remove) {
+                LinkParameters.RemoveEnvironmentVariable(envVar);
+                StoreEnvVar(envVar, false);
+            }
+        }
+    }
+
+    private bool StoreEnvVar(EnvironmentVariable envVar, bool store) {
+        if (store) return UserChoices.StoredEnvironmentVariables.Add(envVar);
+        else return UserChoices.StoredEnvironmentVariables.Remove(envVar);
     }
 
     private async void BtnEnvVars_OnClickAsync()
@@ -160,5 +194,6 @@ public partial class MoreRaOptionsView : UserControl
         }
     }
 
+    // Exit
     private void BtnExit_OnClick(object? sender, RoutedEventArgs e) => _popUpWindow.Close();
 }
