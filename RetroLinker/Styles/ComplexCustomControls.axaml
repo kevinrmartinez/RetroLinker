@@ -121,7 +121,7 @@
                     <Rectangle Grid.Row="1"/>
                     <!-- Controls for Append Paths List -->
                     <StackPanel Grid.Row="2">
-                        <Button x:Name="PART_ButtonClr" Classes="clear_text"/>
+                        <Button x:Name="PART_ButtonClr" Classes="clear_list"/>
                         <Button x:Name="PART_ButtonAdd" Classes="add"/>
                     </StackPanel>
                 </Grid>

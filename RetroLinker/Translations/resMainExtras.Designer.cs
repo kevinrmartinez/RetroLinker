@@ -230,5 +230,41 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("lblAppendCurrentConf", resourceCulture);
             }
         }
+        
+        public static string titleMoreOptions {
+            get {
+                return ResourceManager.GetString("titleMoreOptions", resourceCulture);
+            }
+        }
+        
+        public static string lblLogFile {
+            get {
+                return ResourceManager.GetString("lblLogFile", resourceCulture);
+            }
+        }
+        
+        public static string lblCat_EnvVar {
+            get {
+                return ResourceManager.GetString("lblCat_EnvVar", resourceCulture);
+            }
+        }
+        
+        public static string tipCat_EnvVar {
+            get {
+                return ResourceManager.GetString("tipCat_EnvVar", resourceCulture);
+            }
+        }
+        
+        public static string plhEnvVar_Key {
+            get {
+                return ResourceManager.GetString("plhEnvVar_Key", resourceCulture);
+            }
+        }
+        
+        public static string plhEnvVar_Val {
+            get {
+                return ResourceManager.GetString("plhEnvVar_Val", resourceCulture);
+            }
+        }
     }
 }

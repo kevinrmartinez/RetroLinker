@@ -13,7 +13,7 @@
              Unloaded="View1_Unloaded">
 	
 	<UserControl.Resources>
-		<x:Double x:Key="MinHeightForLargePic">700</x:Double>
+		<x:Double x:Key="MinHeightForLargePic">699</x:Double>
 	</UserControl.Resources>
 	<UserControl.Styles>
 		<StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -113,7 +113,6 @@
 						          IsChecked="{Binding BuildingLink.RaFullscreen}"/>
 						<CheckBox Name="chkAccessi" VerticalAlignment="Center" Content="{x:Static lc:resMainView.chkAccessi}"
 						          IsChecked="{Binding BuildingLink.RaAccessibility}"/>
-						
 					</DockPanel>
 					
 					<StackPanel Orientation="Vertical">
@@ -238,31 +237,19 @@
 							</StackPanel>
 
 							<!-- pic256 -->
-							<Viewbox Classes.collapsed="{Binding ParentWindow.Height, 
-							         Converter={StaticResource NumberLowerThanConverter},
+							<Viewbox HorizontalAlignment="Left" Classes="FixedExpandable" 
+							         Classes.Expanded="{Binding ParentWindow.Height, 
+							         Converter={StaticResource NumberGreaterThanConverter},
 							         ConverterParameter={StaticResource MinHeightForLargePic},
 							         RelativeSource={RelativeSource AncestorType=vw:MainView}}">
 								<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
 								<Viewbox.Styles>
-									<Style Selector="Viewbox">
-										<!-- TODO: Invert it, and move it to a style file -->
-										<Setter Property="HorizontalAlignment" Value="Left"/>
+									<Style Selector="Viewbox.Expanded">
 										<Setter Property="Width" Value="258"/>
 										<Setter Property="Height" Value="258"/>
 										<Setter Property="Margin" Value="0,4"/>
-										<Style Selector="^.collapsed">
-											<Setter Property="Width" Value="0"/>
-											<Setter Property="Height" Value="0"/>
-											<Setter Property="Margin" Value="0"/>
-										</Style>
 									</Style>
 								</Viewbox.Styles>
-								<Viewbox.Transitions>
-									<Transitions>
-										<DoubleTransition Property="Width" Duration="0:00:00.35" Easing="CubicEaseOut"/>
-										<DoubleTransition Property="Height" Duration="0:00:00.35" Easing="CubicEaseOut"/>
-									</Transitions>
-								</Viewbox.Transitions>
 								
 								<Border BorderThickness="2" BorderBrush="Gray">
 									<Image Name="pic256"/>

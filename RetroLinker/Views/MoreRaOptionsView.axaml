@@ -45,18 +45,18 @@
             </Grid>
             
             <DockPanel>
-                <!-- TODO: Localize -->
                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline clear_text" 
                         CommandParameter="{x:Static vw:TextBoxActions.Clear}" Click="BtnRaLogFile_OnClick"/>
                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile" 
                         CommandParameter="{Binding #txtLogFile}" Click="BtnRaLogFile_OnClick"/>
-                <st:TextBoxWithLock x:Name="txtLogFile" Label="Log File:" Text="{Binding LinkParameters.RaLogFile}"
+                <st:TextBoxWithLock x:Name="txtLogFile" Label="{x:Static tl:resMainExtras.lblLogFile}" 
+                                    Text="{Binding LinkParameters.RaLogFile}"
                                     LockedValueIn="{Binding UserChoices.StoredRaLogFile, Mode=OneTime}"
                                     LockedValueOut="{Binding UserChoices.StoredRaLogFile, Mode=OneWayToSource}"/>
             </DockPanel>
             
             <Rectangle Height="20"/>
-            <Label Content="Environment Variables" FontWeight="Bold"/>
+            <Label Content="{x:Static tl:resMainExtras.lblCat_EnvVar}" FontWeight="Bold"/>
             <Border BorderThickness="1" CornerRadius="6" 
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
                 <StackPanel Orientation="Vertical" Spacing="2" Margin="2">
@@ -69,11 +69,13 @@
                     <DockPanel HorizontalSpacing="2">
                         <Button DockPanel.Dock="Right" Classes="textbox_inline browseFolder" CommandParameter="{x:Static vw:TextBoxActions.Browse}"
                                 Click="BtnEnvVars_OnClick"/>
-                        <ComboBox PlaceholderText="VARIABLE" IsEditable="True" MinWidth="{StaticResource VariableMinWidth}"
+                        <ComboBox PlaceholderText="{x:Static tl:resMainExtras.plhEnvVar_Key}" IsEditable="True" 
+                                  MinWidth="{StaticResource VariableMinWidth}"
                                   MaxWidth="{Binding HalfWidth, RelativeSource={RelativeSource AncestorType=vw:PopUpWindow}}"
                                   Text="{Binding NewEnvVar_Key}"
                                   ItemsSource="{x:Static md:SettingsOps.RaEnvironmentVariables}"/>
-                        <TextBox PlaceholderText="/path/to/directory" Text="{Binding NewEnvVar_Value}"/>
+                        <TextBox PlaceholderText="{x:Static tl:resMainExtras.plhEnvVar_Val}" 
+                                 Text="{Binding NewEnvVar_Value}"/>
                     </DockPanel>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

@@ -83,7 +83,7 @@ public partial class PopUpWindow : Window
     private void MoreOptionsPopUp(IMainViewPopUp popUpParams)
     {
         if (popUpParams is not MoreOptPopUpHelper moreOptParams) return;
-        Title = "More shortcut options";    // TODO: Localize 
+        Title = Translations.resMainExtras.titleMoreOptions;
         PopCC1.Content = new MoreRaOptionsView(this, moreOptParams);
         SizeToContent = SizeToContent.Height;
         Width = 600;

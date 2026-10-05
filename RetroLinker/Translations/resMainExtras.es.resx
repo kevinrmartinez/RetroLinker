@@ -80,4 +80,19 @@
     <data name="lblAppendCurrentConf" xml:space="preserve">
         <value>Archivo Config:</value>
     </data>
+    <data name="titleMoreOptions" xml:space="preserve">
+        <value>Más opciones de Retroarch</value>
+    </data>
+    <data name="lblLogFile" xml:space="preserve">
+        <value>Archivo de registro:</value>
+    </data>
+    <data name="lblCat_EnvVar" xml:space="preserve">
+        <value>Variables de Entorno</value>
+    </data>
+    <data name="plhEnvVar_Key" xml:space="preserve">
+        <value>VARIABLE</value>
+    </data>
+    <data name="plhEnvVar_Val" xml:space="preserve">
+        <value>VALOR</value>
+    </data>
 </root>

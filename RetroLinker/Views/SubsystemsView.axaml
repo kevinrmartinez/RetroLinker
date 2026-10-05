@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:st="clr-namespace:RetroLinker.Styles"
+             xmlns:tl="clr-namespace:RetroLinker.Translations"
              xmlns:vw="clr-namespace:RetroLinker.Views"
-             xmlns:pc="clr-namespace:RetroLinker.Styles"
-             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SubsystemsView"
              x:DataType="vw:SubsystemsView"
@@ -16,7 +16,7 @@
     
     <Grid x:Name="gridContent" RowDefinitions="Auto, *, Auto">
         <!--Top-->
-        <pc:MainWindowHeader Grid.Row="0" Title="{x:Static lc:resMainExtras.titleSubsystems}" Classes="Header"/>
+        <st:MainWindowHeader Grid.Row="0" Title="{x:Static tl:resMainExtras.titleSubsystems}" Classes="Header"/>
         <!-- Header -->
     
         <!--Body-->
@@ -28,37 +28,37 @@
             <!-- ROW1 - Subsystem Controls -->
             <Grid x:Name="gridControls" Grid.Row="1" ColumnDefinitions="*,6*" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="10,0">
                 
-                <Label Grid.Column="0" Grid.Row="0" Content="{x:Static lc:resMainExtras.lblSubsysCore}"
+                <Label Grid.Column="0" Grid.Row="0" Content="{x:Static tl:resMainExtras.lblSubsysCore}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtCore" Grid.Column="1" Grid.Row="0" IsEnabled="False" Margin="0,3" Text="{Binding Core}"/>
                     
-                <Label Grid.Column="0" Grid.Row="1" Content="{x:Static lc:resMainExtras.lblSubsysContent}"
+                <Label Grid.Column="0" Grid.Row="1" Content="{x:Static tl:resMainExtras.lblSubsysContent}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtContent" Grid.Column="1" Grid.Row="1" IsEnabled="False" Margin="0,3" Text="{Binding CoreContent}"/>
                     
-                <Label Grid.Column="0" Grid.Row="2" Content="{x:Static lc:resMainExtras.lblSubsysBase}"
+                <Label Grid.Column="0" Grid.Row="2" Content="{x:Static tl:resMainExtras.lblSubsysBase}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtSubsys" Grid.Column="1" Grid.Row="2" Margin="0,3" Text="{Binding SubSystem}"/>
                     
-                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static lc:resMainExtras.lblSubsysArgs}" 
+                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static tl:resMainExtras.lblSubsysArgs}" 
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
                 <Border Grid.Column="1" Grid.Row="3" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
-                    <pc:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
+                    <st:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
                                        IsEnabled="{Binding #txtSubsys.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                 </Border>
                 
                 <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="4" IsVisible="False"
                         BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <StackPanel Orientation="Vertical">
-                        <Label Content="{x:Static lc:resMainExtras.lblSubsysNewArg}"/>
+                        <Label Content="{x:Static tl:resMainExtras.lblSubsysNewArg}"/>
                         <Grid ColumnDefinitions="*,Auto" Margin="2">
                             <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="⏏" Classes="textbox_inline browseFile" Click="ButtonNewArgBrowse_OnClick"/>
-                                <Button Content="⌫" Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
-                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgDis_Tip}"/>
-                                <Button Content="✓" Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
-                                        ToolTip.Tip="{x:Static lc:resMainExtras.btnSubsysArgAdd_Tip}"/>
+                                <Button Classes="textbox_inline browseFile" Click="ButtonNewArgBrowse_OnClick"/>
+                                <Button Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
+                                        ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgDis_Tip}"/>
+                                <Button Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
+                                        ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgAdd_Tip}"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -70,8 +70,8 @@
             
             <!-- ROW3 - Return Controls -->
             <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ViewControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
-                <pc:ViewControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
+                <st:ViewControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
+                <st:ViewControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
             </Grid>
             
         </Grid>
