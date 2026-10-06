@@ -41,11 +41,12 @@ public partial class SubsystemsView : UserControl
         // Core = buildingLink.ROMcore;
         Core = mainWindow.PermaView?.comboCore.Text ?? string.Empty;    // Temporal solution
         CoreContent = buildingLink.RaRom;
+        var subSystemStr = buildingLink.RaCoreSubsystem ?? string.Empty;
         var subsystem = string.Empty;
         var subsystemArgs = new List<string>();
         try
         {
-            var subsysArgs = CommandManager.ResolveSubsystemArg(buildingLink.RaCoreSubsystem);
+            var subsysArgs = CommandManager.ResolveSubsystemArg(subSystemStr);
             subsystem = subsysArgs.Item1;
             subsystemArgs = subsysArgs.Item2;
         }

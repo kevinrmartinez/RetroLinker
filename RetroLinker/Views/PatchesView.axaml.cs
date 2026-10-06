@@ -52,7 +52,7 @@ public partial class PatchesView : UserControl
         _parentWindow = mainWindow;
         IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
         CoreContent = buildingLink.RaRom;
-        _patchString = buildingLink.RaRomPatch;
+        _patchString = buildingLink.RaRomPatch ?? string.Empty;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
         DataContext = this;

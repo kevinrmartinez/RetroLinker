@@ -90,7 +90,7 @@ namespace RetroLinker.Models
             IconItemsList.Add(icoItem);
         }
         
-        public static async Task<string> ResolveImageForTileico(string iconFile, string tileIcoImage, IconsItems? iconItem)
+        public static async Task<string> ResolveImageForTileico(string iconFile, string? tileIcoImage, IconsItems? iconItem)
         {
             MemoryStream? memoryStream = null;
             string? ogFilePath = null;

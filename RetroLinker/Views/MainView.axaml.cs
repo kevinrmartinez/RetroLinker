@@ -141,6 +141,7 @@ public partial class MainView : UserControl
         ApplyArgs();
         
         UpdateContext();
+        CommandManager.TestParser();
             
         // TODO_MAYBE: Tutorial event for new users
     }

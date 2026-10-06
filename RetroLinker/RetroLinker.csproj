@@ -10,7 +10,7 @@
     <AssemblyName>RetroLinkerLib</AssemblyName>
     <VersionPrefix>0.8.1</VersionPrefix>
     <VersionSuffix>dev</VersionSuffix>
-    <NoWarn>CA1416</NoWarn>
+    <!--  <NoWarn>CA1416</NoWarn>  -->
     <!-- Required to use the LibraryImport attribute -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -37,6 +37,7 @@
     <PackageReference Include="Avalonia" Version="12.1.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="15.0.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="12.0.0" />
     <PackageReference Include="Optris.Icons.Avalonia.FontAwesome7" Version="12.0.7" />
@@ -47,6 +48,12 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- To prevent this NuGet from getting trimmed (not compatible due to old age) -->
+    <!-- This doesn't seem to have an effect while testing it, but better safe than sorry.  -->
+    <TrimmerRootAssembly Include="CommandLine"/>
   </ItemGroup>
 
   <ItemGroup>
