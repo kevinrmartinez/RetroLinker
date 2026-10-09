@@ -23,6 +23,7 @@ using Avalonia.Interactivity;
 using MsBox.Avalonia.Dto;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Views
 {

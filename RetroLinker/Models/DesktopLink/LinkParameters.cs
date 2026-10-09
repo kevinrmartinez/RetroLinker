@@ -22,8 +22,11 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.IO;
+using RetroLinker.Models.Settings;
 
-namespace RetroLinker.Models;
+namespace RetroLinker.Models.DesktopLink;
 
 public record EnvironmentVariable(string Key, string Value) {
     public override string ToString() =>  $"{Key}={Value}"; // Compatible with Windows and POSIX
@@ -263,7 +266,7 @@ public class LinkWriter : IShortcutBase
     public LinkWriter(UserLinkBuilder builder)
     {
         RaExecutable = builder.RaExecutable;
-        RaArguments = CommandManager.CommandBuilder(builder);
+        RaArguments = Manager.CommandBuilder(builder);
         Description = builder.Description;
         IconPath = builder.IconPath;
         FriendlyName = builder.FriendlyName;

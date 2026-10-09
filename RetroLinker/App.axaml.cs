@@ -25,6 +25,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.IO;
+using RetroLinker.Models.Settings;
 using RetroLinker.Views;
 
 namespace RetroLinker;

@@ -21,6 +21,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
 using RetroLinker.Models;
+using RetroLinker.Models.Settings;
 using RetroLinker.Styles;
 
 namespace RetroLinker.Views

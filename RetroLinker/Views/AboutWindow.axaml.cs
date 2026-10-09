@@ -23,6 +23,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Views;
 

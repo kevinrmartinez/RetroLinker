@@ -28,6 +28,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using RetroLinker.Models;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 

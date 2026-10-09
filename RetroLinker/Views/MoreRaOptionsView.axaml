@@ -6,6 +6,7 @@
              xmlns:st="clr-namespace:RetroLinker.Styles"
              xmlns:tl="clr-namespace:RetroLinker.Translations"
              xmlns:vw="clr-namespace:RetroLinker.Views"
+             xmlns:settings="clr-namespace:RetroLinker.Models.Settings"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
              x:Class="RetroLinker.Views.MoreRaOptionsView"
              x:DataType="vw:MoreRaOptionsView"
@@ -73,7 +74,7 @@
                                   MinWidth="{StaticResource VariableMinWidth}"
                                   MaxWidth="{Binding HalfWidth, RelativeSource={RelativeSource AncestorType=vw:PopUpWindow}}"
                                   Text="{Binding NewEnvVar_Key}"
-                                  ItemsSource="{x:Static md:SettingsOps.RaEnvironmentVariables}"/>
+                                  ItemsSource="{x:Static settings:SettingsOps.RaEnvironmentVariables}"/>
                         <TextBox PlaceholderText="{x:Static tl:resMainExtras.plhEnvVar_Val}" 
                                  Text="{Binding NewEnvVar_Value}"/>
                     </DockPanel>

@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -25,10 +25,13 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.IO;
+using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 
 using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
@@ -141,7 +144,6 @@ public partial class MainView : UserControl
         ApplyArgs();
         
         UpdateContext();
-        CommandManager.TestParser();
             
         // TODO_MAYBE: Tutorial event for new users
     }
@@ -225,7 +227,7 @@ public partial class MainView : UserControl
         var newValue = string.Empty;
         if (!string.IsNullOrWhiteSpace(value))
         {
-            var (path, patch) = CommandManager.ResolveSoftPatchingArg(value);
+            var (path, patch) = Manager.ResolveSoftPatchingArg(value);
             if (patch.PatchType is ROMPatchType.ExNoPatch) path = patch.Option;
             newValue = path;
         }
@@ -236,7 +238,7 @@ public partial class MainView : UserControl
     private string SetSubsysArg(string value)
     {
         noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? CommandManager.GetArgumentNoOption(value) 
+            ? Manager.GetArgumentNoOption(value) 
             : string.Empty;
         BuildingLink.RaCoreSubsystem = value;
         return value;
@@ -246,7 +248,7 @@ public partial class MainView : UserControl
     {
         BuildingLink.RaAppendedConfig = value;
         noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? CommandManager.GetArgumentNoOption(value) 
+            ? Manager.GetArgumentNoOption(value) 
             : string.Empty;
         return value;
     }
@@ -489,7 +491,7 @@ public partial class MainView : UserControl
                         string ROMIcoSavAUX = (string.IsNullOrEmpty(outputLink.RaRom))
                             ? outputLink.RaExecutable
                             : outputLink.RaRom;
-                        if (ROMIcoSavAUX == CommandManager.Contentless) ROMIcoSavAUX = outputLink.RaCore;
+                        if (ROMIcoSavAUX == Manager.Contentless) ROMIcoSavAUX = outputLink.RaCore;
                         if (Settings.IcoLinkName) UpdateUserIcon(FileOps.ChangeIcoNameToLinkName(outputLink));
                         var newPath = Settings.IcoSavPath switch
                         {
@@ -535,9 +537,10 @@ public partial class MainView : UserControl
                 return (new PopUpGenericContent(resMainView.popNoOutput_Mess), GenericPopUpType.Error);
             // Single Shortcut created
             case 1:
-                return (!results.First().Error) 
+                var onlyResult = results[Index.Start];
+                return (!onlyResult.Error) 
                     ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
-                    : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{results.First().ExMessage}",
+                    : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{onlyResult.ExMessage}",
                         resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
             // Multiple Shortcuts created
             default:
@@ -586,7 +589,7 @@ public partial class MainView : UserControl
             BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
             
             // Validating contentless or not
-            BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? CommandManager.Contentless : BuildingLink.RaRom;
+            BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? Manager.Contentless : BuildingLink.RaRom;
             
             // Validate there is a core
             BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
@@ -996,10 +999,10 @@ public partial class MainView : UserControl
         if (sender is not AvaloniaTemplatedControl tc) return;
         var filesEnum = e.DataTransfer.TryGetFiles();
         var text = e.DataTransfer.TryGetText();
-        if (filesEnum is not null && filesEnum.Any()) {
-            var files = new List<IStorageItem>(filesEnum);
+        if (filesEnum is not null && filesEnum.Length > 0) {
+            var file = filesEnum[Index.Start];
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => 
-                ControlBox_DropResult(ControlBox_HandleDrop(tc, files.First().Path.LocalPath), tc)
+                ControlBox_DropResult(ControlBox_HandleDrop(tc, file.Path.LocalPath), tc)
                 );
             return;
         }

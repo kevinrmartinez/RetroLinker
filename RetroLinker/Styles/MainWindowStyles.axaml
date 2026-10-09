@@ -3,7 +3,8 @@
         xmlns:i="https://github.com/projektanker/icons.avalonia"
         xmlns:md="clr-namespace:RetroLinker.Models"
         xmlns:st="clr-namespace:RetroLinker.Styles"
-        xmlns:vw="clr-namespace:RetroLinker.Views">
+        xmlns:vw="clr-namespace:RetroLinker.Views"
+        xmlns:desktopLink="clr-namespace:RetroLinker.Models.DesktopLink">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -53,7 +54,7 @@
     <!-- Env -->
     <Style Selector="ItemsControl#lstEnvVars">
         <Setter Property="ItemTemplate">
-            <DataTemplate DataType="md:EnvironmentVariable">
+            <DataTemplate DataType="desktopLink:EnvironmentVariable">
                 <Border x:Name="PART_TopBorder">
                     <Grid x:Name="PART_Grid" ColumnDefinitions="Auto,0.4*,*,Auto">
                         <ToggleButton x:Name="PART_Lock" Grid.Column="0" Classes="LockToggle" 

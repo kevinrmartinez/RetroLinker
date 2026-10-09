@@ -18,13 +18,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using RetroLinker.Models.Linux;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.Settings;
 
-namespace RetroLinker.Models
+namespace RetroLinker.Models.IO
 {
     public static class FileOps
     {
@@ -91,14 +91,14 @@ namespace RetroLinker.Models
             [true] = WINSystemStartMenu
         };
         
-        private static Settings _loadedSettings = new();
+        private static Settings.Settings _loadedSettings = new();
 
 
         #region Settings
 
         public static bool ExistSettingsJsonFile() => File.Exists(PathToSettingFileJson);
 
-        public static async Task<Settings> LoadSettingsFO()
+        public static async Task<Settings.Settings> LoadSettingsFO()
         {
             _loadedSettings = await SettingsOps.LoadSettings();
             Logger.LogDebg($"Settings loaded for {nameof(FileOps)}");
@@ -106,22 +106,22 @@ namespace RetroLinker.Models
             return _loadedSettings;
         }
 
-        public static Settings LoadCachedSettingsFO()
+        public static Settings.Settings LoadCachedSettingsFO()
         {
             _loadedSettings = SettingsOps.GetCachedSettings();
             BuildConfigDir(_loadedSettings);
             return _loadedSettings;
         }
 
-        public static Settings SetNewSettings(Settings settings)
+        public static Settings.Settings SetNewSettings(Settings.Settings settings)
         {
             _loadedSettings = settings;
             return _loadedSettings;
         }
 
-        public static Settings LoadDesignerSettingsFO(bool fixedOutput)
+        public static Settings.Settings LoadDesignerSettingsFO(bool fixedOutput)
         {
-            _loadedSettings = new Settings();
+            _loadedSettings = new Settings.Settings();
             BuildConfigDir(_loadedSettings);
             if (fixedOutput) _loadedSettings.AlwaysAskOutput = false;
             return _loadedSettings;
@@ -141,7 +141,7 @@ namespace RetroLinker.Models
             }
         }
 
-        private static void BuildConfigDir(Settings loadedSettings)
+        private static void BuildConfigDir(Settings.Settings loadedSettings)
         {
             const string NormalRAconfig = "Default";
             ConfigDir = new List<string>() { NormalRAconfig };

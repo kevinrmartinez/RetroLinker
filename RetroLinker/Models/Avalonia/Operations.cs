@@ -22,6 +22,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using RetroLinker.Models.IO;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
 
 namespace RetroLinker.Models.Avalonia;

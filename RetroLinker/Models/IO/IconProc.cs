@@ -24,7 +24,7 @@ using ImageMagick;
 using RetroLinker.Models.Windows;
 using SkiaSharp;
 
-namespace RetroLinker.Models
+namespace RetroLinker.Models.IO
 {
     public static class IconProc
     {

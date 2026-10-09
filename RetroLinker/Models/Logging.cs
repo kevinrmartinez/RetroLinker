@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models;
 

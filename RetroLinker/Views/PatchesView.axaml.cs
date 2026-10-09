@@ -23,6 +23,9 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.IO;
 using RetroLinker.Translations;
 
 namespace RetroLinker.Views;
@@ -74,17 +77,17 @@ public partial class PatchesView : UserControl
         ToolTip.SetTip(chkNoPatch, tip);
         rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
 
-        rdoUPSPatch.Tag = CommandManager.UpsPatch;
-        rdoBPSPatch.Tag = CommandManager.BpsPatch;
-        rdoIPSPatch.Tag = CommandManager.IpsPatch;
-        rdoXDPatch.Tag = CommandManager.XdPatch;
-        rdoNoPatch.Tag = CommandManager.NoPatch;
-        chkNoPatch.Tag = CommandManager.ExNoPatch;
+        rdoUPSPatch.Tag = Manager.UpsPatch;
+        rdoBPSPatch.Tag = Manager.BpsPatch;
+        rdoIPSPatch.Tag = Manager.IpsPatch;
+        rdoXDPatch.Tag = Manager.XdPatch;
+        rdoNoPatch.Tag = Manager.NoPatch;
+        chkNoPatch.Tag = Manager.ExNoPatch;
         
         if (string.IsNullOrEmpty(_patchString)) return;
         try
         {
-            var (file, patchType) = CommandManager.ResolveSoftPatchingArg(_patchString);
+            var (file, patchType) = Manager.ResolveSoftPatchingArg(_patchString);
             switch (patchType.PatchType)
             {
                 case ROMPatchType.NoPatch:
@@ -114,11 +117,11 @@ public partial class PatchesView : UserControl
         fileExtension = fileExtension.Trim('.');
         return fileExtension switch
         {
-            CommandManager.UpsExt => CommandManager.UpsPatch, 
-            CommandManager.BpsExt => CommandManager.BpsPatch,
-            CommandManager.IpsExt => CommandManager.IpsPatch, 
-            CommandManager.XdExt => CommandManager.XdPatch,
-            _ => CommandManager.UpsPatch
+            Manager.UpsExt => Manager.UpsPatch, 
+            Manager.BpsExt => Manager.BpsPatch,
+            Manager.IpsExt => Manager.IpsPatch, 
+            Manager.XdExt => Manager.XdPatch,
+            _ => Manager.UpsPatch
         };
     }
     
@@ -169,7 +172,7 @@ public partial class PatchesView : UserControl
     private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
     {
         string patchComm;
-        SoftPatch selectedPatch = CommandManager.NoPatch;
+        SoftPatch selectedPatch = Manager.NoPatch;
         foreach (var radioButton in _patchRadioButtons)
         {
             if (radioButton.Tag is not SoftPatch softPatch) continue;
@@ -179,12 +182,12 @@ public partial class PatchesView : UserControl
         }
         
         var patchPath = txtPatchPath.Text ?? string.Empty;
-        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = CommandManager.ExNoPatch;
+        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Manager.ExNoPatch;
         if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
-        patchComm = CommandManager.CreateSoftPatchingArg(patchPath, selectedPatch);
+        patchComm = Manager.CreateSoftPatchingArg(patchPath, selectedPatch);
         
         if (string.IsNullOrEmpty(patchPath)) {
-            if (!selectedPatch.Equals(CommandManager.NoPatch) && !selectedPatch.Equals(CommandManager.ExNoPatch)) {
+            if (!selectedPatch.Equals(Manager.NoPatch) && !selectedPatch.Equals(Manager.ExNoPatch)) {
                 var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
                 _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
                 patchComm = string.Empty;

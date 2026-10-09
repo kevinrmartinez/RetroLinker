@@ -1,6 +1,6 @@
 /*
     RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2025  Kevin Rafael Martinez Johnston
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
@@ -30,67 +29,11 @@ using RetroLinker.Translations;
 
 namespace RetroLinker.Models.Avalonia;
 
-public static class FileDialogOps
-{
-    public static async Task<string> OpenFileAsync(OpenOpts template, TopLevel topLevel, string? currentFile = null, string? newDialogTitle = null)
-    {
-        var opt = PickerOpt.OpenPickerOpt(template);
-        opt.Title = newDialogTitle ?? opt.Title;
-        if (!string.IsNullOrEmpty(currentFile)) {
-            var currentDir = FileOps.GetDirFromPath(currentFile);
-            if (!string.IsNullOrEmpty(currentDir)) 
-                opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentDir, topLevel);
-        }
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
-        string dir = (file.Count > 0) ? FileOps.GetAbsolutePath(file[0].Path.LocalPath) : string.Empty;
-        return dir;
-    }
-
-    public static async Task<string> OpenFileAsync(FilePickerOpenOptions openOptions, TopLevel topLevel) {
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(openOptions);
-        string dir = file.Count > 0 ? FileOps.GetAbsolutePath(file[0].Path.LocalPath) : string.Empty;
-        return dir;
-    }
-
-    public static async Task<string> OpenFolderAsync(OpenFolderOpts template, TopLevel topLevel, string? currentFolder = null)
-    {
-        FolderPickerOpenOptions opt = new()
-        {
-            AllowMultiple = false,
-            Title = template switch
-            {
-                OpenFolderOpts.UserAssets => resAvaloniaOps.dlgFolderUserAssets,
-                OpenFolderOpts.ROMParent => resAvaloniaOps.dlgFolderROMParent,
-                OpenFolderOpts.IconParent => resAvaloniaOps.dlgFolderIconParent,
-                OpenFolderOpts.IcoOutput => resAvaloniaOps.dlgFolderIcoOutput,
-                OpenFolderOpts.LinkCopy => resAvaloniaOps.dlgFolderLinkCopy,
-                OpenFolderOpts.DefOutput => resAvaloniaOps.dlgFolderDefOutput,
-                // Other
-                _ => resAvaloniaOps.dlgFolderFallback
-            },
-        };
-        if (!string.IsNullOrEmpty(currentFolder))
-            opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFolder, topLevel);
-        
-        var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
-        var dir = dirList.Count > 0 ? FileOps.GetAbsolutePath(dirList[0].Path.LocalPath) : string.Empty;
-        return dir.TrimEnd(FileOps.OsDirSeparator);
-    }
-
-    public static async Task<string> SaveFileAsync(SaveOpts template, string currentFile, TopLevel topLevel)
-    {
-        var opt = PickerOpt.SavePickerOpt(template);
-        if (!string.IsNullOrEmpty(currentFile))
-        {
-            currentFile = FileOps.GetDirFromPath(currentFile)!;
-            opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFile, topLevel);
-        }
-        var file = await topLevel.StorageProvider.SaveFilePickerAsync(opt);
-        string dir = (file != null) ? file.Path.LocalPath : string.Empty;   // Rewrite: replace all instances of this line to: file?.Path.LocalPath ?? string.Empty
-        return dir;
-    }
+public readonly struct PopUpGenericContent(string message, string? title = null, string? header = null) {
+    public readonly string? Title = title;
+    public readonly string? Header = header;
+    public readonly string Message =  message;
 }
-
 
 public static class PopUpDialogOps
 {
@@ -217,14 +160,4 @@ public static class PopUpDialogOps
             
         };
     }
-}
-
-public readonly struct PopUpGenericContent(string message, string? title = null, string? header = null) {
-    public readonly string? Title = title;
-    public readonly string? Header = header;
-    public readonly string Message =  message;
-}
-
-public enum GenericPopUpType {
-    Error, Warning, Question, Info, Success
 }

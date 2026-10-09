@@ -18,144 +18,140 @@
 
 using System.Collections.Generic;
 using Avalonia.Platform.Storage;
+using RetroLinker.Models.IO;
 using RetroLinker.Translations;
+using static RetroLinker.Models.CommandLine.Manager;
 
-namespace RetroLinker.Models.Avalonia
+namespace RetroLinker.Models.Avalonia;
+
+public static class PickerOpt
 {
-    public static class PickerOpt
+    static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe", "*.dll" ] };
+    static readonly FilePickerFileType appimage       = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
+    static readonly FilePickerFileType sh_cripts      = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
+    static readonly FilePickerFileType config_file    = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
+    static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
+    static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
+    static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
+    static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };
+    static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = [$"*{FileOps.LinLinkExt}"] };
+        
+    static readonly List<string> PatchesExtensions    = [$"*.{UpsExt}",$"*.{BpsExt}", $"*.{IpsExt}",$"*.{XdExt}"];
+    static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = [PatchesExtensions[0]] };
+    static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = [PatchesExtensions[1]] };
+    static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = [PatchesExtensions[2]] };
+    static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = [PatchesExtensions[3]] };
+    static readonly FilePickerFileType all_patch      = new(resAvaloniaOps.pckFileTypePatches) { Patterns = PatchesExtensions };
+
+    static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
+    static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
+    static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
+    static readonly List<FilePickerFileType> ICONfileTypes      = [win_icon_files, win_exe, conv_icon];
+    static readonly List<FilePickerFileType> ICONfileTypes2     = [lin_icon_files];
+    static readonly List<FilePickerFileType> WinShorTypes       = [win_lnk];
+    static readonly List<FilePickerFileType> LinShorTypes       = [lin_lnk];
+        
+        
+    public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
     {
-        static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe", "*.dll" ] };
-        static readonly FilePickerFileType appimage       = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
-        static readonly FilePickerFileType sh_cripts      = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
-        static readonly FilePickerFileType config_file    = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
-        static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
-        static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
-        static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
-        static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };
-        static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = [$"*{FileOps.LinLinkExt}"] };
-        
-        static readonly List<string> PatchesExtensions    = [$"*.{CommandManager.UpsExt}",$"*.{CommandManager.BpsExt}", $"*.{CommandManager.IpsExt}",$"*.{CommandManager.XdExt}"];
-        static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = [PatchesExtensions[0]] };
-        static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = [PatchesExtensions[1]] };
-        static readonly FilePickerFileType ips_patch      = new(resAvaloniaOps.pckFileTypeIPS) { Patterns = [PatchesExtensions[2]] };
-        static readonly FilePickerFileType xd_patch       = new(resAvaloniaOps.pckFileTypeXD) { Patterns = [PatchesExtensions[3]] };
-        static readonly FilePickerFileType all_patch      = new(resAvaloniaOps.pckFileTypePatches) { Patterns = PatchesExtensions };
+        var options = new FilePickerOpenOptions {
+            AllowMultiple = false
+        };
 
-        static readonly List<FilePickerFileType> RADirFileTypes_win = [win_exe, FilePickerFileTypes.All];
-        static readonly List<FilePickerFileType> RADirFileTypes_lin = [appimage, sh_cripts, FilePickerFileTypes.All];
-        static readonly List<FilePickerFileType> CONFIGDirFileTypes = [config_file, FilePickerFileTypes.TextPlain];
-        static readonly List<FilePickerFileType> ICONfileTypes      = [win_icon_files, win_exe, conv_icon];
-        static readonly List<FilePickerFileType> ICONfileTypes2     = [lin_icon_files];
-        static readonly List<FilePickerFileType> WinShorTypes       = [win_lnk];
-        static readonly List<FilePickerFileType> LinShorTypes       = [lin_lnk];
-        
-        
-        public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
+        switch (template)
         {
-            var options = new FilePickerOpenOptions {
-                AllowMultiple = false
-            };
+            // Windows exe
+            case OpenOpts.WinExe:
+                options.Title = resAvaloniaOps.dlgFileExe;
+                options.FileTypeFilter = RADirFileTypes_win;
+                break;
 
-            switch (template)
-            {
-                // Windows exe
-                case OpenOpts.WinExe:
-                    options.Title = resAvaloniaOps.dlgFileExe;
-                    options.FileTypeFilter = RADirFileTypes_win;
-                    break;
+            // ROM files (all files)
+            case OpenOpts.RAroms:
+                options.Title = resAvaloniaOps.dlgFileRAroms;
+                options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
+                options.SuggestedStartLocation = Operations.ROMParentDir;
+                break;
 
-                // ROM files (all files)
-                case OpenOpts.RAroms:
-                    options.Title = resAvaloniaOps.dlgFileRAroms;
-                    options.FileTypeFilter = new List<FilePickerFileType> { FilePickerFileTypes.All };
-                    options.SuggestedStartLocation = Operations.ROMParentDir;
-                    break;
+            // RetroArch config
+            case OpenOpts.RAcfg:
+                options.Title = resAvaloniaOps.dlgFileRAcfg;
+                options.FileTypeFilter = CONFIGDirFileTypes;
+                break;
 
-                // RetroArch config
-                case OpenOpts.RAcfg:
-                    options.Title = resAvaloniaOps.dlgFileRAcfg;
-                    options.FileTypeFilter = CONFIGDirFileTypes;
-                    break;
+            // Windows icon
+            case OpenOpts.WINico:
+                options.Title = resAvaloniaOps.dlgFileIcon;
+                options.FileTypeFilter = ICONfileTypes;
+                options.SuggestedStartLocation = Operations.IconParentDir;
+                break;
 
-                // Windows icon
-                case OpenOpts.WINico:
-                    options.Title = resAvaloniaOps.dlgFileIcon;
-                    options.FileTypeFilter = ICONfileTypes;
-                    options.SuggestedStartLocation = Operations.IconParentDir;
-                    break;
+            // Linux executable
+            case OpenOpts.LinBin:
+                options.Title = resAvaloniaOps.dlgFileExe;
+                options.FileTypeFilter = RADirFileTypes_lin;
+                break;
 
-                // Linux executable
-                case OpenOpts.LinBin:
-                    options.Title = resAvaloniaOps.dlgFileExe;
-                    options.FileTypeFilter = RADirFileTypes_lin;
-                    break;
+            // Linux images for icons
+            case OpenOpts.LINico:
+                options.Title = resAvaloniaOps.dlgFileIcon;
+                options.FileTypeFilter = ICONfileTypes2;
+                options.SuggestedStartLocation = Operations.IconParentDir;
+                break;
 
-                // Linux images for icons
-                case OpenOpts.LINico:
-                    options.Title = resAvaloniaOps.dlgFileIcon;
-                    options.FileTypeFilter = ICONfileTypes2;
-                    options.SuggestedStartLocation = Operations.IconParentDir;
-                    break;
-
-                // Other
-                default:
-                    options.Title = resAvaloniaOps.dlgFileInFallback;
-                    options.FileTypeFilter = [FilePickerFileTypes.All];
-                    break;
-            }
-            return options;
+            // Other
+            default:
+                options.Title = resAvaloniaOps.dlgFileInFallback;
+                options.FileTypeFilter = [FilePickerFileTypes.All];
+                break;
         }
-
-        public static FilePickerSaveOptions SavePickerOpt(SaveOpts template)
-        {
-            var options = new FilePickerSaveOptions();
-            options.ShowOverwritePrompt = true;
-            options.Title = resAvaloniaOps.dlgFileLINKDir;
-            options.SuggestedStartLocation = Operations.DesktopFolder;
-            switch (template) 
-            {
-                // Windows .lnk
-                case SaveOpts.WINlnk:                 
-                    options.DefaultExtension = FileOps.GetOutputExt(true);
-                    options.FileTypeChoices = WinShorTypes;
-                    break;
-
-                // Linux popular .desktop
-                case SaveOpts.LINdesktop:
-                    options.DefaultExtension = FileOps.GetOutputExt(false);
-                    options.FileTypeChoices = LinShorTypes;
-                    break;
-                
-                // This part should never happen...
-                default:
-                    options.Title = resAvaloniaOps.dlgFileOutFallback;
-                    break;
-            }
-            return options;
-        }
-        
-        
-        public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
-        {
-            var fileType = patchType switch
-            {
-                PatchOpts.UPS => ups_patch,
-                PatchOpts.BPS => bps_patch,
-                PatchOpts.IPS => ips_patch,
-                PatchOpts.XD => xd_patch,
-                _ => all_patch
-            };
-            
-            return new FilePickerOpenOptions() {
-                AllowMultiple = false,
-                Title = resAvaloniaOps.dlgFilePatch,
-                FileTypeFilter = [fileType, FilePickerFileTypes.All]
-            };
-        }
+        return options;
     }
-    
-    public enum OpenOpts { Other, WinExe, RAroms, RAcfg, WINico, LinBin, LINico }
-    public enum OpenFolderOpts { Other, UserAssets, ROMParent, IconParent, IcoOutput, LinkCopy, DefOutput }
-    public enum SaveOpts { WINlnk, LINdesktop }
-    public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
+
+    public static FilePickerSaveOptions SavePickerOpt(SaveOpts template)
+    {
+        var options = new FilePickerSaveOptions();
+        options.ShowOverwritePrompt = true;
+        options.Title = resAvaloniaOps.dlgFileLINKDir;
+        options.SuggestedStartLocation = Operations.DesktopFolder;
+        switch (template) 
+        {
+            // Windows .lnk
+            case SaveOpts.WINlnk:                 
+                options.DefaultExtension = FileOps.GetOutputExt(true);
+                options.FileTypeChoices = WinShorTypes;
+                break;
+
+            // Linux popular .desktop
+            case SaveOpts.LINdesktop:
+                options.DefaultExtension = FileOps.GetOutputExt(false);
+                options.FileTypeChoices = LinShorTypes;
+                break;
+                
+            // This part should never happen...
+            default:
+                options.Title = resAvaloniaOps.dlgFileOutFallback;
+                break;
+        }
+        return options;
+    }
+        
+        
+    public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
+    {
+        var fileType = patchType switch
+        {
+            PatchOpts.UPS => ups_patch,
+            PatchOpts.BPS => bps_patch,
+            PatchOpts.IPS => ips_patch,
+            PatchOpts.XD => xd_patch,
+            _ => all_patch
+        };
+            
+        return new FilePickerOpenOptions() {
+            AllowMultiple = false,
+            Title = resAvaloniaOps.dlgFilePatch,
+            FileTypeFilter = [fileType, FilePickerFileTypes.All]
+        };
+    }
 }

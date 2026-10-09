@@ -23,6 +23,7 @@ using Avalonia;
 using Optris.Icons.Avalonia;
 using Optris.Icons.Avalonia.FontAwesome7;
 using RetroLinker.Models;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Desktop;
 

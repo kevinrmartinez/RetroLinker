@@ -7,6 +7,9 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.IO;
 using RetroLinker.Styles;
 
 namespace RetroLinker.Views;
@@ -46,7 +49,7 @@ public partial class SubsystemsView : UserControl
         var subsystemArgs = new List<string>();
         try
         {
-            var subsysArgs = CommandManager.ResolveSubsystemArg(subSystemStr);
+            var subsysArgs = Manager.ResolveSubsystemArg(subSystemStr);
             subsystem = subsysArgs.Item1;
             subsystemArgs = subsysArgs.Item2;
         }
@@ -125,7 +128,7 @@ public partial class SubsystemsView : UserControl
     {
         var subsysArg = (string.IsNullOrEmpty(SubSystem)) 
             ? string.Empty 
-            : CommandManager.CreateSubsystemArg(SubSystem, Arguments);
+            : Manager.CreateSubsystemArg(SubSystem, Arguments);
         _parentWindow.ReturnToMainView(this, subsysArg);
     }
 

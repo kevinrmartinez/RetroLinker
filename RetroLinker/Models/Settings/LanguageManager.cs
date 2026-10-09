@@ -22,7 +22,7 @@ using System.Globalization;
 using System.Linq;
 using RetroLinker.Translations;
 
-namespace RetroLinker.Models;
+namespace RetroLinker.Models.Settings;
 
 public static class LanguageManager
 {
@@ -49,7 +49,7 @@ public static class LanguageManager
     public static LanguageItem ResolveLocale(int index) =>
         LanguageList.Find(l => l.ItemIndex == index) ?? LanguageList.First(l => l.DefaultLocale);
     
-    public static int GetLocaleIndex(Settings settings)
+    public static int GetLocaleIndex(Models.Settings.Settings settings)
     {
         var cultureInfo = ResolveCulture(settings.LanguageLocale);
         var item = ResolveLocale(cultureInfo);

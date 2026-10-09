@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using RetroLinker.Models;
+using RetroLinker.Models.IO;
 using RetroLinker.Models.Linux;
 
 namespace RetroLinker.Views;

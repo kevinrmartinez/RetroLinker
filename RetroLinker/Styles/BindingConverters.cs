@@ -21,6 +21,7 @@ using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using RetroLinker.Models;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Styles;
 

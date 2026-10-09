@@ -19,10 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.IO;
+using RetroLinker.Models.Settings;
 using SharpShellLink;
 
 namespace RetroLinker.Models.Windows;

@@ -19,6 +19,8 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using RetroLinker.Models;
+using RetroLinker.Models.IO;
+using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Views;
 

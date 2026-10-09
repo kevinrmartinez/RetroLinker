@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RetroLinker.Models;
+namespace RetroLinker.Models.IO;
+
+public abstract class LocalSerializable { }
 
 public static class JsonHelper
 {
@@ -23,11 +25,11 @@ public static class JsonHelper
     //public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json);
 
     // == Settings ==
-    private static readonly SettingsSerializerContext SettingsContext = new(DefaultOptions);
+    private static readonly Settings.SettingsSerializerContext SettingsContext = new(DefaultOptions);
     
-    private static string Serialize(Settings settingsToSerialize) => JsonSerializer.Serialize(settingsToSerialize, SettingsContext.Settings);
+    private static string Serialize(Settings.Settings settingsToSerialize) => JsonSerializer.Serialize(settingsToSerialize, SettingsContext.Settings);
     
-    private static Settings? Deserialize(string json) => JsonSerializer.Deserialize(json, SettingsContext.Settings);
+    private static Settings.Settings? Deserialize(string json) => JsonSerializer.Deserialize(json, SettingsContext.Settings);
     
 
     // Proxies to always handle De/Serialization exceptions, and other quirks
@@ -36,7 +38,7 @@ public static class JsonHelper
         try {
             switch (objectToSerialize)
             {
-                case Settings settings:
+                case Settings.Settings settings:
                     return Serialize(settings);
                 default:
                     throw new System.NotSupportedException("Serializer not implemented");
@@ -54,7 +56,7 @@ public static class JsonHelper
         {
             return typeof(T).Name switch
             {
-                nameof(Settings) => Deserialize(json) as T,
+                nameof(Settings.Settings) => Deserialize(json) as T,
                 _ => throw new System.NotSupportedException("Deserializer not implemented")
             };
         }

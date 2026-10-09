@@ -24,6 +24,8 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
+using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Views;
 
@@ -47,7 +49,7 @@ public partial class AppendView : UserControl
         _parentWindow = mainWindow;
         var appendConfigFiles = new List<string>();
         try {
-            (_, appendConfigFiles) = CommandManager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.RaAppendedConfig ?? string.Empty);
+            (_, appendConfigFiles) = Manager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.RaAppendedConfig ?? string.Empty);
         }
         catch (System.ArgumentNullException) {
             // Ignore
@@ -96,7 +98,7 @@ public partial class AppendView : UserControl
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
         var appendArg = (AppendPaths.Count == 0) 
             ? string.Empty 
-            : CommandManager.CreateAppendConfigArg(new List<string>(AppendPaths));
+            : Manager.CreateAppendConfigArg(new List<string>(AppendPaths));
         _parentWindow.ReturnToMainView(this, appendArg);
     }
 

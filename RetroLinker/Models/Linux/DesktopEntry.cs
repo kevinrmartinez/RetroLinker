@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using RetroLinker.Models.IO;
+
 namespace RetroLinker.Models.Linux;
 
 public static class DesktopEntry
