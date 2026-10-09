@@ -114,7 +114,7 @@ public partial class PatchesView : UserControl
     private SoftPatch GetPatchTypeByExtension(string filePath)
     {
         var fileExtension = FileOps.GetFileExtFromPath(filePath);
-        fileExtension = fileExtension.Trim('.');
+        fileExtension = fileExtension.Trim('.').ToLower();
         return fileExtension switch
         {
             Manager.UpsExt => Manager.UpsPatch, 
