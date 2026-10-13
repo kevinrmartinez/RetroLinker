@@ -18,8 +18,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using RetroLinker.Models.CommandLine;
@@ -27,11 +25,6 @@ using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Models.DesktopLink;
-
-public record EnvironmentVariable(string Key, string Value) {
-    public override string ToString() =>  $"{Key}={Value}"; // Compatible with Windows and POSIX
-    public override int GetHashCode() => Key.GetHashCode();
-}
 
 // == Interfaces ==
 public interface ILinkParametersBase
@@ -69,23 +62,45 @@ public interface ILinuxLinkParameters : ILinkParametersBase
 
 public interface IUserLinkParameters
 {
-    public string RaRom { get; set; }
+    public string RaRom { get; }
     public string RaRomName => GetRomName(this);
-    public string? RaRomPatch { get; set; }
-    public string RaCore { get; set; }
-    public string? RaCoreSubsystem { get; set; }
-    public string? RaConfig { get; set; }
-    public string? RaAppendedConfig { get; set; }
-    public bool RaFullscreen { get; set; }
-    public bool RaMenuOnError { get; set; }
-    public bool RaAccessibility { get; set; }
-    public bool RaVerbose { get; set; }
-    public string? RaLogFile { get; set; }
-    public bool? CustomEntryName { get; set; }
+    public RomPatchArgs? RaRomPatch { get; }
+    public string RaCore { get; }
+    public SubsystemArgs? RaCoreSubsystem { get; }
+    public string? RaConfig { get; }
+    public IReadOnlyAppendedConfigs? RaAppendedConfig { get; }
+    public bool RaFullscreen { get; }
+    public bool RaMenuOnError { get; }
+    public bool RaAccessibility { get; }
+    public bool RaVerbose { get; }
+    public string? RaLogFile { get; }
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
     protected static string GetRomName(IUserLinkParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
+}
 
+public interface IUserLinkBuilder : IUserLinkParameters
+{
+    // IUserLinkParameters but with setters
+    public new string RaRom { get; set; }
+    public new RomPatchArgs? RaRomPatch { get; set; }
+    public new string RaCore { get; set; }
+    public new SubsystemArgs? RaCoreSubsystem { get; set; }
+    public new string? RaConfig { get; set; }
+    public new IReadOnlyAppendedConfigs? RaAppendedConfig { get; set; }
+    public new bool RaFullscreen { get; set; }
+    public new bool RaMenuOnError { get; set; }
+    public new bool RaAccessibility { get; set; }
+    public new bool RaVerbose { get; set; }
+    public new string? RaLogFile { get; set; }
+    
+    // IUserLinkBuilder
+    public bool? CustomEntryName { get; set; }
+    
+    public bool AddAppendedConfig(string appendedConfigPath);
+    public bool RemoveAppendedConfig(string appendedConfigPath);
+    public bool ClearAppendedConfig();
+    
     public bool AddEnvironmentVariable(EnvironmentVariable envVar);
     public bool RemoveEnvironmentVariable(EnvironmentVariable envVar);
     public bool ClearEnvironmentVariables();
@@ -95,15 +110,16 @@ public interface IShortcutBase : IWindowsLinkParameters, ILinuxLinkParameters;
 
 // == Classes ==
 // General Builder
-public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyPropertyChanged
+public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuilder
 {
     public string RaExecutable { get; set => SetAndNotify(value, ref field); }
     public string RaRom { get; set => SetAndNotify(value, ref field); }
-    public string? RaRomPatch { get; set => SetAndNotify(value, ref field); }
+    public RomPatchArgs? RaRomPatch { get; set => SetAndNotify(value, ref field); }
     public string RaCore { get; set => SetAndNotify(value, ref field); }
-    public string? RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
+    public SubsystemArgs? RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
     public string? RaConfig { get; set => SetAndNotify(value, ref field); }
-    public string? RaAppendedConfig { get; set => SetAndNotify(value, ref field); }
+    public IReadOnlyAppendedConfigs? RaAppendedConfig { get => ObservableRaAppendedConfig; 
+        set => SetRaAppendedConfigStub(value); }
     public bool RaFullscreen { get; set => SetAndNotify(value, ref field); }
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
     public bool RaAccessibility { get; set => SetAndNotify(value, ref field); }
@@ -124,6 +140,7 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public string OutputDir => ILinkParametersBase.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
     
+    private ObservableAppendedConfigs? ObservableRaAppendedConfig { get; set => SetAndNotify(value, ref field); }
     private ObservableCollection<EnvironmentVariable> ObservableEnvironmentVariables { get; set => SetAndNotify(value, ref field); }
     
     // These two are required by the contract, but not used here
@@ -138,13 +155,8 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         
         RaArguments = string.Empty;
         RaRom = string.Empty;
-        RaRomPatch = string.Empty;
         RaCore = string.Empty;
-        RaCoreSubsystem = string.Empty;
-        RaConfig = string.Empty;
-        RaAppendedConfig = string.Empty;
         
-        Description = string.Empty;
         IconPath = string.Empty;
         FriendlyName = string.Empty;
         OutputFileName = string.Empty;
@@ -161,11 +173,11 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         // TODO: parse arguments
         RaArguments = linkParam.RaArguments;
         RaRom = string.Empty;
-        RaRomPatch = string.Empty;
+        // RaRomPatch = string.Empty;
         RaCore = string.Empty;
-        RaCoreSubsystem = string.Empty;
+        // RaCoreSubsystem = string.Empty;
         RaConfig = string.Empty;
-        RaAppendedConfig = string.Empty;
+        // ObservableRaAppendedConfig = new();
         RaFullscreen = true; 
         RaMenuOnError = true;
         RaAccessibility = true;
@@ -190,25 +202,29 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
         TileIcoImagePath = windowsParam?.TileIcoImagePath;
         RaVerbose = linuxParam?.RaVerbose ?? false;
     }
-    
-    public event PropertyChangedEventHandler? PropertyChanged;
 
-    private void SetAndNotify<T>(T value, ref T field, [CallerMemberName] string? propertyName = null) {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return;
-        field = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    private void SetRaAppendedConfigStub(IReadOnlyList<string>? list) {
+        if (list is not ObservableAppendedConfigs observableCollection) return;
+        ObservableRaAppendedConfig = observableCollection;
     }
     
-    /* == Class Methods == */
-    public void SetOutputPath(string fullPath) {
-        OutputPath = fullPath;
-        OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
-        FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
+    /* == Inherited Methods == */
+    public bool AddAppendedConfig(string appendedConfigPath) {
+        if (ObservableRaAppendedConfig is  null) return false;
+        ObservableRaAppendedConfig.Add(appendedConfigPath);
+        return true;
     }
-    
-    public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
-        SetOutputPath(fullPath);
-        FriendlyName = friendlyName;
+
+    public bool RemoveAppendedConfig(string appendedConfigPath) {
+        if (ObservableRaAppendedConfig is  null) return false;
+        ObservableRaAppendedConfig.Remove(appendedConfigPath);
+        return true;
+    }
+
+    public bool ClearAppendedConfig() {
+        if (ObservableRaAppendedConfig is  null) return false;
+        ObservableRaAppendedConfig.Clear();
+        return true;
     }
 
     public bool AddEnvironmentVariable(EnvironmentVariable envVar) {
@@ -224,6 +240,18 @@ public class UserLinkBuilder : IShortcutBase, IUserLinkParameters, INotifyProper
     public bool ClearEnvironmentVariables() {
         ObservableEnvironmentVariables.Clear();
         return true;
+    }
+    
+    /* == Class Methods == */
+    public void SetOutputPath(string fullPath) {
+        OutputPath = fullPath;
+        OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
+        FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
+    }
+    
+    public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
+        SetOutputPath(fullPath);
+        FriendlyName = friendlyName;
     }
 
     public void RestoreRemembered(RememberedUserChoices userChoices)

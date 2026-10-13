@@ -28,6 +28,7 @@ namespace RetroLinker.Styles;
 
 public class MainViewExtensionNotice : TemplatedControl
 {
+    // TODO: Title and Text should be nullable
     // == Avalonia Properties ==
     // Title
     public static readonly DirectProperty<MainViewExtensionNotice, string> TitleProperty = 

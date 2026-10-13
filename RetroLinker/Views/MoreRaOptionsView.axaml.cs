@@ -1,5 +1,22 @@
+/*
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
+    Copyright (C) 2026  Kevin Rafael Martinez Johnston
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -8,7 +25,6 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.Settings;
@@ -41,7 +57,7 @@ public partial class MoreRaOptionsView : UserControl
     public bool NewEnvVar_Valid { get; set => SetAndRaise(NewEnvVar_ValidProperty, ref field, value); }
     
     // Normal Props
-    public IUserLinkParameters LinkParameters { get; }
+    public IUserLinkBuilder LinkBuilder { get; }
     public RememberedUserChoices UserChoices { get; }
     
     public MoreRaOptionsView()
@@ -49,7 +65,7 @@ public partial class MoreRaOptionsView : UserControl
         // Constructor for Designer
         InitializeComponent();
         _popUpWindow = new PopUpWindow(isDesigner: true);
-        LinkParameters = new UserLinkBuilder();
+        LinkBuilder = new UserLinkBuilder();
         UserChoices = new RememberedUserChoices();
         /* TO ADD
          * -N, --nodevice=PORT          Disconnects controller device connected to PORT (1 to 16).
@@ -71,7 +87,7 @@ public partial class MoreRaOptionsView : UserControl
     {
         InitializeComponent();
         _popUpWindow = popUpWindow;
-        LinkParameters = moreOptParams.LinkObject;
+        LinkBuilder = moreOptParams.LinkObject;
         UserChoices = moreOptParams.SettingsObject.UserChoices;
         DataContext = this;
     }
@@ -82,14 +98,14 @@ public partial class MoreRaOptionsView : UserControl
     private void LockControls(bool value) => ((DockPanel?)Content)?.IsEnabled = !value;
     
     // LogFile
-    private void SetRaLogFile(string? logFile) => LinkParameters.RaLogFile = logFile;
+    private void SetRaLogFile(string? logFile) => LinkBuilder.RaLogFile = logFile;
     
     private async void BtnRaLogFile_OnClickAsync()
     {
         try
         {
             LockControls(true);
-            var currentFile = LinkParameters.RaLogFile ?? string.Empty;
+            var currentFile = LinkBuilder.RaLogFile ?? string.Empty;
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.Other, _popUpWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             SetRaLogFile(file);
@@ -139,7 +155,7 @@ public partial class MoreRaOptionsView : UserControl
         if (e.Source is Button { DataContext: EnvironmentVariable envVar, CommandParameter: UserListActions action } button) {
             if (action == UserListActions.Lock) StoreEnvVar(envVar, ((ToggleButton)button).IsChecked.GetValueOrDefault());
             else if (action == UserListActions.Remove) {
-                LinkParameters.RemoveEnvironmentVariable(envVar);
+                LinkBuilder.RemoveEnvironmentVariable(envVar);
                 StoreEnvVar(envVar, false);
             }
         }
@@ -184,11 +200,11 @@ public partial class MoreRaOptionsView : UserControl
                 {
                     case UserListActions.Add:
                         if (!NewEnvVar_Valid) return;
-                        LinkParameters.AddEnvironmentVariable(new EnvironmentVariable(NewEnvVar_Key, NewEnvVar_Value ?? string.Empty));
+                        LinkBuilder.AddEnvironmentVariable(new EnvironmentVariable(NewEnvVar_Key, NewEnvVar_Value ?? string.Empty));
                         ClearNewEnvVars();
                         break;
                     case UserListActions.Clear:
-                        LinkParameters.ClearEnvironmentVariables();
+                        LinkBuilder.ClearEnvironmentVariables();
                         ClearNewEnvVars();
                         break;
                 }

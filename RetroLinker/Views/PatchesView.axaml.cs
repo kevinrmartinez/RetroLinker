@@ -42,7 +42,6 @@ public partial class PatchesView : UserControl
         
         _parentWindow = new MainWindow(true);
         CoreContent = "\"path/to/rom.bin\"";
-        _patchString = string.Empty;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
         DataContext = this;
@@ -55,7 +54,7 @@ public partial class PatchesView : UserControl
         _parentWindow = mainWindow;
         IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
         CoreContent = buildingLink.RaRom;
-        _patchString = buildingLink.RaRomPatch ?? string.Empty;
+        _patchArgs = buildingLink.RaRomPatch;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
         DataContext = this;
@@ -66,7 +65,7 @@ public partial class PatchesView : UserControl
     
     // == FIELDS ==
     private PatchOpts _patchOpts;
-    private readonly string _patchString;
+    private readonly RomPatchArgs? _patchArgs;
     private readonly List<RadioButton> _patchRadioButtons = new();
     
     
@@ -84,35 +83,30 @@ public partial class PatchesView : UserControl
         rdoNoPatch.Tag = Manager.NoPatch;
         chkNoPatch.Tag = Manager.ExNoPatch;
         
-        if (string.IsNullOrEmpty(_patchString)) return;
-        try
+        if (_patchArgs is null) return;
+        var file = _patchArgs.PatchArg;
+        var patchType = _patchArgs.PatchType;
+        switch (patchType)
         {
-            var (file, patchType) = Manager.ResolveSoftPatchingArg(_patchString);
-            switch (patchType.PatchType)
-            {
-                case ROMPatchType.NoPatch:
-                    break;
-                case ROMPatchType.ExNoPatch:
-                    chkNoPatch.IsChecked = true;
-                    break;
-                default:
-                    var rdo = _patchRadioButtons.Find(rdo => ReferenceEquals(rdo.Tag, patchType));
-                    if (rdo is not null) {
-                        rdo.IsChecked = true;
-                        txtPatchPath.Text = file;
-                    }
-                    break;
-            }
-        }
-        catch (System.ArgumentException ex) {
-            Logger.LogErro(ex);
-            rdoNoPatch.IsChecked = true;
+            case RomPatchType.NoPatch:
+                break;
+            case RomPatchType.ExNoPatch:
+                chkNoPatch.IsChecked = true;
+                break;
+            default:
+                var rdo = _patchRadioButtons.Find(rdo => Equals(rdo.Tag, patchType));
+                if (rdo is not null) {
+                    rdo.IsChecked = true;
+                    txtPatchPath.Text = file;
+                }
+                break;
         }
     }
     
     // == FUNCTIONS ==
     private SoftPatch GetPatchTypeByExtension(string filePath)
     {
+        if (string.IsNullOrEmpty(filePath)) return Manager.NoPatch;
         var fileExtension = FileOps.GetFileExtFromPath(filePath);
         fileExtension = fileExtension.Trim('.').ToLower();
         return fileExtension switch
@@ -145,10 +139,10 @@ public partial class PatchesView : UserControl
         var softPatch = radioButton.Tag as SoftPatch;
         _patchOpts = softPatch?.PatchType switch
         {
-            ROMPatchType.UPS => PatchOpts.UPS,
-            ROMPatchType.BPS => PatchOpts.BPS,
-            ROMPatchType.IPS => PatchOpts.IPS,
-            ROMPatchType.XDelta => PatchOpts.XD,
+            RomPatchType.UPS => PatchOpts.UPS,
+            RomPatchType.BPS => PatchOpts.BPS,
+            RomPatchType.IPS => PatchOpts.IPS,
+            RomPatchType.XDelta => PatchOpts.XD,
             _ => PatchOpts.Auto
         };
         
@@ -171,26 +165,26 @@ public partial class PatchesView : UserControl
     // == VIEW CONTROLS ==
     private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
     {
-        string patchComm;
+        RomPatchArgs? patchComm;
         SoftPatch selectedPatch = Manager.NoPatch;
         foreach (var radioButton in _patchRadioButtons)
         {
-            if (radioButton.Tag is not SoftPatch softPatch) continue;
             if (!radioButton.IsChecked.GetValueOrDefault()) continue;
+            if (radioButton.Tag is not SoftPatch softPatch) continue;
             selectedPatch = softPatch;
             break;
         }
         
         var patchPath = txtPatchPath.Text ?? string.Empty;
-        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Manager.ExNoPatch;
         if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
+        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = Manager.ExNoPatch;
         patchComm = Manager.CreateSoftPatchingArg(patchPath, selectedPatch);
         
         if (string.IsNullOrEmpty(patchPath)) {
-            if (!selectedPatch.Equals(Manager.NoPatch) && !selectedPatch.Equals(Manager.ExNoPatch)) {
+            if (selectedPatch.PatchType is not RomPatchType.NoPatch and not RomPatchType.ExNoPatch) {
                 var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
                 _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
-                patchComm = string.Empty;
+                patchComm = null;
             }
         }
         

@@ -57,8 +57,8 @@ public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewP
     public bool ValidOutput { get; set; } = false;
 }
 
-public class MoreOptPopUpHelper(IUserLinkParameters linkObject, Settings settings) : IMainViewPopUp
+public class MoreOptPopUpHelper(IUserLinkBuilder linkObject, Settings settings) : IMainViewPopUp
 {
-    public IUserLinkParameters LinkObject { get; } =  linkObject;
+    public IUserLinkBuilder LinkObject { get; } =  linkObject;
     public Settings SettingsObject { get; } = settings;
 }

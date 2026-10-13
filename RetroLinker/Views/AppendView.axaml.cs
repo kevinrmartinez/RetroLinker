@@ -25,6 +25,7 @@ using Avalonia.Markup.Xaml;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.CommandLine;
+using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker.Views;
@@ -47,19 +48,13 @@ public partial class AppendView : UserControl
         InitializeComponent();
         // TODO: When 'PrevConfig' == true, also store a list of appended files 
         _parentWindow = mainWindow;
-        var appendConfigFiles = new List<string>();
-        try {
-            (_, appendConfigFiles) = Manager.ResolveAppendConfigArg(mainWindow.PermaView?.BuildingLink.RaAppendedConfig ?? string.Empty);
-        }
-        catch (System.ArgumentNullException) {
-            // Ignore
-        }
-        catch (System.ArgumentException ex) {
-            Logger.LogErro(ex);
-        }
-
         SelectedConfigFile = _parentWindow.PermaView?.comboConfig.SelectedItem?.ToString();
-        AppendPaths = new ObservableCollection<string>(appendConfigFiles);
+        var tryObservablePaths = _parentWindow.PermaView?.BuildingLink.RaAppendedConfig as ObservableAppendedConfigs;
+        if (tryObservablePaths is null) {
+            Logger.LogWarn($"[{nameof(AppendView)}] Failed to obtain paths from RaAppendedConfig");
+            tryObservablePaths = new ObservableAppendedConfigs();
+        }
+        AppendPaths = tryObservablePaths;
         DataContext =  this;
     }
     
@@ -68,7 +63,7 @@ public partial class AppendView : UserControl
     
     // Props
     public string? SelectedConfigFile { get; }
-    public ObservableCollection<string> AppendPaths { get; }
+    public ObservableAppendedConfigs AppendPaths { get; }
     
     // FIELDS
     private const OpenOpts ConfigOpt = OpenOpts.RAcfg;
@@ -97,16 +92,16 @@ public partial class AppendView : UserControl
     // View Buttons
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
         var appendArg = (AppendPaths.Count == 0) 
-            ? string.Empty 
-            : Manager.CreateAppendConfigArg(new List<string>(AppendPaths));
+            ? null 
+            : AppendPaths;
         _parentWindow.ReturnToMainView(this, appendArg);
     }
 
     private void BtnDiscAppend_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
 
-    private ObservableCollection<string> FillListTest()
+    private ObservableAppendedConfigs FillListTest()
     {
-        var appendPaths = new ObservableCollection<string>();
+        var appendPaths = new ObservableAppendedConfigs();
         var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
         for (int i = 0; i < 16; i++) {
             var testPath = FileOps.CombineMultipleInputs(pfx, $"retroarch{i}.cfg");

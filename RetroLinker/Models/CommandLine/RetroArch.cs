@@ -17,13 +17,15 @@
 */
 
 using System.Collections.Generic;
+using System.Linq;
 using CommandLine;
+using RetroLinker.Models.DesktopLink;
 
 namespace RetroLinker.Models.CommandLine;
 
 public static partial class Manager
 {
-    /* Due to how CommandLine works, the options are formatted to text following the 'longName' attribute (A->Z)
+    /* Due to how CommandLine works, the options are formatted to text sorted by the 'longName' attribute (A->Z)
      * To export the way we want, we'll have to separete the operation in 6:
      * Each operation will just create the text for its group, and everything will be concatenated at the end.
      */
@@ -44,12 +46,12 @@ public static partial class Manager
         [Option("load-menu-on-error", Default = false,
             HelpText = "Open menu instead of quitting if specified core or content fails to load.")]
         public bool G1_MenuOnError { get; set; }
-
-        // Log
+        
         [Option('v', "verbose", Default = false,
             HelpText = "Verbose logging.")]
-        public bool G2_Verbose { get; set; }
-        
+        public bool G1_Verbose { get; set; }
+
+        // Log
         [Option("log-file", 
             HelpText = "Log messages to a file.")]
         public string? G2_LogFile { get; set; }
@@ -64,9 +66,9 @@ public static partial class Manager
         public IEnumerable<string>? G3_AppendConfig { get; set; }
         
         // Core & Content
-        [Option('L', "libretro", Required = true, Min  = 1, Max = 3,
+        [Option('L', "libretro", Required = false, Min  = 1, Max = 3,
             HelpText = "Path to libretro implementation. Overrides any config setting.")]
-        public required IEnumerable<string> G4_Libretro { get; set; }
+        public IEnumerable<string>? G4_Libretro { get; set; }
         
         // Patch
         [Option("no-patch", Default = false,
@@ -93,5 +95,59 @@ public static partial class Manager
         [Option("subsystem", Separator = sepWhiteSpace,
             HelpText = "Use a subsystem of the libretro core.")]
         public IEnumerable<string>? G6_SubSystem { get; set; }
+        
+        
+        // Methods
+        public static RetroArch? GetGroup1(IUserLinkParameters? link)
+        {
+            if (link is null) return null;
+            return new RetroArch() {
+                G1_Accessibility = link.RaAccessibility,
+                G1_Fullscreen = link.RaFullscreen,
+                G1_MenuOnError = link.RaMenuOnError,
+                G1_Verbose = link.RaVerbose
+            };
+        }
+
+        public static RetroArch? GetGroup2(IUserLinkParameters? link) {
+            if (link is null) return null;
+            return new RetroArch() { G2_LogFile = link.RaLogFile };
+        }
+
+        public static RetroArch? GetGroup3(IUserLinkParameters? link)
+        {
+            if (link is null) return null;
+            return new RetroArch() {
+                G3_Config = link.RaConfig,
+                G3_AppendConfig = link.RaAppendedConfig?.ToArray()
+            };
+        }
+
+        public static RetroArch? GetGroup4(IUserLinkParameters? link)
+        {
+            if (link is null) return null;
+            List<string> coreAndRom = [link.RaCore];
+            if (!string.IsNullOrEmpty(link.RaRom) && link.RaRom != Contentless) coreAndRom.Add(link.RaRom);  // TODO: Test
+            
+            return new RetroArch() {
+                G4_Libretro = coreAndRom.ToArray()
+            };
+        }
+
+        public static RetroArch? GetGroup5(IUserLinkParameters? link)
+        {
+            if (link is null) return null;
+            // TODO
+            return new RetroArch() { G5_NoPatch = true };
+        }
+
+        public static RetroArch? GetGroup6(IUserLinkParameters? link)
+        {
+            if (link is not { RaCoreSubsystem: not null}) return null;
+            List<string> subsystemAndArgs = new();
+            subsystemAndArgs.Add(link.RaCoreSubsystem.Subsystem);
+            subsystemAndArgs.AddRange(link.RaCoreSubsystem.Args);
+            return new RetroArch() { G6_SubSystem = subsystemAndArgs.ToArray() };
+        }
     }
 }

@@ -19,6 +19,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using CommandLine;
 using RetroLinker.Models.DesktopLink;
 
@@ -46,35 +47,127 @@ public static partial class Manager
     private const string IpsOpt = $"--{IpsExt}=";
     private const string XdOpt = $"--{XdExt}=";
     private const string NpOpt = "--no-patch";
-    public static SoftPatch UpsPatch = new(UpsExt, UpsOpt, ROMPatchType.UPS);
-    public static SoftPatch BpsPatch = new(BpsExt, BpsOpt,  ROMPatchType.BPS);
-    public static SoftPatch IpsPatch = new(IpsExt, IpsOpt,  ROMPatchType.IPS);
-    public static SoftPatch XdPatch = new(XdExt, XdOpt,   ROMPatchType.XDelta);
-    public static SoftPatch NoPatch = new("no", string.Empty,  ROMPatchType.NoPatch);
-    public static SoftPatch ExNoPatch = new("explicit-no", NpOpt, ROMPatchType.ExNoPatch);
+    public static SoftPatch UpsPatch = new(UpsExt, UpsOpt, RomPatchType.UPS);
+    public static SoftPatch BpsPatch = new(BpsExt, BpsOpt,  RomPatchType.BPS);
+    public static SoftPatch IpsPatch = new(IpsExt, IpsOpt,  RomPatchType.IPS);
+    public static SoftPatch XdPatch = new(XdExt, XdOpt,   RomPatchType.XDelta);
+    public static SoftPatch NoPatch = new("no", string.Empty,  RomPatchType.NoPatch);
+    public static SoftPatch ExNoPatch = new("explicit-no", NpOpt, RomPatchType.ExNoPatch);
 
     public static string CommandBuilder(IUserLinkParameters link)
     {
-        var command = string.Empty;
-            
-        if (!string.IsNullOrEmpty(link.RaConfig)) command += $"-c \"{link.RaConfig}\" ";
-        if (!string.IsNullOrEmpty(link.RaAppendedConfig)) command += $"{link.RaAppendedConfig} ";
-            
-        command += $"-L {link.RaCore}";
-        if (link.RaRom != Contentless) {
-            command += $" \"{link.RaRom}\"";
-            command += $" {link.RaRomPatch}";
-        }
-            
-        // Subsystem always goes last (Because I say so :p)
-        if (!string.IsNullOrEmpty(link.RaCoreSubsystem)) command += $" {link.RaCoreSubsystem} "; 
-            
-        if (link.RaAccessibility) command = command.Insert(0, accessibility);
-        if (link.RaMenuOnError)   command = command.Insert(0, menuOnError);
-        if (link.RaFullscreen)    command = command.Insert(0, fullscreen);
-        if (link.RaVerbose)       command = command.Insert(0, verbose);
+        return string.Empty;
+    }
 
-        return command.TrimEnd();
+    private static IUserLinkParameters? _userLinkParameters;
+    private static readonly Parser RetroarchParser = new(sett => {
+        // sett.AutoHelp = false;
+        // sett.AutoVersion = false;
+        sett.CaseSensitive = true;
+        sett.IgnoreUnknownArguments = false;
+        sett.HelpWriter = null;
+    });
+
+    private static void RetroarchUnParsing(UnParserSettings settings) {
+        settings.PreferShortName = true;
+        settings.UseEqualToken = false;
+        settings.SkipDefault = true;
+    }
+
+    private static string FormatRaCommand(RetroArch? raParams)
+    {
+        return (raParams is null) 
+            ? string.Empty 
+            : RetroarchParser.FormatCommandLine(raParams, RetroarchUnParsing);
+    }
+    
+    private static string BuildCommandRaG1() {
+        var group1 = RetroArch.GetGroup1(_userLinkParameters);
+        return FormatRaCommand(group1);
+    }
+
+    private static string BuildCommandRaG2() {
+        var group2 = RetroArch.GetGroup2(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    private static string BuildCommandRaG3() {
+        var group2 = RetroArch.GetGroup3(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    private static string BuildCommandRaG4() {
+        var group2 = RetroArch.GetGroup4(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    private static string BuildCommandRaG5() {
+        var group2 = RetroArch.GetGroup5(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    private static string BuildCommandRaG6() {
+        var group2 = RetroArch.GetGroup6(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RetroArch))]
+    public static void TestParser()
+    {
+        var ra = RetroarchParser.ParseArguments<RetroArch>(
+            ["-f", "--accessibility", "-L", "fceumm", "/mnt/ARIES/Games/ROMs/nes/Super Mario Bros. (World).nes", "--ips=/mnt/ARIES/Games/ROMs/nes/patch/SMB1__DAISY_PEACH.ips", "--no-patch"]);
+        var ro = (RetroArch?)ra.Value;
+        if (ro is null) return;
+        Logger.LogDebg(RetroarchParser.FormatCommandLine(ro, RetroarchUnParsing));
+
+        _userLinkParameters = new UserLinkBuilder() {
+            RaCore = "fceumm",
+            RaRom = "supermario.nes",
+            RaConfig = "/path/to/config",
+            RaLogFile = "abteeeeeeee",
+            RaVerbose = true,
+            RaMenuOnError = true,
+            RaFullscreen = false
+        };
+        // var methodList = new List<System.Func<string>>() {
+        //     BuildCommandRaG1,
+        //     BuildCommandRaG2,
+        //     BuildCommandRaG3,
+        //     BuildCommandRaG4,
+        //     BuildCommandRaG5,
+        //     BuildCommandRaG6
+        // };
+        
+        var timer = new System.Diagnostics.Stopwatch();
+        timer.Start();
+        
+        // var taskList = new List<Task<string>>();
+        // foreach (var method in methodList) taskList.Add(Task.Run(method));
+        var g1 = Task.Run(BuildCommandRaG1);
+        var g2 = Task.Run(BuildCommandRaG2);
+        var g3 = Task.Run(BuildCommandRaG3);
+        var g4 = Task.Run(BuildCommandRaG4);
+        var g5 = Task.Run(BuildCommandRaG5);
+        var g6 = Task.Run(BuildCommandRaG6);
+        // var g1 = BuildCommandRaG1();
+        // var g2 = BuildCommandRaG2();
+        // var g3 = BuildCommandRaG3();
+        // var g4 = BuildCommandRaG4();
+        // var g5 = BuildCommandRaG5();
+        // var g6 = BuildCommandRaG6();
+        
+        var taskSet = timer.Elapsed;
+        Task.WaitAll(g1, g2, g3, g4, g5, g6);
+        var taskDone = timer.Elapsed;
+        var command = $"{g1.Result} {g2.Result} {g3.Result} {g4.Result} {g5.Result} {g6.Result}";
+        // var command = $"{g1} {g2} {g3} {g4} {g5} {g6}";
+        
+        timer.Stop();
+        Logger.LogDebg(command);
+        Logger.LogDebg($"Task set: {taskSet.TotalMicroseconds} µs");
+        Logger.LogDebg($"Task done: {taskDone.TotalMicroseconds} µs");
+        Logger.LogDebg($"Total time taken: {timer.Elapsed.TotalMicroseconds} µs");
+        timer.Reset();
     }
 
     private static (string, string) GetOptionAndArgument(string arg)
@@ -113,22 +206,17 @@ public static partial class Manager
         };
     }
 
-    public static string CreateSoftPatchingArg(string patchFile, SoftPatch patchType)
+    public static RomPatchArgs? CreateSoftPatchingArg(string patchFile, SoftPatch patchType)
     {
-        switch (patchType.PatchType)
+        if (patchType.PatchType is RomPatchType.NoPatch) return null;
+        var arg = patchType.PatchType switch
         {
-            case ROMPatchType.UPS:
-            case ROMPatchType.BPS:
-            case ROMPatchType.IPS:
-            case ROMPatchType.XDelta:
-                var file = Utils.PutPathBetweenQuotes(patchFile);
-                return patchType.Option + file;
-            case ROMPatchType.NoPatch:
-            case ROMPatchType.ExNoPatch:
-                return patchType.Option;
-            default:
-                throw new System.ArgumentOutOfRangeException(nameof(patchType));
-        }
+            RomPatchType.UPS or RomPatchType.BPS or RomPatchType.IPS or RomPatchType.XDelta 
+                => Utils.PutPathBetweenQuotes(patchFile),
+            RomPatchType.ExNoPatch => patchType.Option,
+            _ => string.Empty
+        };
+        return new RomPatchArgs(patchType.PatchType, arg);
     }
         
         
@@ -178,14 +266,15 @@ public static partial class Manager
         var fixedArgs = new List<string>();
         foreach (var subsysArg in subsysArgs)
             fixedArgs.Add(Utils.PutPathBetweenQuotes(subsysArg));
-        arg += " " + Utils.GetSingleLineStringFromList(fixedArgs);
+        arg += " " + string.Join(" ", fixedArgs);
         return arg;
     }
 }
-    
-public enum ROMPatchType {
+
+// TODO
+public enum RomPatchType {
     UPS, BPS, IPS,
     XDelta, NoPatch, ExNoPatch
 }
 
-public record SoftPatch(string ExtName, string Option, ROMPatchType PatchType);
+public record SoftPatch(string ExtName, string Option, RomPatchType PatchType);

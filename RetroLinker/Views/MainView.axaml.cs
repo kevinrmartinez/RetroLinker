@@ -43,31 +43,59 @@ namespace RetroLinker.Views;
 
 public partial class MainView : UserControl
 {
+    // Avalonia Properties
+    public static readonly DirectProperty<MainView, bool> TileIconEnabledProperty =
+        AvaloniaProperty.RegisterDirect<MainView, bool>(
+            nameof(TileIconEnabled),
+            view => view.TileIconAllUsers,
+            (view, value) => view.TileIconAllUsers = value);
+
+    public bool TileIconEnabled
+    {
+        get;
+        private set {
+            SetAndRaise(TileIconEnabledProperty, ref field, value);
+            RaisePropertyChanged(FixedOutputDirProperty, null,null);
+        }
+    }
+
+    public static readonly DirectProperty<MainView, bool> TileIconAllUsersProperty =
+        AvaloniaProperty.RegisterDirect<MainView, bool>(
+            nameof(TileIconAllUsers),
+            view => view.TileIconAllUsers,
+            (view, value) => view.TileIconAllUsers = value);
+    public bool TileIconAllUsers
+    {
+        get;
+        set 
+        {
+            BuildingLink.TileIcoAllUsers = value;   // <= TODO: Replace with Binding
+            SetAndRaise(TileIconAllUsersProperty, ref field, value);
+            RaisePropertyChanged(FixedOutputDirProperty, null, null);
+        }
+    }
+
+    /* 
+     * This one bellow gets raised by 'TileIconEnabled' and 'TileIconAllUsers' so the control gets updated.
+     * My alternatives are subscribing to each observable, or to the view's OnPropertyChanged,
+     * and in the end those are the same
+     */
+    public static readonly DirectProperty<MainView, string?> FixedOutputDirProperty =
+        AvaloniaProperty.RegisterDirect<MainView, string?>(
+            nameof(FixedOutputDir),
+            view => (!view.TileIconEnabled) 
+                ? view.Settings.DEFLinkOutput : FileOps.TileIconOutDirs[view.TileIconAllUsers]);
+
+    public string? FixedOutputDir { get; } = null;
+
     // Window Object
     public MainWindow ParentWindow { get; }
     
     // Props
     public Settings Settings { get; private set; }
     public UserLinkBuilder BuildingLink { get; } = new();
-    public string PatchArg {
-        get;
-        set => field = SetPatchArg(value);
-    } = string.Empty;
-    public string SubsysArg {
-        get;
-        set => field = SetSubsysArg(value);
-    } = string.Empty;
-    public string CONFappend {
-        get;
-        set => field = SetCONFappend(value);
-    } = string.Empty;
-    public bool TileIconAllUsers {
-        get; 
-        set => field = SetTileIconAllUsers(value);
-    }
-    
-    public string? FixedOutputDir { get; private set; }
-    [System.Obsolete("Replace with Binding of BuildingLink.OutputFileName")]
+
+    [Obsolete("Replace with Binding of BuildingLink.OutputFileName")]
     public string? FixedOutputName { get; private set; }
     
     
@@ -79,11 +107,10 @@ public partial class MainView : UserControl
         _isDesingner = true;
         Settings =  new Settings();
         // Settings.TileIcoPath = "mmmmmmm";
+        BuildingLink.RaRomPatch = new RomPatchArgs(RomPatchType.UPS, "\"path/to/romPatch.ups\"");
+        BuildingLink.RaCoreSubsystem = new SubsystemArgs("abc", new List<string>() { "\"path/to/rom_a.bin\"", "\"path/to/rom_b.bin\"" });
+        BuildingLink.RaAppendedConfig = new ObservableAppendedConfigs() { "/path/to/config1.conf", "/path/to/config2.conf", "/path/to/config3.conf" };
         CompleteSetup();
-
-        PatchArg = "--ups=\"path/to/rom.bin\"";
-        SubsysArg = "--subsystem=abc \"path/to/rom.bin\"";
-        CONFappend = "--appendconfig=\"/path/to/config1.conf|/path/to/config2.conf|/path/to/config3.conf\"";
     }
     
     public MainView(MainWindow mainWindow)
@@ -98,7 +125,6 @@ public partial class MainView : UserControl
     // Fields
     private readonly bool _isDesingner;   // Debug
     // private string DefLinRAIcon;
-    private int PrevConfigsCount;
     private int PreloadedIconsCount;
     private AvaloniaBitmap ICONimage = new(AvaloniaAssetLoader.Open(Operations.GetMissingImage())); // TODO: Test binding on this
     private IconsItems? IconItemSET;
@@ -142,9 +168,9 @@ public partial class MainView : UserControl
             
         // Arguments should only load when above controls are ready
         ApplyArgs();
-        
-        UpdateContext();
-            
+
+        DataContext = this;
+
         // TODO_MAYBE: Tutorial event for new users
     }
     
@@ -219,45 +245,6 @@ public partial class MainView : UserControl
         Settings = settings;
         ParentWindow.SetSettings(settings);
     }
-    
-    private string SetPatchArg(string value)
-    {
-        // TODO: See a way to update this
-        BuildingLink.RaRomPatch = value;
-        var newValue = string.Empty;
-        if (!string.IsNullOrWhiteSpace(value))
-        {
-            var (path, patch) = Manager.ResolveSoftPatchingArg(value);
-            if (patch.PatchType is ROMPatchType.ExNoPatch) path = patch.Option;
-            newValue = path;
-        }
-        noticePatchPresent.Text = newValue;
-        return newValue;
-    }
-
-    private string SetSubsysArg(string value)
-    {
-        noticeSubsystemPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? Manager.GetArgumentNoOption(value) 
-            : string.Empty;
-        BuildingLink.RaCoreSubsystem = value;
-        return value;
-    }
-
-    private string SetCONFappend(string value)
-    {
-        BuildingLink.RaAppendedConfig = value;
-        noticeAppendPresent.Text = (!string.IsNullOrWhiteSpace(value)) 
-            ? Manager.GetArgumentNoOption(value) 
-            : string.Empty;
-        return value;
-    }
-
-    private bool SetTileIconAllUsers(bool value) {
-        BuildingLink.TileIcoAllUsers = value;
-        FixedOutputDir = FileOps.TileIconOutDirs[value];
-        return value;
-    }
 
     // Controls Modifiers
     void SetViewPreSettings()
@@ -305,8 +292,6 @@ public partial class MainView : UserControl
             Operations.SetDesktopStorageFolder(ParentWindow);
         }
         
-        PrevConfigsCount = (Settings.PrevConfig) ? SettingsOps.PrevConfigs.Count : -1;
-        
         txtLINKDir.PlaceholderText = "Super Mario Bros";
         txtLINKDir.PlaceholderText += FileOps.GetOutputExt(DesktopOS);
         OutputControlsMutations();
@@ -326,24 +311,18 @@ public partial class MainView : UserControl
         }
     }
 
-    void LoadLocalization() {
-        ParentWindow.LocaleReload(Settings.LanguageLocale);
-    }
+    void LoadLocalization() => ParentWindow.LocaleReload(Settings.LanguageLocale);
 
     void OutputControlsMutations()
     {
+        // REWRITE: can be changed to Bindings when 'Settings' gets rewritten 
         bool askOutput = Settings.AlwaysAskOutput;
         bool tileIconEnabled = Settings.TileIcoPath is not null;
+        TileIconEnabled = tileIconEnabled;
         panelLINKRename.IsVisible = !askOutput || tileIconEnabled;
-        btnLINKRename.IsVisible = !DesktopOS;
+        btnLINKRename.IsVisible = !DesktopOS;   // <= what?
         panelTileIcon.IsVisible = tileIconEnabled;
-        FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
-    }
-
-    [System.Obsolete("Stop doing this, make all props report their changes.")]
-    void UpdateContext() {
-        DataContext = null;
-        DataContext = this;
+        // FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
     }
 
     // Icon Boxes
@@ -406,10 +385,7 @@ public partial class MainView : UserControl
 
     bool IsRenameInactive() => Settings is { AlwaysAskOutput: true, TileIcoPath: null };
     
-    void LockControls(bool lockControls) {
-        this.IsEnabled = !lockControls;
-        UpdateContext();
-    }
+    void LockControls(bool lockControls) => this.IsEnabled = !lockControls;
     
     #endregion
 
@@ -459,7 +435,7 @@ public partial class MainView : UserControl
         }
     }
 
-    // TODO: This should ONLY alter the icon paths, image conversion should be done later
+    // TODO: This should ONLY alter the icon paths, image conversion should be done later (0.9)
     private async Task HandleFinalIcon(UserLinkBuilder outputLink)
     {
         // 'outputLink.ICONfile' is set when the comboBox changes, this is done in case of conversions and copy
@@ -812,6 +788,7 @@ public partial class MainView : UserControl
 
     #region RACore Controls
     
+    [Obsolete("Replace with Binding with BuildingLink.Core, and subscribe to its OnPropertyChanged")]
     private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
         if (sender is not AutoCompleteBox combo) return;
@@ -825,7 +802,6 @@ public partial class MainView : UserControl
             txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
         }
         else FixedOutputName = UpdateFixedLinkName(txtLINKRename.Text, combo.Text);
-        UpdateContext();
     }
     
     void btnSubSys_OnClick(object sender, RoutedEventArgs e) {
@@ -921,6 +897,7 @@ public partial class MainView : UserControl
                 // var imposible = 1684 / (comboConfig.Items.Count - 1);
                 // Logger.LogDebg(imposible);
                 // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
+                Manager.TestParser();
             }
 #endif
         }
@@ -949,7 +926,7 @@ public partial class MainView : UserControl
             BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
             BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
             textBox.Text = BuildingLink.FriendlyName;
-            FixedOutputName = BuildingLink.OutputFileName;
+            // FixedOutputName = BuildingLink.OutputFileName;
         }
         catch (System.Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -961,6 +938,7 @@ public partial class MainView : UserControl
         BtnLINKRename_ClickAsync(txt);
     } 
 
+    [Obsolete("Maybe replace with some Binding, not sure")]
     void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox textBox) return;
@@ -968,10 +946,7 @@ public partial class MainView : UserControl
         if (LinkCustomName) return;
         FixedOutputName = (!string.IsNullOrWhiteSpace(textBox.Text)) 
             ? UpdateFixedLinkName(textBox.Text, comboCore.Text) : null;
-        UpdateContext();
     }
-    
-    private void swtTileIcoAllUsers_OnClick(object? sender, RoutedEventArgs e) => UpdateContext();
     
     #endregion
 
@@ -1078,11 +1053,7 @@ public partial class MainView : UserControl
     
     void View1_Unloaded(object sender, RoutedEventArgs e)
     {
-        // Save new configs
-        var cachedSettings = SettingsOps.GetCachedSettings();
-        if ( 
-            ((PrevConfigsCount != SettingsOps.PrevConfigs.Count) && (PrevConfigsCount > -1)) 
-            || !Settings.Equals(cachedSettings)
-        ) SettingsOps.WriteSettings(Settings);
+        // Save changes outside SettingsOps
+        SettingsOps.WriteSettings(Settings);
     }
 }

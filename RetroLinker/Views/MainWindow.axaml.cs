@@ -19,6 +19,7 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using RetroLinker.Models;
+using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
 
@@ -106,21 +107,21 @@ public partial class MainWindow : Window
     
     public void ReturnToMainView() => GoBackToMainView();
 
-    public void ReturnToMainView(UserControl view, string args)
+    public void ReturnToMainView(UserControl view, IExtraArguments? args)
     {
         if (PermaView is not { } mainView) return;
-        
+        IUserLinkBuilder buildingRef = mainView.BuildingLink;
         GoBackToMainView();
         switch (view)
         {
             case AppendView:
-                mainView.CONFappend = args;
+                buildingRef.RaAppendedConfig = args?.GetArgument<IReadOnlyAppendedConfigs>();
                 break;
             case PatchesView:
-                mainView.PatchArg = args;
+                buildingRef.RaRomPatch = args?.GetArgument<RomPatchArgs>();
                 break;
             case SubsystemsView:
-                mainView.SubsysArg = args;
+                buildingRef.RaCoreSubsystem = args?.GetArgument<SubsystemArgs>();
                 break;
             default:
                 // Should not happen
