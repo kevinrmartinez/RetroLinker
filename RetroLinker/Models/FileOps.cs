@@ -63,7 +63,7 @@ namespace RetroLinker.Models
         public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
         public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
         public static readonly string WINUserStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
-        public static readonly string WINSystemStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+        public static readonly string WINSystemStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
 
         private static readonly DirectoryInfo LicensesDir = new(DefLicensesDir);
         public static readonly FileInfo[] LicensesFiles = (LicensesDir.Exists) ? LicensesDir.GetFiles() : [ ];
