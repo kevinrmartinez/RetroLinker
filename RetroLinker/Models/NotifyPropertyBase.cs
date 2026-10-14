@@ -25,5 +25,7 @@ public abstract class NotifyPropertyBase : INotifyPropertyChanged
         if (EqualityComparer<T>.Default.Equals(field, value)) return;
         field = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // trace
+        // Logger.LogDebg($"Property '{propertyName}' changed to {value}");
     }
 }

@@ -48,12 +48,15 @@ public class Settings : LocalSerializable, System.ICloneable
 
 public class RememberedUserChoices
 {
+    // TODO: Doesn't get deserialize
     public bool? StoredRaFullscreen { get; set; }
     public bool? StoredRaMenuOnError { get; set; }
     public bool? StoredRaAccessibility { get; set; }
     public bool? StoredVerbose { get; set; }
     public string? StoredRaLogFile { get; set; }
     public HashSet<EnvironmentVariable> StoredEnvironmentVariables { get; } = new();
+    
+    public RememberedUserChoices() {}
 }
 
 [JsonSerializable(typeof(Settings))]

@@ -87,16 +87,19 @@
     <Style Selector="ToggleButton.LockToggle">
         <Setter Property="Content">
             <Template>
-                <!-- The Binding here is a Hack -->
-                <i:Icon x:Name="PART_Icon"  Value="{Binding Tag, RelativeSource={RelativeSource AncestorType=ToggleButton}}"/>
+                <i:Icon x:Name="PART_Icon" Value="fa7-question"/>
             </Template>
         </Setter>
         
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Padding" Value="4"/>
-        <Setter Property="Tag" Value="fa7-lock-open"/>
-        <Style Selector="^:checked">
-            <Setter Property="Tag" Value="fa7-lock"/>
+        
+        <!-- PART_Icon setters -->
+        <Style Selector="^ i|Icon#PART_Icon">
+            <Setter Property="Value" Value="fa7-lock-open"/>
+        </Style>
+        <Style Selector="^:checked i|Icon#PART_Icon">
+            <Setter Property="Value" Value="fa7-lock"/>
         </Style>
     </Style>
     

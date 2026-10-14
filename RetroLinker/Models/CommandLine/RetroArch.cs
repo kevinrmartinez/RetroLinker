@@ -31,9 +31,6 @@ public static partial class Manager
      */
     private class RetroArch
     {
-        private const char sepPipe = '|';
-        private const char sepWhiteSpace = ' ';
-
         // Toggles
         [Option('f', "fullscreen", Default = false,
             HelpText = "Start the program in fullscreen regardless of config setting.")]
@@ -110,7 +107,7 @@ public static partial class Manager
         }
 
         public static RetroArch? GetGroup2(IUserLinkParameters? link) {
-            if (link is null) return null;
+            if (link is not { RaLogFile: not null}) return null;
             return new RetroArch() { G2_LogFile = link.RaLogFile };
         }
 
@@ -136,9 +133,31 @@ public static partial class Manager
 
         public static RetroArch? GetGroup5(IUserLinkParameters? link)
         {
-            if (link is null) return null;
-            // TODO
-            return new RetroArch() { G5_NoPatch = true };
+            if (link is not { RaRomPatch: not null }) return null;
+            var patchArgs = link.RaRomPatch;
+            var retroArch = new RetroArch();
+            switch (patchArgs.PatchType)
+            {
+                case RomPatchType.No_Patch:
+                    retroArch.G5_NoPatch = true;
+                    break;
+                case RomPatchType.UPS:
+                    retroArch.G5_Ups = patchArgs.PatchArg;
+                    break;
+                case RomPatchType.BPS:
+                    retroArch.G5_Bps = patchArgs.PatchArg;
+                    break;
+                case RomPatchType.IPS:
+                    retroArch.G5_Ips = patchArgs.PatchArg;
+                    break;
+                case RomPatchType.XDelta:
+                    retroArch.G5_Xdelta = patchArgs.PatchArg;
+                    break;
+                default:            // <= Shouldn't happen, but just in case
+                    return null;
+            }
+            
+            return retroArch;
         }
 
         public static RetroArch? GetGroup6(IUserLinkParameters? link)

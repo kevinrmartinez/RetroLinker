@@ -23,22 +23,22 @@
             <Grid ColumnDefinitions="*,*">
                 <StackPanel Grid.Column="0" DockPanel.Dock="Left" Orientation="Vertical" Margin="1,0">
                     <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkFull}"
-                                         IsChecked="{Binding LinkBuilder.RaFullscreen}"
+                                         IsChecked="{Binding LinkBuilder.RaFullscreen, Mode=TwoWay}"
                                          LockedValueIn="{Binding UserChoices.StoredRaFullscreen, Mode=OneTime}"
                                          LockedValueOut="{Binding UserChoices.StoredRaFullscreen, Mode=OneWayToSource}"/>
                     <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkVerb}"
-                                         IsChecked="{Binding LinkBuilder.RaVerbose}"
+                                         IsChecked="{Binding LinkBuilder.RaVerbose, Mode=TwoWay}"
                                          LockedValueIn="{Binding UserChoices.StoredVerbose, Mode=OneTime}"
                                          LockedValueOut="{Binding UserChoices.StoredVerbose, Mode=OneWayToSource}"/>
                 </StackPanel>
                 
                 <StackPanel Grid.Column="1" Orientation="Vertical" Margin="1,0">
                     <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkAccessi}"
-                                         IsChecked="{Binding LinkBuilder.RaAccessibility}"
+                                         IsChecked="{Binding LinkBuilder.RaAccessibility, Mode=TwoWay}"
                                          LockedValueIn="{Binding UserChoices.StoredRaAccessibility, Mode=OneTime}"
                                          LockedValueOut="{Binding UserChoices.StoredRaAccessibility, Mode=OneWayToSource}"/>
                     <st:CheckBoxWithLock Text="{x:Static tl:resMainView.chkMenuOnError}"
-                                         IsChecked="{Binding LinkBuilder.RaMenuOnError}"
+                                         IsChecked="{Binding LinkBuilder.RaMenuOnError, Mode=TwoWay}"
                                          LockedValueIn="{Binding UserChoices.StoredRaMenuOnError, Mode=OneTime}"
                                          LockedValueOut="{Binding UserChoices.StoredRaMenuOnError, Mode=OneWayToSource}"/>
                 </StackPanel>
@@ -50,7 +50,7 @@
                 <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Classes="textbox_inline browseFile" 
                         CommandParameter="{Binding #txtLogFile}" Click="BtnRaLogFile_OnClick"/>
                 <st:TextBoxWithLock x:Name="txtLogFile" Label="{x:Static tl:resMainExtras.lblLogFile}" 
-                                    Text="{Binding LinkBuilder.RaLogFile}"
+                                    Text="{Binding LinkBuilder.RaLogFile, Mode=TwoWay}"
                                     LockedValueIn="{Binding UserChoices.StoredRaLogFile, Mode=OneTime}"
                                     LockedValueOut="{Binding UserChoices.StoredRaLogFile, Mode=OneWayToSource}"/>
             </DockPanel>

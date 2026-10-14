@@ -28,7 +28,7 @@ public static class SettingsOps
     public const string IcoSavRA = "_RA";
     public const string IcoSavROM = "_ROM";
     private const string InvalidDataMessage = "The setting file could not be serialized.";
-    private static Models.Settings.Settings CachedSettings = new();
+    private static Settings CachedSettings = new();
         
     public static List<string> PrevConfigs { get; set; } = new();
     public static List<string> LinkCopyPaths { get; set; } = new();
@@ -43,17 +43,17 @@ public static class SettingsOps
         "LIBRETRO_VIDEO_SHADER_DIRECTORY"
     ];
         
-    public static Models.Settings.Settings GetCachedSettings() => CachedSettings;
+    public static Settings GetCachedSettings() => CachedSettings;
         
     // Load & Save
-    public static async Task<Models.Settings.Settings> LoadSettings()
+    public static async Task<Settings> LoadSettings()
     {
-        Models.Settings.Settings? settings = new();
+        Settings? settings = new();
         if (FileOps.ExistSettingsJsonFile())
         {
             try
             {
-                settings = JsonHelper.DeserializeProxy<Models.Settings.Settings>(await FileOps.ReadSettingsFile());
+                settings = JsonHelper.DeserializeProxy<Settings>(await FileOps.ReadSettingsFile());
                 CachedSettings = settings ?? throw new System.IO.InvalidDataException(InvalidDataMessage);
                 PrevConfigs.AddRange(settings.SavedConfigs);
                 LinkCopyPaths.AddRange(settings.SavedCopyPaths);
@@ -71,7 +71,7 @@ public static class SettingsOps
         return settings;
     }
 
-    public static void WriteSettings(Models.Settings.Settings savingSettings)
+    public static void WriteSettings(Settings savingSettings)
     {
         if (!savingSettings.PrevConfig) PrevConfigs = new();
         if (!savingSettings.MakeLinkCopy) LinkCopyPaths = new(); 

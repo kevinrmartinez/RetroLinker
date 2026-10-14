@@ -25,6 +25,7 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.Settings;

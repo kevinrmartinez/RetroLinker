@@ -33,17 +33,17 @@ public interface IExtraArguments
 
 public interface IReadOnlyAppendedConfigs : IReadOnlyList<string>, IExtraArguments;
 
-public class RomPatchArgs(RomPatchType patchType, string PatchPath) : IExtraArguments
+public class RomPatchArgs(RomPatchType patchType, string patchPath) : IExtraArguments
 {
     public RomPatchType PatchType { get; } = patchType;
-    public string PatchArg { get; } = PatchPath;
+    public string PatchArg { get; } = patchPath;
 
     public override string ToString()
     {
         return PatchType switch
         {
-            RomPatchType.ExNoPatch => PatchType.ToString("G").ToLower(),
-            RomPatchType.NoPatch => string.Empty,
+            RomPatchType.No_Patch => PatchType.ToString("G").ToLower().Replace("_", "-"),
+            RomPatchType.None => string.Empty,
             _ => $"{PatchType}={PatchArg}"
         };
     }
