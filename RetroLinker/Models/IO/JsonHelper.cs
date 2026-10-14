@@ -3,9 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace RetroLinker.Models.IO;
 
-public abstract class LocalSerializable { }
-
-public static class JsonHelper
+internal static class JsonHelper
 {
     /*
      * IL2026: Serializer and Deserializer could break due to trimming
@@ -25,15 +23,15 @@ public static class JsonHelper
     //public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json);
 
     // == Settings ==
-    private static readonly Settings.SettingsSerializerContext SettingsContext = new(DefaultOptions);
+    private static readonly SettingsSerializerContext SettingsContext = new(DefaultOptions);
     
     private static string Serialize(Settings.Settings settingsToSerialize) => JsonSerializer.Serialize(settingsToSerialize, SettingsContext.Settings);
     
-    private static Settings.Settings? Deserialize(string json) => JsonSerializer.Deserialize(json, SettingsContext.Settings);
+    private static Settings.Settings? DeserializeSettings(string json) => JsonSerializer.Deserialize(json, SettingsContext.Settings);
     
 
     // Proxies to always handle De/Serialization exceptions, and other quirks
-    public static string? SerializeProxy(LocalSerializable objectToSerialize)
+    public static string? SerializeProxy(ILocalSerializable objectToSerialize)
     {
         try {
             switch (objectToSerialize)
@@ -45,23 +43,23 @@ public static class JsonHelper
             }
         }
         catch (System.NotSupportedException ex) {
-            Logger.LogErro($"Serialization Error:\n\tType:{objectToSerialize.GetType().Name} \n\t{ex.Message}");
+            Logger.LogErro($"Serialization Error:\n\tType:{objectToSerialize.GetType().Name} \n\t{ex}");
             return null;
         }
     }
 
-    public static T? DeserializeProxy<T>(string json)  where T : LocalSerializable
+    public static T? DeserializeProxy<T>(string json)  where T : class, ILocalSerializable
     {
         try
         {
-            return typeof(T).Name switch
-            {
-                nameof(Settings.Settings) => Deserialize(json) as T,
-                _ => throw new System.NotSupportedException("Deserializer not implemented")
-            };
+            var targetType = typeof(T);
+            if (targetType == typeof(Settings.Settings)) return DeserializeSettings(json) as T;
+
+            // Type Not Supported
+            throw new System.NotSupportedException("Deserializer not implemented");
         }
         catch (System.Exception ex) when  (ex is System.NotSupportedException or JsonException) {
-            Logger.LogErro($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex.Message}");
+            Logger.LogErro($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex}");
             return null;
         }
     }

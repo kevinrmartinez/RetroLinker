@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models.Settings;
 
 // TODO: Create another Settings class (private setters) for saving the props, making validations in the process 
-public class Settings : LocalSerializable, System.ICloneable
+public class Settings : ILocalSerializable, System.ICloneable
 {
     public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
     public string DEFRADir { get; set; } = string.Empty;
@@ -25,7 +24,7 @@ public class Settings : LocalSerializable, System.ICloneable
     public string LanguageLocale { get; set; } = DefaultLanguage;
     public List<string> SavedConfigs { get; set; } = new();
     public List<string> SavedCopyPaths { get; set; } = new();
-    public RememberedUserChoices UserChoices { get; } = new();
+    public RememberedUserChoices UserChoices { get; init; } = new();
     
     private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
@@ -48,18 +47,12 @@ public class Settings : LocalSerializable, System.ICloneable
 
 public class RememberedUserChoices
 {
-    // TODO: Doesn't get deserialize
     public bool? StoredRaFullscreen { get; set; }
     public bool? StoredRaMenuOnError { get; set; }
     public bool? StoredRaAccessibility { get; set; }
     public bool? StoredVerbose { get; set; }
     public string? StoredRaLogFile { get; set; }
-    public HashSet<EnvironmentVariable> StoredEnvironmentVariables { get; } = new();
+    public HashSet<EnvironmentVariable> StoredEnvironmentVariables { get; init; } = new();
     
     public RememberedUserChoices() {}
-}
-
-[JsonSerializable(typeof(Settings))]
-internal partial class SettingsSerializerContext : JsonSerializerContext {
-    // I believe this can be left empty only because Settings uses primitives as properties
 }
