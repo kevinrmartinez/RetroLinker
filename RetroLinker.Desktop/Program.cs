@@ -32,16 +32,16 @@ class Program
     // https://anthonysimmon.com/programmatically-elevate-dotnet-app-on-any-platform/
     // pkexec
     // Fields
-    private const string EmpryValue = "N/A";
+    private const string EmptyValue = "N/A";
     private const string KeyBuildDate = "BuildDateUTC";
     private static readonly Assembly AppAssembly = typeof(Program).Assembly;
     private static readonly AssemblyName AppAssemblyName = AppAssembly.GetName();
-    private static readonly string AppName = AppAssemblyName.Name ?? EmpryValue;
-    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? EmpryValue;
+    private static readonly string AppName = AppAssemblyName.Name ?? EmptyValue;
+    private static readonly string AppVersionFull = AppAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? EmptyValue;
     private static readonly string[] AppVersionSplit = AppVersionFull.Split('+');
     private static readonly string AppVersion = (AppVersionSplit.Length > 1)
         ? AppVersionSplit[Index.Start]
-        : AppAssemblyName.Version?.ToString(3) ?? EmpryValue;
+        : AppAssemblyName.Version?.ToString(3) ?? EmptyValue;
     
     private static readonly string LogFileName = $"{AppName}.log";
     // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
@@ -59,7 +59,7 @@ class Program
         SetUpLogger();
         Logger.LogInfo($"{AppName} v{AppVersion}");
         
-        Logger.LogDebg("Starting AvaloniaApp");
+        Logger.LogDebg("Starting AvaloniaApp");     // <= Trace, not debug
         
         // TODO: Subscribe to more Avalonia error handlers/detectors
         //  https://docs.avaloniaui.net/docs/app-development/setting-unhandled-exceptions
@@ -102,7 +102,7 @@ class Program
     }
 
     private static void AppCallback(AppBuilder obj) {
-        var instance = (App?)obj.Instance;
+        var instance = obj.Instance as App;
         instance?.SetAppInfo(GetAppInfo());
     }
 
@@ -164,6 +164,7 @@ class Program
 
     private static AppInformation GetAppInfo()
     {
+        // TODO: Check for '-dev' in AppVersion, if it's present define DEBUG (?), and turn on Logger.DebugTracing
         var isRunningAdmin = OperatingSystem.IsWindows() 
             ? Models.Windows.NativeAccess.IsWindowsProcessElevated()
             : Models.Linux.NativeAccess.IsUnixProcessElevated();

@@ -19,6 +19,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
 
   <PropertyGroup Condition="'$(Configuration)'=='ReleaseAoT'">
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <!-- https://docs.avaloniaui.net/docs/deployment/native-aot -->
     <!-- Add to all projects/libraries in use, to ensure AOT compatibility -->
     <IsAotCompatible>true</IsAotCompatible>
@@ -36,7 +39,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RetroLinker\RetroLinker.csproj" />
-    <TrimmerRootAssembly Include="RetroLinker" />
   </ItemGroup>
 
   <ItemGroup>
