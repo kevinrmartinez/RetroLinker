@@ -18,15 +18,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
+using TG.INI;
+using TG.INI.Serialization;
 
 namespace RetroLinker.Models.Linux;
 
 [SupportedOSPlatform(App.PlatformLin)]
-public static class ShortcutManager
+public static partial class ShortcutManager
 {
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>=0.9) 
@@ -36,8 +39,31 @@ public static class ShortcutManager
     // private const string Notify = "StartupNotify=false";
     private const string Category = "Categories=Game";
     private const string LinkType = "Type=Application";
-    
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
     public static async Task CreateShortcut(LinkParameters linkBase)
+    {
+        var link = linkBase as LinuxLinkParameters;
+        ArgumentNullException.ThrowIfNull(link);
+        
+        var desktopEntry = new DesktopEntry()
+        {
+            Categories = ["Game"],
+            Comment = link.Description,
+            Exec = $"{link.RaExecutable} {link.RaArguments}",
+            Icon = link.IconPath,
+            Name = link.FriendlyName,
+            StartupNotify = false,
+            Terminal = link.RaVerbose
+        };
+        
+        IniDocument doc = IniSerialization.SerializeObjectToNewDocument(desktopEntry);
+        await Task.Run(() => doc.Write(link.OutputPath));
+        
+        _ = SetExecPermissions(link.OutputPath);
+    }
+    
+    public static async Task CreateShortcut_p(LinkParameters linkBase)
     {
         var link = (LinuxLinkParameters)linkBase;
         List<string> shortcut = new()

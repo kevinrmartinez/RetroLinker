@@ -52,14 +52,14 @@ public partial class RenameEntryView : UserControl
     private readonly RenamePopUpHelper _helper;
     private readonly string _entryExt;
     
-    private const string NamePlaceHolder = DesktopEntry.NamePlaceHolder;
+    private const string NamePlaceHolder = DesktopEntryOps.NamePlaceHolder;
     
 
     #region Functions
 
     private void UpdateFilename() {
         if (_helper.CustomEntry) return;
-        txtFileName.Text = DesktopEntry.StdDesktopEntry(txtFriendlyName.Text, _helper.GivenCore);
+        txtFileName.Text = DesktopEntryOps.StdDesktopEntry(txtFriendlyName.Text, _helper.GivenCore);
     }
 
     private bool AreBoxesEmpty() 
@@ -100,7 +100,7 @@ public partial class RenameEntryView : UserControl
         if (!string.IsNullOrWhiteSpace(cusFileName)) cusFileName += _entryExt;
         var fileName = (_helper.CustomEntry) 
             ? cusFileName ?? NamePlaceHolder 
-            : DesktopEntry.StdDesktopEntry(friendlyName + _entryExt, _helper.GivenCore);
+            : DesktopEntryOps.StdDesktopEntry(friendlyName + _entryExt, _helper.GivenCore);
         var newDir = FileOps.GetDirFromPath(_helper.GivenPath) ?? FileOps.BaseDir;
         var newPath = FileOps.CombineMultipleInputs(newDir, fileName);
         
@@ -120,7 +120,7 @@ public partial class RenameEntryView : UserControl
         if (_helper.ValidOutput) return;
         if (_helper.GivenName == NamePlaceHolder) return;
         
-        var fileName = DesktopEntry.StdDesktopEntry(_helper.GivenName + _entryExt, _helper.GivenCore);
+        var fileName = DesktopEntryOps.StdDesktopEntry(_helper.GivenName + _entryExt, _helper.GivenCore);
         var newDir = FileOps.GetDirFromPath(_helper.GivenPath) ?? FileOps.BaseDir;
         _helper.NewPath = FileOps.CombineMultipleInputs(newDir, fileName);
         _helper.NewFriendlyName = _helper.GivenName;

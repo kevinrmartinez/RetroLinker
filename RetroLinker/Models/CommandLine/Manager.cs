@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using CommandLine;
@@ -61,7 +62,15 @@ public static partial class Manager
         var g6 = Task.Run(BuildCommandRaG6);
         Task.WaitAll(g1, g2, g3, g4, g5, g6);
         string[] resultsArray = [g1.Result, g2.Result, g3.Result, g4.Result, g5.Result, g6.Result];
-        var command = string.Join(sepWhiteSpace, resultsArray);
+        
+        var correctedResults = new List<string>();
+        foreach (var result in resultsArray) {
+            // Discard empty results, and shave leading and trailing white-spaces
+            if (string.IsNullOrWhiteSpace(result)) continue;
+            correctedResults.Add(result.Trim());
+        }
+        
+        var command = string.Join(sepWhiteSpace, correctedResults);
         
         _userLinkParameters = null;
         return command;
