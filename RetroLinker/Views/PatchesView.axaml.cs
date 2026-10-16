@@ -118,7 +118,7 @@ public partial class PatchesView : UserControl
         var arg = patchType switch
         {
             RomPatchType.UPS or RomPatchType.BPS or RomPatchType.IPS or RomPatchType.XDelta 
-                => Utils.PutPathBetweenQuotes(patchFile),
+                => Utils.WrapStringBetweenQuotes(patchFile),
             _ => string.Empty   // <= RomPatchType.No_Patch goes with an empty 'arg'
         };
         return new RomPatchArgs(patchType, arg);

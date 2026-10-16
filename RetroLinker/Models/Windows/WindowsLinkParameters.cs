@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Collections.Generic;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using RetroLinker.Models.DesktopLink;
@@ -24,21 +25,38 @@ using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Models.Windows;
 
+public interface IWindowsPwsWrapper
+{
+    public string RealTargetExecutable { get; }
+    public string RealTargetArguments { get; }
+    public HashSet<EnvironmentVariable> EnvironmentVariables { get; }
+}
+
 [SupportedOSPlatform(App.PlatformWin)]
 public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
 {
-    public string? RaWorkDir { get; init; }
-    public bool TileIcoNameVisible { get; init; }
-    public bool TileIcoNameDark { get; init; }
-    public bool TileIcoAllUsers { get; init; }
-    public bool TileIcoOverwrite { get; init; }
-    public string? TileIcoImagePath { get; init; }
+    public string? RaWorkDir { get; }
+    public bool TileIcoNameVisible { get; }
+    public bool TileIcoNameDark { get; }
+    public bool TileIcoAllUsers { get; }
+    public bool TileIcoOverwrite { get; }
+    public string? TileIcoImagePath { get; }
+    
+    private string _iconFallabckPath;
     
     public WindowsLinkParameters(LinkWriter linkWriter)
     {
-        RaExecutable = linkWriter.RaExecutable;
-        RaWorkDir = linkWriter.RaWorkDir ?? FileOps.GetDirFromPath(RaExecutable); // <= By default
-        RaArguments = linkWriter.RaArguments;
+        if (linkWriter.EnvironmentVariables.Count < 1) {
+            RaExecutable = linkWriter.RaExecutable;
+            RaArguments = linkWriter.RaArguments;
+        }
+        else
+        {
+            RaExecutable = CommandLine.Manager.GetPowershellExecutable();
+            RaArguments = CommandLine.Manager.CreatePowershellArguments(linkWriter);
+        }
+        
+        RaWorkDir = linkWriter.RaWorkDir ?? FileOps.GetDirFromPath(linkWriter.RaExecutable); // <= By default
         Description = linkWriter.Description;
         IconPath = linkWriter.IconPath;
         FriendlyName = linkWriter.FriendlyName;
@@ -51,27 +69,40 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         TileIcoOverwrite = linkWriter.TileIcoOverwrite;
         TileIcoImagePath = linkWriter.TileIcoImagePath;
         UpdateHashedVariables();
+        
+        _iconFallabckPath = linkWriter.RaExecutable;
     }
 
     public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
     {
         System.ArgumentException.ThrowIfNullOrEmpty(shortcut.StringData?.CommandLineArguments);
-        // TODO: if target path is cmd, then the environment variables are set
-        //  And our target is actually inside CommandLineArguments
         string targetPath;
         if (shortcut.LinkTargetIDList is not null) targetPath = shortcut.LinkTargetIDList.Path;
         else if (shortcut.ExtraData.EnvironmentVariableDataBlock is not null)
             targetPath = shortcut.ExtraData.EnvironmentVariableDataBlock.TargetUnicode;
-        else throw new System.ArgumentException("Can't get target from shortcut");
-            
-        RaExecutable = targetPath;
-        RaArguments = shortcut.StringData.CommandLineArguments;
+        else throw new System.ArgumentException("Can't get target program from shortcut");
+
+        var rawArguments = shortcut.StringData.CommandLineArguments;
+        if (rawArguments.Contains("-Command")) {    // TODO: Standardize; have options available as public const
+            RaExecutable = targetPath;
+            RaArguments = rawArguments;
+        }
+        else
+        {
+            var pwsWrapper = CommandLine.Manager.ResolvePowershellArguments(rawArguments);
+            RaExecutable = pwsWrapper.RealTargetExecutable;
+            RaArguments = Utils.UndoTwoDoubleQuotes(pwsWrapper.RealTargetArguments);
+            EnvironmentVariables = new List<EnvironmentVariable>(pwsWrapper.EnvironmentVariables);
+        }
+        
         Description = shortcut.StringData.NameString;
         IconPath = shortcut.StringData.IconLocation;
         OutputFileName = shortcut.LinkTargetIDList?.DisplayName ?? FileOps.GetFileNameFromPath(linkPath);
         FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
         OutputPath = linkPath;
-        TileIcoImagePath = string.Empty; // <= It can be done, but this app can't handle all the things a Tile Icon has  
+        TileIcoImagePath = string.Empty; // <= It can be done, but this app can't handle all the things a Tile Icon has
+        
+        _iconFallabckPath = RaExecutable;
     }
 
     private int _outputCount;
@@ -92,7 +123,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     }
 
     private async Task<LinkWriterResult> BuildWinShortcut_Ssl() {
-        if (string.IsNullOrEmpty(IconPath)) IconPath = RaExecutable;
+        if (string.IsNullOrEmpty(IconPath)) IconPath = _iconFallabckPath;
         return await CreateShortcut(ShortcutManager.CreateShortcut);
     }
 

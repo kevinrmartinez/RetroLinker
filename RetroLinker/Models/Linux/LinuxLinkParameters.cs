@@ -30,7 +30,9 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
 
     public LinuxLinkParameters(LinkWriter linkWriter)
     {
-        RaExecutable = linkWriter.RaExecutable;
+        // TODO: Handle EnvVars
+        // In a Desktop Entry file, the exec line requires quotes in case of special characters, we will use simple quotes
+        RaExecutable = Utils.ConditionallyQuoteString(linkWriter.RaExecutable, false, doubleQuotes: false);
         RaArguments = linkWriter.RaArguments;
         Description = linkWriter.Description;
         IconPath = linkWriter.IconPath;

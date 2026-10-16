@@ -39,7 +39,7 @@ public abstract class LinkParameters : ILinkParametersBase
     /// <returns>A <see cref="LinkWriterResult"/> indicating if the file was whether written successfully or not.</returns>
     public abstract Task<LinkWriterResult> CreateOsShortcut();
 
-    public virtual void UpdateOutputPath(string outputPath) => OutputPath = outputPath;
+    public void UpdateOutputPath(string outputPath) => OutputPath = outputPath;
 
     protected void UpdateHashedVariables() {
         HashedEnvironmentVariables.Clear();

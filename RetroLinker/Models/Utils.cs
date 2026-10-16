@@ -25,31 +25,71 @@ namespace RetroLinker.Models;
 
 public static class Utils
 {
-    private const char SQ = '\'';
-    private const char DQ = '\"';
-    private const char LinIllegaChar = '/';
-    private static readonly char[] WinIllegalChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
+    public const char SQ = '\'';
+    public const char DQ = '\"';
+    private const char LinEscapeChar = '\\';
+    private const char WinEscapeChar = '^';
+    private const char LinIllegalNameChar = '/';
+    private static readonly char[] WinIllegalNameChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
+    
+    private static readonly char[] LinuxProblemChars = [ ' ', '`', '#', '$', 
+                                                         '&', '*', '(', ')', 
+                                                         '[', ']', '|', ';', 
+                                                         '?', '<', '>', '\'' ];
 
-    private static bool HasSingleQuotes(string path) => path.StartsWith(SQ) && path.EndsWith(SQ);
-    private static bool HasDoubleQuotes(string path) => path.StartsWith(DQ) && path.EndsWith(DQ);
+    private static readonly char[] WindowsProblemChars = [ ' ', '!', '%', '^', '&', '|' ];
+
+    private static bool HasSingleQuotes(string text) => text.StartsWith(SQ) && text.EndsWith(SQ);
+    private static bool HasDoubleQuotes(string text) => text.StartsWith(DQ) && text.EndsWith(DQ);
         
-    public static string PutPathBetweenQuotes(string path)
+    public static string WrapStringBetweenQuotes(this string str, bool doubleQuotes = true)
     {
-        if (string.IsNullOrWhiteSpace(path) || HasDoubleQuotes(path)) return path;
-        path = DQ + path;
-        path += DQ;
-        return path;
+        var quote = (doubleQuotes) ? DQ : SQ;
+        Func<string, bool> DoesHaveQuotes = (doubleQuotes) ? HasDoubleQuotes : HasSingleQuotes;
+        
+        if (string.IsNullOrWhiteSpace(str) || DoesHaveQuotes(str)) return str;
+        str = quote + str;
+        str += quote;
+        return str;
     }
 
-    public static string ReversePutPathBetweenQuotes(string path)
+    public static string UnwrapStringBetweenQuotes(this string str, bool doubleQuotes = true)
     {
-        if (string.IsNullOrWhiteSpace(path) || !HasDoubleQuotes(path)) return path;
-        path = path.TrimStart(DQ);
-        path = path.TrimEnd(DQ);
-        return path;
+        // var quote = (doubleQuotes) ? DQ : SQ;
+        Func<string, bool> DoesHaveQuotes = (doubleQuotes) ? HasDoubleQuotes : HasSingleQuotes;
+        
+        if (string.IsNullOrWhiteSpace(str) || !DoesHaveQuotes(str)) return str;
+        // path = path.Trim(quote);
+        const int ZeroIndex = 0;
+        int LastIndex = str.Length - 2;
+        str = str.Remove(ZeroIndex, 1);
+        str = str.Remove(LastIndex, 1);
+        return str;
     }
 
-    public static string TwoDoubleQuotes(string text) => text.Replace(DQ.ToString(), "\"\"");
+    public static string TwoDoubleQuotes(string text) => text.Replace(DQ.ToString(), $"{DQ}{DQ}");
+    public static string UndoTwoDoubleQuotes(string text) => text.Replace($"{DQ}{DQ}", DQ.ToString());
+
+    public static string ConditionallyQuoteString(string text, bool os, bool doubleQuotes = true)
+    {
+        if (string.IsNullOrWhiteSpace(text) || HasDoubleQuotes(text) || HasSingleQuotes(text)) return text;
+        
+        if (os)
+        {
+            if (!text.ContainsAny(WindowsProblemChars)) return text;
+            if (doubleQuotes) return WrapStringBetweenQuotes(text);
+        }
+        else
+        {
+            if (!text.ContainsAny(LinuxProblemChars)) return text;
+            if (doubleQuotes) return WrapStringBetweenQuotes(text);
+            string escapeSQ = "'\\''";
+            if (text.Contains(SQ)) text = text.Replace(SQ.ToString(), escapeSQ);
+        }
+
+        text = $"{SQ}{text}{SQ}";
+        return text;
+    }
 
     // public static List<string> ExtractClassProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
     // {

@@ -48,58 +48,21 @@ public static partial class ShortcutManager
         
         var desktopEntry = new DesktopEntry()
         {
-            Categories = ["Game"],
+            Categories = ["Game", "Emulator", " "],
             Comment = link.Description,
             Exec = $"{link.RaExecutable} {link.RaArguments}",
             Icon = link.IconPath,
-            Name = link.FriendlyName,
-            StartupNotify = false,
-            Terminal = link.RaVerbose
+            Name = link.FriendlyName
         };
         
         IniDocument doc = IniSerialization.SerializeObjectToNewDocument(desktopEntry);
-        await Task.Run(() => doc.Write(link.OutputPath));
+        // Some Desktop Environments don't recognize bool values that start with a capital letter
+        doc[MainEntry][nameof(DesktopEntry.StartupNotify)].Value = false.ToString().ToLowerInvariant();
+        doc[MainEntry][nameof(DesktopEntry.Terminal)].Value = link.RaVerbose.ToString().ToLowerInvariant();
         
-        _ = SetExecPermissions(link.OutputPath);
-    }
-    
-    public static async Task CreateShortcut_p(LinkParameters linkBase)
-    {
-        var link = (LinuxLinkParameters)linkBase;
-        List<string> shortcut = new()
-        {
-            CommentLine,
-            EntryHeader,
-            Category
-        };
-
-        shortcut.Add($"Comment={link.Description}");
-
-        shortcut.Add($"Exec={link.RaExecutable} {link.RaArguments}");
-        
-        shortcut.Add($"Icon={link.IconPath}");
-
-        shortcut.Add("Name=" + link.FriendlyName);
-        // shortcut.Add(notify);
-        
-        shortcut.Add($"Terminal={link.RaVerbose.ToString().ToLower()}");
-
-        shortcut.Add(LinkType);
-
-        string outputFile = link.OutputPath;
-
-        for (int i = 0; i < shortcut.Count; i++)
-        {
-            // shortcut[i] = string.Concat(shortcut[i], "\n");
-            shortcut[i] += "\n";
-        }
-
-        string fullOutputString = string.Concat(shortcut);
-        var outputBytes = System.Text.Encoding.UTF8.GetBytes(fullOutputString);
-        
-        await FileOps.WriteAllBytesToFileAsync(outputFile, outputBytes);
+        await FileOps.WriteIniDocument(doc, link.OutputPath);
         // If file write is successful (doesn't throw), set execution permissions
-        _ = SetExecPermissions(outputFile);
+        _ = SetExecPermissions(link.OutputPath);
     }
 
     private static async Task SetExecPermissions(string filePath)

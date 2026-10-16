@@ -25,6 +25,42 @@ namespace RetroLinker.Models.CommandLine;
 
 public static partial class Manager
 {
+    private static string FormatRaCommand(RetroArch? raParams) {
+        return (raParams is null) 
+            ? string.Empty 
+            : RetroLinkerParser.FormatCommandLine(raParams, RetroarchUnParsing);
+    }
+    
+    private static string BuildCommandRaG1() {
+        var group1 = RetroArch.GetGroup1(_userLinkParameters);
+        return FormatRaCommand(group1);
+    }
+
+    private static string BuildCommandRaG2() {
+        var group2 = RetroArch.GetGroup2(_userLinkParameters);
+        return FormatRaCommand(group2);
+    }
+    
+    private static string BuildCommandRaG3() {
+        var group3 = RetroArch.GetGroup3(_userLinkParameters);
+        return FormatRaCommand(group3);
+    }
+    
+    private static string BuildCommandRaG4() {
+        var group4 = RetroArch.GetGroup4(_userLinkParameters);
+        return FormatRaCommand(group4);
+    }
+    
+    private static string BuildCommandRaG5() {
+        var group5 = RetroArch.GetGroup5(_userLinkParameters);
+        return FormatRaCommand(group5);
+    }
+    
+    private static string BuildCommandRaG6() {
+        var group6 = RetroArch.GetGroup6(_userLinkParameters);
+        return FormatRaCommand(group6);
+    }
+    
     /* Due to how CommandLine works, the options are formatted to text sorted by the 'longName' attribute (A->Z)
      * To export the way we want, we'll have to separete the operation in 6:
      * Each operation will just create the text for its group, and everything will be concatenated at the end.
@@ -49,12 +85,12 @@ public static partial class Manager
         public bool G1_Verbose { get; set; }
 
         // Log
-        [Option("log-file", 
+        [Option("log-file",
             HelpText = "Log messages to a file.")]
         public string? G2_LogFile { get; set; }
 
         // Config
-        [Option('c', "config", 
+        [Option('c', "config",
             HelpText = "Path for config file.")]
         public string? G3_Config { get; set; }
 
@@ -76,11 +112,11 @@ public static partial class Manager
             HelpText = "Specifies path for UPS patch that will be applied to content.")]
         public string? G5_Ups { get; set; }
         
-        [Option("bps", 
+        [Option("bps",
             HelpText = "Specifies path for BPS patch that will be applied to content.")]
         public string? G5_Bps { get; set; }
         
-        [Option("ips", 
+        [Option("ips",
             HelpText = "Specifies path for IPS patch that will be applied to content.")]
         public string? G5_Ips { get; set; }
         

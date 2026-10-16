@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using CommandLine;
 using RetroLinker.Models.DesktopLink;
@@ -36,7 +37,10 @@ public static partial class Manager
     public const string XdExt = "xdelta";
 
     private static IUserLinkParameters? _userLinkParameters;
-    private static readonly Parser RetroarchParser = new(sett => {
+    /// <summary>
+    /// General purpose parser used 
+    /// </summary>
+    private static readonly Parser RetroLinkerParser = new(sett => {
         // sett.AutoHelp = false;
         // sett.AutoVersion = false;
         sett.HelpWriter = null;
@@ -74,41 +78,5 @@ public static partial class Manager
         
         _userLinkParameters = null;
         return command;
-    }
-
-    private static string FormatRaCommand(RetroArch? raParams) {
-        return (raParams is null) 
-            ? string.Empty 
-            : RetroarchParser.FormatCommandLine(raParams, RetroarchUnParsing);
-    }
-    
-    private static string BuildCommandRaG1() {
-        var group1 = RetroArch.GetGroup1(_userLinkParameters);
-        return FormatRaCommand(group1);
-    }
-
-    private static string BuildCommandRaG2() {
-        var group2 = RetroArch.GetGroup2(_userLinkParameters);
-        return FormatRaCommand(group2);
-    }
-    
-    private static string BuildCommandRaG3() {
-        var group3 = RetroArch.GetGroup3(_userLinkParameters);
-        return FormatRaCommand(group3);
-    }
-    
-    private static string BuildCommandRaG4() {
-        var group4 = RetroArch.GetGroup4(_userLinkParameters);
-        return FormatRaCommand(group4);
-    }
-    
-    private static string BuildCommandRaG5() {
-        var group5 = RetroArch.GetGroup5(_userLinkParameters);
-        return FormatRaCommand(group5);
-    }
-    
-    private static string BuildCommandRaG6() {
-        var group6 = RetroArch.GetGroup6(_userLinkParameters);
-        return FormatRaCommand(group6);
     }
 }

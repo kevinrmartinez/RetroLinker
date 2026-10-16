@@ -31,7 +31,7 @@ namespace RetroLinker.Models.IO
         public const string SettingFileJson = "RLsettings.json";
         public const string DefUserAssets = "UserAssets";
         public const string DefLicenses = "Licenses";
-        public const string tempFile = "temp.txt";
+        public const string tempFile = "temp.txt";  // TODO: Create a new method for temporal file naming
         public const string CoresFile = "cores.txt";
         // public const string tempIco = "temp.ico";
         // public const byte MAX_PATH = 255; // Apply Everywhere?
@@ -116,14 +116,6 @@ namespace RetroLinker.Models.IO
         public static Settings.Settings SetNewSettings(Settings.Settings settings)
         {
             _loadedSettings = settings;
-            return _loadedSettings;
-        }
-
-        public static Settings.Settings LoadDesignerSettingsFO(bool fixedOutput)
-        {
-            _loadedSettings = new Settings.Settings();
-            BuildConfigDir(_loadedSettings);
-            if (fixedOutput) _loadedSettings.AlwaysAskOutput = false;
             return _loadedSettings;
         }
 
@@ -352,12 +344,6 @@ namespace RetroLinker.Models.IO
                 return false;
             }
         }
-
-        public static string GetDefinedLinkPath(string linkName, string linkPath) {
-            var newDir = Path.GetFileName(linkName);
-            newDir = Path.Combine(linkPath, newDir);
-            return newDir;
-        }
         
         public static void DumpStreamToFile(Stream fileStream, out string destFile, string fileName = tempFile)
         {
@@ -384,6 +370,9 @@ namespace RetroLinker.Models.IO
             // File Name
             return GetFileNameFromPath(path);
         }
+        
+        public static async Task WriteIniDocument(TG.INI.IniDocument iniDocument, string outputPath) => 
+            await Task.Run(() => iniDocument.Write(outputPath));
         
         #endregion
 

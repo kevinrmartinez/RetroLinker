@@ -25,6 +25,7 @@ using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
 using SharpShellLink;
+using SharpShellLink.Flags;
 
 namespace RetroLinker.Models.Windows;
 
@@ -38,6 +39,9 @@ public static class ShortcutManager
         var outputFile = Shortcut.CreateShortcut(link.RaExecutable, link.RaArguments, link.IconPath, iconIndex);
         outputFile.StringData?.WorkingDir = link.RaWorkDir ?? string.Empty;
         outputFile.StringData?.NameString = link.Description ?? string.Empty;
+        if (link.RaExecutable.Contains("powershell", StringComparison.OrdinalIgnoreCase) &&
+            !link.RaArguments.Contains("-v"))   // TODO: test
+            outputFile.ShowCommand = ShowCommand.SW_SHOWMINNOACTIVE;
         
         await FileOps.WriteAllBytesToFileAsync(link.OutputPath, outputFile.GetBytes());
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
@@ -55,7 +59,7 @@ public static class ShortcutManager
         var tileIcoArguments = new HashSet<TileicoArgument>();
         TileIcoOptions? tileIcoNameOpt = null;
         if (link.TileIcoNameVisible) {
-            tileIcoNameOpt = link.TileIcoNameDark ? TileIcoOptions.name_on_tile_dark : TileIcoOptions.name_on_tile_light;
+            tileIcoNameOpt = (link.TileIcoNameDark) ? TileIcoOptions.name_on_tile_dark : TileIcoOptions.name_on_tile_light;
         }
         
         // Tileico commands
