@@ -25,13 +25,6 @@ using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Models.Windows;
 
-public interface IWindowsPwsWrapper
-{
-    public string RealTargetExecutable { get; }
-    public string RealTargetArguments { get; }
-    public HashSet<EnvironmentVariable> EnvironmentVariables { get; }
-}
-
 [SupportedOSPlatform(App.PlatformWin)]
 public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
 {
@@ -44,16 +37,18 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     
     private string _iconFallabckPath;
     
-    public WindowsLinkParameters(LinkWriter linkWriter)
+    public WindowsLinkParameters(IShortcutBase linkWriter)
     {
-        if (linkWriter.EnvironmentVariables.Count < 1) {
+        EnvironmentVariables = linkWriter.EnvironmentVariables;
+        UpdateHashedVariables();
+        
+        if (HashedEnvironmentVariables.Count < 1) {
             RaExecutable = linkWriter.RaExecutable;
             RaArguments = linkWriter.RaArguments;
         }
-        else
-        {
+        else {
             RaExecutable = CommandLine.Manager.GetPowershellExecutable();
-            RaArguments = CommandLine.Manager.CreatePowershellArguments(linkWriter);
+            RaArguments = CommandLine.Manager.CreatePowershellArguments(linkWriter, HashedEnvironmentVariables);
         }
         
         RaWorkDir = linkWriter.RaWorkDir ?? FileOps.GetDirFromPath(linkWriter.RaExecutable); // <= By default
@@ -62,13 +57,11 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         FriendlyName = linkWriter.FriendlyName;
         OutputFileName = linkWriter.OutputFileName;
         OutputPath = linkWriter.OutputPath;
-        EnvironmentVariables = linkWriter.EnvironmentVariables;
         TileIcoNameVisible = linkWriter.TileIcoNameVisible;
         TileIcoNameDark = linkWriter.TileIcoNameDark;
         TileIcoAllUsers = linkWriter.TileIcoAllUsers;
         TileIcoOverwrite = linkWriter.TileIcoOverwrite;
         TileIcoImagePath = linkWriter.TileIcoImagePath;
-        UpdateHashedVariables();
         
         _iconFallabckPath = linkWriter.RaExecutable;
     }
@@ -92,7 +85,8 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
             var pwsWrapper = CommandLine.Manager.ResolvePowershellArguments(rawArguments);
             RaExecutable = pwsWrapper.RealTargetExecutable;
             RaArguments = Utils.UndoTwoDoubleQuotes(pwsWrapper.RealTargetArguments);
-            EnvironmentVariables = new List<EnvironmentVariable>(pwsWrapper.EnvironmentVariables);
+            HashedEnvironmentVariables = pwsWrapper.EnvironmentVariables;
+            EnvironmentVariables = new List<EnvironmentVariable>(HashedEnvironmentVariables);
         }
         
         Description = shortcut.StringData.NameString;
@@ -116,13 +110,13 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         
         _outputCount++;
         return buildOption switch {
-            WindowsBuildOptions.Shell => await BuildWinShortcut_Ssl(),
+            WindowsBuildOptions.Shell => await BuildWinShortcut_WindowsShell(),
             WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco(),
             _ => throw new System.ArgumentOutOfRangeException(nameof(buildOption), buildOption, null)
         };
     }
 
-    private async Task<LinkWriterResult> BuildWinShortcut_Ssl() {
+    private async Task<LinkWriterResult> BuildWinShortcut_WindowsShell() {
         if (string.IsNullOrEmpty(IconPath)) IconPath = _iconFallabckPath;
         return await CreateShortcut(ShortcutManager.CreateShortcut);
     }

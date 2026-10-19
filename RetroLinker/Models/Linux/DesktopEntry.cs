@@ -8,8 +8,9 @@ public static partial class ShortcutManager
 {
     private const string MainEntry = "Desktop Entry";
     
-    private class DesktopEntry
+    private class DesktopEntry : IDesktopEntry
     {
+        [IniIgnoreProperty] public IReadOnlyList<string> CategoriesRo => Categories;
         [IniSection(MainEntry)] public DesktopEntryStringList Categories { get; set; }
         [IniSection(MainEntry)] public string? Comment { get; set; }
         [IniSection(MainEntry)] public string Exec { get; set; }
@@ -20,8 +21,9 @@ public static partial class ShortcutManager
         [IniSection(MainEntry)] public DesktopEntryType Type { get; set; } = DesktopEntryType.Application;
     }
     
-    private enum DesktopEntryType { Application, Link, Directory }
+    public enum DesktopEntryType { Application, Link, Directory }
     
+    // FIXME: Constructor doesn't seem to work during Ini deserialization
     private class DesktopEntryStringList : List<string> {
         const char SEPARATOR = ';';
         

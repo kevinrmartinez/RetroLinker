@@ -31,7 +31,7 @@ public abstract class LinkParameters : ILinkParametersBase
     public string OutputFileName { get; protected init; } = string.Empty;
     public string OutputPath { get; protected set; } = string.Empty;
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; protected init; } = new List<EnvironmentVariable>();
-    public HashSet<EnvironmentVariable> HashedEnvironmentVariables { get; } = new();
+    public HashSet<EnvironmentVariable> HashedEnvironmentVariables { get; protected init; } = new();
 
     /// <summary>
     /// An OS-agnostic command to write the shortcut to file

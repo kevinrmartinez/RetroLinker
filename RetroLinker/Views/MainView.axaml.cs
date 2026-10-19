@@ -31,7 +31,6 @@ using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.CommandLine;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
-using RetroLinker.Models.Linux;
 using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 
@@ -39,11 +38,15 @@ using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
+using static RetroLinker.Models.Linux.DesktopEntryOps;
+
 namespace RetroLinker.Views;
 
 public partial class MainView : UserControl
 {
-    // Avalonia Properties
+
+    #region AvaloniaProperties
+
     public static readonly DirectProperty<MainView, bool> TileIconEnabledProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
             nameof(TileIconEnabled),
@@ -87,6 +90,8 @@ public partial class MainView : UserControl
                 ? view.Settings.DEFLinkOutput : FileOps.TileIconOutDirs[view.TileIconAllUsers]);
 
     public string? FixedOutputDir { get; } = null;
+
+    #endregion
 
     // Window Object
     public MainWindow ParentWindow { get; }
@@ -375,7 +380,7 @@ public partial class MainView : UserControl
     // Other Functions
     string UpdateFixedLinkName(string fileNameNoExt, string? core) {
         var ext = FileOps.GetOutputExt(DesktopOS);
-        return (DesktopOS) ? fileNameNoExt + ext : DesktopEntryOps.StdDesktopEntry(fileNameNoExt, core) + ext;
+        return (DesktopOS) ? fileNameNoExt + ext : StdDesktopEntry(fileNameNoExt, core) + ext;
     }
     
     string ValidateLINBin(string RAPath) {
@@ -422,14 +427,14 @@ public partial class MainView : UserControl
             string friendlyName;
             if (Settings.AlwaysAskOutput) {
                 friendlyName = linkBuilder.FriendlyName;
-                var correctedFileName = DesktopEntryOps.StdDesktopEntry(friendlyName, linkBuilder.RaCore) 
-                                      + FileOps.GetOutputExt(DesktopOS);
+                var correctedFileName = StdDesktopEntry(friendlyName, linkBuilder.RaCore) 
+                                        + FileOps.GetOutputExt(DesktopOS);
                 outputPath = (correctedFileName == linkBuilder.OutputFileName) 
                     ? linkBuilder.OutputPath : FileOps.CombineMultipleInputs(linkBuilder.OutputDir, correctedFileName); 
             }
             else {
                 var outputPathStr = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, userInput +  FileOps.GetOutputExt(DesktopOS));
-                outputPath = DesktopEntryOps.RenameForDesktopEntry(outputPathStr, linkBuilder.RaCore,  out friendlyName);
+                outputPath = RenameForDesktopEntry(outputPathStr, linkBuilder.RaCore,  out friendlyName);
             }
             linkBuilder.SetOutputPathAndFriendlyName(outputPath, friendlyName);
         }
@@ -796,7 +801,7 @@ public partial class MainView : UserControl
         
         if (IsRenameInactive())
         {
-            var newFile = DesktopEntryOps.StdDesktopEntry(BuildingLink.FriendlyName + FileOps.GetOutputExt(false), combo.Text);
+            var newFile = StdDesktopEntry(BuildingLink.FriendlyName + FileOps.GetOutputExt(false), combo.Text);
             var outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPath);
             if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
             txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
@@ -903,8 +908,8 @@ public partial class MainView : UserControl
                 Logger.LogDebg("Running on debug...");
                 // var imposible = 1684 / (comboConfig.Items.Count - 1);
                 // Logger.LogDebg(imposible);
-                // var readLink = Models.WinClasses.WinShortcutter.ReadShortcut(BuildingLink.OutputPaths[0].FullPath);
-                Manager.TestWindowsCmd();
+                // Manager.TestWindowsCmd();
+                // var par = await Models.Linux.ShortcutManager.ReadShortcut(test);
             }
 #endif
         }
@@ -924,7 +929,7 @@ public partial class MainView : UserControl
             LockControls(true);
             LinkCustomName = false;
             var properFileName = (string.IsNullOrWhiteSpace(textBox.Text))
-                ? DesktopEntryOps.NamePlaceHolder
+                ? NamePlaceHolder
                 : textBox.Text + FileOps.GetOutputExt(DesktopOS);
             var fullPath = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, properFileName);
             var helper = await ResolveRenamePopUp(fullPath, comboCore.Text);

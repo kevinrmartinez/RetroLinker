@@ -49,7 +49,7 @@ public static class ShortcutManager
     
     public static async Task<LinkParameters> ReadShortcut(string linkPath)
     {
-        var inputFile = Shortcut.ReadFromFile(linkPath);
+        var inputFile = await Task.Run(() => Shortcut.ReadFromFile(linkPath));
         return new WindowsLinkParameters(inputFile, linkPath);
     }
     

@@ -18,7 +18,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using CommandLine;
 using RetroLinker.Models.DesktopLink;
@@ -28,8 +27,8 @@ namespace RetroLinker.Models.CommandLine;
 public static partial class Manager
 {
     public const string Contentless = "Contentless";
-    private const char sepWhiteSpace = ' ';
-    private const char sepPipe = '|';
+    public const char SepWhiteSpace = ' ';
+    public const char SepPipe = '|';
         
     public const string UpsExt = "ups";
     public const string BpsExt = "bps";
@@ -37,8 +36,9 @@ public static partial class Manager
     public const string XdExt = "xdelta";
 
     private static IUserLinkParameters? _userLinkParameters;
+    
     /// <summary>
-    /// General purpose parser used 
+    /// General purpose parser.
     /// </summary>
     private static readonly Parser RetroLinkerParser = new(sett => {
         // sett.AutoHelp = false;
@@ -48,7 +48,12 @@ public static partial class Manager
         sett.IgnoreUnknownArguments = false;
     });
 
-    private static void RetroarchUnParsing(UnParserSettings settings) {
+    /// <summary>
+    /// General purpose unparser.
+    /// </summary>
+    /// <param name="settings"></param>
+    /// <remarks>This meyhod is meant to be passed to <see cref="UnParserExtensions.FormatCommandLine{T}(Parser,T,System.Action{UnParserSettings})"/>.</remarks>
+    private static void RetroLinkerUnParsing(UnParserSettings settings) {
         settings.PreferShortName = true;
         settings.UseEqualToken = false;
         settings.SkipDefault = true;
@@ -74,7 +79,7 @@ public static partial class Manager
             correctedResults.Add(result.Trim());
         }
         
-        var command = string.Join(sepWhiteSpace, correctedResults);
+        var command = string.Join(SepWhiteSpace, correctedResults);
         
         _userLinkParameters = null;
         return command;

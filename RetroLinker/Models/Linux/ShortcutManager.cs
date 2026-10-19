@@ -17,7 +17,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
@@ -31,15 +30,16 @@ namespace RetroLinker.Models.Linux;
 [SupportedOSPlatform(App.PlatformLin)]
 public static partial class ShortcutManager
 {
-    // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
-    // TODO: a desktop-entry is basically a .ini file, so this could be made with a INI parser (>=0.9) 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
+    public static async Task<LinkParameters> ReadShortcut(string linkPath)
+    {
+        var iniData = await FileOps.ReadFileTextToEndAsync(linkPath);
+        var doc = IniDocument.Parse(iniData);
+        var desktopEntry = IniSerialization.DeserializeDocument<DesktopEntry>(doc);
+        return new LinuxLinkParameters(desktopEntry, linkPath);
+    }
     
-    private static readonly string CommentLine = $"# Created with {App.LocalInformation.Name} v{App.LocalInformation.Version}";
-    private const string EntryHeader = "[Desktop Entry]";
-    // private const string Notify = "StartupNotify=false";
-    private const string Category = "Categories=Game";
-    private const string LinkType = "Type=Application";
-
+    // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
     public static async Task CreateShortcut(LinkParameters linkBase)
     {
@@ -59,8 +59,9 @@ public static partial class ShortcutManager
         // Some Desktop Environments don't recognize bool values that start with a capital letter
         doc[MainEntry][nameof(DesktopEntry.StartupNotify)].Value = false.ToString().ToLowerInvariant();
         doc[MainEntry][nameof(DesktopEntry.Terminal)].Value = link.RaVerbose.ToString().ToLowerInvariant();
+        var iniString = doc.ToString().ReplaceLineEndings();
         
-        await FileOps.WriteIniDocument(doc, link.OutputPath);
+        await FileOps.WriteAllBytesToFileAsync(link.OutputPath, System.Text.Encoding.UTF8.GetBytes(iniString));
         // If file write is successful (doesn't throw), set execution permissions
         _ = SetExecPermissions(link.OutputPath);
     }

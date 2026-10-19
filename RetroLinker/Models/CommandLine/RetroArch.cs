@@ -28,7 +28,7 @@ public static partial class Manager
     private static string FormatRaCommand(RetroArch? raParams) {
         return (raParams is null) 
             ? string.Empty 
-            : RetroLinkerParser.FormatCommandLine(raParams, RetroarchUnParsing);
+            : RetroLinkerParser.FormatCommandLine(raParams, RetroLinkerUnParsing);
     }
     
     private static string BuildCommandRaG1() {
@@ -94,7 +94,7 @@ public static partial class Manager
             HelpText = "Path for config file.")]
         public string? G3_Config { get; set; }
 
-        [Option("appendconfig", Separator = sepPipe,
+        [Option("appendconfig", Separator = SepPipe,
             HelpText = "Extra config files are loaded in, and take priority over config selected in -c (or default).")]
         public IEnumerable<string>? G3_AppendConfig { get; set; }
         
@@ -125,7 +125,7 @@ public static partial class Manager
         public string? G5_Xdelta { get; set; }
         
         // SubSystem
-        [Option("subsystem", Separator = sepWhiteSpace,
+        [Option("subsystem", Separator = SepWhiteSpace,
             HelpText = "Use a subsystem of the libretro core.")]
         public IEnumerable<string>? G6_SubSystem { get; set; }
         

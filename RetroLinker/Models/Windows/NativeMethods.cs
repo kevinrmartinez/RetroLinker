@@ -32,67 +32,82 @@ using System.Security;
 using System.Security.Principal;
 using System.Text;
 
-namespace RetroLinker.Models.Windows
+namespace RetroLinker.Models.Windows;
+
+[SupportedOSPlatform(App.PlatformWin)]
+internal static class NativeMethods
 {
-    [SupportedOSPlatform(App.PlatformWin)]
-    internal static class NativeMethods
-    {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern bool FreeLibrary(IntPtr hModule);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern bool EnumResourceNames(IntPtr hModule, IntPtr lpszType, ENUMRESNAMEPROC lpEnumFunc, IntPtr lParam);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern IntPtr FindResource(IntPtr hModule, IntPtr lpName, IntPtr lpType);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern IntPtr LockResource(IntPtr hResData);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern uint SizeofResource(IntPtr hModule, IntPtr hResInfo);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern IntPtr GetCurrentProcess();
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int QueryDosDevice(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
-
-        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [SuppressUnmanagedCodeSecurity]
-        public static extern int GetMappedFileName(IntPtr hProcess, IntPtr lpv, StringBuilder lpFilename, int nSize);
-    }
-
-    
-    [UnmanagedFunctionPointer(CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [SuppressUnmanagedCodeSecurity]
-    internal delegate bool ENUMRESNAMEPROC(IntPtr hModule, IntPtr lpszType, IntPtr lpszName, IntPtr lParam);
+    public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
 
-    [SupportedOSPlatform(App.PlatformWin)]
-    public static class NativeAccess
-    {
-        public static bool IsWindowsProcessElevated() {
-            using var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern bool FreeLibrary(IntPtr hModule);
 
-        }
-    }
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern bool EnumResourceNames(IntPtr hModule, IntPtr lpszType, ENUMRESNAMEPROC lpEnumFunc, IntPtr lParam);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern IntPtr FindResource(IntPtr hModule, IntPtr lpName, IntPtr lpType);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern IntPtr LockResource(IntPtr hResData);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern uint SizeofResource(IntPtr hModule, IntPtr hResInfo);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern IntPtr GetCurrentProcess();
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern int QueryDosDevice(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
+
+    [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [SuppressUnmanagedCodeSecurity]
+    public static extern int GetMappedFileName(IntPtr hProcess, IntPtr lpv, StringBuilder lpFilename, int nSize);
 }
 
+    
+[UnmanagedFunctionPointer(CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Unicode)]
+[SuppressUnmanagedCodeSecurity]
+internal delegate bool ENUMRESNAMEPROC(IntPtr hModule, IntPtr lpszType, IntPtr lpszName, IntPtr lParam);
 
+
+/*
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
+    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+[SupportedOSPlatform(App.PlatformWin)]
+public static class NativeAccess
+{
+    public static bool IsWindowsProcessElevated() {
+        using var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
+}

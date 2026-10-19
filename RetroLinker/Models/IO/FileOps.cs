@@ -300,11 +300,16 @@ namespace RetroLinker.Models.IO
         /// <summary>
         /// An async wrapper for <see cref="File.Delete"/>
         /// </summary>
-        /// <remarks>Use this when the UI is running.</remarks>
-        public static async Task DeleteFileAsync(string filePath) {
-            await Task.Run(() => File.Delete(filePath));
-        }
+        /// <remarks>Use this when calling fron the UI.</remarks>
+        public static async Task DeleteFileAsync(string filePath) 
+            => await Task.Run(() => File.Delete(filePath));
         
+        /// <summary>
+        /// A wrapper for <see cref="File.WriteAllBytesAsync(string,byte[],System.Threading.CancellationToken)"/>.
+        /// </summary>
+        /// <param name="filePath">Path of the file to write.</param>
+        /// <param name="bytes">The bytes to be written.</param>
+        /// <remarks>Use this when calling fron the UI.</remarks>
         public static async Task WriteAllBytesToFileAsync(string filePath, byte[] bytes) 
             => await File.WriteAllBytesAsync(filePath, bytes);
         
@@ -370,9 +375,6 @@ namespace RetroLinker.Models.IO
             // File Name
             return GetFileNameFromPath(path);
         }
-        
-        public static async Task WriteIniDocument(TG.INI.IniDocument iniDocument, string outputPath) => 
-            await Task.Run(() => iniDocument.Write(outputPath));
         
         #endregion
 

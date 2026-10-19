@@ -63,6 +63,39 @@ public class ObservableAppendedConfigs : ObservableCollection<string>, IReadOnly
 }
 
 public record EnvironmentVariable(string Key, string Value) {
-    public override string ToString() =>  $"{Key}={Value}"; // Compatible with Windows and POSIX
+    public override string ToString() =>  $"{Key}{EnvSeparator}{Value}"; // Compatible with Windows and POSIX
+    public string ToStringPws() =>  $"{Manager.PwsEnvSetter}{Key}{EnvSeparator}{Utils.ConditionallyQuoteString(Value, os: true, doubleQuotes: false)}";
+    public string ToStringBash() =>  $"{Key}{EnvSeparator}{Utils.ConditionallyQuoteString(Value, os: false, doubleQuotes: false)}";
     public override int GetHashCode() => Key.GetHashCode();
+
+    private const char EnvSeparator = '=';
+    private const int KeyIndex = 0;
+    private const int ValueIndex = 1;
+    
+    public static EnvironmentVariable? FromPwsArgument(string pwsArgument)
+    {
+        pwsArgument = pwsArgument.Replace(Manager.PwsEnvSetter, "").Trim();
+        var env = pwsArgument.Split(EnvSeparator);
+        if (env.Length != 2)
+        {
+            // error or warning?
+            return null;
+        }
+
+        env[ValueIndex] = env[ValueIndex].UnwrapStringBetweenQuotes(doubleQuotes: false);
+        return new EnvironmentVariable(env[KeyIndex], env[ValueIndex]);
+    }
+
+    public static EnvironmentVariable? FromBashArgument(string bashArgument)
+    {
+        var env = bashArgument.Trim().Split(EnvSeparator);
+        if (env.Length != 2)
+        {
+            // error or warning?
+            return null;
+        }
+
+        env[ValueIndex] = env[ValueIndex].UnwrapStringBetweenQuotes(doubleQuotes: false);
+        return new EnvironmentVariable(env[KeyIndex], env[ValueIndex]);
+    }
 }
