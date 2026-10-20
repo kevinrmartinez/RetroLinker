@@ -506,7 +506,7 @@ namespace RetroLinker.Models.IO
         #region Linux Only Ops
         
         [UnsupportedOSPlatform(App.PlatformWin)]
-        public static void MakeLinuxFileExecutable(string filePath)
+        public static void MakeUnixFileExecutable(string filePath, bool forAll = false)
         {
             // Freaking bit magic: https://aaronbos.dev/posts/csharp-flags-enum
             // |= Adds file mode to existing ones
@@ -514,6 +514,7 @@ namespace RetroLinker.Models.IO
             // -= Removes file mode from existing ones
             var fileInfo = new FileInfo(filePath);
             fileInfo.UnixFileMode |= UnixFileMode.UserExecute | UnixFileMode.GroupExecute;
+            if (forAll) fileInfo.UnixFileMode |= UnixFileMode.OtherExecute;
         }
 
         #endregion

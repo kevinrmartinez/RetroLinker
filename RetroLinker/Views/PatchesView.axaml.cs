@@ -126,8 +126,9 @@ public partial class PatchesView : UserControl
     
     // == PATCHES CONTROLS ==
     
-    private void LockControls(bool locked) => gridContent.ShowGridLines = !locked; // TODO: WHAT??
+    private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
     
+    [System.Obsolete("Replace with some binding")]
     private void ControlsEnabled(bool enable)
     {
         txtPatchPath.IsEnabled = enable;

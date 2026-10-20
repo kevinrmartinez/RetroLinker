@@ -45,10 +45,11 @@ public static partial class ShortcutManager
     {
         var link = linkBase as LinuxLinkParameters;
         ArgumentNullException.ThrowIfNull(link);
-        
+
+        const string DefaultCategories = "Game;Emulator;";
         var desktopEntry = new DesktopEntry()
         {
-            Categories = ["Game", "Emulator", " "],
+            Categories = DefaultCategories,
             Comment = link.Description,
             Exec = $"{link.RaExecutable} {link.RaArguments}",
             Icon = link.IconPath,
@@ -71,7 +72,7 @@ public static partial class ShortcutManager
         Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
-            await Task.Run(() => FileOps.MakeLinuxFileExecutable(filePath));
+            await Task.Run(() => FileOps.MakeUnixFileExecutable(filePath));
             Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {

@@ -160,7 +160,7 @@ public static partial class Manager
         {
             if (link is null) return null;
             List<string> coreAndRom = [link.RaCore];
-            if (!string.IsNullOrEmpty(link.RaRom) && link.RaRom != Contentless) coreAndRom.Add(link.RaRom);  // TODO: Test
+            if (!string.IsNullOrEmpty(link.RaRom) && link.RaRom != Contentless) coreAndRom.Add(link.RaRom);
             
             return new RetroArch() {
                 G4_Libretro = coreAndRom.ToArray()

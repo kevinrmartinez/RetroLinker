@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace RetroLinker.Models;
+namespace RetroLinker;
 
 public static class Utils
 {
