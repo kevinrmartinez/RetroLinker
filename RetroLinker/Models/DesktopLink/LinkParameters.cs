@@ -32,14 +32,15 @@ public abstract class LinkParameters : ILinkParametersBase
     public string OutputPath { get; protected set; } = string.Empty;
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; protected init; } = new List<EnvironmentVariable>();
     public HashSet<EnvironmentVariable> HashedEnvironmentVariables { get; protected init; } = new();
-
+    protected string _ogOutputPath = string.Empty;
+    
     /// <summary>
     /// An OS-agnostic command to write the shortcut to file
     /// </summary>
     /// <returns>A <see cref="LinkWriterResult"/> indicating if the file was whether written successfully or not.</returns>
     public abstract Task<LinkWriterResult> CreateOsShortcut();
 
-    public void UpdateOutputPath(string outputPath) => OutputPath = outputPath;
+    public virtual void SetToCopyOutputPath(string outputPath) => OutputPath = outputPath;
 
     protected void UpdateHashedVariables() {
         HashedEnvironmentVariables.Clear();

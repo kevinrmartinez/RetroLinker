@@ -24,13 +24,16 @@ using System.Runtime.Versioning;
 using CommandLine;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
-using RetroLinker.Models.Windows;
 
 namespace RetroLinker.Models.CommandLine;
 
 public static partial class Manager
 {
     public const string PwsEnvSetter = "$env:";
+    public const string PwsCommandOpt = "Command";
+    private const string PwsStartCommand = "Start-Process";
+    private const string PwsStartFilePath = "FilePath";
+    private const string PwsStartArgumentList = "ArgumentList";
     
     public static void TestWindowsCmd()
     {
@@ -79,37 +82,81 @@ public static partial class Manager
         private WindowsPws _pws;
         
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
-                           | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(StartProcess))]
-        private StartProcess _pwsStartProcess;
+                           | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(PwsStartProcess))]
+        private PwsStartProcess _pwsStartProcess;
         
-        private const char CharEscape = '^';
-        private const string EscapedSqPlHld = "@#SQ#@";
-        private const string CommandOpt = "Command";
         private const string CommandsSeparator = ";";
-        private const string StartCommand = "Start-Process";
-        private const string StartFilePath = "FilePath";
-        private const string StartArgumentList = "ArgumentList";
         private const string StartSeparatorPlHld = "@#Sep#@";
         
-        private static readonly string[] startOptions = [StartFilePath, StartArgumentList];
+        private static readonly string[] StartOptions = [PwsStartFilePath, PwsStartArgumentList];
 
+        /// <summary>
+        /// Create an instance of <c>WindowsPwsWrapper</c>, and prepares it for *un-parsing*.
+        /// </summary>
+        /// <param name="realTargetExecutable">Path to the executable the user expects to run.</param>
+        /// <param name="realTargetArguments">Arguments to pass to the executable.</param>
+        /// <param name="environmentVariables">A <see cref="HashSet{EnvironmentVariable}"/> to include for the executable.</param>
         public WindowsPwsWrapper(string realTargetExecutable, string realTargetArguments,
             HashSet<EnvironmentVariable> environmentVariables)
         {
             RealTargetExecutable = realTargetExecutable;
             RealTargetArguments = realTargetArguments;
             EnvironmentVariables = environmentVariables;
-            _pwsStartProcess = new StartProcess() {
+            _pwsStartProcess = new PwsStartProcess() {
                 FilePath = RealTargetExecutable,
                 ArgumentList = RealTargetArguments
             };
             _pws = new WindowsPws();
         }
         
+        /// <summary>
+        /// Builds a command-line argument for Powershell, that works from a shortcut file (.lnk).
+        /// </summary>
+        /// <returns>The command-line as a single <see langword="string"/>.</returns>
+        /// <exception cref="CommandLineParserExceptions">The un-parser failed to create the command-line.</exception>
+        /// <remarks>The return value can be passed to <see cref="WindowsPwsWrapper(string)"/>.</remarks>
+        public string BuildCommandLineArg()
+        {
+            const string quoteArtifact = "\\\"";
+            const string quoteArtifactPlHld = "#{DQ}#";
+            
+            var strpToString = RetroLinkerParser.FormatCommandLine(_pwsStartProcess, RetroLinkerUnParsing);
+            strpToString = strpToString.Replace(quoteArtifact, quoteArtifactPlHld);
+            strpToString = strpToString.Replace('\"', '\'');
+            
+            foreach (var option in StartOptions) {
+                var strpIndex = strpToString.IndexOf(option, StringComparison.Ordinal);
+                strpToString = strpToString.Remove(strpIndex - 1, 1);
+            }
+            strpToString = $"{PwsStartCommand} {strpToString}";
+            var pwsArgument = new List<string>();
+            foreach (var variable in EnvironmentVariables) pwsArgument.Add(variable.ToStringPws());
+            pwsArgument.Add(strpToString);
+
+            _pws.Command = string.Join("; ", pwsArgument); 
+            var pwsToStringArray = RetroLinkerParser.FormatCommandLineArgs(_pws, RetroLinkerUnParsing);
+            var pwsIndex = pwsToStringArray[0].IndexOf(PwsCommandOpt, StringComparison.Ordinal);
+            string PwsArrayToString() => string.Join(SepWhiteSpace, pwsToStringArray);
+            
+            if (pwsIndex < 0) throw new CommandLineParserExceptions(InvalidArgumentsMessage(PwsArrayToString()));
+            
+            pwsToStringArray[0] = pwsToStringArray[0].Remove(pwsIndex - 1, 1);
+            pwsToStringArray[1] = pwsToStringArray[1].WrapStringBetweenQuotes();
+            pwsToStringArray[1] = pwsToStringArray[1].Replace(quoteArtifactPlHld, $"{Utils.DQ}{Utils.DQ}");
+            
+            return PwsArrayToString();
+        }
+        
+        /// <summary>
+        /// Create an instance of <c>WindowsPwsWrapper</c> from an existing command-line.
+        /// </summary>
+        /// <param name="singleLineArguments">The command-line to parse.</param>
+        /// <exception cref="CommandLineParserExceptions">Parsing fails; invalid command-line or improperly formatted.</exception>
+        /// <remarks>The <paramref name="singleLineArguments"/> should be one that works from a shortcut file (.lnk).</remarks>
         public WindowsPwsWrapper(string singleLineArguments)
         {
-            if (string.IsNullOrWhiteSpace(singleLineArguments) || !singleLineArguments.Contains(CommandOpt))
-                throw new ArgumentException($"The '{CommandOpt}' argument is missing.");
+            if (string.IsNullOrWhiteSpace(singleLineArguments) || !singleLineArguments.Contains(PwsCommandOpt))
+                throw new CommandLineParserExceptions($"The '{PwsCommandOpt}' argument is missing.", nameof(singleLineArguments));
 
             EnvironmentVariables = new();
             singleLineArguments =  singleLineArguments.Trim();
@@ -119,11 +166,41 @@ public static partial class Manager
             corrected = corrected.Insert(wht, "=");
             
             var parsedPws = RetroLinkerParser.ParseArguments<WindowsPws?>([corrected]);
-            _pws = parsedPws.Value ?? throw new MissingFieldException();
+            _pws = parsedPws.Value ?? throw new CommandLineParserExceptions(
+                $"<{nameof(WindowsPws)}> could not be parsed from argument '{corrected}'", nameof(corrected));
+
+            var separatedCommand = _pws.Command.UnwrapStringBetweenQuotes().Split(CommandsSeparator);
+            var strpCandidates = ResolveCommendArgument(separatedCommand, EnvironmentVariables);
+            var correctedArguments = ResolveStartProcessArguement(strpCandidates);
+
+            string CorrectedArgumentsForError() => string.Join(SepWhiteSpace, correctedArguments);
             
+            const int minValidArgumentCount = 2;
+            if (correctedArguments.Count < minValidArgumentCount)
+                throw new CommandLineParserExceptions(
+                    InvalidArgumentsMessage(CorrectedArgumentsForError()),
+                    nameof(correctedArguments));
+            
+            var strpParsed = RetroLinkerParser.ParseArguments<PwsStartProcess?>(correctedArguments);
+            _pwsStartProcess = strpParsed.Value ?? throw new CommandLineParserExceptions(
+                $"<{nameof(PwsStartProcess)}> could not be parsed from argument '{CorrectedArgumentsForError()}'",
+                nameof(correctedArguments));
+
+            var correctedFilePath = _pwsStartProcess.FilePath.UnwrapStringBetweenQuotes(doubleQuotes: false);
+            var correctedArgumentList = _pwsStartProcess.ArgumentList.UnwrapStringBetweenQuotes(doubleQuotes: false);
+            correctedArgumentList = correctedArgumentList.UndoTwoDoubleQuotes();
+            
+            RealTargetExecutable = correctedFilePath;
+            RealTargetArguments = correctedArgumentList;
+        }
+
+        private string InvalidArgumentsMessage(string argument) 
+            => $"Invalid arguments, or not formatted correctly: '{argument}'";
+
+        private Collection<string> ResolveCommendArgument(string[] separatedCommand, HashSet<EnvironmentVariable> environmentVariables)
+        {
             var strpCandidates = new Collection<string>();
-            var separatedCommands = _pws.Command.UnwrapStringBetweenQuotes().Split(CommandsSeparator);
-            foreach (var command in separatedCommands)
+            foreach (var command in separatedCommand)
             {
                 if (!command.Contains(PwsEnvSetter)) {
                     strpCandidates.Add(command);
@@ -131,25 +208,29 @@ public static partial class Manager
                 }
                 
                 var env = EnvironmentVariable.FromPwsArgument(command);
-                if (env is not null) EnvironmentVariables.Add(env);
+                if (env is not null) environmentVariables.Add(env);
                 else Logger.LogWarn($"[{nameof(WindowsPwsWrapper)}] Could not parse variable '{command}'");
             }
+            
+            return strpCandidates;
+        }
 
-            var correctedArguments = new List<string>();
-            foreach (var candidate in strpCandidates) {
-                if (!candidate.Contains(StartCommand) || 
-                    !candidate.Contains(StartFilePath) || 
-                    !candidate.Contains(StartArgumentList))
+        private Collection<string> ResolveStartProcessArguement(IEnumerable<string> candidates)
+        {
+            var argCandidates = new Collection<string>();
+            foreach (var candidate in candidates) {
+                if (!candidate.Contains(PwsStartCommand) || 
+                    !candidate.Contains(PwsStartFilePath) || 
+                    !candidate.Contains(PwsStartArgumentList))
                 {
                     Logger.LogWarn($"[{nameof(WindowsPwsWrapper)}] Could not parse argument '{candidate}'");
                     continue;
                 }
                 
-                var start = candidate.Replace(StartCommand, "");
-                start = Utils.UndoTwoDoubleQuotes(start);
-                start = start.Trim();
+                var start = candidate.Replace(PwsStartCommand, "");
+                start = start.UndoTwoDoubleQuotes().Trim();
                 
-                foreach (var option in startOptions)
+                foreach (var option in StartOptions)
                 {
                     var ind = start.IndexOf(option, StringComparison.Ordinal);
                     start = start.Insert(ind - 1, "-");
@@ -163,53 +244,13 @@ public static partial class Manager
                         start = start.Insert(sep, StartSeparatorPlHld);
                     }
                 }
-                
-                correctedArguments.AddRange(start.Split(StartSeparatorPlHld));
+
+                foreach (var arg in start.Split(StartSeparatorPlHld))
+                    argCandidates.Add(arg);
                 break;
             }
 
-            if (correctedArguments is null) throw new MissingFieldException("Invalid arguments, or not formatted correctly.");
-            
-            var strpParsed = RetroLinkerParser.ParseArguments<StartProcess?>(correctedArguments);
-            _pwsStartProcess = strpParsed.Value ?? throw new MissingFieldException();   // TODO: Replace with dedicated exception
-
-            var correctedFilePath = _pwsStartProcess.FilePath.UnwrapStringBetweenQuotes(doubleQuotes: false);
-            var correctedArgumentList = _pwsStartProcess.ArgumentList.UnwrapStringBetweenQuotes(doubleQuotes: false);
-            correctedArgumentList = Utils.UndoTwoDoubleQuotes(correctedArgumentList);
-            
-            RealTargetExecutable = correctedFilePath;
-            RealTargetArguments = correctedArgumentList;
-        }
-
-        public string BuildCommandLineArg()
-        {
-            const string quoteArtifact = "\\\"";
-            const string quoteArtifactPlHld = "#{DQ}#";
-            
-            var strpToString = RetroLinkerParser.FormatCommandLine(_pwsStartProcess, RetroLinkerUnParsing);
-            strpToString = strpToString.Replace(quoteArtifact, quoteArtifactPlHld);
-            strpToString = strpToString.Replace('\"', '\'');
-            
-            foreach (var option in startOptions) {
-                var strpIndex = strpToString.IndexOf(option, StringComparison.Ordinal);
-                strpToString = strpToString.Remove(strpIndex - 1, 1);
-            }
-            strpToString = $"{StartCommand} {strpToString}";
-            var pwsArgument = new List<string>();
-            foreach (var variable in EnvironmentVariables) pwsArgument.Add(variable.ToStringPws());
-            pwsArgument.Add(strpToString);
-
-            _pws.Command = string.Join("; ", pwsArgument); 
-            var pwsToStringArray = RetroLinkerParser.FormatCommandLineArgs(_pws, RetroLinkerUnParsing);
-            var pwsIndex = pwsToStringArray[0].IndexOf(CommandOpt, StringComparison.Ordinal);
-            if (pwsIndex < 0) throw new MissingFieldException("Invalid arguments, or not formatted correctly.");
-            pwsToStringArray[0] = pwsToStringArray[0].Remove(pwsIndex - 1, 1);
-
-            pwsToStringArray[1] = pwsToStringArray[1].WrapStringBetweenQuotes();
-            pwsToStringArray[1] = pwsToStringArray[1].Replace(quoteArtifactPlHld, $"{Utils.DQ}{Utils.DQ}");
-            
-            var pwsToString = string.Join(SepWhiteSpace, pwsToStringArray);
-            return pwsToString;
-        }
+            return argCandidates;
+        } 
     }
 }

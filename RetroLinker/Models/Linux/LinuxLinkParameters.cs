@@ -54,6 +54,7 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
         RaVerbose = linkWriter.RaVerbose;
         FriendlyName = linkWriter.FriendlyName;
         OutputPath = linkWriter.OutputPath;
+        _ogOutputPath = linkWriter.OutputPath;
     }
 
     public LinuxLinkParameters(IDesktopEntry desktopEntry, string entryFilePath)
@@ -70,6 +71,7 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
         FriendlyName = desktopEntry.Name;
         OutputPath = entryFilePath;
         OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
+        _ogOutputPath = entryFilePath;
     }
 
     public override async Task<LinkWriterResult> CreateOsShortcut() {

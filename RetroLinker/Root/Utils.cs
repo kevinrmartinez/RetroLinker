@@ -67,8 +67,8 @@ public static class Utils
         return str;
     }
 
-    public static string TwoDoubleQuotes(string text) => text.Replace(DQ.ToString(), $"{DQ}{DQ}");
-    public static string UndoTwoDoubleQuotes(string text) => text.Replace($"{DQ}{DQ}", DQ.ToString());
+    public static string TwoDoubleQuotes(this string text) => text.Replace(DQ.ToString(), $"{DQ}{DQ}");
+    public static string UndoTwoDoubleQuotes(this string text) => text.Replace($"{DQ}{DQ}", DQ.ToString());
 
     public static string ConditionallyQuoteString(string text, bool os, bool doubleQuotes = true)
     {

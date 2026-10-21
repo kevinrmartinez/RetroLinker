@@ -26,16 +26,16 @@ public static partial class Manager
     {
         private class WindowsPws
         {
-            [Option(CommandOpt, Required = true)]
+            [Option(PwsCommandOpt, Required = true)]
             public string Command { get; set; }
         }
         
-        private class StartProcess
+        private class PwsStartProcess
         {
-            [Option(StartFilePath, Required = true)]
+            [Option(PwsStartFilePath, Required = true)]
             public string FilePath { get; set; }
             
-            [Option(StartArgumentList, Required = true)]
+            [Option(PwsStartArgumentList, Required = true)]
             public string ArgumentList { get; set; }
         }
     }

@@ -105,7 +105,7 @@ public class LinkWriter : IShortcutBase
             results.Add(await parameters.CreateOsShortcut());
             if (settings.MakeLinkCopy) {
                 foreach (var path in OutputPaths) {
-                    parameters.UpdateOutputPath(path);
+                    parameters.SetToCopyOutputPath(path);
                     outputPath = parameters.OutputPath;             // <= Trying to keep track in case of an exception
                     results.Add(await parameters.CreateOsShortcut());
                 }
