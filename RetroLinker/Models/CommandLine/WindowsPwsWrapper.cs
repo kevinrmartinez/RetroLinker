@@ -113,7 +113,7 @@ public static partial class Manager
         /// Builds a command-line argument for Powershell, that works from a shortcut file (.lnk).
         /// </summary>
         /// <returns>The command-line as a single <see langword="string"/>.</returns>
-        /// <exception cref="CommandLineParserExceptions">The un-parser failed to create the command-line.</exception>
+        /// <exception cref="CommandLineParserException">The un-parser failed to create the command-line.</exception>
         /// <remarks>The return value can be passed to <see cref="WindowsPwsWrapper(string)"/>.</remarks>
         public string BuildCommandLineArg()
         {
@@ -138,7 +138,7 @@ public static partial class Manager
             var pwsIndex = pwsToStringArray[0].IndexOf(PwsCommandOpt, StringComparison.Ordinal);
             string PwsArrayToString() => string.Join(SepWhiteSpace, pwsToStringArray);
             
-            if (pwsIndex < 0) throw new CommandLineParserExceptions(InvalidArgumentsMessage(PwsArrayToString()));
+            if (pwsIndex < 0) throw new CommandLineParserException(InvalidArgumentsMessage(PwsArrayToString()));
             
             pwsToStringArray[0] = pwsToStringArray[0].Remove(pwsIndex - 1, 1);
             pwsToStringArray[1] = pwsToStringArray[1].WrapStringBetweenQuotes();
@@ -151,12 +151,12 @@ public static partial class Manager
         /// Create an instance of <c>WindowsPwsWrapper</c> from an existing command-line.
         /// </summary>
         /// <param name="singleLineArguments">The command-line to parse.</param>
-        /// <exception cref="CommandLineParserExceptions">Parsing fails; invalid command-line or improperly formatted.</exception>
+        /// <exception cref="CommandLineParserException">Parsing fails; invalid command-line or improperly formatted.</exception>
         /// <remarks>The <paramref name="singleLineArguments"/> should be one that works from a shortcut file (.lnk).</remarks>
         public WindowsPwsWrapper(string singleLineArguments)
         {
             if (string.IsNullOrWhiteSpace(singleLineArguments) || !singleLineArguments.Contains(PwsCommandOpt))
-                throw new CommandLineParserExceptions($"The '{PwsCommandOpt}' argument is missing.", nameof(singleLineArguments));
+                throw new CommandLineParserException($"The '{PwsCommandOpt}' argument is missing.", nameof(singleLineArguments));
 
             EnvironmentVariables = new();
             singleLineArguments =  singleLineArguments.Trim();
@@ -166,7 +166,7 @@ public static partial class Manager
             corrected = corrected.Insert(wht, "=");
             
             var parsedPws = RetroLinkerParser.ParseArguments<WindowsPws?>([corrected]);
-            _pws = parsedPws.Value ?? throw new CommandLineParserExceptions(
+            _pws = parsedPws.Value ?? throw new CommandLineParserException(
                 $"<{nameof(WindowsPws)}> could not be parsed from argument '{corrected}'", nameof(corrected));
 
             var separatedCommand = _pws.Command.UnwrapStringBetweenQuotes().Split(CommandsSeparator);
@@ -177,12 +177,12 @@ public static partial class Manager
             
             const int minValidArgumentCount = 2;
             if (correctedArguments.Count < minValidArgumentCount)
-                throw new CommandLineParserExceptions(
+                throw new CommandLineParserException(
                     InvalidArgumentsMessage(CorrectedArgumentsForError()),
                     nameof(correctedArguments));
             
             var strpParsed = RetroLinkerParser.ParseArguments<PwsStartProcess?>(correctedArguments);
-            _pwsStartProcess = strpParsed.Value ?? throw new CommandLineParserExceptions(
+            _pwsStartProcess = strpParsed.Value ?? throw new CommandLineParserException(
                 $"<{nameof(PwsStartProcess)}> could not be parsed from argument '{CorrectedArgumentsForError()}'",
                 nameof(correctedArguments));
 
@@ -193,9 +193,6 @@ public static partial class Manager
             RealTargetExecutable = correctedFilePath;
             RealTargetArguments = correctedArgumentList;
         }
-
-        private string InvalidArgumentsMessage(string argument) 
-            => $"Invalid arguments, or not formatted correctly: '{argument}'";
 
         private Collection<string> ResolveCommendArgument(string[] separatedCommand, HashSet<EnvironmentVariable> environmentVariables)
         {

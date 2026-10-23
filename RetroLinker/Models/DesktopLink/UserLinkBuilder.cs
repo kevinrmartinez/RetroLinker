@@ -83,18 +83,20 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     {
         RaExecutable = linkParam.RaExecutable;
         
-        // TODO: parse arguments
         RaArguments = linkParam.RaArguments;
-        RaRom = string.Empty;
-        // RaRomPatch = string.Empty;
-        RaCore = string.Empty;
-        // RaCoreSubsystem = string.Empty;
-        RaConfig = string.Empty;
-        // ObservableRaAppendedConfig = new();
-        RaFullscreen = true; 
-        RaMenuOnError = true;
-        RaAccessibility = true;
-        RaVerbose = true;
+        // This can throw CommandLineParserException, caller should catch it
+        var parsedArguments = CommandLine.Manager.RetroArchCommandParser(RaArguments);
+        RaRom = parsedArguments.RaRom;
+        RaRomPatch = parsedArguments.RaRomPatch;
+        RaCore = parsedArguments.RaCore;
+        RaCoreSubsystem = parsedArguments.RaCoreSubsystem;
+        RaConfig = parsedArguments.RaConfig;
+        ObservableRaAppendedConfig = (parsedArguments.RaAppendedConfig is {} appendedConfigs) 
+            ? new(appendedConfigs) : new();
+        RaFullscreen = parsedArguments.RaFullscreen; 
+        RaMenuOnError = parsedArguments.RaMenuOnError;
+        RaAccessibility = parsedArguments.RaAccessibility;
+        RaVerbose = parsedArguments.RaVerbose;
         
         Description = linkParam.Description;
         IconPath = linkParam.IconPath;

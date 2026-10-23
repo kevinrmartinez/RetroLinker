@@ -52,7 +52,7 @@ public class LinkWriter : IShortcutBase
     public LinkWriter(UserLinkBuilder builder)
     {
         RaExecutable = builder.RaExecutable;
-        RaArguments = Manager.CommandBuilder(builder);
+        RaArguments = Manager.RetroArchCommandBuilder(builder);
         Description = builder.Description;
         IconPath = builder.IconPath;
         FriendlyName = builder.FriendlyName;

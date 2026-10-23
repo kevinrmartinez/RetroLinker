@@ -59,8 +59,12 @@ public static partial class Manager
         settings.SkipDefault = true;
     }
     
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(RetroArch))]
-    public static string CommandBuilder(IUserLinkParameters link)
+    private static string InvalidArgumentsMessage(string argument) 
+        => $"Invalid arguments, or not formatted correctly: '{argument}'";
+    
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
+                       | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
+    public static string RetroArchCommandBuilder(IUserLinkParameters link)
     {
         _userLinkParameters = link;
         var g1 = Task.Run(BuildCommandRaG1);
@@ -83,5 +87,17 @@ public static partial class Manager
         
         _userLinkParameters = null;
         return command;
+    }
+
+    public static IUserLinkParameters RetroArchCommandParser(string command) => RetroArchCommandParser(command.SplitArgs());
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
+                       | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
+    public static IUserLinkParameters RetroArchCommandParser(string[] commandArray)
+    {
+        var parsed = RetroLinkerParser.ParseArguments<RetroArch>(commandArray);
+        if (parsed.Tag == ParserResultType.NotParsed)
+            throw new CommandLineParserException(InvalidArgumentsMessage(string.Join(SepWhiteSpace, commandArray)));
+        return new ParsedRetroArch(parsed.Value);
     }
 }

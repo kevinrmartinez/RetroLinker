@@ -57,8 +57,21 @@ public class SubsystemArgs(string subsystem, IReadOnlyList<string> args) : IExtr
     public override string ToString() => $"{Subsystem} {string.Join(" ", Args)}";
 }
 
+public class AppendedConfigs : List<string>, IReadOnlyAppendedConfigs
+{
+    public AppendedConfigs() : base() {}
+    public AppendedConfigs(IEnumerable<string> collection) : base(collection) {}
+    public AppendedConfigs(int capacity) : base(capacity) {}
+    
+    public override string ToString() => string.Join("|", this);
+}
+
 public class ObservableAppendedConfigs : ObservableCollection<string>, IReadOnlyAppendedConfigs
 {
+    public ObservableAppendedConfigs() : base() {}
+    public ObservableAppendedConfigs(IEnumerable<string> collection) : base(collection) {}
+    public ObservableAppendedConfigs(List<string> list) : base(list) {}
+    
     public override string ToString() => string.Join("|", this);
 }
 

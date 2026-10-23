@@ -40,7 +40,7 @@ public static class ShortcutManager
         outputFile.StringData?.WorkingDir = link.RaWorkDir ?? string.Empty;
         outputFile.StringData?.NameString = link.Description ?? string.Empty;
         if (link.RaExecutable.Contains("powershell", StringComparison.OrdinalIgnoreCase) &&
-            !link.RaArguments.Contains("-v"))   // TODO: test
+            !link.RaArguments.Contains("-v"))   // I think is kind of useless
             outputFile.ShowCommand = ShowCommand.SW_SHOWMINNOACTIVE;
         
         await FileOps.WriteAllBytesToFileAsync(link.OutputPath, outputFile.GetBytes());

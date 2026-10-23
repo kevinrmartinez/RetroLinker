@@ -909,7 +909,8 @@ public partial class MainView : UserControl
                 // var imposible = 1684 / (comboConfig.Items.Count - 1);
                 // Logger.LogDebg(imposible);
                 // Manager.TestWindowsCmd();
-                // var par = await Models.Linux.ShortcutManager.ReadShortcut(test);
+                // var para = await Models.Linux.ShortcutManager.ReadShortcut(test);
+                // var builder = new UserLinkBuilder(para);
             }
 #endif
         }
