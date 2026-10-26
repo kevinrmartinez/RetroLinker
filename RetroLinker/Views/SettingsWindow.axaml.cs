@@ -16,12 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using MsBox.Avalonia.Dto;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.Settings;
 

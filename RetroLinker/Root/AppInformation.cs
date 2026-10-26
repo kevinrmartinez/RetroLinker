@@ -23,13 +23,13 @@ public class AppInformation(
     string name,
     string version,
     bool isRunningAdmin,
-    System.DateTime? buildDate = null,
+    DateTime? buildDate = null,
     string? gitHash = null)
 {
     public string FullName { get; } = fullName;
     public string Name { get; } = name;
     public string Version { get; } = version;
-    public System.DateTime? BuildDate { get; } = buildDate;
+    public DateTime? BuildDate { get; } = buildDate;
     public string? GitHash { get; } = gitHash;
     public bool IsRunningAdmin { get; } = isRunningAdmin;
 

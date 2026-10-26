@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using RetroLinker.Models.DesktopLink;
 
 namespace RetroLinker.Models.CommandLine;

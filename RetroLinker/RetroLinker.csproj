@@ -8,7 +8,7 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>RetroLinkerLib</AssemblyName>
-    <VersionPrefix>0.8.1</VersionPrefix>
+    <VersionPrefix>0.9</VersionPrefix>
     <VersionSuffix>dev</VersionSuffix>
     <!--  <NoWarn>CA1416</NoWarn>  -->
     <!-- Required to use the LibraryImport attribute -->

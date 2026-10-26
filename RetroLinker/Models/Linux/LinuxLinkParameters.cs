@@ -16,9 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
-using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using RetroLinker.Models.CommandLine;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;

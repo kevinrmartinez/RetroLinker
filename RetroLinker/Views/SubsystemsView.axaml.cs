@@ -16,15 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models.Avalonia;
-using RetroLinker.Models.CommandLine;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 

@@ -1,5 +1,3 @@
-using System;
-
 namespace RetroLinker;
 
 public class CommandLineParserException : ArgumentException

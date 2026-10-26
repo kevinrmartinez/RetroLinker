@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Collections.Generic;
 using Avalonia.Platform.Storage;
 using RetroLinker.Models.IO;
 using RetroLinker.Translations;
@@ -110,10 +109,11 @@ public static class PickerOpt
 
     public static FilePickerSaveOptions SavePickerOpt(SaveOpts template)
     {
-        var options = new FilePickerSaveOptions();
-        options.ShowOverwritePrompt = true;
-        options.Title = resAvaloniaOps.dlgFileLINKDir;
-        options.SuggestedStartLocation = Operations.DesktopFolder;
+        var options = new FilePickerSaveOptions {
+            ShowOverwritePrompt = true,
+            Title = resAvaloniaOps.dlgFileLINKDir,
+            SuggestedStartLocation = Operations.DesktopFolder
+        };
         switch (template) 
         {
             // Windows .lnk

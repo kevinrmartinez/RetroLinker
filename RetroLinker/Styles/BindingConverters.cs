@@ -16,11 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
-using RetroLinker.Models;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker.Styles;

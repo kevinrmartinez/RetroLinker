@@ -1,11 +1,28 @@
-using System.Collections.Generic;
+/*
+    RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
+    Copyright (C) 2025  Kevin Rafael Martinez Johnston
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models.Settings;
 
 // TODO: Create another Settings class (private setters) for saving the props, making validations in the process 
-public class Settings : ILocalSerializable, System.ICloneable
+public class Settings : ILocalSerializable, ICloneable
 {
     public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
     public string DEFRADir { get; set; } = string.Empty;
@@ -53,6 +70,4 @@ public class RememberedUserChoices
     public bool? StoredVerbose { get; set; }
     public string? StoredRaLogFile { get; set; }
     public HashSet<EnvironmentVariable> StoredEnvironmentVariables { get; init; } = new();
-    
-    public RememberedUserChoices() {}
 }

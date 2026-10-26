@@ -16,9 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Threading.Tasks;
 using Avalonia.Controls;
-using RetroLinker.Models;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;

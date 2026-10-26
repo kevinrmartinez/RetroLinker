@@ -16,16 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
 using SharpShellLink;
-using SharpShellLink.Flags;
 
 namespace RetroLinker.Models.Windows;
 
@@ -41,7 +36,7 @@ public static class ShortcutManager
         outputFile.StringData?.NameString = link.Description ?? string.Empty;
         if (link.RaExecutable.Contains("powershell", StringComparison.OrdinalIgnoreCase) &&
             !link.RaArguments.Contains("-v"))   // I think is kind of useless
-            outputFile.ShowCommand = ShowCommand.SW_SHOWMINNOACTIVE;
+            outputFile.ShowCommand = SharpShellLink.Flags.ShowCommand.SW_SHOWMINNOACTIVE;
         
         await FileOps.WriteAllBytesToFileAsync(link.OutputPath, outputFile.GetBytes());
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");

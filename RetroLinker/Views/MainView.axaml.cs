@@ -16,9 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
@@ -26,7 +23,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.CommandLine;
 using RetroLinker.Models.DesktopLink;
@@ -140,7 +136,7 @@ public partial class MainView : UserControl
     //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
     // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
     // true = Windows; false = Linux.
-    private readonly bool DesktopOS = System.OperatingSystem.IsWindows();
+    private readonly bool DesktopOS = OperatingSystem.IsWindows();
     
     
     #region LOAD OPS
@@ -154,7 +150,7 @@ public partial class MainView : UserControl
         try {
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
         }
-        catch (System.Exception ex) {
+        catch (Exception ex) {
             Logger.LogDebg(ex);
             TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
         }
@@ -225,7 +221,7 @@ public partial class MainView : UserControl
         // REWRITE: This can be done with separated border elements
         var borderTransition = new BrushTransition() {
             Property = BorderBrushProperty,
-            Duration = System.TimeSpan.FromMilliseconds(250),
+            Duration = TimeSpan.FromMilliseconds(250),
         };
         
         AvaloniaTemplatedControl[] templatedControls = [comboICONDir, txtRADir, txtROMDir, comboConfig, txtLINKDir];
@@ -489,9 +485,9 @@ public partial class MainView : UserControl
                     var imagePath = string.Empty;
                     try {
                         imagePath = await IconProc.ResolveImageForTileico(outputLink.IconPath, outputLink.TileIcoImagePath, IconItemSET);
-                        System.ArgumentException.ThrowIfNullOrEmpty(imagePath);
+                        ArgumentException.ThrowIfNullOrEmpty(imagePath);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
                             null, resMainView.wrnIcoToImage_header);
@@ -618,7 +614,7 @@ public partial class MainView : UserControl
             await this.PopUpGenericMessageBox(popUpContent, popUpType);
             ResetAfterExecute();
         }
-        catch (System.Exception e) {
+        catch (Exception e) {
             await this.PopUpGenericError(e, null, resMainView.popSingleOutput0_Head);
         }
         finally { LockControls(false); }
@@ -636,7 +632,7 @@ public partial class MainView : UserControl
             SetSettings((settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO());
             LoadNewSettings();
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     } 
     
@@ -686,7 +682,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ICONDir_Set(file);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -729,7 +725,7 @@ public partial class MainView : UserControl
     
     #region RADirectory Controls
 
-    [System.Obsolete("Replace with binding?")]
+    [Obsolete("Replace with binding?")]
     void RADirSet(string filePath) {
         BuildingLink.RaExecutable = filePath;
         txtRADir.Text = filePath;
@@ -751,7 +747,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             RADirSet(file);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -761,7 +757,7 @@ public partial class MainView : UserControl
 
     #region ROM Controls
 
-    [System.Obsolete("Replace with binding?")]
+    [Obsolete("Replace with binding?")]
     void ROMDir_Set(string filePath) {
         BuildingLink.RaRom = filePath;
         txtROMDir.Text = filePath;
@@ -780,7 +776,7 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -835,13 +831,13 @@ public partial class MainView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
     
-    [System.Obsolete("Replace with binding?")]
+    [Obsolete("Replace with binding?")]
     void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         BuildingLink.RaConfig = comboConfig.SelectedIndex switch {
@@ -874,7 +870,7 @@ public partial class MainView : UserControl
             var popUp = new PopUpWindow(PopUpWindowType.MoreRaOptions, param);
             await popUp.ShowDialog(ParentWindow);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
     
@@ -894,7 +890,7 @@ public partial class MainView : UserControl
                 if (!DesktopOS)
                 {
                     var helper = await ResolveRenamePopUp(file, comboCore.Text);
-                    if (!helper.ValidOutput) throw new System.Exception("Output path could not be resolved.");
+                    if (!helper.ValidOutput) throw new Exception("Output path could not be resolved.");
                     BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
                     BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
                     file = BuildingLink.OutputPath;
@@ -914,7 +910,7 @@ public partial class MainView : UserControl
             }
 #endif
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -941,7 +937,7 @@ public partial class MainView : UserControl
             textBox.Text = BuildingLink.FriendlyName;
             // FixedOutputName = BuildingLink.OutputFileName;
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 

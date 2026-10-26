@@ -16,13 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using RetroLinker.Models;
 
 namespace RetroLinker.Views;
 

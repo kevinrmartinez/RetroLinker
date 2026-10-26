@@ -19,7 +19,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 
 namespace RetroLinker.Views;

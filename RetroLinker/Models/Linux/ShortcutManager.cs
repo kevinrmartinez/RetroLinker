@@ -16,10 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using TG.INI;

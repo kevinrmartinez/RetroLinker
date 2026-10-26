@@ -16,14 +16,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// TODO: Add global usings here
-using System;
-using System.Threading.Tasks;
+global using System;                            // General usage methods, exceptions, types like Date or URI...
+global using System.Collections.Generic;        // List<T>
+global using System.Collections.ObjectModel;    // Collection<T>
+global using System.Diagnostics.CodeAnalysis;   // Advance members attributes like DynamicDependency and MemberNotNullWhen
+global using System.Runtime.Versioning;         // SupportedOSPlatformAttribute
+global using System.Threading.Tasks;            // Async operations
+
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
@@ -33,6 +36,7 @@ namespace RetroLinker;
 
 public class App : Application
 {
+    // TODO: Give the singleton treatment?
     public static AppInformation LocalInformation { get; private set; } 
         = new(string.Empty, string.Empty,  string.Empty, false);
     

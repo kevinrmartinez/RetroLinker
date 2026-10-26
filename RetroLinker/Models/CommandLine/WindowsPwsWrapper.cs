@@ -16,11 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Versioning;
 using CommandLine;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;

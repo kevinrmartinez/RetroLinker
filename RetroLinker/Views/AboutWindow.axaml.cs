@@ -16,13 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using RetroLinker.Models;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker.Views;
