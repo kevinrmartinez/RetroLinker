@@ -1,6 +1,6 @@
 /*
     RetroLinker: A .NET GUI application to help create desktop links of games running on RetroArch.
-    Copyright (C) 2023  Kevin Rafael Martinez Johnston
+    Copyright (C) 2023-2026 Kevin Rafael Martinez Johnston
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,113 +23,112 @@ using Avalonia.Styling;
 using RetroLinker.Models.Settings;
 using RetroLinker.Styles;
 
-namespace RetroLinker.Views
+namespace RetroLinker.Views;
+
+public partial class SettingsView : UserControl
 {
-    public partial class SettingsView : UserControl
+    // Window Obj
+    // private MainWindow MainAppWindow;
+    public SettingsWindow ParentWindow { get; }
+        
+    public SettingsView() {
+        InitializeComponent();
+        ParentWindow = new SettingsWindow(true);
+        CompleteConstructor();
+    }
+
+    public SettingsView(SettingsWindow parentWindow, bool desktopOs) 
     {
-        // Window Obj
-        // private MainWindow MainAppWindow;
-        public SettingsWindow ParentWindow { get; }
-        
-        public SettingsView() {
-            InitializeComponent();
-            ParentWindow = new SettingsWindow(true);
-            CompleteConstructor();
-        }
+        InitializeComponent();
+        ParentWindow = parentWindow;
+        DesktopOS = desktopOs;
+        CompleteConstructor();
+    }
 
-        public SettingsView(SettingsWindow parentWindow, bool desktopOs) 
-        {
-            InitializeComponent();
-            ParentWindow = parentWindow;
-            DesktopOS = desktopOs;
-            CompleteConstructor();
-        }
+    private void CompleteConstructor()
+    {
+        FillComboLocale();
+        LoadTheme(ParentWindow.NewSettings.ChosenTheme);
+        comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
+        DataContext = this;
+    }
 
-        private void CompleteConstructor()
-        {
-            FillComboLocale();
-            LoadTheme(ParentWindow.NewSettings.ChosenTheme);
-            comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
-            DataContext = this;
-        }
+    // PROPS/STATICS
+    private bool DesktopOS;
+    // Consider using independent Settings references
+    // private Settings settings; 
+    static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
+    static readonly ThemeVariant light_theme = ThemeVariant.Light;
+    static readonly ThemeVariant system_theme = ThemeVariant.Default;
 
-        // PROPS/STATICS
-        private bool DesktopOS;
-        // Consider using independent Settings references
-        // private Settings settings; 
-        static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
-        static readonly ThemeVariant light_theme = ThemeVariant.Light;
-        static readonly ThemeVariant system_theme = ThemeVariant.Default;
+    #region Loading
+    void FillComboLocale()
+    {
+        int index = (comboLocale.SelectedIndex >= 0) ? comboLocale.SelectedIndex : 0;
+        // LanguageManager.EnglishItem.ItemIndex = 0;
+        foreach (var languageItem in LanguageManager.LanguageList)
+        {
+            languageItem.ItemIndex = index;
+            comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
+            index++;
+        }
+    }
+    #endregion
+        
+    // Appearance
+    void LoadTheme(byte themeCode)
+    {
+        // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
+        switch (themeCode)
+        {
+            case 1: // Light
+                swtThemeSwitch.IsChecked = false;
+                break;
+            case 2: // Dark
+                swtThemeSwitch.IsChecked = true;
+                break;
+            default:// Any other case (0 = System Theme)
+                chkThemeDefault.IsChecked = true;
+                break;
+        }
+    }
+        
+    public void SetCurrentTheme(byte themeCode) => LoadTheme(themeCode);
+        
+    void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
+    {
+        // Avalonia's Designer gets borked on this part
+        if (swtThemeSwitch.IsChecked.GetValueOrDefault())
+        {
+            Application.Current?.RequestedThemeVariant = dark_theme;
+            ParentWindow.NewSettings.ChosenTheme = 2;
+        }
+        else
+        {
+            Application.Current?.RequestedThemeVariant = light_theme;
+            ParentWindow.NewSettings.ChosenTheme = 1;
+        }
+    }
 
-        #region Loading
-        void FillComboLocale()
+    void ThemeDefault_CheckedChanged(object sender, RoutedEventArgs e)
+    {
+        if (chkThemeDefault.IsChecked.GetValueOrDefault())
         {
-            int index = (comboLocale.SelectedIndex >= 0) ? comboLocale.SelectedIndex : 0;
-            // LanguageManager.EnglishItem.ItemIndex = 0;
-            foreach (var languageItem in LanguageManager.LanguageList)
-            {
-                languageItem.ItemIndex = index;
-                comboLocale.Items.Add(LocaleComboItem.GetLocaleComboItem(languageItem));
-                index++;
-            }
+            // Avalonia's Designer breaks on this part
+            Application.Current!.RequestedThemeVariant = system_theme;
+            swtThemeSwitch.IsEnabled = false;
+            ParentWindow.NewSettings.ChosenTheme = 0;
         }
-        #endregion
-        
-        // Appearance
-        void LoadTheme(byte themeCode)
-        {
-            // Avalonia's Designer gets borked on this part; find an alternative do this on DEBUG, or a designer specific code
-            switch (themeCode)
-            {
-                case 1: // Light
-                    swtThemeSwitch.IsChecked = false;
-                    break;
-                case 2: // Dark
-                    swtThemeSwitch.IsChecked = true;
-                    break;
-                default:// Any other case (0 = System Theme)
-                    chkThemeDefault.IsChecked = true;
-                    break;
-            }
+        else {
+            swtThemeSwitch.IsEnabled = true; 
+            ThemeSwitch_CheckedChanged(sender, e);
         }
-        
-        public void SetCurrentTheme(byte themeCode) => LoadTheme(themeCode);
-        
-        void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            // Avalonia's Designer gets borked on this part
-            if (swtThemeSwitch.IsChecked.GetValueOrDefault())
-            {
-                Application.Current?.RequestedThemeVariant = dark_theme;
-                ParentWindow.NewSettings.ChosenTheme = 2;
-            }
-            else
-            {
-                Application.Current?.RequestedThemeVariant = light_theme;
-                ParentWindow.NewSettings.ChosenTheme = 1;
-            }
-        }
-
-        void ThemeDefault_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (chkThemeDefault.IsChecked.GetValueOrDefault())
-            {
-                // Avalonia's Designer breaks on this part
-                Application.Current!.RequestedThemeVariant = system_theme;
-                swtThemeSwitch.IsEnabled = false;
-                ParentWindow.NewSettings.ChosenTheme = 0;
-            }
-            else {
-                swtThemeSwitch.IsEnabled = true; 
-                ThemeSwitch_CheckedChanged(sender, e);
-            }
-        }
+    }
         
         
-        private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
-            // REWRITE: Rewrite so this button shouldn't be necessary
-            var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
-            ParentWindow.NewSettings.LanguageLocale = locale.Culture.Name;
-        }
+    private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
+        // REWRITE: Rewrite so this button shouldn't be necessary
+        var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
+        ParentWindow.NewSettings.LanguageLocale = locale.Culture.Name;
     }
 }
