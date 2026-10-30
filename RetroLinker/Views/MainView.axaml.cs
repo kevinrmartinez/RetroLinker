@@ -907,6 +907,7 @@ public partial class MainView : UserControl
                 // Manager.TestWindowsCmd();
                 // var para = await Models.Linux.ShortcutManager.ReadShortcut(test);
                 // var builder = new UserLinkBuilder(para);
+                // IconProc.TestBytes();
             }
 #endif
         }

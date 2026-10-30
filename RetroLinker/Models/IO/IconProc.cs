@@ -17,58 +17,58 @@
 */
 
 using System.IO;
-using ImageMagick;
 using RetroLinker.Models.Windows;
 using SkiaSharp;
 
 namespace RetroLinker.Models.IO;
 
-public static class IconProc
+public static partial class IconProc
 {
-    const int MaxRes = 256; // Magick can't work with bigger .ico files...
     public static List<IconsItems> IconItemsList { get; } = new();
 
-    public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
-
-    public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
-        
-    public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
-        
-    public static MagickImage ReverseImageConvert(MemoryStream img) => new(img) {Format = MagickFormat.Png};
-
-    private static MagickImage ResizeToIco(MagickImage ico)
-    {
-        // ICOGeo is a square geometry equals to MaxRes
-        var ICOGeo = new MagickGeometry(MaxRes) {IgnoreAspectRatio = false};
-        // IsSquare: true if the image is a square (Height = Width)
-        bool IsSquare = (ico.BaseHeight == ico.BaseWidth);
-            
-        // Transform the image into the geometry ICOGeo, if it's not square it will rescale into its original Aspect Ratio
-        ico.Scale(ICOGeo);
-        /* if it's not square, the image will be extended into MaxRes, it will be centered,
-         *  and it will be in front of a transparent background */
-        if (!IsSquare) ico.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent);
-        return ico;
-    }
-
-    private static MemoryStream GetStream(MagickImage img) {
-        var imgStream = new MemoryStream();
-        img.Write(imgStream);
-        imgStream.Position = 0;
-        return imgStream;
-    }
-
-    private static MemoryStream GetStream(string path)
-    {
-        // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
-        // Set the background transparent before reading the image.
-        // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
-        var img = new MagickImage() {BackgroundColor = MagickColors.Transparent};
-            
-        img.Read(path);
-        img.Format = MagickFormat.Png32;
-        return GetStream(img);
-    }
+    // public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
+    //
+    // public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
+    //     
+    // public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
+    //     
+    // public static MagickImage ReverseImageConvert(MemoryStream img) => new(img) {Format = MagickFormat.Png};
+    //
+    // private static MagickImage ResizeToIco(MagickImage ico)
+    // {
+    //     // ICOGeo is a square geometry equals to MaxRes
+    //     var ICOGeo = new MagickGeometry(IcoMaxRes) {IgnoreAspectRatio = false};
+    //     // IsSquare: true if the image is a square (Height = Width)
+    //     bool IsSquare = (ico.BaseHeight == ico.BaseWidth);
+    //         
+    //     // Transform the image into the geometry ICOGeo, if it's not square it will rescale into its original Aspect Ratio
+    //     ico.Scale(ICOGeo);
+    //     /* if it's not square, the image will be extended into MaxRes, it will be centered,
+    //      *  and it will be in front of a transparent background */
+    //     if (!IsSquare) ico.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent);
+    //     return ico;
+    // }
+    //
+    // private static MemoryStream GetStream(MagickImage img) {
+    //     var imgStream = new MemoryStream();
+    //     img.Write(imgStream);
+    //     imgStream.Position = 0;
+    //     return imgStream;
+    // }
+    //
+    // private static MemoryStream GetStream(string path)
+    // {
+    //     // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
+    //     // Set the background transparent before reading the image.
+    //     // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
+    //     var img = new MagickImage() {BackgroundColor = MagickColors.Transparent};
+    //         
+    //     img.Read(path);
+    //     img.Format = MagickFormat.Png32;
+    //     return GetStream(img);
+    // }
+    
+    
 
     public static void BuildIconItem(string filePath, int newIndex, bool OS)
     {
@@ -76,7 +76,8 @@ public static class IconProc
         var fileExt = FileOps.GetFileExtFromPath(filePath);
         var icoItem = new IconsItems(filePath, newIndex);
             
-        if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
+        // if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
+        if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = new MemoryStream();
         if (OS)
         {
             const int defaultIndex = 0;
@@ -119,15 +120,15 @@ public static class IconProc
 
         if (string.IsNullOrEmpty(imageFromIco))
         {
-            MagickImage? image = null;
-            if (memoryStream is not null) {
-                memoryStream.Position = 0;
-                image = ReverseImageConvert(memoryStream);
-            }
-            else if (!string.IsNullOrWhiteSpace(ogFilePath)) {
-                image = ReverseImageConvert(ogFilePath);
-            }
-            if (image is not null) imageFromIco = FileOps.WriteImageToTemp(image, ogFileName);
+            // MagickImage? image = null;
+            // if (memoryStream is not null) {
+            //     memoryStream.Position = 0;
+            //     image = ReverseImageConvert(memoryStream);
+            // }
+            // else if (!string.IsNullOrWhiteSpace(ogFilePath)) {
+            //     image = ReverseImageConvert(ogFilePath);
+            // }
+            // if (image is not null) imageFromIco = FileOps.WriteImageToTemp(image, ogFileName);
         }
             
         return imageFromIco;
