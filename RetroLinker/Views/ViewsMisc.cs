@@ -16,9 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using RetroLinker.Models;
+using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
+
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace RetroLinker.Views;
 
@@ -30,8 +34,8 @@ public enum TextBoxActions { Browse, Restore, Clear }
 public enum UserListActions { Add, Remove, Clear, Lock }
 
 /* == Records == */
-public record Contributor(string DisplayName, System.Uri? OnlinePageUrl);
-public record ThirdParty(string DisplayName, System.Uri OnlinePageUrl, string? Comment = null);
+public record Contributor(string DisplayName, Uri? OnlinePageUrl);
+public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);
 
 /* == Interfaces == */
 public interface IMainViewPopUp;
@@ -40,6 +44,94 @@ public interface IMainViewPopUp;
 
 
 /* == Dynamic Classes == */
+public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
+{
+    public string FilePath
+    {
+        get;
+        private set {
+            SetAndNotify(value, ref field);
+            ManuallyNotify(nameof(FileName));
+            ManuallyNotify(nameof(FileExt));
+        }
+    }
+    
+    private string? FilePathPreConversion { get; init; }
+    
+    [MemberNotNullWhen(true, nameof(FilePathPreConversion))] 
+    public bool ConversionRequired { get; private set => SetAndNotify(value, ref field); }
+    
+    public string FileName => IIconItem.GetFileName(this);
+
+    public string FileExt => IIconItem.GetFileExt(this);
+
+    public AvaloniaBitmap? ImageBitmap { get; private set => SetAndNotify(value, ref field); }
+    
+    private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
+    
+    
+    public static ViewableIconItem DefaultInstance { get; } = new(Translations.resGeneric.btnDefault, Avalonia.Platform.AssetLoader.Open(DefaultIconAsset));
+
+    private ViewableIconItem(string filePathOrName, System.IO.Stream imageStream) {
+        FilePath = filePathOrName;
+        ConversionRequired = false;
+        SetBitmap(imageStream);
+    }
+    
+    public ViewableIconItem(string filePath, bool? conversionRequired = null)
+    {
+        FilePath = filePath;
+        ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
+        if (ConversionRequired) FilePathPreConversion = FilePath;
+
+        _ = SetBitmapAsync();
+    }
+
+    public static ViewableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
+    
+    public void SetBitmap(System.IO.Stream newImageStream) => ImageBitmap = GetBitmap(newImageStream);
+    public async Task SetBitmapAsync(string newImagePath) => ImageBitmap = await GetBitmap(newImagePath);
+    public void ResetBitmap() => _ = SetBitmapAsync();
+    
+    public async Task<System.IO.MemoryStream> GetImageStream() => await IIconItem.GenerateImageStream(this);
+
+    public override string ToString() => FileName;
+
+    public void Dispose() {
+        if (this.Equals(DefaultInstance)) {
+            Logger.LogWarn($"'{nameof(Dispose)}' was called on '{nameof(ViewableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
+            return;
+        }
+        FilePath = string.Empty;
+        var holder = ImageBitmap;
+        ImageBitmap = null;
+        holder?.Dispose();
+    }
+
+    private async Task SetBitmapAsync() => ImageBitmap = await GetBitmap();
+    
+    private async Task<AvaloniaBitmap?> GetBitmap(string? path = null)
+    {
+        System.IO.MemoryStream streamToDecode;
+        try {
+            streamToDecode = await IIconItem.GenerateImageStream(this);
+        }
+        catch (Exception ex) {
+            Logger.LogWarn($"Icon '{FilePath}' could not be decoded into a bitmap");
+            Logger.LogErro(ex);
+            streamToDecode = new System.IO.MemoryStream();
+        }
+        
+        return GetBitmap(streamToDecode);
+    }
+
+    private AvaloniaBitmap? GetBitmap(System.IO.Stream imageStream) {
+        var avaloniaBitmap = (imageStream is not { Length: > 0 }) ? null : Operations.GetBitmap(imageStream);
+        imageStream.Dispose();
+        return avaloniaBitmap;
+    }
+}
+
 public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp
 {
     public string GivenPath { get; } = givenPath;

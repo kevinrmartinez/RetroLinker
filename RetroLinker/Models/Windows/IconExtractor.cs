@@ -60,19 +60,12 @@ namespace RetroLinker.Models.Windows
         /// <summary>
         /// Gets the full path of the associated file.
         /// </summary>
-        public string FileName
-        {
-            get;
-            private set;
-        }
+        public string FileName { get; private set; }
 
         /// <summary>
         /// Gets the count of the icons in the associated file.
         /// </summary>
-        public int Count
-        {
-            get { return iconData.Length; }
-        }
+        public int Count => iconData.Length;
 
         /// <summary>
         /// Initializes a new instance of the IconExtractor class from the specified file name.

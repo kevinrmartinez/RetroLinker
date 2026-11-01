@@ -45,4 +45,10 @@ public abstract class NotifyPropertyBase : INotifyPropertyChanged
         // trace
         // Logger.LogDebg($"Property '{propertyName}' changed to {value}");
     }
+
+    /// <summary> Manually notify that a property has its value updated. </summary>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <remarks>This is useful to notify when getter-only properties had the value they depend on updated.</remarks>
+    protected void ManuallyNotify(string propertyName) 
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

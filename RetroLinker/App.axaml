@@ -14,7 +14,7 @@
     <Application.Resources>
         <!-- TODO: Import resources from dedicated files; each file for the kind of resource (UI, Binding converter...) -->
         
-        <!-- <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> | It works, but it's of no use in the current implementation -->
+        <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> 
         <!-- Fonts -->
         <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
         

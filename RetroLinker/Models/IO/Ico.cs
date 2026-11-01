@@ -25,6 +25,7 @@ public static partial class IconProc
 {
     private const int IcoReserved = 0;
     private const int IcoMaxRes = 256;
+    private const int IconDirEntryOffset = sizeof(short) * 3;
     private const int IconDirEntrySize = 16;
     
     private enum IcoType {
@@ -57,9 +58,6 @@ public static partial class IconProc
         
         /// <summary> An embedded PNG image for the 256×256 frame. </summary>
         public byte[]? PngFrame { get; }
-
-        private const int IconDirEntryOffset1 = 6;
-        private const int IconDirEntryOffset2 = 16;
         
         /// <summary> Construct an ICO file with the provided image and sizes. </summary>
         /// <param name="initialBitmap">The image to convert, provided as a <see cref="SKBitmap"/>.</param>
@@ -75,7 +73,7 @@ public static partial class IconProc
             
             var bitmaps = new List<BitmapStructure>();
             var entries = new List<IconDirEntry>();
-            var offset = IconDirEntryOffset1 + (IconDirEntryOffset2 * IdCount);
+            var offset = IconDirEntryOffset + (IconDirEntrySize * IdCount);
             foreach (var size in sizes)
             {
                 // TODO: Resize
@@ -115,20 +113,6 @@ public static partial class IconProc
         }
         
         public byte[] ToBytes() => ToStream().ToArray();
-
-        public async Task WriteToFileAsync(string outFile)
-        {
-            var fileStream = new FileStream(outFile, FileMode.Create);
-            await using var writer =  new BinaryWriter(fileStream);
-            writer.Write(IdReserved);
-            writer.Write((short)IdType);
-            writer.Write(IdCount);
-            foreach (var entry in IdEntries) writer.Write(entry.ToBytes());
-            foreach (var bitmapStructure in BitmapFrames) writer.Write(bitmapStructure.ToBytes());
-            if (PngFrame is not null) writer.Write(PngFrame);
-            writer.Flush();
-            fileStream.Close();
-        }
     }
     
     private struct IconDirEntry

@@ -100,7 +100,7 @@ public static partial class Manager
         // Core & Content
         [Option('L', "libretro", Required = false, Min = 1, Max = 3,
             HelpText = "Path to libretro implementation. Overrides any config setting.")]
-        public IEnumerable<string> G4_Libretro { get; set; } = new string[2];
+        public IEnumerable<string>? G4_Libretro { get; set; }
         
         // Patch
         [Option("no-patch", Default = false,

@@ -10,6 +10,7 @@
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
              x:CompileBindings="True" 
+             IconImage="{Binding SelectedIcon.ImageBitmap, TargetNullValue={StaticResource NaNImage}}"
              Unloaded="View1_Unloaded">
 	
 	<UserControl.Resources>
@@ -227,9 +228,10 @@
 							</StackPanel>
 							<!-- Icon Control -->
 							<Grid Name="gridIconControl" ColumnDefinitions="*, Auto" Margin="0,5">
-								<ComboBox Name="comboICONDir" Grid.Column="0" SelectedIndex="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
-										   SelectionChanged="comboICONDir_SelectionChanged"/>
-								<Button Name="btnICONDir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
+								<ComboBox Name="comboIcon" Grid.Column="0" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
+										   ItemsSource="{Binding IconItems}" SelectedItem="{Binding SelectedIcon}"
+										   ToolTip.Tip="{Binding SelectedIcon.FilePath}"/>
+								<Button Name="btnIcon" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
 							</Grid>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" IsVisible="False"
@@ -254,19 +256,20 @@
 								</Viewbox.Styles>
 								
 								<Border BorderThickness="2" BorderBrush="Gray">
-									<Image Name="pic256"/>
+									<Image Name="pic256" Source="{Binding IconImage}"/>
 								</Border>
 							</Viewbox>
 							<!-- pic128 -->
 							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
-								<Image Name="pic128"/>
+								<Image Name="pic128" Source="{Binding IconImage}"/>
 								</Border>
 							</Viewbox>
 							<!-- pic64 -->
 							<Viewbox Height="66" Width="66" HorizontalAlignment="Left" Margin="0,4">
 								<Border BorderThickness="2" BorderBrush="Gray">
-								<Image Name="pic64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+								<Image Name="pic64" Source="{Binding IconImage}" 
+								       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 								</Border>
 							</Viewbox>
 
@@ -274,19 +277,22 @@
 								<!-- pic48 -->
 								<Viewbox Height="50" Width="50" HorizontalAlignment="Left" Margin="0,4">
 									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic48" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+										<Image Name="pic48" Source="{Binding IconImage}" 
+										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
 								<!-- pic32 -->
 								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic32" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+										<Image Name="pic32" Source="{Binding IconImage}" 
+										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
 								<!-- pic16 -->
 								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="2,0">
 									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+										<Image Name="pic16" Source="{Binding IconImage}" 
+										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 									</Border>
 								</Viewbox>
 							</StackPanel>
@@ -297,7 +303,7 @@
 									<MultiBinding Converter="{x:Static BoolConverters.And}">
 										<MultiBinding Converter="{x:Static BoolConverters.Or}">
 											<Binding Path="#rdoIconDef.IsChecked"/>
-											<Binding Path="!#comboICONDir.SelectedIndex"/>
+											<Binding Path="!#comboIcon.SelectedIndex"/>
 										</MultiBinding>
 										<Binding Path="Settings.TileIcoPath" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
 									</MultiBinding>

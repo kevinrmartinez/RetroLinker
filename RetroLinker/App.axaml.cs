@@ -36,15 +36,14 @@ namespace RetroLinker;
 
 public class App : Application
 {
-    // TODO: Give the singleton treatment?
     public static AppInformation LocalInformation { get; private set; } 
         = new(string.Empty, string.Empty,  string.Empty, false);
+    public static bool PlatformOs { get; } = OperatingSystem.IsWindows();
+    public static string[]? Args { get; private set; }
     
     public const string RetroBin = "retroarch";
     public const string PlatformWin = "windows";
     public const string PlatformLin = "linux";
-    
-    public static string[]? Args;
     
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 

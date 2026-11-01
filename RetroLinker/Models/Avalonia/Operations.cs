@@ -45,7 +45,7 @@ public static class Operations
         {
             Logger.LogWarn("'cores.txt' was not found, extracting internal core asset...");
             var assetStream = AssetLoader.Open(GetDefaultCores());
-            FileOps.DumpStreamToFile(assetStream, out coresFile, "cores.txt");
+            coresFile = await FileOps.DumpStreamToFile(assetStream, "cores.txt");
             Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
         }
         return Cores = await FileOps.LoadCores(coresFile);
@@ -56,8 +56,11 @@ public static class Operations
     public static Uri GetDefaultIcon() => new(DEFicon1);
 
     public static Uri GetMissingImage() => new(NaN);
-    
-    public static AvaloniaBitmap GetBitmap(string path) => new(path);
+
+    public static async Task<AvaloniaBitmap> GetBitmap(string path) {
+        var stream = new System.IO.MemoryStream(await FileOps.ReadFileBytesToEndAsync(path));
+        return GetBitmap(stream);
+    }
 
     public static AvaloniaBitmap GetBitmap(System.IO.Stream imgStream) => new(imgStream);
     

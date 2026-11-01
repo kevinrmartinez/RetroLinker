@@ -27,12 +27,12 @@ public static class FileOps
     public const string SettingFileJson = "RLsettings.json";
     public const string DefUserAssets = "UserAssets";
     public const string DefLicenses = "Licenses";
-    public const string tempFile = "temp.txt";  // TODO: Create a new method for temporal file naming
     public const string CoresFile = "cores.txt";
     // public const string tempIco = "temp.ico";
     // public const byte MAX_PATH = 255;
-    public const string WinPeExt1 = ".exe";
-    public const string WinPeExt2 = ".dll";
+    public const string WinPeExtExe = ".exe";
+    public const string WinPeExtDll = ".dll";
+    public const string WinIcoExt = ".ico";
     public const string WinLinkExt = ".lnk";
     public const string LinLinkExt = ".desktop";
     public const string LinuxRABin = "retroarch";
@@ -50,7 +50,8 @@ public static class FileOps
         
         
     public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
-    public static readonly List<string> LinIconsExt = ["*.ico", "*.png", "*.xpm", "*.svg", "*.svgz"];
+    public static readonly List<string> WinAllIconsExt = [$"*{WinIcoExt}", $"*{WinPeExtExe}", $"*{WinPeExtDll}", ..WinExtraIconsExt];
+    public static readonly List<string> LinIconsExt = [$"*{WinIcoExt}", "*.png", "*.xpm", "*.svg", "*.svgz"];
         
     public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -171,8 +172,7 @@ public static class FileOps
     public static bool GetCoreFile(out string file)
     {
         var externalCores = Path.Combine(_loadedSettings.UserAssetsPath, CoresFile);
-        if (!File.Exists(externalCores))
-        {
+        if (!File.Exists(externalCores)) {
             file = string.Empty;
             return false;
         }
@@ -189,73 +189,51 @@ public static class FileOps
             Logger.LogInfo($"Completed reading of \"{filePath}\".");
             return cores;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Logger.LogWarn($"The file \"{filePath}\" could not be found!");
             Logger.LogErro(e);
             return Array.Empty<string>();
         }
     }
 
-    public static (List<string>, string?) LoadIcons(bool DesktopOS)
+    public static List<IIconItem> LoadIcons()
     {
         var dir = _loadedSettings.UserAssetsPath + OsDirSeparator;
-        var files = new List<string>();
-        string? iconException = null;
+        var validIcons = new List<IIconItem>();
 
-        try
-        {
-            if (IconProc.IconItemsList.Count == 0)
-            {
-                var filesList = new DirectoryInfo(dir).GetFiles();
-                Logger.LogInfo($"Searching for Icons at \"{dir}\".");
-                foreach (var file in filesList)
-                {
-                    var ext = file.Extension;
-                    var filePath = file.FullName;
-                    if (DesktopOS)
-                    {
-                        if (WinExtraIconsExt.Contains("*" + ext) || (ext is ".exe"))
-                            IconProc.IconItemsList.Add(new IconsItems(filePath, true));
-                        else if (ext is ".ico") IconProc.IconItemsList.Add(new IconsItems(filePath));
-                    }
-                    else if (LinIconsExt.Contains("*" + ext))
-                        IconProc.IconItemsList.Add(new IconsItems(filePath));
-                }
-
-                Logger.LogInfo(filesList.Length == 0
-                    ? "No icons found."
-                    : $"{IconProc.IconItemsList.Count} icons were found.");
-            }
-
-            var index = 1;
-            foreach (var file in IconProc.IconItemsList) {
-                files.Add(file.FileName);
-                file.comboIconIndex = index;
-                index++;
-            }
-        }
-        catch (Exception e) {
-            Logger.LogErro("An error has occurred while loading icons...");
-            Logger.LogErro(e);
-            iconException = e.Message;
-        }
+        var extList = (App.PlatformOs) ? WinAllIconsExt : LinIconsExt;
+        var filesList = new DirectoryInfo(dir).GetFiles();
+        Logger.LogInfo($"Searching for Icons at \"{dir}\".");
             
-        return (files, iconException);
+        foreach (var file in filesList)
+            if (extList.Contains("*" + file.Extension.ToLowerInvariant())) validIcons.Add(new IconItem(file.FullName));
+
+        Logger.LogInfo(validIcons.Count == 0
+            ? "No icons found."
+            : $"{validIcons.Count} icons were found.");
+            
+        return validIcons;
     }
     #endregion
 
     #region ABSTRACTIONS
 
+    public static MemoryStream BytesToStream(byte[] bytes) => new(bytes);
+
     public static string GetAbsolutePath(string path) => Path.GetFullPath(path);
         
     public static string? GetDirFromPath(string path) => Path.GetDirectoryName(path);
+    
+    public static string ForceGetDirFromPath(string path) => GetDirFromPath(path) ?? BaseDir;
         
     public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
         
     public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
         
     public static string GetFileExtFromPath(string pathToFile) => Path.GetExtension(pathToFile);
+    
+    [return: NotNullIfNotNull("pathToFile")]
+    public static string? ChangeFileExtension(string? pathToFile, string? newExtension) => Path.ChangeExtension(pathToFile, newExtension);
         
     public static string CombineMultipleInputs(params string[] paths) => Path.Combine(paths);
         
@@ -265,13 +243,10 @@ public static class FileOps
         if (!Path.Exists(path)) return true;
         else return (GetFileInfo(path).Length > 0);
     }
-
-    // public static string[] ReadFileLinesToEnd(string filePath) => File.ReadAllLines(filePath);
+    
     public static Task<string[]> ReadFileLinesToEndAsync(string filePath) => File.ReadAllLinesAsync(filePath);
-        
-    // public static string ReadFileTextToEnd(string filePath) => File.ReadAllText(filePath);
-        
     public static async Task<string> ReadFileTextToEndAsync(string filePath) => await File.ReadAllTextAsync(filePath);
+    public static async Task<byte[]> ReadFileBytesToEndAsync(string filePath) => await File.ReadAllBytesAsync(filePath);
 
     /// <summary>
     /// A wrapper for <see cref="File.Move(string,string,bool)"/>
@@ -301,7 +276,7 @@ public static class FileOps
         => await Task.Run(() => File.Delete(filePath));
         
     /// <summary>
-    /// A wrapper for <see cref="File.WriteAllBytesAsync(string,byte[],System.Threading.CancellationToken)"/>.
+    /// A wrapper for <see cref="M:File.WriteAllBytesAsync(string,byte[],System.Threading.CancellationToken)"/>.
     /// </summary>
     /// <param name="filePath">Path of the file to write.</param>
     /// <param name="bytes">The bytes to be written.</param>
@@ -331,6 +306,21 @@ public static class FileOps
 
     #region FUNCTIONS
 
+    public static string GenerateTempFileName(string? extension = null)
+    {
+        if (string.IsNullOrWhiteSpace(extension)) extension = ".tmp";
+        if (!extension.StartsWith('.')) extension = extension.Insert(0, ".");
+        var newFileName = new System.Text.StringBuilder();
+        newFileName.Append(DateTime.Now.ToString("yyyy-MM-dd_HHmmss"));
+        newFileName.Append('_');
+        newFileName.Append(Random.Shared.GetHexString(4, true));
+        newFileName.Append(extension);
+        return newFileName.ToString();
+    }
+    
+    public static string GenerateTempFileFullName(string? extension = null) 
+        => CombineMultipleInputs(UserTemp, GenerateTempFileName(extension));
+
     public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
 
     private static bool CheckUsrSetDir(string path)
@@ -346,18 +336,22 @@ public static class FileOps
         }
     }
         
-    public static void DumpStreamToFile(Stream fileStream, out string destFile, string fileName = tempFile)
+    public static async Task<string> DumpStreamToFile(Stream fileStream, string? fileName = null)
     {
+        if (string.IsNullOrWhiteSpace(fileName)) fileName = GenerateTempFileName();
         fileStream.Position = 0;
         CheckUsrSetDir(UserTemp);
-        destFile = Path.Combine(UserTemp, fileName);
-        var streamReader = new StreamReader(fileStream);
-        File.WriteAllText(destFile, streamReader.ReadToEnd());
+        var destFile = CombineMultipleInputs(UserTemp, fileName);
+        await using var writer = new FileStream(destFile, FileMode.Create);
+        await fileStream.CopyToAsync(writer);
+        await writer.FlushAsync();
+        writer.Close();
+        return destFile;
     }
 
     public static bool IsConfigFile(string filePath, out string fileExt) {
         fileExt = GetFileExtFromPath(filePath);
-        return (fileExt is ".txt" or ".cfg");
+        return (fileExt.ToLowerInvariant() is ".txt" or ".cfg");
     }
         
     public static string SeparateFileNameFromPath(string path, out string fileNameNoExt, out string fileExt)
@@ -376,33 +370,23 @@ public static class FileOps
 
     #region ICONS
 
-    public static string CpyIconToUsrSet(string? ogPath)
+    public static string RenameIconToUsrSett(string ogPath)
     {
         if (string.IsNullOrEmpty(ogPath)) return string.Empty;  // If we analyze this in a vacuum, this should throw
-        string name = Path.GetFileName(ogPath);
-        string newPath = Path.Combine(_loadedSettings.IcoSavPath, name);
+        var name = GetFileNameFromPath(ogPath);
+        var newPath = CombineMultipleInputs(_loadedSettings.IcoSavPath, name);
         CheckUsrSetDir(_loadedSettings.IcoSavPath);
-        // TODO: This line below is problematic, it doesn't let the user replace an existing item (0.9)
-        //  Solution 1: Delete old, and copy (or overwrite)
-        //  Solution 2: Resolve the naming conflict (add a number at the end of the file name)
-        if (File.Exists(newPath)) return GetAbsolutePath(newPath);
-            
-        File.Copy(ogPath, newPath);
         return GetAbsolutePath(newPath);
     }
 
-    public static string CpyIconToCustomSet(string ogPath, string destPath)
-    {
-        destPath = Path.GetDirectoryName(destPath)!;
-        string name = Path.GetFileName(ogPath);
-        string newPath = Path.Combine(destPath, name);
-        if (File.Exists(newPath)) return GetAbsolutePath(newPath);
-            
-        File.Copy(ogPath, newPath);
+    public static string RenameIconToCustomSett(string ogPath, string destPath) {
+        destPath = ForceGetDirFromPath(destPath);
+        var ogName = GetFileNameFromPath(ogPath);
+        var newPath = CombineMultipleInputs(destPath, ogName);
         return GetAbsolutePath(newPath);
     }
 
-    public static bool IsVectorImage(string file) => (GetFileExtFromPath(file) is ".svg" or ".svgz");
+    public static bool IsVectorImage(string file) => (GetFileExtFromPath(file).ToLowerInvariant() is ".svg" or ".svgz");
 
     public static bool IsFileAnIcon(string filePath, bool OS, out string fileExt)
     {
@@ -413,13 +397,11 @@ public static class FileOps
                 var fixedExt = ext.Remove(0, 1);
                 extList.Add(fixedExt);
             }
-            extList.Add(".exe");
-            extList.Add(".dll");
-            extList.Add(".ico");
+            extList.AddRange(WinIcoExt, WinPeExtExe, WinPeExtDll);
         }
         else extList.AddRange(LinIconsExt);
-        fileExt = GetFileExtFromPath(filePath);
-            
+        
+        fileExt = GetFileExtFromPath(filePath).ToLowerInvariant();
         return extList.Contains(fileExt);
     }
 
@@ -428,51 +410,20 @@ public static class FileOps
 
     #region Windows Only Ops
 
-    public static bool IsExtWinPE(string ext) => ext is WinPeExt1 or WinPeExt2;
-        
+    public static bool IsExtWinPE(string ext) => ext.Equals(WinPeExtExe, StringComparison.OrdinalIgnoreCase) || 
+                                                 ext.Equals(WinPeExtDll, StringComparison.OrdinalIgnoreCase);
+    
     public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
-    public static string SaveWinIco(IconsItems selectedIconItem)
+    public static string GetConvertedIcoPath(IIconItem selectedIconItem)
     {
-        string icoExt = GetFileExtFromPath(selectedIconItem.FileName).ToLower();
-        string icoName = Path.GetFileNameWithoutExtension(selectedIconItem.FileName) + ".ico";
+        if (IsExtWinPE(selectedIconItem.FileExt) && !_loadedSettings.ExtractIco) return selectedIconItem.FilePath;
+        
+        string icoName = GetFileNameNoExtFromPath(selectedIconItem.FileName) + WinIcoExt;
         string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : _loadedSettings.UserAssetsPath;
-        string newPath = Path.Combine(newDir, icoName);
-        selectedIconItem.IconStream?.Position = 0;
-
-        switch (icoExt)
-        {
-            // case WinPeExt1 or WinPeExt2:
-            //     if (_loadedSettings.ExtractIco) {
-            //         var extractedIco = IconProc.ImageConvert(selectedIconItem.IconStream!);
-            //         extractedIco.Write(newPath);
-            //         extractedIco.Dispose();
-            //     }
-            //     else newPath = selectedIconItem.FilePath;
-            //     break;
-            // default: // .jpg, .png, etc
-            //     var iconImage = (icoExt is ".svg" or ".svgz") 
-            //         ? IconProc.ImageConvert(selectedIconItem.IconStream!)   // process IconStream for svg 
-            //         : IconProc.ImageConvert(selectedIconItem.FilePath);     // process image file 
-            //     iconImage.Write(newPath);
-            //     iconImage.Dispose();
-            //     break;
-        }
+        string newPath = CombineMultipleInputs(newDir, icoName);
+        // TODO: It returns a path to UserTemp
         return newPath;
-    }
-
-    public static string ChangeIcoNameToLinkName(IShortcutBase linkObj)
-    {
-        var iconFilePath = linkObj.IconPath;
-        var iconDir = GetDirFromPath(iconFilePath);
-        ArgumentException.ThrowIfNullOrEmpty(iconDir);
-        var linkName = Path.ChangeExtension(linkObj.OutputFileName, ".ico");
-        var newIconPath = Path.Combine(iconDir, linkName);
-            
-        File.Copy(iconFilePath, newIconPath, true);
-        File.Delete(iconFilePath);
-            
-        return newIconPath;
     }
 
     // public static string WriteImageToTemp(ImageMagick.MagickImage image, string? fileName = null)
@@ -486,16 +437,6 @@ public static class FileOps
     //     image.Dispose();
     //     return newDir;
     // }
-        
-    public static string WriteIcoToFile(MemoryStream icoStream, string outputPath)
-    {
-        // Obsolete?
-        var fileInfo = new FileInfo(outputPath);
-        var fileStream = fileInfo.Create();
-        fileStream.Write(icoStream.ToArray());
-        fileStream.Close();
-        return fileInfo.FullName;
-    }
 
     #endregion
 

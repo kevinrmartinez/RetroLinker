@@ -17,15 +17,16 @@
 */
 
 using System.IO;
-using RetroLinker.Models.Windows;
 using SkiaSharp;
+using Svg.Skia;
 
 namespace RetroLinker.Models.IO;
 
 public static partial class IconProc
 {
-    public static List<IconsItems> IconItemsList { get; } = new();
-
+    // https://learn.microsoft.com/en-us/windows/win32/uxguide/vis-icons
+    private static IReadOnlyList<int> _icoAppSizes = [ 16, 32, 48, 256 ];
+    
     // public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
     //
     // public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
@@ -56,8 +57,6 @@ public static partial class IconProc
     //     return imgStream;
     // }
     //
-    private static MemoryStream GetImageStream(string path) => new MemoryStream(SKBitmap.Decode(path).Bytes);
-
     
     public static MemoryStream EncodeAsPngMk2(SKBitmap bitmap)
     {
@@ -67,131 +66,99 @@ public static partial class IconProc
         var ms = new MemoryStream();
         var pixmap = tempImage.PeekPixels();
         pixmap.Encode(ms, new SKPngEncoderOptions(SKPngEncoderFilterFlags.None, zLibLevel: 1));
+        ms.Position = 0;
         return ms;
     }
 
     public static MemoryStream EncodeAsPngMk2(string path) => EncodeAsPngMk2(SKBitmap.Decode(path));
     public static MemoryStream EncodeAsPngMk2(MemoryStream img) => EncodeAsPngMk2(SKBitmap.Decode(img));
 
-    public static void BuildIconItem(string filePath, int newIndex, bool OS)
+    public static MemoryStream DecodeSvg(Stream svgFileStream)
     {
-        filePath = FileOps.GetAbsolutePath(filePath);
-        var fileExt = FileOps.GetFileExtFromPath(filePath);
-        var icoItem = new IconsItems(filePath, newIndex);
-            
-        // if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = GetStream(filePath);
-        if (FileOps.IsVectorImage(filePath)) icoItem.IconStream = new MemoryStream();
-        if (OS)
+        var ms = new MemoryStream();
+        using var tempSvg = new SKSvg();
+        var picture = tempSvg.Load(svgFileStream);
+        if (picture is not null)
         {
-            const int defaultIndex = 0;
-            if (FileOps.IsFileWinPE(filePath)) icoItem.IconStream = ExtractIco(filePath, defaultIndex);
-            if (FileOps.WinExtraIconsExt.Contains($"*{fileExt}") || (FileOps.IsExtWinPE(fileExt))) 
-                icoItem.ConversionRequired = true;
+            var biggerSide = Math.Max(picture.CullRect.Width, picture.CullRect.Height);
+            float scaleXY = 1 / (biggerSide / IcoMaxRes);
+            using var bitmap = picture.ToBitmap(SKColors.Empty, scaleXY, scaleXY, SKColorType.Bgra8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
+            if (bitmap is not null) ms = EncodeAsPngMk2(bitmap);
         }
-        IconItemsList.Add(icoItem);
+        return ms;
     }
 
     #region Windows Only
+
+    public static bool IsIcoConversionRequired(string fileExtension) 
+        => !fileExtension.Equals(FileOps.WinIcoExt, StringComparison.OrdinalIgnoreCase);
+    
     [SupportedOSPlatform(App.PlatformWin)]
     public static MemoryStream ExtractIco(string path, int index)
     {
-        var icoExtractor = new IconExtractor(path);
+        var icoExtractor = new Windows.IconExtractor(path);
         var icoCount = icoExtractor.Count;
         if (index >= icoCount) index -= icoCount;
-        using var rawIco = icoExtractor.GetIcon(index);
-        using var skImage = SKImage.FromBitmap(SKBitmap.Decode(rawIco));
-        using var skDecode = skImage.Encode();
-        if (skDecode is not null)
-        {
-            var icoStream = new MemoryStream();
-            skDecode.SaveTo(icoStream);
-            return icoStream;
-        }
-        else return new MemoryStream();
+        return icoExtractor.GetIcon(index);
     }
     
-    public static async Task<string> ResolveImageForTileico(string iconFile, string? tileIcoImage, IconsItems? iconItem)
+    public static async Task<string> ResolveImageForTileico(string iconFile, string? tileIcoImage, IIconItem iconItem)
     {
         MemoryStream? memoryStream = null;
         string? ogFilePath = null;
-        var ogFileName = string.Empty;
         var imageFromIco = string.Empty;
 
         if (!string.IsNullOrWhiteSpace(tileIcoImage)) {
             // if a conversion to .ico happened, 'outputLink.TileIcoImage' has either: an image file, or a Windows PE
             var path = tileIcoImage;
             if (FileOps.IsFileWinPE(path)) {                    // If it's a Windows PE...
-                if (FileOps.IsFileWinPE(iconFile)) {            //  and was not extracted, 'IconItemSET' should have what we want
-                    memoryStream = iconItem?.IconStream;        // the IconStream may be null
-                    ogFilePath = iconItem?.FilePath;
-                    ogFileName = iconItem?.FileName;
+                if (FileOps.IsFileWinPE(iconFile)) {            //  and was NOT extracted
+                    memoryStream = await iconItem.GetImageStream();
+                    ogFilePath = iconItem.FilePath;
                 }
                 else {                                          //  and was extracted
                     ogFilePath = iconFile;
-                    ogFileName = FileOps.GetFileNameFromPath(ogFilePath);
                 }
             }
+            // else if (FileOps.IsVectorImage(path)) {             // If it's a vector image, the raw file won't work?
+            //     memoryStream = await iconItem.GetImageStream();
+            //     ogFilePath = iconItem.FilePath;
+            // }
             else imageFromIco = path;   // If it's an image file, just return that
         }
         else if (iconItem is { ConversionRequired: false }) {
-            // if a conversion did not happen, then 'outputLink.ICONfile' is a .ico file
-            memoryStream = iconItem.IconStream;
+            // if a conversion did not happen, then 'outputLink.IconPath' is a .ico file
+            memoryStream = await iconItem.GetImageStream();
             ogFilePath = iconItem.FilePath;
-            ogFileName = iconItem.FileName;
         }
 
         if (string.IsNullOrEmpty(imageFromIco))
         {
-            // MagickImage? image = null;
-            // if (memoryStream is not null) {
-            //     memoryStream.Position = 0;
-            //     image = ReverseImageConvert(memoryStream);
-            // }
-            // else if (!string.IsNullOrWhiteSpace(ogFilePath)) {
-            //     image = ReverseImageConvert(ogFilePath);
-            // }
-            // if (image is not null) imageFromIco = FileOps.WriteImageToTemp(image, ogFileName);
+            MemoryStream? image = null;
+            if (memoryStream is not null) {
+                memoryStream.Position = 0;
+                image = EncodeAsPngMk2(memoryStream);
+                await memoryStream.DisposeAsync();
+            }
+            else if (!string.IsNullOrWhiteSpace(ogFilePath)) {
+                image = EncodeAsPngMk2(ogFilePath);
+            }
+
+            if (image is not null) {
+                var newName = FileOps.GenerateTempFileName("png");
+                imageFromIco = await FileOps.DumpStreamToFile(image, newName);
+                await image.DisposeAsync();
+            }
         }
-            
+
         return imageFromIco;
     }
+
+    public static byte[] VirtuallyCreateIco(MemoryStream icoStream) {
+        using var bitmap = SKBitmap.Decode(icoStream);
+        var ico = new IcoContainer(bitmap, _icoAppSizes);
+        return ico.ToBytes();
+    }
+
     #endregion
-    
-}
-    
-    
-public class IconsItems
-{
-    public string FileName { get; private set; }
-
-    public string FilePath
-    {
-        get;
-        set {
-            field = value;
-            FileName = (string.IsNullOrWhiteSpace(value)) ? string.Empty : FileOps.GetFileNameFromPath(value);
-        }
-    }
-    public MemoryStream? IconStream { get; set; }
-    public int? comboIconIndex { get; set; }
-    public bool ConversionRequired { get; set; }
-        
-        
-    public IconsItems() {
-        FileName = string.Empty;
-        FilePath = string.Empty;
-        ConversionRequired = false;
-    }
-
-    public IconsItems(string filePath, bool conversionRequired = false) {
-        FileName = string.Empty;
-        FilePath = filePath;
-        ConversionRequired = conversionRequired;
-    }
-
-    public IconsItems(string filePath, int? comboIconInd, bool conversionRequired = false) : this(filePath, conversionRequired) {
-        comboIconIndex = comboIconInd;
-    }
-        
-    public bool HasSameFile(IconsItems? other) => (other != null) && (FilePath == other.FilePath);
 }
