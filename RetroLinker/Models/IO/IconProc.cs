@@ -56,19 +56,22 @@ public static partial class IconProc
     //     return imgStream;
     // }
     //
-    // private static MemoryStream GetStream(string path)
-    // {
-    //     // TODO: Consider the differences between 'MemoryStream' and 'byte[]' 
-    //     // Set the background transparent before reading the image.
-    //     // Solution thanks to Micah y Mateen Ulhaq @ stackoverflow.com
-    //     var img = new MagickImage() {BackgroundColor = MagickColors.Transparent};
-    //         
-    //     img.Read(path);
-    //     img.Format = MagickFormat.Png32;
-    //     return GetStream(img);
-    // }
+    private static MemoryStream GetImageStream(string path) => new MemoryStream(SKBitmap.Decode(path).Bytes);
+
     
-    
+    public static MemoryStream EncodeAsPngMk2(SKBitmap bitmap)
+    {
+        // This method bellow is confirmed to run ~4x faster than the method above, even with a little extra compression
+        // Thanks to mjblacker on GitHub: https://github.com/mono/SkiaSharp/issues/2757#issuecomment-2424337566
+        using var tempImage = SKImage.FromBitmap(bitmap);
+        var ms = new MemoryStream();
+        var pixmap = tempImage.PeekPixels();
+        pixmap.Encode(ms, new SKPngEncoderOptions(SKPngEncoderFilterFlags.None, zLibLevel: 1));
+        return ms;
+    }
+
+    public static MemoryStream EncodeAsPngMk2(string path) => EncodeAsPngMk2(SKBitmap.Decode(path));
+    public static MemoryStream EncodeAsPngMk2(MemoryStream img) => EncodeAsPngMk2(SKBitmap.Decode(img));
 
     public static void BuildIconItem(string filePath, int newIndex, bool OS)
     {
@@ -87,7 +90,26 @@ public static partial class IconProc
         }
         IconItemsList.Add(icoItem);
     }
-        
+
+    #region Windows Only
+    [SupportedOSPlatform(App.PlatformWin)]
+    public static MemoryStream ExtractIco(string path, int index)
+    {
+        var icoExtractor = new IconExtractor(path);
+        var icoCount = icoExtractor.Count;
+        if (index >= icoCount) index -= icoCount;
+        using var rawIco = icoExtractor.GetIcon(index);
+        using var skImage = SKImage.FromBitmap(SKBitmap.Decode(rawIco));
+        using var skDecode = skImage.Encode();
+        if (skDecode is not null)
+        {
+            var icoStream = new MemoryStream();
+            skDecode.SaveTo(icoStream);
+            return icoStream;
+        }
+        else return new MemoryStream();
+    }
+    
     public static async Task<string> ResolveImageForTileico(string iconFile, string? tileIcoImage, IconsItems? iconItem)
     {
         MemoryStream? memoryStream = null;
@@ -133,27 +155,8 @@ public static partial class IconProc
             
         return imageFromIco;
     }
-
-    #region Windows Only
-    [SupportedOSPlatform(App.PlatformWin)]
-    public static MemoryStream ExtractIco(string path, int index)
-    {
-        var icoExtractor = new IconExtractor(path);
-        var icoCount = icoExtractor.Count;
-        if (index >= icoCount) index -= icoCount;
-        using var rawIco = icoExtractor.GetIcon(index);
-        using var skImage = SKImage.FromBitmap(SKBitmap.Decode(rawIco));
-        using var skDecode = skImage.Encode();
-        if (skDecode is not null)
-        {
-            var icoStream = new MemoryStream();
-            skDecode.SaveTo(icoStream);
-            return icoStream;
-        }
-        else return new MemoryStream();
-    }
     #endregion
-        
+    
 }
     
     

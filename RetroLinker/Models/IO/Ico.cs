@@ -32,8 +32,11 @@ public static partial class IconProc
         CUR = (short)2
     }
     
-    private ref struct IcoContainer
+    /// <summary> A data Structure representing a valid .ico file. </summary>
+    /// <remarks> Working with this may be inneficient, but it's done for undenstanding what's going on here in the future. </remarks>
+    private class IcoContainer
     {
+        
         // https://en.wikipedia.org/wiki/ICO_(file_format)#Structure
         // ICONDIR structure
         
@@ -58,6 +61,12 @@ public static partial class IconProc
         private const int IconDirEntryOffset1 = 6;
         private const int IconDirEntryOffset2 = 16;
         
+        /// <summary> Construct an ICO file with the provided image and sizes. </summary>
+        /// <param name="initialBitmap">The image to convert, provided as a <see cref="SKBitmap"/>.</param>
+        /// <param name="sizes">
+        /// A list of sizes to convert into, the file will be builded in the same order as this list.
+        /// The <see langword="int"/> values will be converted to <see langword="byte"/> with overflow enable.
+        /// </param>
         public IcoContainer(SKBitmap initialBitmap, IReadOnlyList<int> sizes)
         {
             IdReserved = IcoReserved;
@@ -79,16 +88,7 @@ public static partial class IconProc
                     structureLenght = bitmapStructure.SizeInBytes();
                 }
                 else {
-                    // PngFrame = resizedBitmap.Encode(SKEncodedImageFormat.Png, 100).ToArray();
-                    
-                    // This method bellow is confirmed to run ~4x faster than the method above, even with a little extra compression
-                    // Thanks to mjblacker on GitHub: https://github.com/mono/SkiaSharp/issues/2757#issuecomment-2424337566
-                    using var tempImage = SKImage.FromBitmap(resizedBitmap);
-                    using var ms = new MemoryStream();
-                    var pixmap = tempImage.PeekPixels();
-                    pixmap.Encode(ms, new SKPngEncoderOptions(SKPngEncoderFilterFlags.None, zLibLevel: 1));
-                    
-                    PngFrame = ms.ToArray();
+                    PngFrame = EncodeAsPngMk2(resizedBitmap).ToArray();
                     structureLenght = PngFrame.Length;
                 }
                 entries.Add(new IconDirEntry(size, structureLenght, ref offset));
@@ -97,7 +97,7 @@ public static partial class IconProc
             IdEntries = entries.ToArray();
             BitmapFrames = bitmaps.ToArray();
         }
-
+        
         public MemoryStream ToStream()
         {
             var stream = new MemoryStream();
@@ -115,6 +115,20 @@ public static partial class IconProc
         }
         
         public byte[] ToBytes() => ToStream().ToArray();
+
+        public async Task WriteToFileAsync(string outFile)
+        {
+            var fileStream = new FileStream(outFile, FileMode.Create);
+            await using var writer =  new BinaryWriter(fileStream);
+            writer.Write(IdReserved);
+            writer.Write((short)IdType);
+            writer.Write(IdCount);
+            foreach (var entry in IdEntries) writer.Write(entry.ToBytes());
+            foreach (var bitmapStructure in BitmapFrames) writer.Write(bitmapStructure.ToBytes());
+            if (PngFrame is not null) writer.Write(PngFrame);
+            writer.Flush();
+            fileStream.Close();
+        }
     }
     
     private struct IconDirEntry
@@ -183,6 +197,7 @@ public static partial class IconProc
         // https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
         
         /// <summary> Specifies the number of bytes required by the structure. </summary>
+        /// <remarks> Is the sum of the size of all properties aside from image data. </remarks>
         public uint Size { get; }
         
         /// <summary> Specifies the width of the bitmap, in pixels. </summary>
@@ -200,7 +215,7 @@ public static partial class IconProc
         /// <item>For compressed formats, biHeight must be positive, regardless of image orientation.</item>
         /// </list>
         /// </summary>
-        public int  Height { get; }
+        public int Height { get; }
         
         /// <summary> Specifies the number of planes for the target device. This value must be set to 1. </summary>
         public ushort Planes { get; }
@@ -229,10 +244,10 @@ public static partial class IconProc
         public uint SizeImage { get; }
         
         /// <summary> Specifies the horizontal resolution, in pixels per meter, of the target device for the bitmap. </summary>
-        public int  XPelsPerMeter { get; }
+        public int XPelsPerMeter { get; }
         
         /// <summary> Specifies the vertical resolution, in pixels per meter, of the target device for the bitmap. </summary>
-        public int  YPelsPerMeter { get; }
+        public int YPelsPerMeter { get; }
         
         /// <summary> Specifies the number of color indices in the color table that are actually used by the bitmap. </summary>
         public uint ClrUsed { get; }
@@ -244,29 +259,30 @@ public static partial class IconProc
         public byte[] RawColorData { get; }
         
         /// <summary> Bitmap transparency data (AND mask) for older ICO parsers. </summary>
-        /// <remarks> This can be all zeroes and still be rendered, but not valid. Some older parsers still present on current Windows will still access this </remarks>
+        /// <remarks> This can be all zeroes and still be rendered, but not valid. Some older parsers still present on current Windows will still access this. </remarks>
         public byte[] RawTransparencyData { get; } 
         
-        public const uint BI_RGB = 0;
-        public const uint BI_BITFIELDS = 3;
-        private const uint DefaultSize = 40;
+        private const uint BI_RGB = 0;
+        private const uint BI_BITFIELDS = 3;
+        private const ushort IcoPlanesValue = 1;
         private const int MaskResolver = 31;
         private const int MaskAlingment = 4;
 
         public BitmapStructure(SKBitmap resizedBitmap)
         {
-            const ushort bpp = 32;                  // <= Not working less here
+            const ushort bpp8 = 32;                 // <= Not working with less here
             int squareSize = resizedBitmap.Width;   // <= All bitmaps are forced to be squares (Width = Height)
-            int maskStride = ((squareSize + MaskResolver) / bpp) * MaskAlingment;
-
-            Size = DefaultSize;
+            // int maskStride = ((squareSize + MaskResolver) / bpp8) * MaskAlingment;
+            
+            Size = (sizeof(int) * 9) + (sizeof(short) * 2); 
             Width = squareSize;
-            Height = squareSize * 2;
-            Planes = 1;
-            BitCount = bpp;
+            Height = squareSize * 2;    // Part of the specification
+            Planes = IcoPlanesValue;
+            BitCount = bpp8;
             Compression = BI_RGB;
-            SizeImage = (uint)((Width * Height * MaskAlingment) + (maskStride * squareSize));
+            
             (RawColorData, RawTransparencyData) = GenerateMasksData(resizedBitmap);
+            SizeImage = (uint)(RawColorData.Length + RawTransparencyData.Length);
             
             // Not using these
             XPelsPerMeter = 0;
@@ -311,7 +327,7 @@ public static partial class IconProc
             return (xorStream.ToArray(), andStream.ToArray());
         }
         
-        public int SizeInBytes() => (sizeof(int) * 9) + (sizeof(short) * 2) + RawColorData.Length + RawTransparencyData.Length;
+        public int SizeInBytes() => (int)Size + RawColorData.Length + RawTransparencyData.Length;
 
         public MemoryStream ToStream()
         {

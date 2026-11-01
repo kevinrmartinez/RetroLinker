@@ -30,7 +30,7 @@ public static class FileOps
     public const string tempFile = "temp.txt";  // TODO: Create a new method for temporal file naming
     public const string CoresFile = "cores.txt";
     // public const string tempIco = "temp.ico";
-    // public const byte MAX_PATH = 255; // Apply Everywhere?
+    // public const byte MAX_PATH = 255;
     public const string WinPeExt1 = ".exe";
     public const string WinPeExt2 = ".dll";
     public const string WinLinkExt = ".lnk";

@@ -250,7 +250,6 @@ public partial class MainView : UserControl
     // Controls Modifiers
     void SetViewPreSettings()
     {
-        txtRADir.MaxLength = 255;
         // Based on current OS
         if (!DesktopOS) {
             if (string.IsNullOrEmpty(Settings.DEFRADir)) Settings.DEFRADir = App.RetroBin;
@@ -902,12 +901,6 @@ public partial class MainView : UserControl
             else
             {
                 Logger.LogDebg("Running on debug...");
-                // var imposible = 1684 / (comboConfig.Items.Count - 1);
-                // Logger.LogDebg(imposible);
-                // Manager.TestWindowsCmd();
-                // var para = await Models.Linux.ShortcutManager.ReadShortcut(test);
-                // var builder = new UserLinkBuilder(para);
-                // IconProc.TestBytes();
             }
 #endif
         }
