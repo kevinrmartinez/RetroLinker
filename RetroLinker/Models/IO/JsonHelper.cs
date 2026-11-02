@@ -34,7 +34,7 @@ internal static class JsonHelper
         WriteIndented =  true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         AllowOutOfOrderMetadataProperties = true,
-        PropertyNameCaseInsensitive = false,
+        PropertyNameCaseInsensitive = false
     };
     
     //public static string Serialize<T>(T objectToSerialize) => JsonSerializer.Serialize(objectToSerialize, typeof(T), DefaultOptions);
@@ -57,10 +57,10 @@ internal static class JsonHelper
                 case Settings.Settings settings:
                     return Serialize(settings);
                 default:
-                    throw new System.NotSupportedException("Serializer not implemented");
+                    throw new NotSupportedException("Serializer not implemented");
             }
         }
-        catch (System.NotSupportedException ex) {
+        catch (NotSupportedException ex) {
             Logger.LogErro($"Serialization Error:\n\tType:{objectToSerialize.GetType().Name} \n\t{ex}");
             return null;
         }
@@ -74,9 +74,9 @@ internal static class JsonHelper
             if (targetType == typeof(Settings.Settings)) return DeserializeSettings(json) as T;
 
             // Type Not Supported
-            throw new System.NotSupportedException("Deserializer not implemented");
+            throw new NotSupportedException("Deserializer not implemented");
         }
-        catch (System.Exception ex) when  (ex is System.NotSupportedException or JsonException) {
+        catch (Exception ex) when  (ex is NotSupportedException or JsonException) {
             Logger.LogErro($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex}");
             return null;
         }

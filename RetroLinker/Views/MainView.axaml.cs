@@ -85,7 +85,7 @@ public partial class MainView : UserControl
             view => (!view.TileIconEnabled) 
                 ? view.Settings.DEFLinkOutput : FileOps.TileIconOutDirs[view.TileIconAllUsers]);
 
-    public string? FixedOutputDir { get; } = null;
+    public string? FixedOutputDir { get; }
 
     #endregion
 

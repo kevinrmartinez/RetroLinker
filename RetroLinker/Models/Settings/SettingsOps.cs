@@ -56,7 +56,7 @@ public static class SettingsOps
                 PrevConfigs.AddRange(settings.SavedConfigs);
                 LinkCopyPaths.AddRange(settings.SavedCopyPaths);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Logger.LogWarn($"There was a error while loading \"{FileOps.SettingFileJson}\"");
                 Logger.LogErro(e);

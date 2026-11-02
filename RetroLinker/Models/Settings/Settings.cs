@@ -41,7 +41,9 @@ public class Settings : ILocalSerializable, ICloneable
     public string LanguageLocale { get; set; } = DefaultLanguage;
     public List<string> SavedConfigs { get; set; } = new();
     public List<string> SavedCopyPaths { get; set; } = new();
-    public RememberedUserChoices UserChoices { get; init; } = new();
+    public RememberedUserChoices UserChoices { get; 
+        init => field = value ?? new(); // To handle JSON files with this feature missing 
+    } = new();
     
     private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
