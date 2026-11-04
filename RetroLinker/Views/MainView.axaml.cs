@@ -52,6 +52,21 @@ public partial class MainView : UserControl
             (view, value) => view.SelectedIcon = value);
     
     public ViewableIconItem SelectedIcon { get; set => SetAndRaise(SelectedIconProperty, ref field, value); } = ViewableIconItem.DefaultInstance;
+
+    public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
+        AvaloniaProperty.RegisterDirect<MainView, bool>(
+            nameof(CustomIconSource),
+            view => view.CustomIconSource,
+            (view, value) => view.CustomIconSource = value);
+    
+    public bool CustomIconSource
+    {
+        get;
+        set {
+            if (!value) SelectedIcon = ViewableIconItem.DefaultInstance;
+            SetAndRaise(CustomIconSourceProperty, ref field, value);
+        }
+    }
     
     public static readonly DirectProperty<MainView, AvaloniaBitmap?> IconImageProperty =
         AvaloniaProperty.RegisterDirect<MainView, AvaloniaBitmap?>(
@@ -59,14 +74,7 @@ public partial class MainView : UserControl
             view => view.IconImage,
             (view, value) => view.IconImage = value);
 
-    public AvaloniaBitmap? IconImage
-    {
-        get;
-        set {
-            // field?.Dispose();
-            SetAndRaise(IconImageProperty, ref field, value);
-        }
-    }
+    public AvaloniaBitmap? IconImage { get; set => SetAndRaise(IconImageProperty, ref field, value); }
     
     public static readonly DirectProperty<MainView, bool> TileIconEnabledProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
@@ -232,8 +240,6 @@ public partial class MainView : UserControl
             var content = new PopUpGenericContent(message, resMainView.popIconsError_Title);
             _ = this.PopUpGenericMessageBox(content, GenericPopUpType.Error);
         }
-        
-        rdoIconDef.IsChecked = true;
     }
 
     void ApplyDragDropEvents()
@@ -657,15 +663,6 @@ public partial class MainView : UserControl
             SelectedIcon = existing;
             SelectedIcon.ResetBitmap();
         }
-    }
-
-    void rdoIcon_CheckedChanged(object sender, RoutedEventArgs e)
-    {
-        if (rdoIconDef.IsChecked.GetValueOrDefault()) {
-            comboIcon.SelectedIndex = 0;
-            gridIconControl.IsEnabled = false;
-        }
-        else gridIconControl.IsEnabled = true;
     }
 
     async void btnICONDir_ClickAsync()
