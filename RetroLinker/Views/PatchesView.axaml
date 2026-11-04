@@ -10,6 +10,9 @@
              x:DataType="vw:PatchesView"
              x:CompileBindings="True">
     
+    <UserControl.Resources>
+        <x:String x:Key="GroupPatchType">PatchType</x:String>
+    </UserControl.Resources>
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
     </UserControl.Styles>
@@ -36,14 +39,14 @@
                 
                 <Label Content="{x:Static lc:resMainExtras.lblPatchType}"/>
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <RadioButton Name="rdoNoPatch" GroupName="PatchType" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
+                    <RadioButton Name="rdoNoPatch" GroupName="{StaticResource GroupPatchType}" IsCheckedChanged="RadioButtonPatch_OnIsCheckedChanged"
                                  Content="{x:Static lc:resMainExtras.rdoNoPatch}"/>
-                    <RadioButton Name="rdoAutoPatch" GroupName="PatchType" Click="RadioButtonPatch_OnIsCheckedChanged"
+                    <RadioButton Name="rdoAutoPatch" GroupName="{StaticResource GroupPatchType}" Click="RadioButtonPatch_OnIsCheckedChanged"
                                  Content="{x:Static lc:resGeneric.btnAuto}"/>
-                    <RadioButton Name="rdoUPSPatch" GroupName="PatchType" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoBPSPatch" GroupName="PatchType" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoIPSPatch" GroupName="PatchType" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
-                    <RadioButton Name="rdoXDPatch" GroupName="PatchType" Content="xDelta" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoUPSPatch" GroupName="{StaticResource GroupPatchType}" Content="UPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoBPSPatch" GroupName="{StaticResource GroupPatchType}" Content="BPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoIPSPatch" GroupName="{StaticResource GroupPatchType}" Content="IPS" Click="RadioButtonPatch_OnIsCheckedChanged"/>
+                    <RadioButton Name="rdoXDPatch" GroupName="{StaticResource GroupPatchType}" Content="xDelta" Click="RadioButtonPatch_OnIsCheckedChanged"/>
                 </StackPanel>
                 <Grid ColumnDefinitions="*, Auto" Margin="3,10">
                     <TextBox Name="txtPatchPath" Grid.Column="0" HorizontalAlignment="Stretch"

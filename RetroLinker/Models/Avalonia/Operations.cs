@@ -21,7 +21,7 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using RetroLinker.Models.IO;
-using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap; // To distinguish Avalonia's bitmap from the images NuGets
+using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace RetroLinker.Models.Avalonia;
 
@@ -30,7 +30,7 @@ public static class Operations
     // private static bool FirstLoad = true;
     private static string[] Cores = [];
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
-    private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.ico";
+    private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.png";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
     
     public static IStorageFolder? DesktopFolder { get; private set; }
