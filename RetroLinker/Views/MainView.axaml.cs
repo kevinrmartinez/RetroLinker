@@ -436,6 +436,7 @@ public partial class MainView : UserControl
         if (SelectedIcon.Equals(ViewableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
         else
         {
+            outputLink.IconPath = SelectedIcon.FilePath;    // It's set to the selected icon file by default 
             if (DesktopOS)
             {
                 // If it's Windows, the images may need to be converted to .ico
@@ -461,7 +462,6 @@ public partial class MainView : UserControl
                         };
                     }
                 }
-                else outputLink.IconPath = SelectedIcon.FilePath;
 
                 if (Settings.TileIcoPath is not null)
                 {

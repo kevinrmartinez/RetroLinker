@@ -31,9 +31,3 @@ public interface IIconItem
 
     public async Task<System.IO.MemoryStream> GetImageStream() => await GenerateImageStream(this);
 }
-
-public class IconItem (string filePath, bool conversionRequired = false) : IIconItem
-{
-    public string FilePath { get; } = filePath;
-    public bool ConversionRequired { get; } = conversionRequired;
-} 

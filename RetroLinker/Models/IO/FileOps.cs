@@ -17,7 +17,6 @@
 */
 
 using System.IO;
-using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Models.IO;

@@ -1,0 +1,194 @@
+Subject: [PATCH] Async implementation of Ico Building
+---
+Index: RetroLinker/Models/IO/Ico.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RetroLinker/Models/IO/Ico.cs b/RetroLinker/Models/IO/Ico.cs
+--- a/RetroLinker/Models/IO/Ico.cs	(revision 0cdf92c71b65d724cd3cb76078c7aced0edd64a1)
++++ b/RetroLinker/Models/IO/Ico.cs	(date 1793387306539)
+@@ -27,37 +27,64 @@
+     private const int IcoMaxRes = 256;
+     private const int IconDirEntrySize = 16;
+     
++    public static async void TestBytes()
++    {
++        var file = "/some/path/2048.png";
++        var outFile = $"{file}.ico";
++        using var image = SKBitmap.Decode(file);
++        IReadOnlyList<int> sizes = [16, 20, 24, 32, 40, 48, 64, 128, 256];
++        
++        var stopWatch = new System.Diagnostics.Stopwatch();
++        stopWatch.Start();
++        var ico1 = new IcoContainer(image,  sizes);
++        var build1 = stopWatch.Elapsed;
++        stopWatch.Restart();
++        var ico2 = await IcoContainer.BuildAsync(image, sizes);
++        var build2 = stopWatch.Elapsed;
++        stopWatch.Restart();
++        // FileOps.WriteAllBytesToFileAsync()
++        await FileOps.WriteAllBytesToFileAsync(outFile, ico1.ToBytes());
++        stopWatch.Stop();
++        var write = stopWatch.Elapsed;
++        
++        Logger.LogDebg($"Ico Sequential Building: {build1.TotalMilliseconds}ms");
++        Logger.LogDebg($"Ico async Building: {build2.TotalMilliseconds}ms");
++        Logger.LogDebg($"Ico Writing: {write.TotalMilliseconds}ms");
++    }
++    
+     private enum IcoType {
+         ICO = (short)1,
+         CUR = (short)2
+     }
+     
+-    private ref struct IcoContainer
++    private class IcoContainer
+     {
+         // https://en.wikipedia.org/wiki/ICO_(file_format)#Structure
+         // ICONDIR structure
+         
+         /// <summary> Reserved. Must be 0. </summary>
+-        public short IdReserved { get; }
++        public short IdReserved { get; init; }
+         
+         /// <summary> Image type: 1 for ICO image, 2 for CUR image. Other values are invalid. </summary>
+-        public IcoType IdType { get; }
++        public IcoType IdType { get; init; }
+         
+         /// <summary> Number of images in the file. </summary>
+-        public short IdCount { get; }
++        public short IdCount { get; init; }
+         
+         /// <summary> Array of <see cref="IconDirEntry"/>. Each entry represents an image. </summary>
+-        public IconDirEntry[] IdEntries { get; }
++        public IconDirEntry[] IdEntries { get; init; }
+ 
+         /// <summary> Collection of Bitmaps present in this file, in exception to the 256×256 frame. </summary>
+-        public BitmapStructure[] BitmapFrames { get; }
++        public BitmapStructure[] BitmapFrames { get; init; }
+         
+         /// <summary> An embedded PNG image for the 256×256 frame. </summary>
+-        public byte[]? PngFrame { get; }
++        public byte[]? PngFrame { get; init; }
+ 
+         private const int IconDirEntryOffset1 = 6;
+         private const int IconDirEntryOffset2 = 16;
+         
++        private IcoContainer() {}
++        
+         public IcoContainer(SKBitmap initialBitmap, IReadOnlyList<int> sizes)
+         {
+             IdReserved = IcoReserved;
+@@ -98,6 +125,76 @@
+             BitmapFrames = bitmaps.ToArray();
+         }
+ 
++        // Builds the bitmaps in parallel. It works, but it's only faster than sequential by ~700µs on a good day
++        public static async Task<IcoContainer> BuildAsync(SKBitmap initialBitmap, IReadOnlyList<int> sizes)
++        {
++            var count = (short)sizes.Count;
++
++            var pngTask = (Task<(IconDirEntry, byte[])>?) null;
++            var tasks = new List<Task<(IconDirEntry, BitmapStructure)>>();
++            var entries = new List<IconDirEntry>();
++            var bitmaps = new List<BitmapStructure>();
++
++            foreach (var size in sizes) {
++                if (size < IcoMaxRes) tasks.Add(Task.Run(() => BuildBitmapAsync(initialBitmap, size)));
++                else pngTask = Task.Run(() => BuildPngAsync(initialBitmap));
++            }
++            
++            var results = await Task.WhenAll(tasks);
++            (IconDirEntry pngEntry, byte[] pngBytes) = await pngTask;   // FIXME
++
++            foreach (var resultPair in results) {
++                entries.Add(resultPair.Item1);
++                bitmaps.Add(resultPair.Item2);
++            }
++            entries.Add(pngEntry);
++            
++            var offset = IconDirEntryOffset1 + (IconDirEntryOffset2 * count);
++            foreach (var entry in entries) {
++                entry.UpdateOffset(offset);
++                offset += entry.BytesInRes;
++            }
++            
++            return new IcoContainer()
++            {
++                IdReserved = IcoReserved,
++                IdType = IcoType.ICO,
++                IdCount = count,
++                IdEntries = entries.ToArray(),
++                BitmapFrames = bitmaps.ToArray(),
++                PngFrame = pngBytes
++            };
++        }
++
++        private static (IconDirEntry, BitmapStructure) BuildBitmapAsync(SKBitmap initialBitmap, int size)
++        {
++            var offsetStub = 128;
++            using var resizedBitmap =
++                initialBitmap.Resize(new SKSizeI(size, size), new SKSamplingOptions(SKFilterMode.Linear));
++            
++            var bitmapStructure = new BitmapStructure(resizedBitmap); 
++            var dirEntry = new IconDirEntry(size, bitmapStructure.SizeInBytes(), ref offsetStub);
++            return (dirEntry, bitmapStructure);
++        }
++
++        private static (IconDirEntry, byte[]) BuildPngAsync(SKBitmap initialBitmap)
++        {
++            // Should only be 256x256
++            var fixedSize = 256;
++            var offsetStub = 128;
++            using var resizedBitmap =
++                initialBitmap.Resize(new SKSizeI(fixedSize, fixedSize), new SKSamplingOptions(SKFilterMode.Linear));
++            
++            using var tempImage = SKImage.FromBitmap(resizedBitmap);
++            using var ms = new MemoryStream();
++            var pixmap = tempImage.PeekPixels();
++            pixmap.Encode(ms, new SKPngEncoderOptions(SKPngEncoderFilterFlags.None, zLibLevel: 1));
++
++            var dirEntry = new IconDirEntry(fixedSize, pixmap.BytesSize, ref offsetStub);
++            
++            return (dirEntry, ms.ToArray());
++        }
++
+         public MemoryStream ToStream()
+         {
+             var stream = new MemoryStream();
+@@ -143,7 +240,7 @@
+         public int BytesInRes { get; }
+         
+         /// <summary> Specifies the offset of the DIB or PNG data from the beginning of the file. </summary>
+-        public int ImageOffset { get; }
++        public int ImageOffset { get; private set; }
+ 
+         public IconDirEntry(int squareSize, int imageLength, ref int offset)
+         {
+@@ -175,6 +272,8 @@
+         }
+ 
+         public byte[] ToBytes() => ToStream().ToArray();
++        
++        public void UpdateOffset(int offset) => ImageOffset = offset;
+     }
+     
+     private struct BitmapStructure
+Index: RetroLinker/Views/MainView.axaml.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RetroLinker/Views/MainView.axaml.cs b/RetroLinker/Views/MainView.axaml.cs
+--- a/RetroLinker/Views/MainView.axaml.cs	(revision 0cdf92c71b65d724cd3cb76078c7aced0edd64a1)
++++ b/RetroLinker/Views/MainView.axaml.cs	(date 1793386289515)
+@@ -907,7 +907,7 @@
+                 // Manager.TestWindowsCmd();
+                 // var para = await Models.Linux.ShortcutManager.ReadShortcut(test);
+                 // var builder = new UserLinkBuilder(para);
+-                // IconProc.TestBytes();
++                IconProc.TestBytes();
+             }
+ #endif
+         }
