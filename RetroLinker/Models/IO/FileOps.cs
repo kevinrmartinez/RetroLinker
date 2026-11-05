@@ -414,14 +414,27 @@ public static class FileOps
     
     public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
-    public static string GetConvertedIcoPath(IIconItem selectedIconItem)
+    [SupportedOSPlatform(App.PlatformWin)]
+    public static string GetConvertedIcoPath(DesktopLink.IShortcutBase linkParameters, string raRom, IIconItem selectedIconItem)
     {
+        // TODO: test
         if (IsExtWinPE(selectedIconItem.FileExt) && !_loadedSettings.ExtractIco) return selectedIconItem.FilePath;
         
-        string icoName = GetFileNameNoExtFromPath(selectedIconItem.FileName) + WinIcoExt;
-        string newDir = (CheckUsrSetDir(UserTemp)) ? UserTemp : _loadedSettings.UserAssetsPath;
-        string newPath = CombineMultipleInputs(newDir, icoName);
-        // TODO: It returns a path to UserTemp
+        var romIcoSave = (string.IsNullOrEmpty(raRom) || raRom == CommandLine.Manager.Contentless)
+            ? linkParameters.RaExecutable
+            : raRom;
+        
+        var newPath = GetFileNameNoExtFromPath(selectedIconItem.FileName) + WinIcoExt;
+        if (_loadedSettings.IcoLinkName) {
+            var dir = ForceGetDirFromPath(linkParameters.IconPath);
+            var newName = ChangeFileExtension(linkParameters.OutputFileName, WinIcoExt);
+            newPath = CombineMultipleInputs(dir, newName);
+        }
+        newPath = _loadedSettings.IcoSavPath switch {
+            SettingsOps.IcoSavROM => RenameIconToCustomSett(newPath, romIcoSave),
+            SettingsOps.IcoSavRA => RenameIconToCustomSett(newPath, linkParameters.RaExecutable),
+            _ => RenameIconToUsrSett(newPath)
+        };
         return newPath;
     }
 

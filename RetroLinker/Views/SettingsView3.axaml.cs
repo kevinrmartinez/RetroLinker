@@ -192,7 +192,8 @@ public partial class SettingsView3 : UserControl
 
     private async void BtnDefLinkOutput_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
@@ -202,7 +203,7 @@ public partial class SettingsView3 : UserControl
             else comboDEFLinkOutput.Items[candidatesCount] = folder;
             comboDEFLinkOutput.SelectedIndex = candidatesCount;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -216,7 +217,8 @@ public partial class SettingsView3 : UserControl
     // LINK COPY
     private async void BtnAddLinkCopy_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentItem = (string)comboaddLinkCopy.SelectedItem!;
             if (string.IsNullOrWhiteSpace(currentItem)) return;
@@ -236,7 +238,7 @@ public partial class SettingsView3 : UserControl
             // If the element already exist in the list, make the existing element light up, or shake or something 
             comboaddLinkCopy.SelectedIndex = 0;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally  { LockControls(false); }
     }
 
@@ -261,7 +263,8 @@ public partial class SettingsView3 : UserControl
     // ICONS
     private async void btnIcoSavPath_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, ParentWindow, currentFolder);
@@ -269,7 +272,7 @@ public partial class SettingsView3 : UserControl
             txtIcoSavPath.Text = folder; 
             ParentWindow.NewSettings.IcoSavPath = folder;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -285,7 +288,7 @@ public partial class SettingsView3 : UserControl
         else SetDefaultSavIcoPath(0);
     }
         
-    private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, System.EventArgs e) {
+    private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, EventArgs e) {
             
         if (sender is not ComboBox combo) return;
         SetDefaultSavIcoPath((byte)combo.SelectedIndex);
@@ -304,7 +307,7 @@ public partial class SettingsView3 : UserControl
             // txtUserAssets.Text = folder;
             ParentWindow.NewSettings.TileIcoPath = file;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
         

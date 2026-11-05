@@ -43,37 +43,6 @@ public partial class MainView : UserControl
 {
 
     #region AvaloniaProperties
-
-    public static readonly DirectProperty<MainView, ViewableIconItem> SelectedIconProperty =
-        AvaloniaProperty.RegisterDirect<MainView, ViewableIconItem>(
-            nameof(SelectedIcon),
-            view => view.SelectedIcon,
-            (view, value) => view.SelectedIcon = value);
-    
-    public ViewableIconItem SelectedIcon { get; set => SetAndRaise(SelectedIconProperty, ref field, value); } = ViewableIconItem.DefaultInstance;
-
-    public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
-        AvaloniaProperty.RegisterDirect<MainView, bool>(
-            nameof(CustomIconSource),
-            view => view.CustomIconSource,
-            (view, value) => view.CustomIconSource = value);
-    
-    public bool CustomIconSource
-    {
-        get;
-        set {
-            if (!value) SelectedIcon = ViewableIconItem.DefaultInstance;
-            SetAndRaise(CustomIconSourceProperty, ref field, value);
-        }
-    }
-    
-    public static readonly DirectProperty<MainView, AvaloniaBitmap?> IconImageProperty =
-        AvaloniaProperty.RegisterDirect<MainView, AvaloniaBitmap?>(
-            nameof(IconImage),
-            view => view.IconImage,
-            (view, value) => view.IconImage = value);
-
-    public AvaloniaBitmap? IconImage { get; set => SetAndRaise(IconImageProperty, ref field, value); }
     
     public static readonly DirectProperty<MainView, bool> TileIconEnabledProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
@@ -95,12 +64,11 @@ public partial class MainView : UserControl
             nameof(TileIconAllUsers),
             view => view.TileIconAllUsers,
             (view, value) => view.TileIconAllUsers = value);
+    
     public bool TileIconAllUsers
     {
         get;
-        set 
-        {
-            BuildingLink.TileIcoAllUsers = value;   // <= TODO: Replace with Binding
+        set {
             SetAndRaise(TileIconAllUsersProperty, ref field, value);
             RaisePropertyChanged(FixedOutputDirProperty, null, null);
         }
@@ -118,6 +86,37 @@ public partial class MainView : UserControl
                 ? view.Settings.DEFLinkOutput : FileOps.TileIconOutDirs[view.TileIconAllUsers]);
 
     public string? FixedOutputDir { get; } = null;
+    
+    public static readonly DirectProperty<MainView, ViewableIconItem> IconSelectedItemProperty =
+        AvaloniaProperty.RegisterDirect<MainView, ViewableIconItem>(
+            nameof(IconSelectedItem),
+            view => view.IconSelectedItem,
+            (view, value) => view.IconSelectedItem = value);
+    
+    public ViewableIconItem IconSelectedItem { get; set => SetAndRaise(IconSelectedItemProperty, ref field, value); } = ViewableIconItem.DefaultInstance;
+
+    public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
+        AvaloniaProperty.RegisterDirect<MainView, bool>(
+            nameof(IconCustomSource),
+            view => view.IconCustomSource,
+            (view, value) => view.IconCustomSource = value);
+    
+    public bool IconCustomSource
+    {
+        get;
+        set {
+            if (!value) IconSelectedItem = ViewableIconItem.DefaultInstance;
+            SetAndRaise(CustomIconSourceProperty, ref field, value);
+        }
+    }
+    
+    public static readonly DirectProperty<MainView, AvaloniaBitmap?> IconImageProperty =
+        AvaloniaProperty.RegisterDirect<MainView, AvaloniaBitmap?>(
+            nameof(IconImage),
+            view => view.IconImage,
+            (view, value) => view.IconImage = value);
+
+    public AvaloniaBitmap? IconImage { get; set => SetAndRaise(IconImageProperty, ref field, value); }
 
     #endregion
 
@@ -432,50 +431,34 @@ public partial class MainView : UserControl
     
     private async Task SetFinalIconPath(UserLinkBuilder outputLink)
     {    
-        if (SelectedIcon.Equals(ViewableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
+        if (IconSelectedItem.Equals(ViewableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
         else
         {
-            outputLink.IconPath = SelectedIcon.FilePath;    // It's set to the selected icon file by default 
+            outputLink.IconPath = IconSelectedItem.FilePath;    // It's set to the selected icon file by default 
             if (DesktopOS)
             {
                 // If it's Windows, the images may need to be converted to .ico
-                if (SelectedIcon.ConversionRequired)
-                {
-                    outputLink.TileIcoImagePath = SelectedIcon.FilePath; // Pass the original image as the image for the Tile Icon
-                    outputLink.IconPath = FileOps.GetConvertedIcoPath(SelectedIcon);
-                    if (!FileOps.IsFileWinPE(outputLink.IconPath))
-                    {
-                        var romIcoSave = (string.IsNullOrEmpty(outputLink.RaRom) || outputLink.RaRom == Manager.Contentless)
-                            ? outputLink.RaExecutable
-                            : outputLink.RaRom;
-                        if (Settings.IcoLinkName) {
-                            var dir = FileOps.ForceGetDirFromPath(outputLink.IconPath);
-                            var newName = FileOps.ChangeFileExtension(outputLink.OutputFileName, FileOps.WinIcoExt);
-                            outputLink.IconPath = FileOps.CombineMultipleInputs(dir, newName);
-                        }
-                        outputLink.IconPath = Settings.IcoSavPath switch
-                        {
-                            SettingsOps.IcoSavROM => FileOps.RenameIconToCustomSett(outputLink.IconPath, romIcoSave),
-                            SettingsOps.IcoSavRA => FileOps.RenameIconToCustomSett(outputLink.IconPath, outputLink.RaExecutable),
-                            _ => FileOps.RenameIconToUsrSett(outputLink.IconPath)
-                        };
-                    }
+                if (IconSelectedItem.ConversionRequired) {
+                    outputLink.TileIcoImagePath = IconSelectedItem.FilePath; // Pass the original image as the image for the Tile Icon
+                    outputLink.IconPath = FileOps.GetConvertedIcoPath(outputLink, outputLink.RaRom, IconSelectedItem);
                 }
 
                 if (Settings.TileIcoPath is not null)
                 {
                     var imagePath = string.Empty;
-                    try {
-                        imagePath = await IconProc.ResolveImageForTileico(outputLink.IconPath, outputLink.TileIcoImagePath, SelectedIcon);
+                    try 
+                    {
+                        imagePath = await IconProc.ResolveImageForTileico(outputLink.IconPath, outputLink.TileIcoImagePath, IconSelectedItem);
                         ArgumentException.ThrowIfNullOrEmpty(imagePath);
                     }
                     catch (Exception ex)
                     {
+                        Logger.LogErro(ex);
                         var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess, 
                             null, resMainView.wrnIcoToImage_header);
-                        var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
-                        Logger.LogDebg(ms.ToString("G"));
-                        Logger.LogErro(ex);
+                        await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
+                        // var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
+                        // Logger.LogDebg(ms.ToString("G"));
                     }
                     outputLink.TileIcoImagePath = imagePath;
                 }
@@ -483,7 +466,8 @@ public partial class MainView : UserControl
             // If it's Linux, no conversion is required
 
             // In case of 'CpyUserIcon = true', but it'll be ignored if Tileico is in use 
-            if (Settings.TileIcoPath is null && Settings.CpyUserIcon) outputLink.IconPath = FileOps.RenameIconToUsrSett(outputLink.IconPath);
+            if (Settings is { CpyUserIcon: true, TileIcoPath: null } && !IconSelectedItem.ConversionRequired) 
+                outputLink.IconPath = FileOps.RenameIconToUsrSett(outputLink.IconPath);
         }
     }
 
@@ -541,7 +525,8 @@ public partial class MainView : UserControl
 
     async void RunExecution()
     {
-        try {
+        try 
+        {
             LockControls(true);
             
             // Validate there's an executable (Linux)
@@ -584,12 +569,12 @@ public partial class MainView : UserControl
                     }
                 }
 
-                if (DesktopOS && SelectedIcon.ConversionRequired)
+                if (DesktopOS && IconSelectedItem.ConversionRequired)
                 {
                     if (!FileOps.IsFileWinPE(outputLink.IconPath))
                     {
-                        var wrkIconItem = SelectedIcon;
-                        var icoBytes = (FileOps.IsExtWinPE(SelectedIcon.FileExt)) 
+                        var wrkIconItem = IconSelectedItem;
+                        var icoBytes = (FileOps.IsExtWinPE(IconSelectedItem.FileExt)) 
                             ? (await wrkIconItem.GetImageStream()).ToArray()
                             : IconProc.VirtuallyCreateIco(await wrkIconItem.GetImageStream());
                         await FileOps.WriteAllBytesToFileAsync(outputLink.IconPath, icoBytes);
@@ -597,12 +582,12 @@ public partial class MainView : UserControl
                         var index = IconItems.IndexOf(wrkIconItem);
                         if (index >= 0)
                         {
-                            SelectedIcon = IconItems[Index.Start];
+                            IconSelectedItem = IconItems[Index.Start];
                             IconItems.RemoveAt(index);
                             wrkIconItem.Dispose();
                             wrkIconItem = new ViewableIconItem(outputLink.IconPath, conversionRequired: false);
                             IconItems.Insert(index, wrkIconItem);
-                            SelectedIcon = wrkIconItem;
+                            IconSelectedItem = wrkIconItem;
                         }
                     }
                 }
@@ -631,7 +616,8 @@ public partial class MainView : UserControl
     // TOP CONTROLS
     async void btnSettings_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             var settingWindow = new SettingsWindow(ParentWindow, Settings); 
             var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
@@ -656,20 +642,21 @@ public partial class MainView : UserControl
         if (existing is null) {
             var newIcon = new ViewableIconItem(filePath);
             IconItems.Add(newIcon);
-            SelectedIcon = newIcon;
+            IconSelectedItem = newIcon;
         }
         else {
-            SelectedIcon = existing;
-            SelectedIcon.ResetBitmap();
+            IconSelectedItem = existing;
+            IconSelectedItem.ResetBitmap();
         }
     }
 
     async void btnICONDir_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             var opt = DesktopOS ? OpenOpts.WINico : OpenOpts.LINico;
-            var currentFile = SelectedIcon.FilePath;
+            var currentFile = IconSelectedItem.FilePath;
             var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             IconPath_Set(file);
@@ -692,7 +679,8 @@ public partial class MainView : UserControl
 
     async void btnRADir_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             OpenOpts opt;
             string currentFile = string.Empty;
@@ -728,7 +716,8 @@ public partial class MainView : UserControl
 
     async void btnROMDir_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
             string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow, currentFile);
@@ -783,7 +772,8 @@ public partial class MainView : UserControl
 
     async void btnCONFIGDir_ClickAsync()
     {
-        try {
+        try 
+        {
             LockControls(true);
             string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAcfg, ParentWindow, currentFile);
@@ -876,7 +866,8 @@ public partial class MainView : UserControl
 
     async void BtnLINKRename_ClickAsync(TextBox textBox)
     {
-        try {
+        try 
+        {
             LockControls(true);
             LinkCustomName = false;
             var properFileName = (string.IsNullOrWhiteSpace(textBox.Text))

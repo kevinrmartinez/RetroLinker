@@ -9,8 +9,9 @@
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
-             x:CompileBindings="True" 
-             IconImage="{Binding SelectedIcon.ImageBitmap, Mode=OneWay,
+             x:CompileBindings="True"
+             TileIconAllUsers="{Binding BuildingLink.TileIcoAllUsers}"
+             IconImage="{Binding IconSelectedItem.ImageBitmap, Mode=OneWay,
              TargetNullValue={StaticResource NaNImage}}"
              Unloaded="View1_Unloaded">
 	
@@ -226,19 +227,19 @@
 						<StackPanel Orientation="Vertical" Margin="2">
 							<StackPanel Orientation="Horizontal" Spacing="14">
 								<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
-								             IsChecked="{Binding CustomIconSource, Converter={x:Static BoolConverters.Not}}"/>
+								             IsChecked="{Binding IconCustomSource, Converter={x:Static BoolConverters.Not}}"/>
 								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"/>
 							</StackPanel>
 							<!-- Icon Control -->
-							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding CustomIconSource, Mode=OneWay}">
+							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding IconCustomSource, Mode=OneWay}">
 								<Button DockPanel.Dock="Right" Name="btnIcon" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
 								<ComboBox Name="comboIcon" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
-								          ItemsSource="{Binding IconItems}" SelectedItem="{Binding SelectedIcon}"
-								          ToolTip.Tip="{Binding SelectedIcon.FilePath}"/>
+								          ItemsSource="{Binding IconItems}" SelectedItem="{Binding IconSelectedItem}"
+								          ToolTip.Tip="{Binding IconSelectedItem.FilePath}"/>
 							</DockPanel>
 
 							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" 
-							            IsVisible="{Binding SelectedIcon.ImageBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+							            IsVisible="{Binding IconSelectedItem.ImageBitmap, Converter={x:Static ObjectConverters.IsNull}}"
 										ToolTip.Tip="{x:Static tl:resMainView.tipIconNoImage}">
 								<Label VerticalAlignment="Center" i:Attached.Icon="fa7-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
 								<Label VerticalAlignment="Center" Content="{x:Static tl:resMainView.lblIconNoImage}" FontSize="12"/>

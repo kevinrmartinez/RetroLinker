@@ -79,6 +79,7 @@
                     </DockPanel>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <!-- TODO: Try a grid for the sliding animation -->
                         <Viewbox HorizontalAlignment="Right" Classes="Expandable" Tag="{Binding #btnClearList.Bounds.Height}"
                                  Classes.Expanded="{Binding NewEnvVar_Valid, Mode=OneWay}">
                             <StackPanel Orientation="Horizontal">

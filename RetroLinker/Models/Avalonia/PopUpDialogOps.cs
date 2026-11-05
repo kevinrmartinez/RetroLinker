@@ -38,7 +38,7 @@ public static class PopUpDialogOps
 {
     private static Window GetParentWindow(UserControl view) {
         var window = view.FindAncestorOfType<Window>();
-        return window ?? throw new System.ArgumentNullException(nameof(view), @"Could not get the view's owner Window.");
+        return window ?? throw new ArgumentNullException(nameof(view), @"Could not get the view's owner Window.");
     }
 
     private static void GetContentFromStruct(this AbstractMessageBoxParams @params, PopUpGenericContent content, GenericPopUpType type)
@@ -62,19 +62,20 @@ public static class PopUpDialogOps
         var typeBr = typeof(ButtonResult);
         var typeStr = typeof(string);
         if (typeT != typeBr && typeT != typeStr) 
-            throw new System.InvalidOperationException($"Invalid Type was used: {typeT.Name}. Only the types '{typeBr.Name}' and '{typeStr.Name}' are supported.");
+            throw new InvalidOperationException($"Invalid Type was used: {typeT.Name}. Only the types '{typeBr.Name}' and '{typeStr.Name}' are supported.");
         
         if (msboxOwner.Icon is {} wIcon) someParams.WindowIcon = wIcon;
         var msBox = someParams switch {
             MessageBoxStandardParams stdParams => (IMsBox<T>)MessageBoxManager.GetMessageBoxStandard(stdParams),
             MessageBoxCustomParams cusParams => (IMsBox<T>)MessageBoxManager.GetMessageBoxCustom(cusParams),
-            _ => throw new System.ArgumentException(@"Can't build pop-up; unknown parameters", nameof(someParams))
+            _ => throw new ArgumentException(@"Can't build pop-up; unknown parameters", nameof(someParams))
         };
         return await msBox.ShowWindowDialogAsync(msboxOwner);
     }
     
+    
     // App extension
-    public static async Task PopUpCriticalError(this App app, System.Exception exception)
+    public static async Task PopUpCriticalError(this App app, Exception exception)
     {
         Logger.LogCrit($"{nameof(app)} has re-threw a critical exception:");
         Logger.LogCrit(exception);
@@ -92,6 +93,7 @@ public static class PopUpDialogOps
         };
         await mainWindow.PopUpMessageBox<ButtonResult>(msBoxParams);
     }
+    
     
     // Window extensions
     public static async Task<T> PopUpMessageBox<T>(this Window window, AbstractMessageBoxParams someParams) {
@@ -117,10 +119,10 @@ public static class PopUpDialogOps
         return await CallMessageBox<ButtonResult>(window, msBoxParams);
     }
     
-    public static async Task PopUpGenericError(this Window window, System.Exception exception, string? customTitle = null,  string? customHeader = null)
+    public static async Task PopUpGenericError(this Window window, Exception exception, string? customTitle = null,  string? customHeader = null)
     {
-        var missingComponentEx = (exception is System.IO.FileNotFoundException fnf) && (fnf.Message.Contains("assembly", System.StringComparison.OrdinalIgnoreCase));
-        if (!missingComponentEx) missingComponentEx = (exception is System.DllNotFoundException) || (exception.InnerException is System.DllNotFoundException);
+        var missingComponentEx = (exception is System.IO.FileNotFoundException fnf) && (fnf.Message.Contains("assembly", StringComparison.OrdinalIgnoreCase));
+        if (!missingComponentEx) missingComponentEx = (exception is DllNotFoundException) || (exception.InnerException is DllNotFoundException);
         if (missingComponentEx)
         {
             if (Application.Current is not App app) throw exception;
@@ -145,7 +147,7 @@ public static class PopUpDialogOps
         return await window.PopUpGenericMessageBox(content, type);
     }
 
-    public static async Task PopUpGenericError(this UserControl view, System.Exception exception, string? customTitle = null,  string? customHeader = null) {
+    public static async Task PopUpGenericError(this UserControl view, Exception exception, string? customTitle = null,  string? customHeader = null) {
         var window = GetParentWindow(view);
         await window.PopUpGenericError(exception, customTitle, customHeader);
     }
@@ -155,8 +157,7 @@ public static class PopUpDialogOps
         return new MessageBoxStandardParams() {
             CanResize = false,
             MaxWidth = 600,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
     }
 }
