@@ -27,65 +27,21 @@ namespace RetroLinker.Views;
 
 public partial class AboutWindow : Window
 {
-    public AppInformation AppInfo { get; }
-    public Contributor[] Contributors { get; }
-    public ThirdParty[] ThirdPartyLibs { get; }
-    public ThirdParty[] ThirdPartyRes { get; }
-    public ThirdParty[] ThirdPartyThanks { get; }
+    public AppInformation AppInfo { get; } = App.LocalInformation;
+    public Contributor[] Contributors    => _contributors;
+    public ThirdParty[] ThirdPartyLibs   => _thirdPartyLibs;
+    public ThirdParty[] ThirdPartyRes    => _thirdPartyRes;
+    public ThirdParty[] ThirdPartyThanks => _thirdPartyThanks;
     
     public AboutWindow()
     {
         InitializeComponent();
-        AppInfo = App.LocalInformation;
         BorderDev.IsVisible = false;
         
 #if !RELEASE
         BorderDev.IsVisible = true;
 #endif
-        
-        // Contributors (In order of arrival)
-        // Contributors feel free to add their names and social media/contact/GitHub in this record array
-        Contributors = [ 
-#if DEBUG
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-            new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
-#endif
-        ];
-        
-        // Used Libraries
-        ThirdPartyLibs =
-        [
-            new ThirdParty("AvaloniaUI", new Uri("https://avaloniaui.net/"), "Cross-platform UI framework"),
-            new ThirdParty("Magick.NET", new Uri("https://github.com/dlemstra/Magick.NET"), "Powerful image manipulation library"),
-            new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
-            new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
-            new ThirdParty("SharpShellLink", new Uri("https://github.com/JeremyAnsel/SharpShellLink"), "A .NET Class Library for processing ShellLink (LNK) files"),
-            new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App"),
-        ];
-        
-        // Attribution
-        ThirdPartyRes = [
-            // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
-            new ThirdParty("Libretro invader logo", new Uri("https://github.com/libretro/retroarch-assets")),
-            new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
-            new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
-            // new ThirdParty("Liberation Mono Fonts", new Uri(FileOps.CombineMultipleInputs(FileOps.DefLicensesDir, "LiberationMono-License.txt")))
-            new ThirdParty("Liberation Mono Fonts", LiberationUri)
-        ];
-        
-        // Special Thanks
-        ThirdPartyThanks = [
-            new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "Classic Avalonia DevTool for AvaloniaUI v12")
-        ];
-        
-        // =Update Bindings=
-        DataContext = null;
+        // Set Bindings
         DataContext = this;
     }
 
@@ -98,13 +54,56 @@ public partial class AboutWindow : Window
             var uriPath = new Uri(licenseFile.FullName);
             return uriPath;
         }
-        catch (Exception ex)
-        {
-            // Logger.LogErro($"{nameof(AboutWindow)}.{nameof(GetLiberationMonoUri)}:)");
+        catch (InvalidOperationException) {
+            Logger.LogWarn("The local licence file for LiberationMono was not found, using online link");
+            return new Uri("https://github.com/liberationfonts/liberation-fonts");
+        }
+        catch (Exception ex) {
             Logger.LogErro(ex);
             return new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
     }
+    
+    // These fields below do not change on runtime, so they can be static
+    
+    // Contributors (In order of arrival)
+    // Contributors feel free to add their names and social media/contact/GitHub in this record array
+    private static readonly Contributor[] _contributors = [ 
+#if DEBUG
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+        new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
+#endif
+    ];
 
-    private void Button_OnClick(object? sender, RoutedEventArgs e) => this.Close();
+    private static readonly ThirdParty[] _thirdPartyLibs =
+    [
+        new ThirdParty("AvaloniaUI", new Uri("https://avaloniaui.net/"), "Cross-platform UI framework"),
+        new ThirdParty("MessageBox.Avalonia", new Uri("https://github.com/AvaloniaCommunity/MessageBox.Avalonia"), "Messagebox for AvaloniaUI"),
+        new ThirdParty("SkiaSharp", new Uri("https://github.com/mono/SkiaSharp"), "2D graphics library; image processing"),
+        new ThirdParty("SharpShellLink", new Uri("https://github.com/JeremyAnsel/SharpShellLink"), "A .NET Class Library for processing ShellLink (LNK) files"),
+        new ThirdParty("Optris.Icons.Avalonia", new Uri("https://github.com/Optris/Optris.Icons.Avalonia"), "A library to easily display icons in an Avalonia App"),
+        new ThirdParty("CommandLineParser", new Uri("https://github.com/mono/SkiaSharp"), "Terse syntax C# command line parser for .NET"),
+        new ThirdParty("TG.INI", new Uri("https://github.com/mono/SkiaSharp"), "Reads and writes INI files and make navigating them easy"),
+        new ThirdParty("Svg.Skia", new Uri("https://github.com/wieslawsoltes/Svg.Skia"), "An SVG rendering library"),
+    ];
+    
+    private static readonly ThirdParty[] _thirdPartyRes =
+    [
+        // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
+        new ThirdParty("Libretro invader logo", new Uri("https://github.com/libretro/retroarch-assets")),
+        new ThirdParty("Image placeholder icons created by JC Icon - Flaticon", new Uri("https://www.flaticon.com/free-icons/image-placeholder")),
+        new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
+        new ThirdParty("Liberation Mono Fonts", LiberationUri)
+    ];
+    
+    private static readonly ThirdParty[] _thirdPartyThanks = [
+        new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "Legacy Avalonia DevTool for AvaloniaUI v12"),
+        new ThirdParty("Xylocopadream.IconTool", new Uri("https://github.com/Zergoma/Xylocopadream.IconTool"), "Makes the icons of an app from one drawing (Makes a .ico with SkiaSharp)"),
+    ];
 }

@@ -10,7 +10,8 @@
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
              x:CompileBindings="True" 
-             IconImage="{Binding SelectedIcon.ImageBitmap, TargetNullValue={StaticResource NaNImage}}"
+             IconImage="{Binding SelectedIcon.ImageBitmap, Mode=OneWay,
+             TargetNullValue={StaticResource NaNImage}}"
              Unloaded="View1_Unloaded">
 	
 	<UserControl.Resources>
@@ -226,8 +227,7 @@
 							<StackPanel Orientation="Horizontal" Spacing="14">
 								<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
 								             IsChecked="{Binding CustomIconSource, Converter={x:Static BoolConverters.Not}}"/>
-								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"
-								             IsChecked="{Binding CustomIconSource}"/>
+								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"/>
 							</StackPanel>
 							<!-- Icon Control -->
 							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding CustomIconSource, Mode=OneWay}">

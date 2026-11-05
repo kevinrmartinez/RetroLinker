@@ -277,6 +277,7 @@ public static partial class IconProc
 
         private (byte[], byte[]) GenerateMasksData(SKBitmap bitmap)
         {
+            // based on Xylocopadream.IconTool: https://github.com/Zergoma/Xylocopadream.IconTool/blob/main/src/Xylocopadream.IconTool/IcoWriter.cs
             int squareSize = bitmap.Width;
             using var xorStream = new MemoryStream();
             using var xorWriter = new BinaryWriter(xorStream);

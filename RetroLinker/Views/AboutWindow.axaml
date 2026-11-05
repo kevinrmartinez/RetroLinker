@@ -253,6 +253,6 @@
         </Grid>
         
         <!-- EXIT BUTTON -->
-        <Button Grid.Row="1" Content="{x:Static lc:resGeneric.btnClose}" Click="Button_OnClick"/>
+        <Button Grid.Row="1" Content="{x:Static lc:resGeneric.btnClose}" Command="{Binding Close}"/>
     </Grid>
 </Window>

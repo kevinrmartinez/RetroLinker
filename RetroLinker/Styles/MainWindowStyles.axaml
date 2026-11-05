@@ -1,7 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
-        xmlns:md="clr-namespace:RetroLinker.Models"
         xmlns:st="clr-namespace:RetroLinker.Styles"
         xmlns:vw="clr-namespace:RetroLinker.Views"
         xmlns:desktopLink="clr-namespace:RetroLinker.Models.DesktopLink">
