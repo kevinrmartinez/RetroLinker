@@ -24,7 +24,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
-using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.CommandLine;
 using RetroLinker.Models.DesktopLink;

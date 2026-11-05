@@ -24,39 +24,50 @@ namespace RetroLinker.Models.IO;
 
 public static partial class IconProc
 {
+    // TODO: give the user an option for Nearest sampling
+    private static readonly SKSamplingOptions NearestResampler = new(SKFilterMode.Nearest, SKMipmapMode.Nearest); 
+    private static readonly SKSamplingOptions LinearResampler = new(SKFilterMode.Linear, SKMipmapMode.Linear); 
     // https://learn.microsoft.com/en-us/windows/win32/uxguide/vis-icons
-    private static IReadOnlyList<int> _icoAppSizes = [ 16, 32, 48, 256 ];
-    
-    // public static MagickImage ImageConvert(string path) => ResizeToIco(new MagickImage(path) {Format = MagickFormat.Ico});
-    //
-    // public static MagickImage ImageConvert(MemoryStream img) => ResizeToIco(new MagickImage(img) {Format = MagickFormat.Ico});
-    //     
-    // public static MagickImage ReverseImageConvert(string path) => new(path) {Format = MagickFormat.Png};
-    //     
-    // public static MagickImage ReverseImageConvert(MemoryStream img) => new(img) {Format = MagickFormat.Png};
-    //
-    // private static MagickImage ResizeToIco(MagickImage ico)
-    // {
-    //     // ICOGeo is a square geometry equals to MaxRes
-    //     var ICOGeo = new MagickGeometry(IcoMaxRes) {IgnoreAspectRatio = false};
-    //     // IsSquare: true if the image is a square (Height = Width)
-    //     bool IsSquare = (ico.BaseHeight == ico.BaseWidth);
-    //         
-    //     // Transform the image into the geometry ICOGeo, if it's not square it will rescale into its original Aspect Ratio
-    //     ico.Scale(ICOGeo);
-    //     /* if it's not square, the image will be extended into MaxRes, it will be centered,
-    //      *  and it will be in front of a transparent background */
-    //     if (!IsSquare) ico.Extent(ICOGeo, Gravity.Center, MagickColors.Transparent);
-    //     return ico;
-    // }
-    //
-    // private static MemoryStream GetStream(MagickImage img) {
-    //     var imgStream = new MemoryStream();
-    //     img.Write(imgStream);
-    //     imgStream.Position = 0;
-    //     return imgStream;
-    // }
-    //
+    private static readonly IReadOnlyList<int> _icoAppSizes = [ 16, 32, 48, 256 ];
+
+    public static SKBitmap ResizeAndPad(SKBitmap sourceBitmap, int targetHeightWidth)
+    {
+        // If the image is already square, there's no need for padding
+        if (sourceBitmap.Height == sourceBitmap.Width) {
+            return sourceBitmap.Resize(new SKSizeI(targetHeightWidth, targetHeightWidth), LinearResampler);
+        }
+        
+        /* Disclosure: This part was mostly provided by Gemini (the LLM) */
+        // 1. Calculate scale factors to fit maintaining aspect ratio
+        float scaleX = (float)targetHeightWidth / sourceBitmap.Width;
+        float scaleY = (float)targetHeightWidth / sourceBitmap.Height;
+        float scale = Math.Min(scaleX, scaleY);
+        
+        // 2. Compute the scaled dimensions
+        float scaledWidth = sourceBitmap.Width * scale;
+        float scaledHeight = sourceBitmap.Height * scale;
+        
+        // 3. Compute padding offsets to center the image
+        float left = (targetHeightWidth - scaledWidth) / 2;
+        float top = (targetHeightWidth - scaledHeight) / 2;
+        
+        // 4. Create the target bitmap with the exact requested dimensions
+        var info = new SKImageInfo(targetHeightWidth, targetHeightWidth, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var targetBitmap = new SKBitmap(info);
+        
+        // 5. Prepare a Canvas and Rectangle for drawing the target at the center of the Canvas
+        using var canvas = new SKCanvas(targetBitmap);
+        canvas.Clear(SKColors.Transparent);
+        var destRect = new SKRect(left, top, left + scaledWidth, top + scaledHeight);
+        
+        // 6. Resized the original bitmap with Linear filtering
+        using var resized = sourceBitmap.Resize(new SKSizeI((int)scaledWidth, (int)scaledHeight), LinearResampler);
+        
+        // 7. Draw the source bitmap into the destination rectangle
+        canvas.DrawBitmap(resized, destRect);
+
+        return targetBitmap;
+    }
     
     public static MemoryStream EncodeAsPngMk2(SKBitmap bitmap)
     {
@@ -120,10 +131,10 @@ public static partial class IconProc
                     ogFilePath = iconFile;
                 }
             }
-            // else if (FileOps.IsVectorImage(path)) {             // If it's a vector image, the raw file won't work?
-            //     memoryStream = await iconItem.GetImageStream();
-            //     ogFilePath = iconItem.FilePath;
-            // }
+            else if (FileOps.IsVectorImage(path)) {             // If it's a vector image, the raw file won't work
+                memoryStream = await iconItem.GetImageStream();
+                ogFilePath = iconItem.FilePath;
+            }
             else imageFromIco = path;   // If it's an image file, just return that
         }
         else if (iconItem is { ConversionRequired: false }) {
@@ -154,8 +165,8 @@ public static partial class IconProc
         return imageFromIco;
     }
 
-    public static byte[] VirtuallyCreateIco(MemoryStream icoStream) {
-        using var bitmap = SKBitmap.Decode(icoStream);
+    public static byte[] VirtuallyCreateIco(MemoryStream imageStream) {
+        using var bitmap = SKBitmap.Decode(imageStream);
         var ico = new IcoContainer(bitmap, _icoAppSizes);
         return ico.ToBytes();
     }

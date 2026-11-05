@@ -23,6 +23,7 @@ public interface IIconItem
         }
         else imageStream = FileOps.BytesToStream(await FileOps.ReadFileBytesToEndAsync(path));
         
+        imageStream.Position = 0;
         return imageStream;
     }
     

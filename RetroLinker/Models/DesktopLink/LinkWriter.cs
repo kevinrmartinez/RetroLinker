@@ -96,7 +96,7 @@ public class LinkWriter : IShortcutBase
         try
         {
             // RaArguments was set on constructor
-            System.ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
+            ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
             var settings = SettingsOps.GetCachedSettings();
             // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
             LinkParameters parameters = (os) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
@@ -109,7 +109,7 @@ public class LinkWriter : IShortcutBase
                 }
             }
         }
-        catch (System.Exception ex) {
+        catch (Exception ex) {
             var error = new LinkWriterResult(outputPath);
             error.ResultFailure(ex.Message);
             results.Add(error);

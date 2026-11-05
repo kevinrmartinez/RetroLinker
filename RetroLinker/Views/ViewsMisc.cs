@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using System.Runtime.CompilerServices;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.DesktopLink;
@@ -67,15 +68,25 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
 
     public AvaloniaBitmap? ImageBitmap { get; private set => SetAndNotify(value, ref field); }
     
+    private bool IsDefault { get; }
+    
     private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
     
     
-    public static ViewableIconItem DefaultInstance { get; } = new(Translations.resGeneric.btnDefault, Avalonia.Platform.AssetLoader.Open(DefaultIconAsset));
+    public static ViewableIconItem DefaultInstance { get; } = new();
 
-    private ViewableIconItem(string filePathOrName, System.IO.Stream imageStream) {
-        FilePath = filePathOrName;
-        ConversionRequired = false;
-        SetBitmap(imageStream);
+    private ViewableIconItem([CallerMemberName] string? caller = null) {
+        switch (caller)
+        {
+            case nameof(DefaultInstance):
+                FilePath = Translations.resGeneric.btnDefault;
+                ConversionRequired = false;
+                IsDefault = true;
+                _ = SetBitmapAsync();
+                break;
+            default:
+                throw new InvalidOperationException($"[{nameof(ViewableIconItem)}] Unknown caller '{caller}'");
+        }
     }
     
     public ViewableIconItem(string filePath, bool? conversionRequired = null)
@@ -91,14 +102,18 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     
     public void SetBitmap(System.IO.Stream newImageStream) => ImageBitmap = GetBitmap(newImageStream);
     public async Task SetBitmapAsync(string newImagePath) => ImageBitmap = await GetBitmap(newImagePath);
-    public void ResetBitmap() => _ = SetBitmapAsync();
+
+    public void ResetBitmap() {
+        ImageBitmap?.Dispose();
+        _ = SetBitmapAsync();
+    }
     
     public async Task<System.IO.MemoryStream> GetImageStream() => await IIconItem.GenerateImageStream(this);
 
     public override string ToString() => FileName;
 
     public void Dispose() {
-        if (this.Equals(DefaultInstance)) {
+        if (IsDefault) {
             Logger.LogWarn($"'{nameof(Dispose)}' was called on '{nameof(ViewableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
             return;
         }
@@ -112,6 +127,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     
     private async Task<AvaloniaBitmap?> GetBitmap(string? path = null)
     {
+        if (IsDefault) return GetBitmap(Avalonia.Platform.AssetLoader.Open(DefaultIconAsset));
         System.IO.MemoryStream streamToDecode;
         try {
             streamToDecode = await IIconItem.GenerateImageStream(this);

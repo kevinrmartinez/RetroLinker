@@ -62,7 +62,7 @@ public static partial class IconProc
         /// <summary> Construct an ICO file with the provided image and sizes. </summary>
         /// <param name="initialBitmap">The image to convert, provided as a <see cref="SKBitmap"/>.</param>
         /// <param name="sizes">
-        /// A list of sizes to convert into, the file will be builded in the same order as this list.
+        /// A list of sizes to convert into, the file will be built in the same order as this list.
         /// The <see langword="int"/> values will be converted to <see langword="byte"/> with overflow enable.
         /// </param>
         public IcoContainer(SKBitmap initialBitmap, IReadOnlyList<int> sizes)
@@ -76,9 +76,7 @@ public static partial class IconProc
             var offset = IconDirEntryOffset + (IconDirEntrySize * IdCount);
             foreach (var size in sizes)
             {
-                // TODO: Resize
-                using var resizedBitmap =
-                    initialBitmap.Resize(new SKSizeI(size, size), new SKSamplingOptions(SKFilterMode.Linear));
+                using var resizedBitmap = ResizeAndPad(initialBitmap, size);
                 int structureLenght = 0;
                 if (size < IcoMaxRes) {
                     var bitmapStructure = new BitmapStructure(resizedBitmap); 
