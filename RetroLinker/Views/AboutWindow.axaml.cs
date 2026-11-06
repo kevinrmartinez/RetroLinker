@@ -45,7 +45,8 @@ public partial class AboutWindow : Window
         DataContext = this;
     }
 
-    private static readonly Uri LiberationUri = GetLiberationMonoUri();     // It's static because I just need to set this once per runtime
+    // These fields below do not change on runtime, so they can be static
+    private static readonly Uri LiberationUri = GetLiberationMonoUri();
     private static Uri GetLiberationMonoUri()
     {
         try
@@ -64,8 +65,6 @@ public partial class AboutWindow : Window
         }
     }
     
-    // These fields below do not change on runtime, so they can be static
-    
     // Contributors (In order of arrival)
     // Contributors feel free to add their names and social media/contact/GitHub in this record array
     private static readonly Contributor[] _contributors = [ 
@@ -81,6 +80,7 @@ public partial class AboutWindow : Window
 #endif
     ];
 
+    // Third party library and NuGets; most of them don't need attribution, but they're all cool so they will have it :)
     private static readonly ThirdParty[] _thirdPartyLibs =
     [
         new ThirdParty("AvaloniaUI", new Uri("https://avaloniaui.net/"), "Cross-platform UI framework"),
@@ -93,6 +93,7 @@ public partial class AboutWindow : Window
         new ThirdParty("Svg.Skia", new Uri("https://github.com/wieslawsoltes/Svg.Skia"), "An SVG rendering library"),
     ];
     
+    // Third party Resources/Assets; most of them REQUIRE attribution, anotate them here 
     private static readonly ThirdParty[] _thirdPartyRes =
     [
         // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was

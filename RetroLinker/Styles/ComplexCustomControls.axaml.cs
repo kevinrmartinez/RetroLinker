@@ -24,9 +24,11 @@ using Avalonia.Metadata;
 
 namespace RetroLinker.Styles;
 
+// TODO: Update control scheme (Inherit UserControl)
+
 public class MainViewExtensionNotice : TemplatedControl
 {
-    // TODO: Title and Text should be nullable
+    // REWRITE: Title and Text should be nullable
     // == Avalonia Properties ==
     // Title
     public static readonly DirectProperty<MainViewExtensionNotice, string> TitleProperty = 
@@ -35,7 +37,7 @@ public class MainViewExtensionNotice : TemplatedControl
             h => h.Title, 
             (h,  v) => h.Title = v);
     
-    private string _title = string.Empty;
+    private string _title = string.Empty;   // REWRITE: Use 'field'
     public string Title {
         get => _title;
         set => SetAndRaise(TitleProperty, ref _title, value);
@@ -99,6 +101,7 @@ public class MainWindowHeader : TemplatedControl
     }
     
     // Constructors
+    // REWRITE: shouldn't be necessary
     public MainWindowHeader() { }
     
     public MainWindowHeader(string title) : this() =>  Title = title;
@@ -144,6 +147,7 @@ public class UserStringList : TemplatedControl
         set => SetAndRaise(ClearButtonProperty, ref field, value);
     }
     
+    // REWRITE: Use Commands for buttons (either on the caller view, or static in this class)
     // == Avalonia Events ==
     // AddItem
     public static readonly RoutedEvent<RoutedEventArgs> AddItemEvent =

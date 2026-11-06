@@ -805,8 +805,8 @@ public partial class MainView : UserControl
 
     /*
      * TODO
-     *  Bind txtLINKDir to BuildingLink.OutputPath
-     *  Bind txtLINKRename to BuildingLink.FriendlyName
+     *  Bind txtLINKDir to BuildingLink.OutputPath (empty txtLINKDir when it gets invisible)
+     *  Bind txtLINKRename to BuildingLink.FriendlyName (empty txtLINKRename when it gets invisible)
      *  Have comboCore update BuildingLink.OutputFileName when relevant
      */
     
@@ -911,14 +911,12 @@ public partial class MainView : UserControl
     
     #region Genric Envents
 
-    void ControlBox_DragEnter(object? sender, DragEventArgs e)
-    {
+    void ControlBox_DragEnter(object? sender, DragEventArgs e) {
         if (sender is not AvaloniaTemplatedControl tc) return;
         tc.BorderBrush = Brushes.Aqua;
     }
     
-    void ControlBox_DragLeave(object? sender, DragEventArgs e)
-    {
+    void ControlBox_DragLeave(object? sender, DragEventArgs e) {
         if (sender is not AvaloniaTemplatedControl tc) return;
         ResetBorderBrush(tc);
     }

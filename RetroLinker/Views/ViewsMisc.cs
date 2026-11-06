@@ -39,12 +39,15 @@ public record Contributor(string DisplayName, Uri? OnlinePageUrl);
 public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);
 
 /* == Interfaces == */
+/// <summary> Represents the Types that can return/modify a value from PopUps called from <see cref="T:MainView"/>. </summary>
 public interface IMainViewPopUp;
 
 /* == Static Classes == */
 
 
 /* == Dynamic Classes == */
+/// <summary> An individual Item for <see cref="F:MainView.comboIcon"/>. It notifies changes to the UI, and holds the access to the icon data. </summary>
+/// <remarks>A static default instance exist to represent the 'Default' option in the control.</remarks>
 public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
 {
     public string FilePath
@@ -57,9 +60,9 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
         }
     }
     
-    private string? FilePathPreConversion { get; init; }
-    
-    [MemberNotNullWhen(true, nameof(FilePathPreConversion))] 
+    // private string? FilePathPreConversion { get; init; }
+    //
+    // [MemberNotNullWhen(true, nameof(FilePathPreConversion))] 
     public bool ConversionRequired { get; private set => SetAndNotify(value, ref field); }
     
     public string FileName => IIconItem.GetFileName(this);
@@ -75,6 +78,9 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     
     public static ViewableIconItem DefaultInstance { get; } = new();
 
+    /// <summary> Constructor dedicated to static instances. </summary>
+    /// <param name="caller">The name of the caller member, annotaded with <see cref="CallerMemberNameAttribute"/>.</param>
+    /// <exception cref="InvalidOperationException">If the <paramref name="caller"/> is not recognized.</exception>
     private ViewableIconItem([CallerMemberName] string? caller = null) {
         switch (caller)
         {
@@ -89,12 +95,9 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
         }
     }
     
-    public ViewableIconItem(string filePath, bool? conversionRequired = null)
-    {
+    public ViewableIconItem(string filePath, bool? conversionRequired = null) {
         FilePath = filePath;
         ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
-        if (ConversionRequired) FilePathPreConversion = FilePath;
-
         _ = SetBitmapAsync();
     }
 
@@ -148,6 +151,10 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     }
 }
 
+/// <summary> Structure for the advance Rename PopUp on Linux. </summary>
+/// <param name="givenPath">The selected output path of the link.</param>
+/// <param name="givenCore">The selected core, if any.</param>
+/// <remarks>From <see cref="MainView"/>, this structure serves to send values to, and receive values from the relevant PopUp.</remarks>
 public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp
 {
     public string GivenPath { get; } = givenPath;
@@ -158,10 +165,13 @@ public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewP
     public string? NewFriendlyName { get; set; } = null;
     public bool CustomEntry { get; set; } = false;
     
-    [MemberNotNullWhen(returnValue: true, nameof(NewPath), nameof(NewFriendlyName))]
+    [MemberNotNullWhen(true, nameof(NewPath), nameof(NewFriendlyName))]
     public bool ValidOutput { get; set; } = false;
 }
 
+/// <summary> Structure for the MoreOptions PopUp. </summary>
+/// <param name="linkObject">The working Link to modify.</param>
+/// <param name="settings">The current Settings to reference and modify.</param>
 public class MoreOptPopUpHelper(IUserLinkBuilder linkObject, Settings settings) : IMainViewPopUp
 {
     public IUserLinkBuilder LinkObject { get; } =  linkObject;
