@@ -75,6 +75,8 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
         ObservableEnvironmentVariables = new();
         // RaWorkDir = string.Empty;
         // TileIcoImagePath = string.Empty;
+
+        if (!App.PlatformOs) CustomEntryName = false;
     }
     
     public UserLinkBuilder(ILinkParametersBase linkParam)
@@ -165,6 +167,28 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
         SetOutputPath(fullPath);
         FriendlyName = friendlyName;
+    }
+    
+    public void UpdateOutputPathFromFriendlyName(string friendlyName, string? outputDir = null)
+    {
+        FriendlyName = friendlyName;
+        // TODO: test
+        if (string.IsNullOrWhiteSpace(FriendlyName)) {
+            OutputFileName = string.Empty;
+            OutputPath = string.Empty;
+        }
+        else
+        {
+            var wrkDir = string.IsNullOrEmpty(outputDir) ? FileOps.ForceGetDirFromPath(OutputPath) : outputDir;
+            if (App.PlatformOs) {
+                OutputFileName = FriendlyName + FileOps.WinLinkExt;
+                OutputPath = FileOps.CombineMultipleInputs(wrkDir, OutputFileName);
+            }
+            else if (CustomEntryName.HasValue && !CustomEntryName.Value) {
+                OutputFileName = Linux.DesktopEntryOps.StdDesktopEntry(FriendlyName, RaCore) + FileOps.LinLinkExt;
+                OutputPath = FileOps.CombineMultipleInputs(wrkDir, OutputFileName);
+            }
+        }
     }
 
     public void RestoreRemembered(RememberedUserChoices userChoices)

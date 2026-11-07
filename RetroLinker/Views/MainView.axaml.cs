@@ -31,7 +31,6 @@ using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 
-using AvaloniaAssetLoader = Avalonia.Platform.AssetLoader;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 
@@ -43,19 +42,70 @@ public partial class MainView : UserControl
 {
 
     #region AvaloniaProperties
+
+    public static readonly DirectProperty<MainView, string> UserRaCoreProperty =
+        AvaloniaProperty.RegisterDirect<MainView, string>(
+            nameof(UserRaCore),
+            view => view.UserRaCore,
+            (view, value) => view.UserRaCore = value);
+
+    public string UserRaCore
+    {
+        get => BuildingLink.RaCore;
+        set
+        {
+            BuildingLink.RaCore = value;
+            if (DesktopOS || string.IsNullOrWhiteSpace(BuildingLink.FriendlyName) || 
+                BuildingLink.CustomEntryName.GetValueOrDefault()) return;
+            OutputFriendlyName = BuildingLink.FriendlyName;
+            RaisePropertyChanged(UserRaCoreProperty, string.Empty, value);
+        }
+    }
+
+    public static readonly DirectProperty<MainView, string> OutputFullPathProperty =
+        AvaloniaProperty.RegisterDirect<MainView, string>(
+            nameof(OutputFullPath),
+            view => view.OutputFullPath,
+            (view, value) => view.OutputFullPath = value);
+
+    public string OutputFullPath
+    {
+        get => (!IsRenameInactive() && string.IsNullOrWhiteSpace(BuildingLink.OutputPath)) 
+            ? FixedOutputDir : BuildingLink.OutputPath;
+        set {
+            if (IsRenameInactive()) BuildingLink.SetOutputPath(value);
+            RaisePropertyChanged(OutputFullPathProperty, string.Empty, value);
+        }
+    }
+    
+    public static readonly DirectProperty<MainView, string> OutputFriendlyNameProperty =
+        AvaloniaProperty.RegisterDirect<MainView, string>(
+            nameof(OutputFriendlyName),
+            view => view.OutputFriendlyName,
+            (view, value) => view.OutputFriendlyName = value);
+
+    public string OutputFriendlyName
+    {
+        get => BuildingLink.FriendlyName;
+        set {
+            if (!IsRenameInactive()) BuildingLink.UpdateOutputPathFromFriendlyName(value, FixedOutputDir);
+            RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
+            RaisePropertyChanged(OutputFriendlyNameProperty, string.Empty, value);
+        }
+    }
     
     public static readonly DirectProperty<MainView, bool> TileIconEnabledProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
             nameof(TileIconEnabled),
-            view => view.TileIconAllUsers,
-            (view, value) => view.TileIconAllUsers = value);
+            view => view.TileIconEnabled,
+            (view, value) => view.TileIconEnabled = value);
 
     public bool TileIconEnabled
     {
         get;
         private set {
             SetAndRaise(TileIconEnabledProperty, ref field, value);
-            RaisePropertyChanged(FixedOutputDirProperty, null,null);
+            UpdateAndNotifyFixedOutputDir();
         }
     }
 
@@ -70,7 +120,7 @@ public partial class MainView : UserControl
         get;
         set {
             SetAndRaise(TileIconAllUsersProperty, ref field, value);
-            RaisePropertyChanged(FixedOutputDirProperty, null, null);
+            UpdateAndNotifyFixedOutputDir();
         }
     }
 
@@ -79,14 +129,13 @@ public partial class MainView : UserControl
      * My alternatives are subscribing to each observable, or to the view's OnPropertyChanged,
      * and in the end those are the same
      */
-    public static readonly DirectProperty<MainView, string?> FixedOutputDirProperty =
-        AvaloniaProperty.RegisterDirect<MainView, string?>(
+    public static readonly DirectProperty<MainView, string> FixedOutputDirProperty =
+        AvaloniaProperty.RegisterDirect<MainView, string>(
             nameof(FixedOutputDir),
-            view => (!view.TileIconEnabled) 
-                ? view.Settings.DEFLinkOutput : FileOps.TileIconOutDirs[view.TileIconAllUsers]);
+            view => view.FixedOutputDir);
 
-    public string? FixedOutputDir { get; } = null;
-    
+    public string FixedOutputDir => (!TileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[TileIconAllUsers];
+
     public static readonly DirectProperty<MainView, ViewableIconItem> IconSelectedItemProperty =
         AvaloniaProperty.RegisterDirect<MainView, ViewableIconItem>(
             nameof(IconSelectedItem),
@@ -127,9 +176,6 @@ public partial class MainView : UserControl
     public Settings Settings { get; private set; }
     public UserLinkBuilder BuildingLink { get; } = new();
     public ObservableCollection<ViewableIconItem> IconItems { get; } = [ViewableIconItem.DefaultInstance];
-
-    [Obsolete("Replace with Binding of BuildingLink.OutputFileName")]
-    public string? FixedOutputName { get; private set; }
     
     
     public MainView()
@@ -158,7 +204,6 @@ public partial class MainView : UserControl
     // Fields
     private readonly bool _isDesingner;   // Debug
     // private string DefLinRAIcon;
-    private bool LinkCustomName;
 
     // TODO: This has to be a enum or something, as it needs to include macOS. And move to App. (>=0.10)
     //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
@@ -184,18 +229,18 @@ public partial class MainView : UserControl
             TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
         }
 #else
-            ParentWindow.RequestedThemeVariant = LoadThemeVariant();
+        ParentWindow.RequestedThemeVariant = LoadThemeVariant();
 #endif
-            
-        SetViewPreSettings();
         
+        SetViewPreSettings();
+
         ApplyDragDropEvents();
         ApplySettingsToControls();
-        
+
         comboConfig_Loaded();
         _ = comboCore_Loaded();
         _ = comboIcon_Loaded();
-            
+    
         // Arguments should only load when above controls are ready
         ApplyArgs();
 
@@ -269,6 +314,11 @@ public partial class MainView : UserControl
         // TODO: This is a temporal workaround, this should be eliminated when a global Settings is implemented
         Settings = settings;
         ParentWindow.SetSettings(settings);
+    }
+
+    private void UpdateAndNotifyFixedOutputDir() {
+        OutputFriendlyName = OutputFriendlyName; // Updates the output path, if relevant
+        RaisePropertyChanged(FixedOutputDirProperty, string.Empty, string.Empty);
     }
 
     // Controls Modifiers
@@ -346,6 +396,7 @@ public partial class MainView : UserControl
         btnLINKRename.IsVisible = !DesktopOS;   // <= what?
         panelTileIcon.IsVisible = tileIconEnabled;
         // FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
+        // UpdateAndNotifyFixedOutputDir();
     }
     
     // Pop-ups
@@ -373,10 +424,6 @@ public partial class MainView : UserControl
     
     
     // Other Functions
-    string UpdateFixedLinkName(string fileNameNoExt, string? core) {
-        var ext = FileOps.GetOutputExt(DesktopOS);
-        return (DesktopOS) ? fileNameNoExt + ext : StdDesktopEntry(fileNameNoExt, core) + ext;
-    }
     
     string ValidateLINBin(string RAPath) {
         if (RAPath == txtRADir.Text) return RAPath;
@@ -396,38 +443,7 @@ public partial class MainView : UserControl
         LockControls(false);
     }
 
-    private void HandleLinkOutput(string userInput, UserLinkBuilder linkBuilder)
-    {
-        if (DesktopOS)
-        {
-            var outDirectory = (Settings.TileIcoPath is null)
-                ? Settings.DEFLinkOutput
-                : FileOps.TileIconOutDirs[linkBuilder.TileIcoAllUsers];
-            var outputPathStr = (IsRenameInactive())
-                ? userInput
-                : FileOps.CombineMultipleInputs(outDirectory, userInput +  FileOps.GetOutputExt(DesktopOS));
-            linkBuilder.SetOutputPath(outputPathStr);
-        }
-        else
-        {
-            if (linkBuilder.CustomEntryName ?? false) return;
-
-            string outputPath;
-            string friendlyName;
-            if (Settings.AlwaysAskOutput) {
-                friendlyName = linkBuilder.FriendlyName;
-                var correctedFileName = StdDesktopEntry(friendlyName, linkBuilder.RaCore) 
-                                        + FileOps.GetOutputExt(DesktopOS);
-                outputPath = (correctedFileName == linkBuilder.OutputFileName) 
-                    ? linkBuilder.OutputPath : FileOps.CombineMultipleInputs(linkBuilder.OutputDir, correctedFileName); 
-            }
-            else {
-                var outputPathStr = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, userInput +  FileOps.GetOutputExt(DesktopOS));
-                outputPath = RenameForDesktopEntry(outputPathStr, linkBuilder.RaCore,  out friendlyName);
-            }
-            linkBuilder.SetOutputPathAndFriendlyName(outputPath, friendlyName);
-        }
-    }
+    // private void HandleLinkOutput(string userInput, UserLinkBuilder linkBuilder)
     
     private async Task SetFinalIconPath(UserLinkBuilder outputLink)
     {    
@@ -536,11 +552,11 @@ public partial class MainView : UserControl
             BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? Manager.Contentless : BuildingLink.RaRom;
             
             // Validate there is a core
-            BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
+            // BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
             
             // Link handling
-            var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
-            if (!string.IsNullOrWhiteSpace(linkDir)) HandleLinkOutput(linkDir, BuildingLink);
+            // var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
+            // if (!string.IsNullOrWhiteSpace(linkDir)) HandleLinkOutput(linkDir, BuildingLink);
             
             // Include a link description, if any
             // outputLink.Desc = txtDesc.Text;
@@ -736,27 +752,11 @@ public partial class MainView : UserControl
     #endregion
 
     #region RACore Controls
-    
-    [Obsolete("Replace with Binding with BuildingLink.Core, and subscribe to its OnPropertyChanged")]
-    private void ComboCore_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        if (sender is not AutoCompleteBox combo) return;
-        if (string.IsNullOrWhiteSpace(txtLINKRename.Text) || DesktopOS || LinkCustomName) return;
-        
-        if (IsRenameInactive())
-        {
-            var newFile = StdDesktopEntry(BuildingLink.FriendlyName + FileOps.GetOutputExt(false), combo.Text);
-            var outputDir = FileOps.GetDirFromPath(BuildingLink.OutputPath);
-            if (string.IsNullOrWhiteSpace(outputDir)) outputDir = FileOps.BaseDir;
-            txtLINKRename.Text = FileOps.CombineMultipleInputs(outputDir, newFile);
-        }
-        else FixedOutputName = UpdateFixedLinkName(txtLINKRename.Text, combo.Text);
-    }
-    
+
     void btnSubSys_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainViewTypes.SubsysView);
     }
-    
+
     #endregion
 
     #region Config Controls
@@ -802,13 +802,6 @@ public partial class MainView : UserControl
     #endregion
 
     #region LinkPath Controls
-
-    /*
-     * TODO
-     *  Bind txtLINKDir to BuildingLink.OutputPath (empty txtLINKDir when it gets invisible)
-     *  Bind txtLINKRename to BuildingLink.FriendlyName (empty txtLINKRename when it gets invisible)
-     *  Have comboCore update BuildingLink.OutputFileName when relevant
-     */
     
     private async void BtnMoreParams_OnClickAsync() 
     {
@@ -835,17 +828,17 @@ public partial class MainView : UserControl
             string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
             if (!string.IsNullOrEmpty(file))
             {
-                LinkCustomName = false;
                 if (!DesktopOS)
                 {
                     var helper = await ResolveRenamePopUp(file, comboCore.Text);
                     if (!helper.ValidOutput) throw new Exception("Output path could not be resolved.");
                     BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
-                    BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
-                    file = BuildingLink.OutputPath;
+                    BuildingLink.CustomEntryName = helper.CustomEntry;
+                    // file = BuildingLink.OutputPath;
                 }
-
-                textBox.Text = file;
+                else BuildingLink.SetOutputPath(file);
+                RaisePropertyChanged(OutputFullPathProperty, currentFile, file);
+                RaisePropertyChanged(OutputFriendlyNameProperty, string.Empty, OutputFriendlyName);
             }
 #if DEBUG
             else
@@ -869,7 +862,6 @@ public partial class MainView : UserControl
         try 
         {
             LockControls(true);
-            LinkCustomName = false;
             var properFileName = (string.IsNullOrWhiteSpace(textBox.Text))
                 ? NamePlaceHolder
                 : textBox.Text + FileOps.GetOutputExt(DesktopOS);
@@ -878,9 +870,8 @@ public partial class MainView : UserControl
             if (!helper.ValidOutput) return;
             
             BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
-            BuildingLink.CustomEntryName = LinkCustomName = helper.CustomEntry;
-            textBox.Text = BuildingLink.FriendlyName;
-            // FixedOutputName = BuildingLink.OutputFileName;
+            BuildingLink.CustomEntryName = helper.CustomEntry;
+            RaisePropertyChanged(OutputFullPathProperty, properFileName, helper.NewPath);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -890,16 +881,6 @@ public partial class MainView : UserControl
         if (sender is not Button btn) return;
         if (btn.CommandParameter is not TextBox txt) return;
         BtnLINKRename_ClickAsync(txt);
-    } 
-
-    [Obsolete("Maybe replace with some Binding, not sure")]
-    void txtLINKDir_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is not TextBox textBox) return;
-        if (IsRenameInactive()) return;
-        if (LinkCustomName) return;
-        FixedOutputName = (!string.IsNullOrWhiteSpace(textBox.Text)) 
-            ? UpdateFixedLinkName(textBox.Text, comboCore.Text) : null;
     }
     
     #endregion

@@ -48,21 +48,16 @@ public static class DesktopEntryOps
     
     private static string DesktopEntryName(string fileName, string core)
     {
-        const string prefix = "retroarch.";
-        const string whiteSpace = " ";
-        const string whiteSpaceReplacer = "_";
-        bool dotAtTheEnd = true;
+        const char whiteSpaceReplacer = '_';
+        const string prefix = $"{App.RetroBin}.";
             
-        fileName = fileName.Replace(whiteSpace, whiteSpaceReplacer);
-        do
-        {
-            int lastChar = fileName.Length - 1;
-            if (fileName[lastChar] == '.') fileName = fileName.Remove(lastChar);
-            else dotAtTheEnd = false;
-        } while (dotAtTheEnd);
+        fileName = fileName.Replace(CommandLine.Manager.SepWhiteSpace, whiteSpaceReplacer);
+        fileName = fileName.TrimEnd('.');
         
-        fileName = fileName.Insert(0, $"{core}.");
-        fileName = fileName.Insert(0, prefix);
-        return fileName;
+        var built = new System.Text.StringBuilder();
+        built.Append(prefix);
+        built.Append($"{core}.");
+        built.Append(fileName);
+        return built.ToString();
     }
 }

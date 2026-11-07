@@ -33,6 +33,7 @@
                 <Label Content="{x:Static lc:resMainExtras.lblPatchContent}"/>
                 <TextBox x:Name="txtCoreContent" IsEnabled="False" Margin="3,0" Text="{Binding CoreContent}"/>
                 
+                <!-- TODO: Repeat on the others ExtraViews -->
                 <Rectangle  Height="6"/>
                 <Rectangle Height="1" Stroke="Gray" StrokeThickness="1" StrokeDashArray="6"/>
                 <Rectangle  Height="6"/>

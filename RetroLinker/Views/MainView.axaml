@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:rl="clr-namespace:RetroLinker"
              xmlns:st="clr-namespace:RetroLinker.Styles"
 			 xmlns:tl="clr-namespace:RetroLinker.Translations"
              xmlns:vw="clr-namespace:RetroLinker.Views"
@@ -80,7 +81,7 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
 						<Label Content="{x:Static tl:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" TextChanged="ComboCore_OnTextChanged"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" Text="{Binding UserRaCore}"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static tl:resMainView.tipSubSys}"
 									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
@@ -127,30 +128,35 @@
 						<StackPanel Name="panelLINKOut" Orientation="Vertical" IsVisible="{Binding !#panelLINKRename.IsVisible}">
 							<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static tl:resMainView.lblLinkDir}" Classes="ReqField"/>
 							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
-								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros.lnk"/>
+								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Text="{Binding OutputFullPath}" />
 								<Button Name="btnLINKDir" Grid.Column="1" Classes="textbox_inline browseFile" 
 								        CommandParameter="{Binding #txtLINKDir}" Click="btnLINKDir_OnClick"/>
 							</Grid>
+							<st:MainViewExtensionNotice Name="noticeLinkFriendlyName" FontSize="11" Margin="3,0"
+							                            Foreground="{DynamicResource TextControlForeground}"
+							                            Title="{x:Static tl:resMainExtras.lblFriendlyName}"
+							                            Text="{Binding OutputFriendlyName, Mode=OneWay}">
+								<st:MainViewExtensionNotice.IsVisible>
+									<MultiBinding Converter="{x:Static BoolConverters.And}">
+										<Binding Source="{x:Static rl:App.PlatformOs}" 
+										         Converter="{x:Static BoolConverters.Not}"/>
+										<Binding Path="$self.Text" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+									</MultiBinding>
+								</st:MainViewExtensionNotice.IsVisible>
+							</st:MainViewExtensionNotice>
 						</StackPanel>
 						<!-- Write Link Name -->
 						<StackPanel Name="panelLINKRename" Orientation="Vertical">
 							<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static tl:resMainView.lblLinkName}" Classes="ReqField"/>
 							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
-								<TextBox Name="txtLINKRename" Grid.Column="0" IsReadOnly="False" TextChanged="txtLINKDir_TextChanged" PlaceholderText="Super Mario Bros"/>
+								<TextBox Name="txtLINKRename" Grid.Column="0" IsReadOnly="False" PlaceholderText="Super Mario Bros" 
+								         Text="{Binding OutputFriendlyName}"/>
 								<Button Name="btnLINKRename" Grid.Column="1" CommandParameter="{Binding #txtLINKRename}" 
 								        Click="BtnLINKRename_OnClick" i:Attached.Icon="fa7-pen" FontSize="18"/>
 							</Grid>
 							<st:MainViewExtensionNotice Name="noticeLinkDefinedDir" FontSize="11" Margin="3,0"
 							                            Foreground="{DynamicResource TextControlForeground}"
-							                            Tag="{x:Static vw:MainWindow.OsDirSeparator}">
-								<st:MainViewExtensionNotice.Text>
-									<MultiBinding StringFormat="{}{0}{2}{1}">
-										<Binding Path="FixedOutputDir"/>
-										<Binding Path="BuildingLink.OutputFileName"/>
-										<Binding Path="#noticeLinkDefinedDir.Tag"/>
-									</MultiBinding>
-								</st:MainViewExtensionNotice.Text>
-							</st:MainViewExtensionNotice>
+							                            Text="{Binding OutputFullPath, Mode=OneWay}"/>
 						</StackPanel>
 						
 						<!-- TileIcon Controls -->
