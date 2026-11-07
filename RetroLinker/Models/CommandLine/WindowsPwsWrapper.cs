@@ -29,22 +29,6 @@ public static partial class Manager
     private const string PwsStartCommand = "Start-Process";
     private const string PwsStartFilePath = "FilePath";
     private const string PwsStartArgumentList = "ArgumentList";
-    
-    public static void TestWindowsCmd()
-    {
-        const string arg = """
-                           -Command "$env:LIBRETRO_CHEATS_DIRECTORY='C:\Program Files'; Start-Process -FilePath 'C:\RetroArch Win64\retroarch.exe' -ArgumentList '-v -f -L fbneo ""C:\Users\Developer\Downloads\gigawing\giga wing.zip""'"
-                           """;
-        const string arg2 = """
-                            -Command "$env:LIBRETRO_CHEATS_DIRECTORY='C:\Program Files'; Start-Process -ArgumentList '-v -f -L fbneo ""C:\Users\Developer\Downloads\gigawing\giga wing.zip""' -FilePath C:\RetroArchWin64\retroarch.exe"
-                            """;
-        var pwsUnparse = new WindowsPwsWrapper(arg2);
-        
-        var pwsParse = new WindowsPwsWrapper(pwsUnparse.RealTargetExecutable, pwsUnparse.RealTargetArguments, pwsUnparse.EnvironmentVariables);
-        var result = pwsParse.BuildCommandLineArg();
-        Logger.LogDebg(result);
-        Logger.LogDebg(result == arg2);
-    }
 
     [SupportedOSPlatform(App.PlatformWin)]
     public static string GetPowershellExecutable()

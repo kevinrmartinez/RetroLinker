@@ -30,12 +30,14 @@ public static partial class ShortcutManager
     private class DesktopEntry : IDesktopEntry
     {
         [IniIgnoreProperty] public IReadOnlyList<string> CategoriesRo => Categories;
-        [IniSection(MainEntry)][TypeConverter(typeof(DesktopEntryStringListConverter))] 
-        public DesktopEntryStringList Categories { get; set; }
+
+        [IniSection(MainEntry)]
+        [TypeConverter(typeof(DesktopEntryStringListConverter))]
+        public DesktopEntryStringList Categories { get; set; } = new();
         [IniSection(MainEntry)] public string? Comment { get; set; }
-        [IniSection(MainEntry)] public string Exec { get; set; }
+        [IniSection(MainEntry)] public string Exec { get; set; } = string.Empty;
         [IniSection(MainEntry)] public string? Icon { get; set; }
-        [IniSection(MainEntry)] public string Name { get; set; }
+        [IniSection(MainEntry)] public string Name { get; set; } = string.Empty;
         [IniSection(MainEntry)] public bool StartupNotify { get; set; }
         [IniSection(MainEntry)] public bool Terminal { get; set; }
         [IniSection(MainEntry)] public DesktopEntryType Type { get; set; } = DesktopEntryType.Application;
