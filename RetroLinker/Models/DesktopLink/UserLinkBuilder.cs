@@ -29,7 +29,7 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     public string RaCore { get; set => SetAndNotify(value, ref field); }
     public SubsystemArgs? RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
     public string? RaConfig { get; set => SetAndNotify(value, ref field); }
-    public IReadOnlyAppendedConfigs? RaAppendedConfig { get => ObservableRaAppendedConfig; 
+    public IReadOnlyAppendedConfigs? RaAppendedConfig { get => ObservableRaAppendedConfig;
         set => SetRaAppendedConfigStub(value); }
     public bool RaFullscreen { get; set => SetAndNotify(value, ref field); }
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
@@ -43,31 +43,29 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     public bool TileIcoAllUsers { get; set => SetAndNotify(value, ref field); }
     public bool TileIcoOverwrite { get; set => SetAndNotify(value, ref field); }
     public string? TileIcoImagePath { get; set => SetAndNotify(value, ref field); }
-    
+
     public bool? CustomEntryName { get; set => SetAndNotify(value, ref field); }
     public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
     public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
     public string OutputPath { get; private set => SetAndNotify(value, ref field); }
     public string OutputDir => ILinkParametersBase.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
-    
+
     private ObservableAppendedConfigs? ObservableRaAppendedConfig { get; set => SetAndNotify(value, ref field); }
     private ObservableCollection<EnvironmentVariable> ObservableEnvironmentVariables { get; set => SetAndNotify(value, ref field); }
-    
+
     // These two are required by the contract, but not used here
     public string RaArguments { get; }
     public string? RaWorkDir { get; }
-    
-    // private ShortcutBuilder() {}
 
     public UserLinkBuilder()
     {
         RaExecutable = string.Empty;
-        
+
         RaArguments = string.Empty;
         RaRom = string.Empty;
         RaCore = string.Empty;
-        
+
         IconPath = string.Empty;
         FriendlyName = string.Empty;
         OutputFileName = string.Empty;
@@ -78,11 +76,11 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
 
         if (!App.PlatformOs) CustomEntryName = false;
     }
-    
+
     public UserLinkBuilder(ILinkParametersBase linkParam)
     {
         RaExecutable = linkParam.RaExecutable;
-        
+
         RaArguments = linkParam.RaArguments;
         // This can throw CommandLineParserException, caller should catch it
         var parsedArguments = CommandLine.Manager.RetroArchCommandParser(RaArguments);
@@ -91,38 +89,38 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
         RaCore = parsedArguments.RaCore;
         RaCoreSubsystem = parsedArguments.RaCoreSubsystem;
         RaConfig = parsedArguments.RaConfig;
-        ObservableRaAppendedConfig = (parsedArguments.RaAppendedConfig is {} appendedConfigs) 
+        ObservableRaAppendedConfig = (parsedArguments.RaAppendedConfig is {} appendedConfigs)
             ? new(appendedConfigs) : new();
-        RaFullscreen = parsedArguments.RaFullscreen; 
+        RaFullscreen = parsedArguments.RaFullscreen;
         RaMenuOnError = parsedArguments.RaMenuOnError;
         RaAccessibility = parsedArguments.RaAccessibility;
         RaVerbose = parsedArguments.RaVerbose;
-        
+        RaLogFile = parsedArguments.RaLogFile;
+
         Description = linkParam.Description;
         IconPath = linkParam.IconPath;
-        FriendlyName = linkParam.FriendlyName;
         OutputFileName = linkParam.OutputFileName;
+        FriendlyName = linkParam.FriendlyName;
         OutputPath = linkParam.OutputPath;      // <= main output (the one in main view)
         ObservableEnvironmentVariables = new(linkParam.EnvironmentVariables);
 
-        CustomEntryName = false;   // <= Only set on Linux, null on other OSs; TODO: Should reverse the Desktop Entry naming convention
-        
         var windowsParam =  linkParam as IWindowsLinkParameters;
-        var linuxParam =  linkParam as ILinuxLinkParameters;
         RaWorkDir = windowsParam?.RaWorkDir;
         TileIcoNameVisible = windowsParam?.TileIcoNameVisible ?? false;
         TileIcoNameDark = windowsParam?.TileIcoNameDark ?? false;
         TileIcoAllUsers = windowsParam?.TileIcoAllUsers ?? false;
         TileIcoOverwrite = windowsParam?.TileIcoOverwrite ?? false;
         TileIcoImagePath = windowsParam?.TileIcoImagePath;
-        RaVerbose = linuxParam?.RaVerbose ?? false;
+        // var linuxParam =  linkParam as ILinuxLinkParameters;
+        // RaVerbose = linuxParam?.RaVerbose ?? false;
+        if (!App.PlatformOs) CustomEntryName = !Linux.DesktopEntryOps.ReverseDesktopEntryName(OutputFileName, stripExt: true, out _);
     }
 
     private void SetRaAppendedConfigStub(IReadOnlyList<string>? list) {
         if (list is not ObservableAppendedConfigs observableCollection) return;
         ObservableRaAppendedConfig = observableCollection;
     }
-    
+
     /* == Inherited Methods == */
     public bool AddAppendedConfig(string appendedConfigPath) {
         if (ObservableRaAppendedConfig is  null) return false;
@@ -156,23 +154,22 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
         ObservableEnvironmentVariables.Clear();
         return true;
     }
-    
+
     /* == Class Methods == */
     public void SetOutputPath(string fullPath) {
         OutputPath = fullPath;
         OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
         FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
     }
-    
+
     public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
         SetOutputPath(fullPath);
         FriendlyName = friendlyName;
     }
-    
+
     public void UpdateOutputPathFromFriendlyName(string friendlyName, string? outputDir = null)
     {
         FriendlyName = friendlyName;
-        // TODO: test
         if (string.IsNullOrWhiteSpace(FriendlyName)) {
             OutputFileName = string.Empty;
             OutputPath = string.Empty;
@@ -193,7 +190,7 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
 
     public void RestoreRemembered(RememberedUserChoices userChoices)
     {
-        RaFullscreen = userChoices.StoredRaFullscreen.GetValueOrDefault(); 
+        RaFullscreen = userChoices.StoredRaFullscreen.GetValueOrDefault();
         RaMenuOnError = userChoices.StoredRaMenuOnError.GetValueOrDefault();
         RaAccessibility = userChoices.StoredRaAccessibility.GetValueOrDefault();
         RaVerbose = userChoices.StoredVerbose.GetValueOrDefault();
