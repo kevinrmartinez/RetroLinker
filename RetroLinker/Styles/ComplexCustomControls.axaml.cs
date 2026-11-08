@@ -24,7 +24,7 @@ using Avalonia.Metadata;
 
 namespace RetroLinker.Styles;
 
-// TODO: Update control scheme (Inherit UserControl)
+// TODO: Update control scheme (Inherit UserControl)(>=0.10)
 
 public class MainViewExtensionNotice : TemplatedControl
 {

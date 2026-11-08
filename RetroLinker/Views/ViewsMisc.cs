@@ -59,23 +59,23 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
             ManuallyNotify(nameof(FileExt));
         }
     }
-    
+
     // private string? FilePathPreConversion { get; init; }
     //
-    // [MemberNotNullWhen(true, nameof(FilePathPreConversion))] 
+    // [MemberNotNullWhen(true, nameof(FilePathPreConversion))]
     public bool ConversionRequired { get; private set => SetAndNotify(value, ref field); }
-    
+
     public string FileName => IIconItem.GetFileName(this);
 
     public string FileExt => IIconItem.GetFileExt(this);
 
     public AvaloniaBitmap? ImageBitmap { get; private set => SetAndNotify(value, ref field); }
-    
+
     private bool IsDefault { get; }
-    
+
     private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
-    
-    
+
+
     public static ViewableIconItem DefaultInstance { get; } = new();
 
     /// <summary> Constructor dedicated to static instances. </summary>
@@ -94,7 +94,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
                 throw new InvalidOperationException($"[{nameof(ViewableIconItem)}] Unknown caller '{caller}'");
         }
     }
-    
+
     public ViewableIconItem(string filePath, bool? conversionRequired = null) {
         FilePath = filePath;
         ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
@@ -102,7 +102,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     }
 
     public static ViewableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
-    
+
     public void SetBitmap(System.IO.Stream newImageStream) => ImageBitmap = GetBitmap(newImageStream);
     public async Task SetBitmapAsync(string newImagePath) => ImageBitmap = await GetBitmap(newImagePath);
 
@@ -110,7 +110,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
         ImageBitmap?.Dispose();
         _ = SetBitmapAsync();
     }
-    
+
     public async Task<System.IO.MemoryStream> GetImageStream() => await IIconItem.GenerateImageStream(this);
 
     public override string ToString() => FileName;
@@ -127,7 +127,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
     }
 
     private async Task SetBitmapAsync() => ImageBitmap = await GetBitmap();
-    
+
     private async Task<AvaloniaBitmap?> GetBitmap(string? path = null)
     {
         if (IsDefault) return GetBitmap(Avalonia.Platform.AssetLoader.Open(DefaultIconAsset));
@@ -140,7 +140,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
             Logger.LogErro(ex);
             streamToDecode = new System.IO.MemoryStream();
         }
-        
+
         return GetBitmap(streamToDecode);
     }
 
@@ -155,16 +155,16 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
 /// <param name="givenPath">The selected output path of the link.</param>
 /// <param name="givenCore">The selected core, if any.</param>
 /// <remarks>From <see cref="MainView"/>, this structure serves to send values to, and receive values from the relevant PopUp.</remarks>
-public class RenamePopUpHelper(string givenPath, string? givenCore) : IMainViewPopUp
+public class RenamePopUpHelper(string givenPath, string givenName, string? givenCore, bool customEntry) : IMainViewPopUp
 {
     public string GivenPath { get; } = givenPath;
-    public string GivenName { get; } = FileOps.GetFileNameNoExtFromPath(givenPath);
+    public string GivenName { get; } = (string.IsNullOrEmpty(givenName)) ? FileOps.GetFileNameNoExtFromPath(givenPath) : givenName;
     public string? GivenCore { get; } = givenCore;
-    
+
     public string? NewPath { get; set; } = null;
     public string? NewFriendlyName { get; set; } = null;
-    public bool CustomEntry { get; set; } = false;
-    
+    public bool CustomEntry { get; set; } = customEntry;
+
     [MemberNotNullWhen(true, nameof(NewPath), nameof(NewFriendlyName))]
     public bool ValidOutput { get; set; } = false;
 }

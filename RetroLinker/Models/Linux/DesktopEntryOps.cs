@@ -22,12 +22,10 @@ namespace RetroLinker.Models.Linux;
 
 public static class DesktopEntryOps
 {
-    // What a mess...
-    // REWRITE: Remake this. Better yet, don't do this sh*t...
-    
     // private const string Ext = FileOps.LinLinkExt;
     public const string NamePlaceHolder = "[ROM]";
     public const string CorePlaceHolder = "[CORE]";
+    private const int MinConventionParts = 3;
 
     public static string StdDesktopEntry(string? friendlyName, string? core)
     {
@@ -35,7 +33,8 @@ public static class DesktopEntryOps
         friendlyName = (!string.IsNullOrWhiteSpace(friendlyName)) ? friendlyName : NamePlaceHolder;
         return DesktopEntryName(friendlyName, core);
     }
-    
+
+    [Obsolete]
     public static string RenameForDesktopEntry(string linkPath, string? core, out string friendlyName)
     {
         _ = FileOps.SeparateFileNameFromPath(linkPath, out friendlyName, out var fileExt);
@@ -45,19 +44,32 @@ public static class DesktopEntryOps
         System.ArgumentException.ThrowIfNullOrEmpty(dir);
         return FileOps.CombineMultipleInputs(dir, newFileName);
     }
-    
+
     private static string DesktopEntryName(string fileName, string core)
     {
         const char whiteSpaceReplacer = '_';
         const string prefix = $"{App.RetroBin}.";
-            
+
         fileName = fileName.Replace(CommandLine.Manager.SepWhiteSpace, whiteSpaceReplacer);
         fileName = fileName.TrimEnd('.');
-        
+
         var built = new System.Text.StringBuilder();
         built.Append(prefix);
         built.Append($"{core}.");
         built.Append(fileName);
         return built.ToString();
+    }
+
+    public static bool ReverseDesktopEntryName(string fileName, bool stripExt, [NotNullWhen(true)] out string? friendlyName)
+    {
+        friendlyName = null;
+        fileName = stripExt ? FileOps.GetFileNameNoExtFromPath(fileName) : FileOps.GetFileNameFromPath(fileName);
+        var split = fileName.Split('.');
+        if (split.Length < MinConventionParts || !split[Index.Start].Equals(App.RetroBin)) return false;
+        var index = 0;
+        for (int i = 0; i < MinConventionParts - 1; i++)
+            index = fileName.IndexOf('.', index + 1);
+        friendlyName = fileName.Substring(index + 1);
+        return true;
     }
 }
