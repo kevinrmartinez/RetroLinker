@@ -36,15 +36,15 @@ namespace RetroLinker;
 
 public class App : Application
 {
-    public static AppInformation LocalInformation { get; private set; } 
+    public static AppInformation LocalInformation { get; private set; }
         = new(string.Empty, string.Empty,  string.Empty, false);
     public static bool PlatformOs { get; } = OperatingSystem.IsWindows();
     public static string[]? Args { get; private set; }
-    
+
     public const string RetroBin = "retroarch";
     public const string PlatformWin = "windows";
     public const string PlatformLin = "linux";
-    
+
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
@@ -115,7 +115,7 @@ public class App : Application
             Logger.LogErro(ex);
             localLicenseUri = new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
-        
+
         app.Resources["LicenseUri"] = localLicenseUri;
     }
 

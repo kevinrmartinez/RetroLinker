@@ -266,5 +266,17 @@ namespace RetroLinker.Translations {
                 return ResourceManager.GetString("plhEnvVar_Val", resourceCulture);
             }
         }
+        
+        public static string btnRename_Yes {
+            get {
+                return ResourceManager.GetString("btnRename_Yes", resourceCulture);
+            }
+        }
+        
+        public static string btnRename_No {
+            get {
+                return ResourceManager.GetString("btnRename_No", resourceCulture);
+            }
+        }
     }
 }

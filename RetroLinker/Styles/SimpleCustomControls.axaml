@@ -8,6 +8,7 @@
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Spacing="2">
                     <Button Classes="check"/>
+                    <Button Classes="cross"/>
                     <Button Classes="trash"/>
                     <Button Classes="clear_text"/>
                     <Button Classes="add"/>
@@ -34,6 +35,11 @@
     <Style Selector="Button.check">
         <Setter Property="i:Attached.Icon" Value="fa7-check"/>
         <Setter Property="Foreground" Value="ForestGreen"/>
+    </Style>
+    
+    <Style Selector="Button.cross">
+        <Setter Property="i:Attached.Icon" Value="fa7-xmark"/>
+        <Setter Property="Foreground" Value="Firebrick"/>
     </Style>
     
     <Style Selector="Button.trash">

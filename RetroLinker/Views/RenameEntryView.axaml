@@ -3,52 +3,62 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:lx="clr-namespace:RetroLinker.Models.Linux"
              xmlns:tl="clr-namespace:RetroLinker.Translations"
              xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
              x:Class="RetroLinker.Views.RenameEntryView"
-             Name="RenameEntry" Unloaded="View_OnUnloaded">
-    
+             x:DataType="vw:RenameEntryView" DataContext="{Binding $self}">
+
+    <UserControl.Styles>
+        <StyleInclude Source="../Styles/ComplexCustomControls.axaml"/>
+    </UserControl.Styles>
+
     <Grid Margin="6,10" RowDefinitions="Auto, *, Auto">
         <!-- ROW0 - Name Controls -->
         <StackPanel Grid.Row="0">
             <Grid ColumnDefinitions="0.25*, *">
                 <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static tl:resMainExtras.lblFriendlyName}"/>
-                <TextBox Name="txtFriendlyName" Grid.Column="1" HorizontalAlignment="Stretch" TextChanged="TxtFriendlyName_OnTextChanged"
-                         ToolTip.Tip="{x:Static tl:resMainExtras.txtFriendlyName_Tip}"/>
+                <TextBox x:Name="txtFriendlyName" Grid.Column="1" HorizontalAlignment="Stretch" Text="{Binding TxtFriendlyName}"
+                         PlaceholderText="{x:Static lx:DesktopEntryOps.NamePlaceHolder}" ToolTip.Tip="{x:Static tl:resMainExtras.txtFriendlyName_Tip}"/>
             </Grid>
-        
+
             <Grid ColumnDefinitions="0.25*, *" Margin="0,8,0,0">
                 <Label Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{x:Static tl:resMainExtras.lblFileName}"/>
                 <Grid Grid.Column="1" ColumnDefinitions="*, Auto">
-                    <TextBox Name="txtFileName" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True" Text="---" TextChanged="TxtFileName_OnTextChanged"
+                    <TextBox x:Name="txtFileName" Grid.Column="0" HorizontalAlignment="Stretch"
+                             Text="{Binding TxtFileName, Mode=TwoWay}"
+                             IsReadOnly="{Binding !ChkCustomFilename}"
                              ToolTip.Tip="{x:Static tl:resMainExtras.txtFileName_Tip}"/>
-                    <Label Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static vw:RenameEntryView.EntryExt}"
+                    <Label x:Name="lblExt" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static vw:RenameEntryView.EntryExt}"
                            ToolTip.Tip="{x:Static tl:resMainExtras.lblExt_Tip}"/>
                 </Grid>
             </Grid>
         </StackPanel>
-        
+
         <!-- ROW1 - Spacing -->
         <Rectangle Grid.Row="1"/>
-        
+
         <!-- ROW2 - Controls -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto, Auto">
-            <CheckBox Name="chkCustomFilename" Grid.Column="0" Margin="10,0" Content="{x:Static tl:resMainExtras.chkCustomFilename}" 
-                      IsCheckedChanged="ChkCustomFilename_OnIsCheckedChanged"/>
-            
-            <Rectangle Grid.Column="1"/>
-            
-            <Button Name="btnClear" Grid.Column="2" ToolTip.Tip="{x:Static tl:resGeneric.btnUndo}" Click="BtnRestore_OnClick"
-                    i:Attached.Icon="fa7-arrow-rotate-left" FontSize="20"/>
-            
-            <Button Name="btnNameApply" Grid.Column="3" Click="BtnNameApply_OnClick">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <i:Icon FontSize="20" Value="fa7-check" Foreground="Green"/>
-                    <TextBlock FontSize="16" Text="{x:Static tl:resGeneric.btnApply}" VerticalAlignment="Center"/>
-                </StackPanel>
+        <DockPanel Grid.Row="2">
+            <CheckBox DockPanel.Dock="Left" Margin="10,0" Content="{x:Static tl:resMainExtras.chkCustomFilename}" 
+                      IsChecked="{Binding ChkCustomFilename}"/>
+
+            <Button DockPanel.Dock="Right" Classes="cross" FontSize="20" IsCancel="True" ToolTip.Tip="{x:Static tl:resMainExtras.btnRename_No}"
+                    Command="{Binding DoNotRename}"/>
+            <Button DockPanel.Dock="Right" Classes="check" FontSize="20" IsDefault="True" ToolTip.Tip="{x:Static tl:resMainExtras.btnRename_Yes}"
+                    Command="{Binding ApplyRename}">
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="#txtFriendlyName.Text" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+                        <Binding Path="#txtFileName.Text" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+                    </MultiBinding>
+                </Button.IsEnabled>
             </Button>
-        </Grid>
-        
+            <Button DockPanel.Dock="Right" Classes="restore" FontSize="20" ToolTip.Tip="{x:Static tl:resGeneric.btnUndo}"
+                    Command="{Binding Restore}"/>
+
+            <Rectangle/>
+        </DockPanel>
     </Grid>
 </UserControl>

@@ -129,4 +129,10 @@
     <data name="plhEnvVar_Val" xml:space="preserve">
         <value>VALUE</value>
     </data>
+    <data name="btnRename_Yes" xml:space="preserve">
+        <value>Apply current rename</value>
+    </data>
+    <data name="btnRename_No" xml:space="preserve">
+        <value>Don't do any rename</value>
+    </data>
 </root>

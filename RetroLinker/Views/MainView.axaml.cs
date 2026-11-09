@@ -141,7 +141,18 @@ public partial class MainView : UserControl
             view => view.IconSelectedItem,
             (view, value) => view.IconSelectedItem = value);
 
-    public ViewableIconItem IconSelectedItem { get; set => SetAndRaise(IconSelectedItemProperty, ref field, value); } = ViewableIconItem.DefaultInstance;
+    public ViewableIconItem IconSelectedItem
+    {
+        get;
+        set {
+            if (!IconItems.Contains(value)) {
+                Logger.LogWarn($"IconItem '{value} [{value.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
+                               $"but it's not in the {nameof(IconItems)} list.");
+                return;
+            }
+            SetAndRaise(IconSelectedItemProperty, ref field, value);
+        }
+    } = ViewableIconItem.DefaultInstance;
 
     public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
@@ -213,7 +224,8 @@ public partial class MainView : UserControl
 
 
     #region LOAD OPS
-    void CompleteSetup()
+
+    private void CompleteSetup()
     {
         BuildingLink.RestoreRemembered(Settings.UserChoices);
         if (!DesktopOS) Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
@@ -236,9 +248,9 @@ public partial class MainView : UserControl
         ApplyDragDropEvents();
         ApplySettingsToControls();
 
-        comboConfig_Loaded();
-        _ = comboCore_Loaded();
-        _ = comboIcon_Loaded();
+        Prepare_comboConfig();
+        _ = Prepare_comboCore();
+        _ = Prepare_comboIcon();
 
         // Arguments should only load when above controls are ready
         ApplyArgs();
@@ -249,7 +261,7 @@ public partial class MainView : UserControl
     }
 
 
-    async Task comboCore_Loaded()
+    private async Task Prepare_comboCore()
     {
         var cores = await Operations.GetCoresArray();
         if (cores.Length < 1) ToolTip.SetTip(comboCore, resMainView.lblNoCores);
@@ -257,7 +269,7 @@ public partial class MainView : UserControl
         Logger.LogInfo($"{cores.Length} cores were imported.");
      }
 
-    void comboConfig_Loaded()
+    private void Prepare_comboConfig()
     {
         comboConfig.Items.Clear();
         foreach (var config in FileOps.ConfigDir)
@@ -266,7 +278,7 @@ public partial class MainView : UserControl
         comboConfig.SelectedIndex = 0;
     }
 
-    async Task comboIcon_Loaded()
+    private async Task Prepare_comboIcon()
     {
         try
         {
@@ -284,7 +296,7 @@ public partial class MainView : UserControl
         }
     }
 
-    void ApplyDragDropEvents()
+    private void ApplyDragDropEvents()
     {
         // REWRITE: This can be done with separated border elements
         var borderTransition = new BrushTransition() {
@@ -304,6 +316,7 @@ public partial class MainView : UserControl
             // https://docs.avaloniaui.net/docs/how-to/drag-and-drop-how-to
         }
     }
+
     #endregion
 
     #region Functions
@@ -836,8 +849,7 @@ public partial class MainView : UserControl
                     // file = BuildingLink.OutputPath;
                 }
                 else BuildingLink.SetOutputPath(file);
-                RaisePropertyChanged(OutputFullPathProperty, currentFile, file);
-                RaisePropertyChanged(OutputFriendlyNameProperty, string.Empty, OutputFriendlyName);
+                UpdateAndNotifyFixedOutputDir();
             }
 #if DEBUG
             else
@@ -862,7 +874,8 @@ public partial class MainView : UserControl
         {
             LockControls(true);
             RenamePopUpHelper helper;
-            if (BuildingLink.CustomEntryName ?? false) helper = await ResolveRenamePopUp(OutputFullPath, OutputFriendlyName, BuildingLink.RaCore);
+            if (BuildingLink.CustomEntryName ?? false)
+                helper = await ResolveRenamePopUp(OutputFullPath, OutputFriendlyName, BuildingLink.RaCore);
             else
             {
                 var validInput = (string.IsNullOrWhiteSpace(textBox.Text)) ? null : textBox.Text;
@@ -874,9 +887,10 @@ public partial class MainView : UserControl
             }
             if (!helper.ValidOutput) return;
 
+            // if (helper.NewFriendlyName.Equals(Models.Linux.DesktopEntryOps.NamePlaceHolder)) helper.NewFriendlyName = string.Empty;
             BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
             BuildingLink.CustomEntryName = helper.CustomEntry;
-            RaisePropertyChanged(OutputFullPathProperty, string.Empty, helper.NewPath);
+            UpdateAndNotifyFixedOutputDir();
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }

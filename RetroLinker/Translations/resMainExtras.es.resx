@@ -95,4 +95,10 @@
     <data name="plhEnvVar_Val" xml:space="preserve">
         <value>VALOR</value>
     </data>
+    <data name="btnRename_No" xml:space="preserve">
+        <value>No hacer ningun renombre</value>
+    </data>
+    <data name="btnRename_Yes" xml:space="preserve">
+        <value>Aplicar el renombre actual</value>
+    </data>
 </root>

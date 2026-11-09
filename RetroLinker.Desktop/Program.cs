@@ -41,7 +41,7 @@ class Program
     private static readonly string AppVersion = (AppVersionSplit.Length > 1)
         ? AppVersionSplit[Index.Start]
         : AppAssemblyName.Version?.ToString(3) ?? EmptyValue;
-    
+
     private static readonly string LogFileName = $"{AppName}.log";
     // private static readonly string LogFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
     private static readonly string LogFileBak = $"{LogFileName}.bak";
@@ -57,9 +57,9 @@ class Program
     {
         SetUpLogger();
         Logger.LogInfo($"{AppName} v{AppVersion}");
-        
+
         Logger.LogDebg("Starting AvaloniaApp");     // <= Trace, not debug
-        
+
         // TODO: Subscribe to more Avalonia error handlers/detectors
         //  https://docs.avaloniaui.net/docs/app-development/setting-unhandled-exceptions
 #if DEBUG
@@ -71,7 +71,7 @@ class Program
         int appExit = 1;
         // Try-Catch is used to print the Exception to log, and then close the log.
         try {
-            // I think that every exception that happens while the app is running can be capture here, thrusting that 
+            // I think that every exception that happens while the app is running can be capture here, thrusting that
             // the 'Program' class doesn't cause exceptions.
             appExit = BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
@@ -81,7 +81,7 @@ class Program
             Logger.LogCrit(e);
         }
 #endif
-        
+
         // App Closing
         Logger.Close();
         return appExit;
@@ -106,7 +106,7 @@ class Program
     }
 
     #endregion
-    
+
     // Logging
     private static void SetUpLogger()
     {
@@ -136,7 +136,7 @@ class Program
         string[] names = [LogDebug, $"{LogDebug}.txt"];
         return files.Any(fsi => names.Contains(fsi.Name.ToLowerInvariant()));
     }
-    
+
     // AppInfo
     private static DateTime? GetBuildDateOfAssembly()
     {
@@ -149,14 +149,14 @@ class Program
         if (long.TryParse(buildDateAtt, out var buildDateTicks)) {
             return DateTime.FromBinary(buildDateTicks);     // Date is set in UTC
         }
-        
+
         Logger.LogWarn("App build bate was requested, but it could not be accessed");
         return null;
     }
 
     private static string? GetGitHashOfRepo() {
         if (AppVersionSplit.Length > 1) return AppVersionSplit[1];
-        
+
         Logger.LogWarn("Hash of git repo was requested, but it could not be accessed");
         return null;
     }
@@ -164,7 +164,7 @@ class Program
     private static AppInformation GetAppInfo()
     {
         // TODO: Check for '-dev' in AppVersion, if it's present define DEBUG (?), and turn on Logger.DebugTracing
-        var isRunningAdmin = OperatingSystem.IsWindows() 
+        var isRunningAdmin = OperatingSystem.IsWindows()
             ? Models.Windows.NativeAccess.IsWindowsProcessElevated()
             : Models.Linux.NativeAccess.IsUnixProcessElevated();
         var fullName = AppAssemblyName.FullName;
