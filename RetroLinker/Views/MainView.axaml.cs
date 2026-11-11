@@ -42,6 +42,24 @@ public partial class MainView : UserControl
 
     #region AvaloniaProperties
 
+    public static readonly DirectProperty<MainView, bool> ContentlessRomProperty =
+        AvaloniaProperty.RegisterDirect<MainView, bool>(
+            nameof(ContentlessRom),
+            view => view.ContentlessRom,
+            (view, value) => view.ContentlessRom = value);
+
+    public bool ContentlessRom
+    {
+        get;
+        set {
+            SetAndRaise(ContentlessRomProperty, ref field, value);
+            if (value) {
+                BuildingLink.RaRom = string.Empty;
+                BuildingLink.RaRomPatch = null;
+            }
+        }
+    }
+
     public static readonly DirectProperty<MainView, string> UserRaCoreProperty =
         AvaloniaProperty.RegisterDirect<MainView, string>(
             nameof(UserRaCore),
@@ -145,9 +163,9 @@ public partial class MainView : UserControl
     {
         get;
         set {
-            if (value is null) return;
+            // if (value is null) return;
             if (!IconItems.Contains(value)) {
-                Logger.LogWarn($"IconItem '{value} [{value.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
+                Logger.LogWarn($"IconItem '{value} [{value?.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
                                $"but it's not in the {nameof(IconItems)} list.");
                 return;
             }
@@ -442,6 +460,7 @@ public partial class MainView : UserControl
     #region Execution
 
     void ResetAfterExecute() {
+        if (BuildingLink.RaRom == Manager.Contentless) ContentlessRom = true;
         BuildingLink.TileIcoImagePath = null;
         LockControls(false);
     }
@@ -552,7 +571,7 @@ public partial class MainView : UserControl
             // BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
 
             // Validating contentless or not
-            BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? Manager.Contentless : BuildingLink.RaRom;
+            BuildingLink.RaRom = (ContentlessRom) ? Manager.Contentless : BuildingLink.RaRom;
 
             // Icons handling
             await SetFinalIconPath(BuildingLink);
@@ -711,14 +730,8 @@ public partial class MainView : UserControl
 
     #region ROM Controls
 
-    [Obsolete("Replace with binding?")]
     void ROMDir_Set(string filePath) {
         BuildingLink.RaRom = filePath;
-        txtROMDir.Text = filePath;
-    }
-
-    void chkContentless_CheckedChanged(object sender, RoutedEventArgs e) {
-        panelROMDirControl.IsEnabled = !chkContentless.IsChecked.GetValueOrDefault();
     }
 
     async void btnROMDir_ClickAsync()
@@ -726,7 +739,7 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-            string currentFile = (string.IsNullOrEmpty(txtROMDir.Text)) ? string.Empty : txtROMDir.Text;
+            string currentFile = (string.IsNullOrEmpty(BuildingLink.RaRom)) ? string.Empty : BuildingLink.RaRom;
             string file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             ROMDir_Set(file);
