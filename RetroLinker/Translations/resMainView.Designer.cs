@@ -123,9 +123,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string lblDesc {
+        public static string lblDesc_Win {
             get {
-                return ResourceManager.GetString("lblDesc", resourceCulture);
+                return ResourceManager.GetString("lblDesc_Win", resourceCulture);
             }
         }
         
@@ -135,9 +135,9 @@ namespace RetroLinker.Translations {
             }
         }
         
-        public static string tipDesc {
+        public static string tipDesc_Win {
             get {
-                return ResourceManager.GetString("tipDesc", resourceCulture);
+                return ResourceManager.GetString("tipDesc_Win", resourceCulture);
             }
         }
         
@@ -360,6 +360,18 @@ namespace RetroLinker.Translations {
         public static string popNoOutput_Mess {
             get {
                 return ResourceManager.GetString("popNoOutput_Mess", resourceCulture);
+            }
+        }
+        
+        public static string lblDesc_Lin {
+            get {
+                return ResourceManager.GetString("lblDesc_Lin", resourceCulture);
+            }
+        }
+        
+        public static string tipDesc_Lin {
+            get {
+                return ResourceManager.GetString("tipDesc_Lin", resourceCulture);
             }
         }
     }

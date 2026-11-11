@@ -32,14 +32,14 @@
     <data name="lblLinkDeskDir" xml:space="preserve">
         <value>Directorio del Desktop</value>
     </data>
-    <data name="lblDesc" xml:space="preserve">
+    <data name="lblDesc_Win" xml:space="preserve">
         <value>Descripcion del Shortcut</value>
     </data>
     <data name="txtDesc_mark" xml:space="preserve">
-        <value>Juega Super Mario Bros. en RetroArch</value>
+        <value>Juega Super Tilt Bro. en RetroArch</value>
     </data>
-    <data name="tipDesc" xml:space="preserve">
-        <value>Agrega una descripcion al shortcut que se creará</value>
+    <data name="tipDesc_Win" xml:space="preserve">
+        <value>Agrega una descripcion para el nuevo Shortcut</value>
     </data>
     <data name="lblICON" xml:space="preserve">
         <value>Seleccion de Icono</value>
@@ -151,5 +151,11 @@
     </data>
     <data name="popNoOutput_Mess" xml:space="preserve">
         <value>Ningun link fue creado!\nEste no es un comportamiento esperado, por favor contacte al mantainer en GitHub!</value>
+    </data>
+    <data name="lblDesc_Lin" xml:space="preserve">
+        <value>Comentario del Shortcut</value>
+    </data>
+    <data name="tipDesc_Lin" xml:space="preserve">
+        <value>Agrega un comentario para el nuevo Shortcut</value>
     </data>
 </root>

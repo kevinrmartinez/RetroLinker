@@ -49,10 +49,11 @@
 
 				<!-- ROW1 - RetroArch Executable -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
-					<!-- TODO: BINDING! -->
 					<Label Margin="0,5,0,0" Content="{x:Static tl:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
-						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="retroarch.exe"/>
+						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="{x:Static vw:MainView.RaExecPlaceholder}"
+						         Text="{Binding BuildingLink.RaExecutable}"
+						         IsReadOnly="{x:Static rl:App.PlatformOs}"/>
 						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnRADir_OnClick"/>
 					</Grid>
 				</StackPanel>
@@ -64,7 +65,8 @@
 						<CheckBox Name="chkContentless" Content="{x:Static tl:resMainView.chkContentless}" IsCheckedChanged="chkContentless_CheckedChanged"/>
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0">
-						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="supermariobros.nes"/>
+						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						         PlaceholderText="{x:Static vw:MainView.RomPlaceholder}"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browseFile"/>
 							<Button Name="btnPatches" Click="BtnPatches_OnClick" i:Attached.Icon="fa7-screwdriver-wrench" FontSize="18" ToolTip.Tip="{x:Static tl:resMainView.tipPatches}"/>
@@ -81,7 +83,8 @@
 					<StackPanel Name="panelCORE" Grid.Column="0" Margin="0,5">
 						<Label Content="{x:Static tl:resMainView.lblCore}" Classes="ReqField"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<AutoCompleteBox Name="comboCore" Grid.Column="0" Text="{Binding UserRaCore}"/>
+							<AutoCompleteBox Name="comboCore" Grid.Column="0" Text="{Binding UserRaCore}"
+							                 PlaceholderText="fceumm"/>
 							<Button Name="btnSubSys" Grid.Column="1" Click="btnSubSys_OnClick" ToolTip.Tip="{x:Static tl:resMainView.tipSubSys}"
 									i:Attached.Icon="fa7-microchip" Classes="textbox_inline"/>
 						</Grid>
@@ -97,7 +100,8 @@
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="0,5">
 						<Label Content="{x:Static tl:resMainView.lblConfig}"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" SelectionChanged="comboConfig_SelectionChanged"/>
+							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
+							          SelectionChanged="comboConfig_SelectionChanged"/>
 							<StackPanel Grid.Column="1" Orientation="Horizontal">
 								<Button Name="btnCONFIGDir" Click="btnCONFIGDir_OnClick" Classes="textbox_inline browseFile"/>
 								<Button Name="btnAppendConfig" Click="btnAppendConfig_OnClick" Classes="textbox_inline" 
@@ -128,7 +132,8 @@
 						<StackPanel Name="panelLINKOut" Orientation="Vertical" IsVisible="{Binding !#panelLINKRename.IsVisible}">
 							<Label Name="lblLinkDir" Margin="3,10,0,0" Content="{x:Static tl:resMainView.lblLinkDir}" Classes="ReqField"/>
 							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
-								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Text="{Binding OutputFullPath}" />
+								<TextBox Name="txtLINKDir" Grid.Column="0" IsReadOnly="True" Text="{Binding OutputFullPath}"
+								         PlaceholderText="{x:Static vw:MainView.OutputPlaceholder}"/>
 								<Button Name="btnLINKDir" Grid.Column="1" Classes="textbox_inline browseFile" 
 								        CommandParameter="{Binding #txtLINKDir}" Click="btnLINKDir_OnClick"/>
 							</Grid>
@@ -149,7 +154,7 @@
 						<StackPanel Name="panelLINKRename" Orientation="Vertical">
 							<Label Name="lblLinkName" Margin="3,10,0,0" Content="{x:Static tl:resMainView.lblLinkName}" Classes="ReqField"/>
 							<Grid ColumnDefinitions="*,Auto" Margin="3,0">
-								<TextBox Name="txtLINKRename" Grid.Column="0" IsReadOnly="False" PlaceholderText="Super Mario Bros" 
+								<TextBox Name="txtLINKRename" Grid.Column="0" IsReadOnly="False" PlaceholderText="{x:Static vw:MainView.RenamePlaceholder}" 
 								         Text="{Binding OutputFriendlyName}"/>
 								<Button Name="btnLINKRename" Grid.Column="1" CommandParameter="{Binding #txtLINKRename}" 
 								        Click="BtnLINKRename_OnClick" i:Attached.Icon="fa7-pen" FontSize="18"/>
@@ -199,13 +204,14 @@
 					
 					<!-- Description/Comment -->
 					<StackPanel Orientation="Horizontal" Margin="3,0">
-						<Label Content="{x:Static tl:resMainView.lblDesc}"/>
+						<Label Content="{x:Static vw:MainView.OutputDescLabel}"/>
 						<st:IconFontWithTip IconValue="fa7-circle-info" Tip="{x:Static tl:resMainView.tipDescTileIco}"
 						                    IsVisible="{Binding Settings.TileIcoPath, 
 						                    Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 					</StackPanel>
-					<TextBox Name="txtDesc" Margin="3,0" PlaceholderText="{x:Static tl:resMainView.txtDesc_mark}" 
-					         Text="{Binding BuildingLink.Description}" ToolTip.Tip="{x:Static tl:resMainView.tipDesc}"/>
+					<TextBox Name="txtDesc" Margin="3,0" Text="{Binding BuildingLink.Description}"
+					         PlaceholderText="{x:Static tl:resMainView.txtDesc_mark}"
+					         ToolTip.Tip="{x:Static vw:MainView.OutputDescTip}"/>
 				</StackPanel>
 
 				<!-- ROW5 - Spacing -->

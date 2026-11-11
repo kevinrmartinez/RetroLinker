@@ -145,6 +145,7 @@ public partial class MainView : UserControl
     {
         get;
         set {
+            if (value is null) return;
             if (!IconItems.Contains(value)) {
                 Logger.LogWarn($"IconItem '{value} [{value.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
                                $"but it's not in the {nameof(IconItems)} list.");
@@ -183,6 +184,8 @@ public partial class MainView : UserControl
     public MainWindow ParentWindow { get; }
 
     // Props
+    public static string OutputDescLabel => (App.PlatformOs) ? resMainView.lblDesc_Win : resMainView.lblDesc_Lin;
+    public static string OutputDescTip => (App.PlatformOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
     public Settings Settings { get; private set; }
     public UserLinkBuilder BuildingLink { get; } = new();
     public ObservableCollection<ViewableIconItem> IconItems { get; } = [ViewableIconItem.DefaultInstance];
@@ -212,7 +215,12 @@ public partial class MainView : UserControl
 
 
     // Fields
+    public const string RomPlaceholder = "Super_Tilt_Bro_(E).nes";
+    public const string RenamePlaceholder = "Super Tilt Bro";
+    public static readonly string RaExecPlaceholder = (App.PlatformOs) ? App.RetroBin + FileOps.WinPeExtExe : App.RetroBin;
+    public static readonly string OutputPlaceholder = RenamePlaceholder + FileOps.GetOutputExt(App.PlatformOs);
     private readonly bool _isDesingner;   // Debug
+    private string OldDefRaExec = string.Empty;
     // private string DefLinRAIcon;
 
     // TODO: This has to be a enum or something, as it needs to include macOS. And move to App. (>=0.10)
@@ -220,7 +228,7 @@ public partial class MainView : UserControl
     //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
     // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
     // true = Windows; false = Linux.
-    private readonly bool DesktopOS = OperatingSystem.IsWindows();
+    private readonly bool DesktopOS = App.PlatformOs;
 
 
     #region LOAD OPS
@@ -228,7 +236,10 @@ public partial class MainView : UserControl
     private void CompleteSetup()
     {
         BuildingLink.RestoreRemembered(Settings.UserChoices);
-        if (!DesktopOS) Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
+        if (!DesktopOS) {
+            Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
+            Settings.DEFRADir = App.RetroBin;
+        }
 
         // Implement an Event for theme handling
 #if DEBUG
@@ -242,8 +253,6 @@ public partial class MainView : UserControl
 #else
         ParentWindow.RequestedThemeVariant = LoadThemeVariant();
 #endif
-
-        SetViewPreSettings();
 
         ApplyDragDropEvents();
         ApplySettingsToControls();
@@ -334,18 +343,6 @@ public partial class MainView : UserControl
     }
 
     // Controls Modifiers
-    void SetViewPreSettings()
-    {
-        // Based on current OS
-        if (!DesktopOS) {
-            if (string.IsNullOrEmpty(Settings.DEFRADir)) Settings.DEFRADir = App.RetroBin;
-            txtRADir.IsReadOnly = false;
-            // DefLinRAIcon = AvaloniaOps.DefLinRAIcon;
-        }
-
-        txtROMDir.IsReadOnly = true;
-        comboConfig.IsTextSearchEnabled = false;
-    }
 
     void LoadNewSettings() {
         ApplySettingsToControls();
@@ -368,17 +365,16 @@ public partial class MainView : UserControl
 
     void ApplySettingsToControls()
     {
-        // TODO: If done after first load, these line bellow could override whatever the user has set
-        if (!string.IsNullOrEmpty(Settings.DEFRADir)) txtRADir.Text = Settings.DEFRADir;
-        BuildingLink.RaExecutable = Settings.DEFRADir;
+        if (!OldDefRaExec.Equals(Settings.DEFRADir) && BuildingLink.RaExecutable.Equals(OldDefRaExec)) {
+            BuildingLink.RaExecutable = Settings.DEFRADir;
+            OldDefRaExec = Settings.DEFRADir;
+        }
+
         if (!_isDesingner && !ParentWindow.IsDesigner) {
             Operations.SetROMParentStorageFolder(Settings.DEFROMPath, ParentWindow);
             Operations.SetIconParentStorageFolder(Settings.IconParentPath, ParentWindow);
             Operations.SetDesktopStorageFolder(ParentWindow);
         }
-
-        txtLINKDir.PlaceholderText = "Super Mario Bros";
-        txtLINKDir.PlaceholderText += FileOps.GetOutputExt(DesktopOS);
         OutputControlsMutations();
     }
 
@@ -436,11 +432,6 @@ public partial class MainView : UserControl
 
 
     // Other Functions
-
-    string ValidateLINBin(string RAPath) {
-        if (RAPath == txtRADir.Text) return RAPath;
-        return string.IsNullOrWhiteSpace(txtRADir.Text) ? string.Empty : txtRADir.Text;
-    }
 
     bool IsRenameInactive() => Settings is { AlwaysAskOutput: true, TileIcoPath: null };
 
@@ -558,20 +549,10 @@ public partial class MainView : UserControl
             LockControls(true);
 
             // Validate there's an executable (Linux)
-            BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
+            // BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
 
             // Validating contentless or not
             BuildingLink.RaRom = (chkContentless.IsChecked.GetValueOrDefault()) ? Manager.Contentless : BuildingLink.RaRom;
-
-            // Validate there is a core
-            // BuildingLink.RaCore = (string.IsNullOrWhiteSpace(comboCore.Text)) ? string.Empty : comboCore.Text;
-
-            // Link handling
-            // var linkDir = (IsRenameInactive()) ? txtLINKDir.Text : txtLINKRename.Text;
-            // if (!string.IsNullOrWhiteSpace(linkDir)) HandleLinkOutput(linkDir, BuildingLink);
-
-            // Include a link description, if any
-            // outputLink.Desc = txtDesc.Text;
 
             // Icons handling
             await SetFinalIconPath(BuildingLink);
@@ -699,10 +680,8 @@ public partial class MainView : UserControl
 
     #region RADirectory Controls
 
-    [Obsolete("Replace with binding?")]
-    void RADirSet(string filePath) {
+    void RaExecutable_Set(string filePath) {
         BuildingLink.RaExecutable = filePath;
-        txtRADir.Text = filePath;
     }
 
     async void btnRADir_ClickAsync()
@@ -714,13 +693,13 @@ public partial class MainView : UserControl
             string currentFile = string.Empty;
             if (DesktopOS) {
                 opt = OpenOpts.WinExe;
-                currentFile = (string.IsNullOrEmpty(txtRADir.Text)) ? string.Empty : txtRADir.Text;
+                currentFile = BuildingLink.RaExecutable;
             }
             else { opt = OpenOpts.LinBin; }
             var dlgTitle = resAvaloniaOps.dlgFileRAexe;
-            string file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
+            var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
             if (string.IsNullOrEmpty(file)) return;
-            RADirSet(file);
+            RaExecutable_Set(file);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -926,7 +905,7 @@ public partial class MainView : UserControl
         if (sender is not AvaloniaTemplatedControl tc) return;
         var filesEnum = e.DataTransfer.TryGetFiles();
         var text = e.DataTransfer.TryGetText();
-        if (filesEnum is not null && filesEnum.Length > 0) {
+        if (filesEnum is { Length: > 0 }) {
             var file = filesEnum[Index.Start];
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() =>
                 ControlBox_DropResult(ControlBox_HandleDrop(tc, file.Path.LocalPath), tc)
@@ -939,9 +918,7 @@ public partial class MainView : UserControl
                 );
             return;
         }
-        Avalonia.Threading.Dispatcher.UIThread.Invoke(() =>
-            ControlBox_DropResult(false, tc)
-            );
+        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(accepted: false, tc));
     }
 
     bool ControlBox_HandleDrop(AvaloniaTemplatedControl sender, string droppedPath)
@@ -950,14 +927,14 @@ public partial class MainView : UserControl
             if (!FileOps.IsFileAnIcon(droppedPath, DesktopOS, out _)) return false;
             IconPath_Set(droppedPath);
         }
-        else if (sender.Equals(txtRADir)) RADirSet(droppedPath);
+        else if (sender.Equals(txtRADir)) RaExecutable_Set(droppedPath);
         else if (sender.Equals(txtROMDir)) ROMDir_Set(droppedPath);
         else if (sender.Equals(comboConfig))
         {
             if (!FileOps.IsConfigFile(droppedPath, out _)) return false;
             comboConfig_Set(droppedPath);
         }
-        // else if (sender.Equals(txtLINKDir)) later...
+        // TODO: else if (sender.Equals(txtLINKDir)) later...
 
         return true;
     }
@@ -965,19 +942,17 @@ public partial class MainView : UserControl
     bool ControlBox_HandlePaste(AvaloniaTemplatedControl sender, string pastedPath)
     {
         // if (pastedPath.Length > 255) return false;
-        if (sender.Equals(comboIcon))
-        {
+        if (sender.Equals(comboIcon)) {
             if (!FileOps.IsFileAnIcon(pastedPath, DesktopOS, out _)) return false;
             IconPath_Set(pastedPath);
         }
-        else if (sender.Equals(txtRADir)) RADirSet(pastedPath);
+        else if (sender.Equals(txtRADir)) RaExecutable_Set(pastedPath);
         else if (sender.Equals(txtROMDir)) ROMDir_Set(pastedPath);
-        else if (sender.Equals(comboConfig))
-        {
+        else if (sender.Equals(comboConfig)) {
             if (!FileOps.IsConfigFile(pastedPath, out _)) return false;
             comboConfig_Set(pastedPath);
         }
-        // else if (sender.Equals(txtLINKDir)) later...
+        // TODO: else if (sender.Equals(txtLINKDir)) later...
 
         return true;
     }
@@ -999,9 +974,9 @@ public partial class MainView : UserControl
 
     // CLOSING
     public void DisposeResources() {
+        IconSelectedItem = ViewableIconItem.DefaultInstance;
         foreach (var iconItem in IconItems) iconItem.Dispose();
         IconItems.Clear();
-        IconImage?.Dispose();
     }
 
     void View1_Unloaded(object sender, RoutedEventArgs e) {
