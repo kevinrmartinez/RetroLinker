@@ -30,10 +30,10 @@ public partial class SettingsView3 : UserControl
     // Window Obj
     // private MainWindow appMainWindow;
     public SettingsWindow ParentWindow { get; }
-        
+
     // PROPS/STATICS
-    public bool DesktopOS { get; }
-        
+    public bool DesktopOs => App.PlatformOs;
+
     private bool IsDesigner;
     private bool FirstTimeLoad = true;
     private int candidatesCount;
@@ -45,7 +45,7 @@ public partial class SettingsView3 : UserControl
         resSettingsWindow.strDefIcoSavPathItem1,
         resSettingsWindow.strDefIcoSavPathItem2,
     };
-        
+
     public SettingsView3()
     {
         // Constructor for Designer
@@ -53,13 +53,12 @@ public partial class SettingsView3 : UserControl
         ParentWindow = new SettingsWindow(true);
         IsDesigner = true;
     }
-        
-    public SettingsView3(SettingsWindow settingsWindow, bool OS) {
+
+    public SettingsView3(SettingsWindow settingsWindow) {
         InitializeComponent();
         ParentWindow = settingsWindow;
-        DesktopOS = OS;
     }
-        
+
     // LOAD
     private void View_OnLoaded(object? sender, RoutedEventArgs e)
     {
@@ -67,7 +66,7 @@ public partial class SettingsView3 : UserControl
         if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
         if (FirstTimeLoad)
         {
-            if (!DesktopOS) candidateCopiesPath.AddRange(FileOps.LinLinkPathCandidates);
+            if (!DesktopOs) candidateCopiesPath.AddRange(FileOps.LinLinkPathCandidates);
             else candidateCopiesPath.AddRange(FileOps.WinLinkPathCandidates);
             candidatesCount = candidateCopiesPath.Count;
 
@@ -75,20 +74,20 @@ public partial class SettingsView3 : UserControl
                 comboDEFLinkOutput.Items.Add(candidate);
             foreach (var path in SettingsOps.LinkCopyPaths)
                 lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(path));
-                
+
             candidateCopiesPath.Add(StrAddCustomCopyPath);
             comboaddLinkCopy.ItemsSource = candidateCopiesPath;
             comboaddLinkCopy.SelectedIndex = 0;
             comboUseDefaultIcoSavPath.ItemsSource = defIcoSavPathList;
 
-            borderTemp.IsVisible = DesktopOS;
-                
+            borderTemp.IsVisible = DesktopOs;
+
             FirstTimeLoad = false;
         }
         //Settings
         ApplySettingsToControls();
     }
-        
+
     // FUNCTIONS
     void ApplySettingsToControls()
     {
@@ -101,7 +100,7 @@ public partial class SettingsView3 : UserControl
         }
         else comboDEFLinkOutput.SelectedIndex = 0;
 
-        if (!DesktopOS) return;
+        if (!DesktopOs) return;
         ValidateSavIcoPath(ParentWindow.NewSettings.IcoSavPath);
     }
 
@@ -109,7 +108,7 @@ public partial class SettingsView3 : UserControl
     {
         var UsrAssets = ParentWindow.NewSettings.UserAssetsPath;
         var AbsoUsrAssets = FileOps.GetAbsolutePath(UsrAssets);
-            
+
         switch (wrkPath)
         {
             case SettingsOps.IcoSavROM:
@@ -133,7 +132,7 @@ public partial class SettingsView3 : UserControl
         comboUseDefaultIcoSavPath.IsEnabled = true;
         comboUseDefaultIcoSavPath.SelectedIndex = index;
         panelWindowsOnlyControls2.IsEnabled = false;
-            
+
         txtIcoSavPath.Text = index switch
         {
             0 => ParentWindow.NewSettings.UserAssetsPath,
@@ -141,7 +140,7 @@ public partial class SettingsView3 : UserControl
             2 => resSettingsWindow.txtIcoSavPath2,
             _ => ParentWindow.NewSettings.UserAssetsPath
         };
-            
+
         ParentWindow.NewSettings.IcoSavPath = index switch
         {
             0 => ParentWindow.NewSettings.UserAssetsPath,
@@ -150,7 +149,7 @@ public partial class SettingsView3 : UserControl
             _ => ParentWindow.NewSettings.UserAssetsPath
         };
     }
-        
+
     void SetCustomSavIcoPath(string path)
     {
         chkUseDefaultIcoSavPath.IsChecked = false;
@@ -162,7 +161,7 @@ public partial class SettingsView3 : UserControl
     }
 
     int NextCopyItemIndex() => (lsboxLinkCopies.Items.Count < 2) ? 0 : lsboxLinkCopies.Items.Count - 2;
-        
+
     ListBoxItem AddLinkCopyItem(string dir)
     {
         var newItem = new ListBoxItem();
@@ -170,7 +169,7 @@ public partial class SettingsView3 : UserControl
 
         var trashButton = gridControl.NewItemTrash;
         trashButton.Click += btnTrashCopyItem;
-            
+
         newItem.Content = gridControl.NewItemGrid;
         return newItem;
     }
@@ -184,15 +183,15 @@ public partial class SettingsView3 : UserControl
         panelContent.IsEnabled = !locked;
         UpdateContext();
     }
-        
-        
+
+
     // DEFAULT OUTPUT
-    private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) => 
+    private void ComboDEFLinkOutpu_OnSelectionChanged(object? sender, SelectionChangedEventArgs e) =>
         ParentWindow.NewSettings.DEFLinkOutput = (string)comboDEFLinkOutput.SelectedItem!;
 
     private async void BtnDefLinkOutput_ClickAsync()
     {
-        try 
+        try
         {
             LockControls(true);
             string currentFolder = (string)comboDEFLinkOutput.SelectedItem!;
@@ -208,16 +207,16 @@ public partial class SettingsView3 : UserControl
     }
 
     private void BtnDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) => BtnDefLinkOutput_ClickAsync();
-        
+
     private void BtnclrDefLinkOutput_OnClick(object? sender, RoutedEventArgs e) {
         ParentWindow.NewSettings.DEFLinkOutput = ParentWindow.GetDefSettings().DEFLinkOutput;
         comboDEFLinkOutput.SelectedIndex = 0;
     }
-        
+
     // LINK COPY
     private async void BtnAddLinkCopy_ClickAsync()
     {
-        try 
+        try
         {
             LockControls(true);
             string currentItem = (string)comboaddLinkCopy.SelectedItem!;
@@ -235,7 +234,7 @@ public partial class SettingsView3 : UserControl
                 lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(currentItem));
                 ParentWindow.SetLinkCopyPaths.Add(currentItem);
             }
-            // If the element already exist in the list, make the existing element light up, or shake or something 
+            // If the element already exist in the list, make the existing element light up, or shake or something
             comboaddLinkCopy.SelectedIndex = 0;
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
@@ -243,33 +242,33 @@ public partial class SettingsView3 : UserControl
     }
 
     private void BtnAddLinkCopy_OnClick(object? sender, RoutedEventArgs e) => BtnAddLinkCopy_ClickAsync();
-        
+
     private void btnTrashCopyItem(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;
         var parentGrid = button.Parent as Grid;
-            
+
         if (parentGrid!.Children[0] is not Label label) return;
         var path = (string)label.Content!;
         ParentWindow.SetLinkCopyPaths.Remove(path);
-            
+
         var parentListBoxItem = parentGrid.Parent as ListBoxItem;
         lsboxLinkCopies.Items.Remove(parentListBoxItem);
     }
 
-        
+
     #region WINDOWS OS ONLY
 
     // ICONS
     private async void btnIcoSavPath_ClickAsync()
     {
-        try 
+        try
         {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(txtIcoSavPath.Text)) ? string.Empty : txtIcoSavPath.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IcoOutput, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            txtIcoSavPath.Text = folder; 
+            txtIcoSavPath.Text = folder;
             ParentWindow.NewSettings.IcoSavPath = folder;
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
@@ -282,18 +281,18 @@ public partial class SettingsView3 : UserControl
         ParentWindow.NewSettings.IcoSavPath = ParentWindow.GetDefSettings().IcoSavPath;
         txtIcoSavPath.Text = ParentWindow.NewSettings.IcoSavPath;
     }
-        
+
     private void ChkUseDefaultIcoSavPath_IsCheckedChanged(object? sender, RoutedEventArgs e) {
         if (!chkUseDefaultIcoSavPath.IsChecked.GetValueOrDefault()) SetCustomSavIcoPath(string.Empty);
         else SetDefaultSavIcoPath(0);
     }
-        
+
     private void ComboUseDefaultIcoSavPath_DropDownClosed(object? sender, EventArgs e) {
-            
+
         if (sender is not ComboBox combo) return;
         SetDefaultSavIcoPath((byte)combo.SelectedIndex);
     }
-        
+
     // TILE ICON
     private async void btnTileIcoBrowse_OnClickAsync(TextBox textBox)
     {
@@ -310,7 +309,7 @@ public partial class SettingsView3 : UserControl
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
-        
+
     // REWRITE: This is brilliant, now reimplement it across the settings :)
     private void btnTileIco_OnClick(object? sender, RoutedEventArgs e) {
         if (sender is not Button button) return;

@@ -10,7 +10,6 @@
 			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.MainView"
              x:DataType="vw:MainView"
-             x:CompileBindings="True"
              TileIconAllUsers="{Binding BuildingLink.TileIcoAllUsers}"
              IconImage="{Binding IconSelectedItem.ImageBitmap, Mode=OneWay,
              TargetNullValue={StaticResource NaNImage}}"
@@ -50,6 +49,7 @@
 
 				<!-- ROW1 - RetroArch Executable -->
 				<StackPanel Name="panelRADir" Grid.Row="1">
+					<!-- TODO: BINDING! -->
 					<Label Margin="0,5,0,0" Content="{x:Static tl:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="retroarch.exe"/>

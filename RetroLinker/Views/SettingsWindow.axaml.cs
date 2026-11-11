@@ -35,21 +35,19 @@ public partial class SettingsWindow : Window
 
     private readonly Settings _oldSettings;
     private readonly Settings _defSettings = new();
-    ContentControl[] _tabs;
-    private bool DesktopOS = System.OperatingSystem.IsWindows();
     public List<string> SetLinkCopyPaths;
-        
+
     public SettingsWindow()
     {
         // Constructor for Designer
         InitializeComponent();
         _oldSettings = new Settings();
         NewSettings = new Settings();
-        _tabs = [CCTab1, CCTab2, CCTab3];
-        SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
-        CCTab1.Content = new SettingsView(this, DesktopOS);
-        CCTab2.Content = new SettingsView2(this, DesktopOS);
-        CCTab3.Content = new SettingsView3(this, DesktopOS);
+        // _tabs = [CCTab1, CCTab2, CCTab3];
+        // SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+        CCTab1.Content = new SettingsView(this);
+        CCTab2.Content = new SettingsView2(this);
+        CCTab3.Content = new SettingsView3(this);
     }
 
     public SettingsWindow(bool isDesigner)
@@ -57,10 +55,10 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         _oldSettings = new Settings();
         NewSettings = new Settings();
-        _tabs = [CCTab1, CCTab2, CCTab3];
+        // _tabs = [CCTab1, CCTab2, CCTab3];
         SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
     }
-        
+
     public SettingsWindow(MainWindow mainWindow, in Settings settings)
     {
         InitializeComponent();
@@ -68,17 +66,17 @@ public partial class SettingsWindow : Window
         _oldSettings = settings;
         var newSettings = settings.Clone() as Settings;
         NewSettings = newSettings ?? new Settings();
-        _tabs = [CCTab1, CCTab2, CCTab3];
+        // _tabs = [CCTab1, CCTab2, CCTab3];
         SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
-        CCTab1.Content = new SettingsView(this, DesktopOS);
-        CCTab2.Content = new SettingsView2(this, DesktopOS);
-        CCTab3.Content = new SettingsView3(this, DesktopOS);
+        CCTab1.Content = new SettingsView(this);
+        CCTab2.Content = new SettingsView2(this);
+        CCTab3.Content = new SettingsView3(this);
     }
 
     #region GeneralFunctions
     public Settings GetOldSettings() => _oldSettings;
     public Settings GetDefSettings() => _defSettings;
-        
+
     private void CCTab_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         if (sender is not ContentControl cc) return;
@@ -88,7 +86,7 @@ public partial class SettingsWindow : Window
     }
 
     #endregion
-        
+
     #region Window/Dialog Controls
 
     void btnDISSettings_OnClick(object sender, RoutedEventArgs e) {

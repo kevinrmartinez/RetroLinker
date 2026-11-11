@@ -34,27 +34,33 @@ public partial class SubsystemsView : UserControl
         AvaloniaProperty.RegisterDirect<SubsystemsView, string>(
             nameof(SubSystem),
             view => view.SubSystem,
-            (view, obj) => view.SubSystem = obj);
+            (view, obj) => view.SubSystem = obj,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
     public string SubSystem { get; set => SetAndRaise(SubSystemProperty, ref field, value); }
 
     public static readonly DirectProperty<SubsystemsView, ICollection<string>> ArgumentsProperty =
         AvaloniaProperty.RegisterDirect<SubsystemsView, ICollection<string>>(
             nameof(Arguments),
             view => view.Arguments,
-            (view, col) => view.Arguments = col);
+            (view, col) => view.Arguments = col,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
     public ICollection<string> Arguments { get; set => SetAndRaise(ArgumentsProperty, ref field, value); }
-    
+
     public static readonly DirectProperty<SubsystemsView, string?> NewArgumentProperty =
         AvaloniaProperty.RegisterDirect<SubsystemsView, string?>(
             nameof(NewArgument),
             view => view.NewArgument,
-            (view, obj) => view.NewArgument = obj);
+            (view, obj) => view.NewArgument = obj,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
     public string? NewArgument { get; set => SetAndRaise(NewArgumentProperty, ref field, value); }
-    
+
     // Props
     public string Core { get; init; }
     public string CoreContent { get; init; }
-    
+
     // Designer Constructor
     public SubsystemsView()
     {
@@ -64,7 +70,6 @@ public partial class SubsystemsView : UserControl
         SubSystem = "[SUBSYSTEM]";
         Arguments = FillListTest();
         _parentWindow = new MainWindow(true);
-        DataContext = this;
     }
 
     // Active Constructor
@@ -77,26 +82,25 @@ public partial class SubsystemsView : UserControl
         Core = mainWindow.PermaView?.comboCore.Text ?? string.Empty;    // Temporal solution
         CoreContent = buildingLink.RaRom;
         var subsystemArgs = buildingLink.RaCoreSubsystem;
-        
+
         var subsystem = string.Empty;
         var subsystemArgsList = new ObservableCollection<string>();
         if (subsystemArgs is not null) {
             subsystem = subsystemArgs.Subsystem;
             subsystemArgsList = new ObservableCollection<string>(subsystemArgs.Args);
         }
-        
+
         SubSystem = subsystem;
         Arguments = subsystemArgsList;
-        DataContext = this;
     }
-    
+
     // Window Object
     private readonly MainWindow _parentWindow;
-    
+
     // Subsystem controls
-    
+
     private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
-    
+
     private void AddNewArgument(bool addNew) {
         if (ArgsList is null) return;
         ArgsList.AddButton?.IsEnabled = !addNew;
@@ -110,14 +114,14 @@ public partial class SubsystemsView : UserControl
 
     private async void ButtonNewArgBrowse_ClickAsync()
     {
-        try 
+        try
         {
             LockControls(true);
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, _parentWindow);
             if (string.IsNullOrEmpty(file)) return;
             TextBoxNewArg.Text = file;
         }
-        catch (System.Exception ex) { _ = this.PopUpGenericError(ex); }
+        catch (Exception ex) { await this.PopUpGenericError(ex); }
         finally { LockControls(false); }
     }
 
@@ -133,7 +137,7 @@ public partial class SubsystemsView : UserControl
         TextBoxNewArg.Text = null;
         AddNewArgument(false);
     }
-    
+
     private void ArgsList_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (sender is not Styles.UserStringList stringList) return;
@@ -145,18 +149,18 @@ public partial class SubsystemsView : UserControl
                 break;
         }
     }
-    
+
     // View Controls
     private void BtnSaveSubsystem_OnClick(object? sender, RoutedEventArgs e)
     {
-        var subsysArg = (string.IsNullOrEmpty(SubSystem)) 
+        var subsysArg = (string.IsNullOrEmpty(SubSystem))
             ? null
             : new SubsystemArgs(SubSystem, new List<string>(Arguments));
         _parentWindow.ReturnToMainView(this, subsysArg);
     }
 
     private void BtnDiscSubsystem_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
-    
+
     // Designer Only
     private ObservableCollection<string> FillListTest()
     {

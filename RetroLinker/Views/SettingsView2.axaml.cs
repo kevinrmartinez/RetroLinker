@@ -28,36 +28,35 @@ public partial class SettingsView2 : UserControl
     // Window Obj
     // private MainWindow MainAppWindow;
     public SettingsWindow ParentWindow { get; }
-    
+
     // PROPS/STATICS
-    public bool DesktopOS { get; }
+    public bool DesktopOS => App.PlatformOs;
 
     public SettingsView2() {
         // Constructor for Designer
         InitializeComponent();
         ParentWindow = new SettingsWindow(true);
     }
-    
-    public SettingsView2(SettingsWindow settingsWindow, bool desktopOs) {
+
+    public SettingsView2(SettingsWindow settingsWindow) {
         InitializeComponent();
         ParentWindow = settingsWindow;
-        DesktopOS = desktopOs;
     }
-    
+
     // GENERIC
     private void UpdateContext() {
         DataContext = null;
         DataContext = this;
     }
-    
+
     private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();
-    
+
     // USER ASSETS
     void LockControls(bool locked) {
         gridConfigAll2.IsEnabled = !locked;
         UpdateContext();
     }
-    
+
     async void btnUserAssets_ClickAsync(TextBox textBox)
     {
         try
@@ -68,7 +67,7 @@ public partial class SettingsView2 : UserControl
             if (string.IsNullOrWhiteSpace(folder)) return;
             ParentWindow.NewSettings.UserAssetsPath = folder;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -83,17 +82,18 @@ public partial class SettingsView2 : UserControl
             case TextBoxActions action:
                 ParentWindow.NewSettings.UserAssetsPath = action switch {
                     TextBoxActions.Restore => ParentWindow.GetOldSettings().UserAssetsPath,
+                    TextBoxActions.Clear => ParentWindow.GetDefSettings().UserAssetsPath,
                     _ => ParentWindow.NewSettings.UserAssetsPath
                 };
                 break;
         }
         UpdateContext();
     }
-    
+
     // RA EXECUTABLE
     async void btnDefRADir_ClickAsync(TextBox textBox)
     {
-        try 
+        try
         {
             LockControls(true);
             var opt = DesktopOS ? OpenOpts.WinExe : OpenOpts.LinBin;
@@ -103,7 +103,7 @@ public partial class SettingsView2 : UserControl
             if (string.IsNullOrWhiteSpace(file)) return;
             ParentWindow.NewSettings.DEFRADir = file;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -125,11 +125,11 @@ public partial class SettingsView2 : UserControl
         }
         UpdateContext();
     }
-    
+
     // DEFAULT ROM PATH
     async void btnDefROMPath_ClickAsync(TextBox textBox)
     {
-        try 
+        try
         {
             LockControls(true);
             string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
@@ -137,7 +137,7 @@ public partial class SettingsView2 : UserControl
             if (string.IsNullOrWhiteSpace(folder)) return;
             ParentWindow.NewSettings.DEFROMPath = folder;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -170,7 +170,7 @@ public partial class SettingsView2 : UserControl
             if (string.IsNullOrWhiteSpace(folder)) return;
             ParentWindow.NewSettings.IconParentPath = folder;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 

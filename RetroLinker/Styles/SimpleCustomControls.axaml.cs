@@ -20,7 +20,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -47,7 +47,7 @@ public static class DummyData
 public class LinkCopyItemGrid
 {
     // TODO: Reimplement using DataTemplates (>=0.10)
-    
+
     // Link Copy ListItem
     public Grid NewItemGrid { get; private set; }
     public Label NewItemText { get;  private set; }
@@ -60,10 +60,10 @@ public class LinkCopyItemGrid
             VerticalAlignment = VerticalAlignment.Center,
             ColumnDefinitions = new ColumnDefinitions("*, Auto")
         };
-            
+
         NewItemText = new Label();
         if (!string.IsNullOrEmpty(path)) NewItemText.Content = path;
-            
+
         ProjektankerIcon trashcan = new()
         {
             Value = "fa7-trash",
@@ -74,7 +74,7 @@ public class LinkCopyItemGrid
             Height = 30,
             Content = trashcan
         };
-        
+
         Grid.SetColumn(NewItemText,0);
         Grid.SetColumn(NewItemTrash,1);
         NewItemGrid.Children.Add(NewItemText);
@@ -112,7 +112,7 @@ public static class LocaleComboItem
             Content = locale.Name,
             Margin = new Thickness(3,0)
         };
-        
+
         Grid.SetColumn(pictureBox,0);
         Grid.SetColumn(text,1);
         grid.Children.Add(pictureBox);
@@ -127,11 +127,11 @@ public class ViewControlButton : Button
     // Fields
     const string blankText = "blank";
     const string blankIcon = "fa7-question";
-    
+
     // Overrides
-    protected override System.Type StyleKeyOverride { get; } = typeof(Button);
-    
-    
+    protected override Type StyleKeyOverride { get; } = typeof(Button);
+
+
     // Avalonia Properties
     public enum ButtonFunctions
     { None, Save, Discard, Default }
@@ -148,7 +148,7 @@ public class ViewControlButton : Button
         get => _buttonFunction;
         set => SetButtonFunction(value);
     }
-    
+
     // Content Properties
     private string ButtonText { get; set; } = blankText;
     private string ButtonIconValue { get; set; } =  blankIcon;
@@ -190,15 +190,15 @@ public class ViewControlButton : Button
         var yesIcon = "fa7-check";
         var yesColor = new SolidColorBrush(Colors.Green);
         var yesText = resGeneric.btnConfirm;
-        
+
         var noIcon = "fa7-x";
         var noColor = new SolidColorBrush(Colors.Crimson);
         var noText = resGeneric.btnDiscard;
 
         var defIcon = "fa7-arrow-rotate-left";
         var defText = resGeneric.btnDefault;
-        
-        
+
+
         switch (function)
         {
             case ButtonFunctions.Save:
@@ -227,6 +227,7 @@ public class ViewControlButton : Button
     }
 }
 
+
 [TemplatePart("PART_Icon", typeof(ProjektankerIcon), IsRequired = true)]
 public class IconFontWithTip : UserControl
 {
@@ -242,7 +243,7 @@ public class IconFontWithTip : UserControl
         get;
         set => SetAndRaise(IconValueProperty, ref field, value);
     } = string.Empty;
-    
+
     // - Tip
     public static readonly DirectProperty<IconFontWithTip, object?> TipProperty =
         AvaloniaProperty.RegisterDirect<IconFontWithTip, object?>(
@@ -254,16 +255,17 @@ public class IconFontWithTip : UserControl
         get;
         set => SetAndRaise(TipProperty, ref field, value);
     }
-    
+
 
     // Content Properties
-    
+
 
     // Constructor
     public IconFontWithTip() {
         InitializeIfNeeded();
     }
 }
+
 
 [TemplatePart("PART_CheckBox", typeof(CheckBox), IsRequired = true)]
 [TemplatePart("PART_Lock", typeof(ToggleButton), IsRequired = true)]
@@ -278,7 +280,7 @@ public class CheckBoxWithLock : UserControl
             (c, v) => c.Text = v);
 
     public string? Text { get; set => SetAndRaise(TextProperty, ref field, value); }
-    
+
     /* - Checked */
     public static readonly DirectProperty<CheckBoxWithLock, bool> IsCheckedProperty =
         AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool>(
@@ -287,7 +289,7 @@ public class CheckBoxWithLock : UserControl
             (c, v) => c.IsChecked = v);
 
     public bool IsChecked { get; set => UpdateLockedValueOut(IsCheckedProperty, ref field, value); }
-    
+
     /* - Locked */
     public static readonly DirectProperty<CheckBoxWithLock, bool> IsLockedProperty =
         AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool>(
@@ -296,7 +298,7 @@ public class CheckBoxWithLock : UserControl
             (c, v) => c.IsLocked = v);
 
     public bool IsLocked { get; set => UpdateLockedValueOut(IsLockedProperty, ref field, value); }
-    
+
     /* - Locked Value */
     public static readonly DirectProperty<CheckBoxWithLock, bool?> LockedValueInProperty =
         AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool?>(
@@ -306,9 +308,9 @@ public class CheckBoxWithLock : UserControl
     /// <summary>
     /// Set the lock status on Control creation
     /// </summary>
-    /// <remarks>Should only be Bind using <see cref="BindingMode.OneTime"/>!</remarks>
+    /// <remarks>Should only be Bind using <see cref="E:Avalonia.Data.BindingMode.OneTime"/>!</remarks>
     public bool? LockedValueIn { get; set => UpdateLockedValueIn(LockedValueInProperty, ref field, value); }
-    
+
     public static readonly DirectProperty<CheckBoxWithLock, bool?> LockedValueOutProperty =
         AvaloniaProperty.RegisterDirect<CheckBoxWithLock, bool?>(
             nameof(LockedValueOut),
@@ -317,15 +319,15 @@ public class CheckBoxWithLock : UserControl
     /// <summary>
     /// Updates the locked value
     /// </summary>
-    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="BindingMode.OneWayToSource"/>.</remarks>
+    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="E:Avalonia.Data.BindingMode.OneWayToSource"/>.</remarks>
     public bool? LockedValueOut { get; set => SetAndRaise(LockedValueOutProperty, ref field, value); }
-    
-    
+
+
     /* == Constructor == */
     public CheckBoxWithLock() {
         InitializeIfNeeded();
     }
-    
+
     /* == Class Methods == */
     private void UpdateLockedValueIn(DirectPropertyBase<bool?> property, ref bool? field, bool? value) {
         SetAndRaise(property, ref field, value);
@@ -342,6 +344,7 @@ public class CheckBoxWithLock : UserControl
     }
 }
 
+
 [TemplatePart("PART_TextBox", typeof(TextBox), IsRequired = true)]
 [TemplatePart("PART_Lock", typeof(ToggleButton), IsRequired = true)]
 public class TextBoxWithLock : UserControl
@@ -355,7 +358,7 @@ public class TextBoxWithLock : UserControl
             (c, v) => c.Label = v);
 
     public string? Label { get; set => SetAndRaise(LabelProperty, ref field, value); }
-    
+
     /* - Text */
     public static readonly DirectProperty<TextBoxWithLock, string?> TextProperty =
         AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
@@ -364,7 +367,7 @@ public class TextBoxWithLock : UserControl
             (c, v) => c.Text = v);
 
     public string? Text { get; set => SetAndRaise(TextProperty, ref field, value); }
-    
+
     /* - Locked */
     public static readonly DirectProperty<TextBoxWithLock, bool> IsLockedProperty =
         AvaloniaProperty.RegisterDirect<TextBoxWithLock, bool>(
@@ -373,7 +376,7 @@ public class TextBoxWithLock : UserControl
             (c, v) => c.IsLocked = v);
 
     public bool IsLocked { get; set => SetAndRaise(IsLockedProperty, ref field, value); }
-    
+
     /* - Locked Value */
     public static readonly DirectProperty<TextBoxWithLock, string?> LockedValueInProperty =
         AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
@@ -383,9 +386,9 @@ public class TextBoxWithLock : UserControl
     /// <summary>
     /// Set the lock status on Control creation
     /// </summary>
-    /// <remarks>Should only be Bind using <see cref="BindingMode.OneTime"/>!</remarks>
+    /// <remarks>Should only be Bind using <see cref="E:Avalonia.Data.BindingMode.OneTime"/>!</remarks>
     public string? LockedValueIn { get; set => UpdateLockedValueIn(LockedValueInProperty, ref field, value); }
-    
+
     public static readonly DirectProperty<TextBoxWithLock, string?> LockedValueOutProperty =
         AvaloniaProperty.RegisterDirect<TextBoxWithLock, string?>(
             nameof(LockedValueOut),
@@ -394,10 +397,10 @@ public class TextBoxWithLock : UserControl
     /// <summary>
     /// Updates the locked value
     /// </summary>
-    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="BindingMode.OneWayToSource"/>.</remarks>
+    /// <remarks>If <see cref="LockedValueIn"/> has an active binding, this one should be bound using <see cref="E:Avalonia.Data.BindingMode.OneWayToSource"/>.</remarks>
     public string? LockedValueOut { get; set => SetAndRaise(LockedValueOutProperty, ref field, value); }
-    
-    
+
+
     /* == Constructor == */
     public TextBoxWithLock() {
         InitializeIfNeeded();
@@ -405,13 +408,13 @@ public class TextBoxWithLock : UserControl
             // Kind of a hack
             if (IsLocked) LockedValueOut = (string?)e.NewValue;
         });
-        
+
         // TODO: Trace this kind of stuff (>=0.10)
         // LockedValueOutProperty.Changed.AddClassHandler<TextBoxWithLock>((o, e) => {
         //     Logger.LogDebg("'LockedValueOutProperty' changed: " + e.NewValue);
         // });
     }
-    
+
     /*  == Class Methods == */
     private void UpdateLockedValueIn(DirectPropertyBase<string?> property, ref string? field, string? value) {
         SetAndRaise(property, ref field, value);
@@ -419,3 +422,7 @@ public class TextBoxWithLock : UserControl
         if (IsLocked) Text = value;
     }
 }
+
+
+[TemplatePart("PART_MainRect", typeof(Rectangle), IsRequired = true)]
+public class DashDivider : UserControl { }

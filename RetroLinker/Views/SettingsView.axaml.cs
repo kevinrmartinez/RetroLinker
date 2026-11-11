@@ -30,18 +30,17 @@ public partial class SettingsView : UserControl
     // Window Obj
     // private MainWindow MainAppWindow;
     public SettingsWindow ParentWindow { get; }
-        
+
     public SettingsView() {
         InitializeComponent();
         ParentWindow = new SettingsWindow(true);
         CompleteConstructor();
     }
 
-    public SettingsView(SettingsWindow parentWindow, bool desktopOs) 
+    public SettingsView(SettingsWindow parentWindow)
     {
         InitializeComponent();
         ParentWindow = parentWindow;
-        DesktopOS = desktopOs;
         CompleteConstructor();
     }
 
@@ -50,16 +49,12 @@ public partial class SettingsView : UserControl
         FillComboLocale();
         LoadTheme(ParentWindow.NewSettings.ChosenTheme);
         comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
-        DataContext = this;
     }
 
     // PROPS/STATICS
-    private bool DesktopOS;
-    // Consider using independent Settings references
-    // private Settings settings; 
-    static readonly ThemeVariant dark_theme = ThemeVariant.Dark;
-    static readonly ThemeVariant light_theme = ThemeVariant.Light;
-    static readonly ThemeVariant system_theme = ThemeVariant.Default;
+    private static readonly ThemeVariant DarkTheme = ThemeVariant.Dark;
+    private static readonly ThemeVariant LightTheme = ThemeVariant.Light;
+    private static readonly ThemeVariant SystemTheme = ThemeVariant.Default;
 
     #region Loading
     void FillComboLocale()
@@ -74,7 +69,7 @@ public partial class SettingsView : UserControl
         }
     }
     #endregion
-        
+
     // Appearance
     void LoadTheme(byte themeCode)
     {
@@ -92,20 +87,20 @@ public partial class SettingsView : UserControl
                 break;
         }
     }
-        
+
     public void SetCurrentTheme(byte themeCode) => LoadTheme(themeCode);
-        
+
     void ThemeSwitch_CheckedChanged(object sender, RoutedEventArgs e)
     {
         // Avalonia's Designer gets borked on this part
         if (swtThemeSwitch.IsChecked.GetValueOrDefault())
         {
-            Application.Current?.RequestedThemeVariant = dark_theme;
+            Application.Current?.RequestedThemeVariant = DarkTheme;
             ParentWindow.NewSettings.ChosenTheme = 2;
         }
         else
         {
-            Application.Current?.RequestedThemeVariant = light_theme;
+            Application.Current?.RequestedThemeVariant = LightTheme;
             ParentWindow.NewSettings.ChosenTheme = 1;
         }
     }
@@ -115,17 +110,17 @@ public partial class SettingsView : UserControl
         if (chkThemeDefault.IsChecked.GetValueOrDefault())
         {
             // Avalonia's Designer breaks on this part
-            Application.Current!.RequestedThemeVariant = system_theme;
+            Application.Current!.RequestedThemeVariant = SystemTheme;
             swtThemeSwitch.IsEnabled = false;
             ParentWindow.NewSettings.ChosenTheme = 0;
         }
         else {
-            swtThemeSwitch.IsEnabled = true; 
+            swtThemeSwitch.IsEnabled = true;
             ThemeSwitch_CheckedChanged(sender, e);
         }
     }
-        
-        
+
+
     private void BtnLocale_OnClick(object? sender, RoutedEventArgs e) {
         // REWRITE: Rewrite so this button shouldn't be necessary
         var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);

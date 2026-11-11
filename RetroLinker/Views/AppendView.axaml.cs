@@ -28,21 +28,19 @@ namespace RetroLinker.Views;
 
 public partial class AppendView : UserControl
 {
-    // Designer Constructor
     public AppendView()
     {
+        // Designer Constructor
         InitializeComponent();
         _parentWindow = new MainWindow(true);
         AppendPaths = FillListTest();
         ItemsControlPaths.Items = AppendPaths;
-        DataContext =  this;
     }
-    
-    // Active Constructor
+
     public AppendView(MainWindow mainWindow)
     {
         InitializeComponent();
-        // TODO: When 'PrevConfig' == true, also store a list of appended files 
+        // TODO: When 'PrevConfig' == true, also store a list of appended files
         _parentWindow = mainWindow;
         SelectedConfigFile = _parentWindow.PermaView?.comboConfig.SelectedItem?.ToString();
         var tryObservablePaths = _parentWindow.PermaView?.BuildingLink.RaAppendedConfig as ObservableAppendedConfigs;
@@ -51,26 +49,25 @@ public partial class AppendView : UserControl
             tryObservablePaths = new ObservableAppendedConfigs();
         }
         AppendPaths = tryObservablePaths;
-        DataContext =  this;
     }
-    
+
     // Window Object
     private readonly MainWindow _parentWindow;
-    
+
     // Props
     public string? SelectedConfigFile { get; }
     public ObservableAppendedConfigs AppendPaths { get; }
-    
+
     // FIELDS
     private const OpenOpts ConfigOpt = OpenOpts.RAcfg;
 
     // Append Config controls
 
     private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
-    
+
     private async void BtnConfigPathBrowse_ClickAsync()
     {
-        try 
+        try
         {
             LockControls(true);
             var loadedFile = await FileDialogOps.OpenFileAsync(ConfigOpt, _parentWindow);
@@ -78,17 +75,17 @@ public partial class AppendView : UserControl
             if (!AppendPaths.Contains(loadedFile))
                 AppendPaths.Add(loadedFile);
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
     private void BtnConfigPathBrowse_OnClick(object? sender, RoutedEventArgs e) => BtnConfigPathBrowse_ClickAsync();
-    
-    
+
+
     // View Buttons
     private void BtnSaveAppend_OnClick(object? sender, RoutedEventArgs e) {
-        var appendArg = (AppendPaths.Count == 0) 
-            ? null 
+        var appendArg = (AppendPaths.Count == 0)
+            ? null
             : AppendPaths;
         _parentWindow.ReturnToMainView(this, appendArg);
     }

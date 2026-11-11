@@ -7,8 +7,7 @@
              xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SubsystemsView"
-             x:DataType="vw:SubsystemsView"
-             x:CompileBindings="True">
+             x:DataType="vw:SubsystemsView" DataContext="{Binding $self}">
     
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -20,13 +19,19 @@
         <!-- Header -->
     
         <!--Body-->
-        <Grid x:Name="gridBody" Grid.Row="1" RowDefinitions="Auto, *, Auto, Auto">
+        <DockPanel x:Name="gridBody" Grid.Row="1">
     
-            <!-- ROW0 - Spacing -->
-            <Rectangle Grid.Row="0" Height="8"/>
+            <!-- Top Spacing -->
+            <Rectangle DockPanel.Dock="Top" Height="8"/>
+            
+            <!-- Return Controls -->
+            <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
+                <st:ViewControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
+                <st:ViewControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
+            </Grid>
     
-            <!-- ROW1 - Subsystem Controls -->
-            <Grid x:Name="gridControls" Grid.Row="1" ColumnDefinitions="*,6*" RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="10,0">
+            <!-- Subsystem Controls -->
+            <Grid x:Name="gridControls" ColumnDefinitions="*,6*" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" Margin="10,2">
                 
                 <Label Grid.Column="0" Grid.Row="0" Content="{x:Static tl:resMainExtras.lblSubsysCore}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -35,20 +40,23 @@
                 <Label Grid.Column="0" Grid.Row="1" Content="{x:Static tl:resMainExtras.lblSubsysContent}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 <TextBox x:Name="txtContent" Grid.Column="1" Grid.Row="1" IsEnabled="False" Margin="0,3" Text="{Binding CoreContent}"/>
+                
+                <st:DashDivider Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Margin="0,3"/>
                     
-                <Label Grid.Column="0" Grid.Row="2" Content="{x:Static tl:resMainExtras.lblSubsysBase}"
+                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static tl:resMainExtras.lblSubsysBase}"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                <TextBox x:Name="txtSubsys" Grid.Column="1" Grid.Row="2" Margin="0,3" Text="{Binding SubSystem}"/>
+                <TextBox x:Name="txtSubsys" Grid.Column="1" Grid.Row="3" Margin="0,3" Text="{Binding SubSystem}"/>
                     
-                <Label Grid.Column="0" Grid.Row="3" Content="{x:Static tl:resMainExtras.lblSubsysArgs}" 
+                <Label Grid.Column="0" Grid.Row="4" Content="{x:Static tl:resMainExtras.lblSubsysArgs}" 
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
-                <Border Grid.Column="1" Grid.Row="3" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                <Border Grid.Column="1" Grid.Row="4" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <st:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
                                        IsEnabled="{Binding #txtSubsys.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                 </Border>
                 
-                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="4" IsVisible="False"
+                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="5" IsVisible="False"
                         BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                    <!-- TODO: Add expandable transition -->
                     <StackPanel Orientation="Vertical">
                         <Label Content="{x:Static tl:resMainExtras.lblSubsysNewArg}"/>
                         <Grid ColumnDefinitions="*,Auto" Margin="2">
@@ -65,16 +73,7 @@
                 </Border>
             </Grid>
             
-            <!-- ROW2 - Spacing -->
-            <Rectangle Grid.Row="2" Height="10"/>
-            
-            <!-- ROW3 - Return Controls -->
-            <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <st:ViewControlButton x:Name="btnSavePatch" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveSubsystem_OnClick"/>
-                <st:ViewControlButton x:Name="btnDiscPatch" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscSubsystem_OnClick"/>
-            </Grid>
-            
-        </Grid>
+        </DockPanel>
     
         <!--Bottom-->
         <!-- <Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray"> -->

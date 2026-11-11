@@ -31,41 +31,39 @@ public partial class PatchesView : UserControl
 {
     // == Props ==
     public string CoreContent { get; }
-    
+
     public PatchesView()
     {
         // Constructor for Designer
         InitializeComponent();
-        
+
         _parentWindow = new MainWindow(true);
         CoreContent = "\"path/to/rom.bin\"";
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
-        DataContext = this;
     }
-    
+
     public PatchesView(MainWindow mainWindow)
     {
         InitializeComponent();
-        
+
         _parentWindow = mainWindow;
         IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
         CoreContent = buildingLink.RaRom;
         _patchArgs = buildingLink.RaRomPatch;
         _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
         CompleteSetup();
-        DataContext = this;
     }
-    
+
     // == Window Object ==
     private readonly MainWindow _parentWindow;
-    
+
     // == FIELDS ==
     private PatchOpts _patchOpts;
     private readonly RomPatchArgs? _patchArgs;
     private readonly List<RadioButton> _patchRadioButtons = new();
-    
-    
+
+
     // == LOAD EVENTS ==
     private void CompleteSetup()
     {
@@ -79,7 +77,7 @@ public partial class PatchesView : UserControl
         rdoXDPatch.Tag  = RomPatchType.XDelta;
         rdoNoPatch.Tag  = RomPatchType.None;
         chkNoPatch.Tag  = RomPatchType.No_Patch;
-        
+
         if (_patchArgs is null) return;
         var file = _patchArgs.PatchArg;
         var patchType = _patchArgs.PatchType;
@@ -99,34 +97,34 @@ public partial class PatchesView : UserControl
                 break;
         }
     }
-    
+
     // == FUNCTIONS ==
     private RomPatchType GetPatchTypeByExtension(string filePath)
     {
         if (string.IsNullOrEmpty(filePath)) return RomPatchType.None;
         var fileExtension = FileOps.GetFileExtFromPath(filePath);
         fileExtension = fileExtension.Trim('.').ToLower();
-        System.Enum.TryParse(typeof(RomPatchType), fileExtension, ignoreCase: true, out var result);
+        Enum.TryParse(typeof(RomPatchType), fileExtension, ignoreCase: true, out var result);
         return (RomPatchType?)result ?? RomPatchType.None;
     }
-    
+
     private RomPatchArgs? CreateSoftPatchingArg(string patchFile, RomPatchType patchType)
     {
         if (patchType is RomPatchType.None) return null;
         var arg = patchType switch
         {
-            RomPatchType.UPS or RomPatchType.BPS or RomPatchType.IPS or RomPatchType.XDelta 
+            RomPatchType.UPS or RomPatchType.BPS or RomPatchType.IPS or RomPatchType.XDelta
                 => Utils.WrapStringBetweenQuotes(patchFile),
             _ => string.Empty   // <= RomPatchType.No_Patch goes with an empty 'arg'
         };
         return new RomPatchArgs(patchType, arg);
     }
-    
+
     // == PATCHES CONTROLS ==
-    
+
     private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
-    
-    [System.Obsolete("Replace with some binding")]
+
+    [Obsolete("Replace with some binding")]
     private void ControlsEnabled(bool enable)
     {
         txtPatchPath.IsEnabled = enable;
@@ -134,7 +132,7 @@ public partial class PatchesView : UserControl
         chkNoPatch.IsChecked = false;
         chkNoPatch.IsEnabled = !enable;
     }
-    
+
     private void RadioButtonPatch_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
@@ -159,7 +157,7 @@ public partial class PatchesView : UserControl
             string file = await FileDialogOps.OpenFileAsync(openOptions, _parentWindow);
             if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -177,12 +175,12 @@ public partial class PatchesView : UserControl
             selectedPatch = softPatch;
             break;
         }
-        
+
         var patchPath = txtPatchPath.Text ?? string.Empty;
         if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
         if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = RomPatchType.No_Patch;
         patchComm = CreateSoftPatchingArg(patchPath, selectedPatch);
-        
+
         if (string.IsNullOrEmpty(patchPath)) {
             if (selectedPatch is not RomPatchType.None and not RomPatchType.No_Patch) {
                 var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
@@ -190,7 +188,7 @@ public partial class PatchesView : UserControl
                 patchComm = null;
             }
         }
-        
+
         _parentWindow.ReturnToMainView(this, patchComm);
     }
 

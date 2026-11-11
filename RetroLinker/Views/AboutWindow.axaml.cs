@@ -32,17 +32,15 @@ public partial class AboutWindow : Window
     public ThirdParty[] ThirdPartyLibs   => _thirdPartyLibs;
     public ThirdParty[] ThirdPartyRes    => _thirdPartyRes;
     public ThirdParty[] ThirdPartyThanks => _thirdPartyThanks;
-    
+
     public AboutWindow()
     {
         InitializeComponent();
         BorderDev.IsVisible = false;
-        
+
 #if !RELEASE
         BorderDev.IsVisible = true;
 #endif
-        // Set Bindings
-        DataContext = this;
     }
 
     // These fields below do not change on runtime, so they can be static
@@ -64,10 +62,10 @@ public partial class AboutWindow : Window
             return new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
     }
-    
+
     // Contributors (In order of arrival)
     // Contributors feel free to add their names and social media/contact/GitHub in this record array
-    private static readonly Contributor[] _contributors = [ 
+    private static readonly Contributor[] _contributors = [
 #if DEBUG
         new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
         new Contributor("kevinrmartinez", new Uri("https://github.com/kevinrmartinez")),
@@ -92,8 +90,8 @@ public partial class AboutWindow : Window
         new ThirdParty("TG.INI", new Uri("https://github.com/mono/SkiaSharp"), "Reads and writes INI files and make navigating them easy"),
         new ThirdParty("Svg.Skia", new Uri("https://github.com/wieslawsoltes/Svg.Skia"), "An SVG rendering library"),
     ];
-    
-    // Third party Resources/Assets; most of them REQUIRE attribution, anotate them here 
+
+    // Third party Resources/Assets; most of them REQUIRE attribution, anotate them here
     private static readonly ThirdParty[] _thirdPartyRes =
     [
         // new ThirdParty("Unknown Icon", new Uri("https://www.flaticon.es/iconos-gratis/formas-y-simbolos")), // Can't remember what this was
@@ -102,7 +100,7 @@ public partial class AboutWindow : Window
         new ThirdParty("Flag Icons - IconBeast", new Uri("https://www.iconbeast.com/free-download-world-flag-icons/")),
         new ThirdParty("Liberation Mono Fonts", LiberationUri)
     ];
-    
+
     private static readonly ThirdParty[] _thirdPartyThanks = [
         new ThirdParty("Zeronia.Diagnostics", new Uri("https://github.com/CrashInLine/Zeronia.Diagnostics"), "Legacy Avalonia DevTool for AvaloniaUI v12"),
         new ThirdParty("Xylocopadream.IconTool", new Uri("https://github.com/Zergoma/Xylocopadream.IconTool"), "Makes the icons of an app from one drawing (Makes a .ico with SkiaSharp)"),

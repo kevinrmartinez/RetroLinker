@@ -2,13 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vw="using:RetroLinker.Views"
-             xmlns:cc="using:RetroLinker.Styles"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:st="clr-namespace:RetroLinker.Styles"
              xmlns:lc="clr-namespace:RetroLinker.Translations"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
              x:Class="RetroLinker.Views.SettingsView2"
-             x:DataType="vw:SettingsView2"
-             x:CompileBindings="True">
+             x:DataType="vw:SettingsView2" DataContext="{Binding $self}">
 	
 	<UserControl.Styles>
 		<StyleInclude Source="/Styles/SettingsStyles.axaml"/>
@@ -34,6 +34,8 @@
 							        Click="btnUserAssets_OnClick"/>
 							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
 							        Click="btnUserAssets_OnClick"/>
+							<Button Classes="textbox_inline" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+							        i:Attached.Icon="fa7-repeat" Foreground="Firebrick" Click="btnUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -87,7 +89,7 @@
 	            <StackPanel>
 		            <StackPanel Orientation="Horizontal">
 			            <Label Content="{x:Static lc:resSettingsWindow.lblCat_IconParentDir}"/>
-			            <cc:IconFontWithTip IconValue="fa7-circle-question" Tip="{x:Static lc:resSettingsWindow.tipIconParentPath}"/>
+			            <st:IconFontWithTip IconValue="fa7-circle-question" Tip="{x:Static lc:resSettingsWindow.tipIconParentPath}"/>
 		            </StackPanel>
 		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
 		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">

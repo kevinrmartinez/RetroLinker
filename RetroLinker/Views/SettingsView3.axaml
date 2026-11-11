@@ -3,13 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             xmlns:vw="using:RetroLinker.Views"
-             xmlns:cc="using:RetroLinker.Styles"
-             xmlns:lc="clr-namespace:RetroLinker.Translations"
+             xmlns:st="clr-namespace:RetroLinker.Styles"
+             xmlns:tl="clr-namespace:RetroLinker.Translations"
+             xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="700"
              x:Class="RetroLinker.Views.SettingsView3"
-             x:DataType="vw:SettingsView3"
-             x:CompileBindings="True"
+             x:DataType="vw:SettingsView3" DataContext="{Binding $self}"
              Loaded="View_OnLoaded">
 
     <UserControl.Styles>
@@ -22,18 +21,18 @@
         <Border Classes="SettingCatg">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="{x:Static lc:resSettingsWindow.lblCat_DEFLinkOutput}"/>
-                    <cc:IconFontWithTip x:Name="tipDisableBecauseTileIco" IconValue="fa7-ban" 
-                                        Tip="{x:Static lc:resSettingsWindow.tipDisableBecauseTileIco}"
+                    <Label Content="{x:Static tl:resSettingsWindow.lblCat_DEFLinkOutput}"/>
+                    <st:IconFontWithTip x:Name="tipDisableBecauseTileIco" IconValue="fa7-ban" 
+                                        Tip="{x:Static tl:resSettingsWindow.tipDisableBecauseTileIco}"
                                         IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
                                         Converter={x:Static ObjectConverters.IsNotNull}}"/>
                 </StackPanel>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <StackPanel IsEnabled="{Binding !#tipDisableBecauseTileIco.IsVisible}">
                     <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
-                              Content="{x:Static lc:resSettingsWindow.chkAlwaysAskOutput}"
+                              Content="{x:Static tl:resSettingsWindow.chkAlwaysAskOutput}"
                               IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}"/>
-                    <Label Content="{x:Static lc:resSettingsWindow.lblDEFLinkOutput}"/>
+                    <Label Content="{x:Static tl:resSettingsWindow.lblDEFLinkOutput}"/>
                     <Grid x:Name="panelDEFLinkOutput" ColumnDefinitions="*, Auto" Margin="3,0,3,2"
                           IsEnabled="{Binding !#chkAlwaysAskOutput.IsChecked}">
                         <ComboBox x:Name="comboDEFLinkOutput" Grid.Column="0" HorizontalAlignment="Stretch"
@@ -52,10 +51,10 @@
         <!-- OUTPUT COPIES -->
         <Border Classes="SettingCatg">
             <StackPanel>
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_MakeLinkCopy}"/>
+                <Label Content="{x:Static tl:resSettingsWindow.lblCat_MakeLinkCopy}"/>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <CheckBox x:Name="chkMakeLinkCopy" Classes="SettingCatg"
-                          Content="{x:Static lc:resSettingsWindow.chkMakeLinkCopy}"
+                          Content="{x:Static tl:resSettingsWindow.chkMakeLinkCopy}"
                           IsChecked="{Binding ParentWindow.NewSettings.MakeLinkCopy}"/>
                 <Border Classes="SettingCatg">
                     <StackPanel>
@@ -77,16 +76,16 @@
 
         <!-- WINDOWS ONLY -->
         <!-- Windows .ico -->
-        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOS}">
+        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOs}">
             <StackPanel x:Name="panelIcoOutputControls" IsEnabled="{Binding $parent.IsVisible}">
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_IcoOutput}"/> 
+                <Label Content="{x:Static tl:resSettingsWindow.lblCat_IcoOutput}"/> 
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <Rectangle Height="4"/>
                 <TextBlock FontSize="10" TextWrapping="Wrap" Margin="3,0"
-                           Text="{x:Static lc:resSettingsWindow.blcIcoOutout}"/>
+                           Text="{x:Static tl:resSettingsWindow.blcIcoOutout}"/>
                 <!-- SAVE ICO CONTROLS -->
                 <TextBlock TextWrapping="Wrap" FontSize="10" VerticalAlignment="Center" Margin="3,10,3,-4"
-                           Text="{x:Static lc:resSettingsWindow.blcIcoSavPath}"/>
+                           Text="{x:Static tl:resSettingsWindow.blcIcoSavPath}"/>
                 <Grid x:Name="panelWindowsOnlyControls2" Margin="3,4" ColumnDefinitions="*,Auto">
                     <TextBox x:Name="txtIcoSavPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -100,17 +99,17 @@
                         <CheckBox x:Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"
                                   VerticalAlignment="Center"
                                   IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
-                                  ToolTip.Tip="{x:Static lc:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
+                                  ToolTip.Tip="{x:Static tl:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
                         <ComboBox x:Name="comboUseDefaultIcoSavPath" Grid.Column="1" VerticalAlignment="Center"
                                   HorizontalAlignment="Stretch" Margin="-5,0,5,0"
                                   DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
                     </Grid>
                     <CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg"
-                              Content="{x:Static lc:resSettingsWindow.chkExtractIco}"
+                              Content="{x:Static tl:resSettingsWindow.chkExtractIco}"
                               IsChecked="{Binding ParentWindow.NewSettings.ExtractIco}"
-                              ToolTip.Tip="{x:Static lc:resSettingsWindow.tipExtractIco}"/>
+                              ToolTip.Tip="{x:Static tl:resSettingsWindow.tipExtractIco}"/>
                     <CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg"
-                              Content="{x:Static lc:resSettingsWindow.chkIcoLinkName}"
+                              Content="{x:Static tl:resSettingsWindow.chkIcoLinkName}"
                               IsChecked="{Binding ParentWindow.NewSettings.IcoLinkName}"/>
                 </Grid>
             </StackPanel>
@@ -120,34 +119,34 @@
         <Border x:Name="borderTemp" Classes="SettingCatg" >
             <!-- IsVisible="{Binding DesktopOS}" -->
             <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
-                <Label Content="{x:Static lc:resSettingsWindow.lblCat_TileIcon}"/>
+                <Label Content="{x:Static tl:resSettingsWindow.lblCat_TileIcon}"/>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
                 <!-- <CheckBox x:Name="chkTileIcons" Classes="SettingCatg" Content="Enable" IsChecked="True"/> -->
                 
                 <!-- TODO: These two TextBlocks break the program on runtime after Avalonia 12.1.3 -->
                 <!--  When the border 'IsVisible' is set to false from here, even with binding -->
                 <!--  Waiting on https://github.com/AvaloniaUI/Avalonia/issues/22339 -->
-                <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static lc:resSettingsWindow.blcTileIco1}">
+                <TextBlock TextWrapping="Wrap" Margin="3,0" Text="{x:Static tl:resSettingsWindow.blcTileIco1}">
                     <Rectangle Width="2"/>
-                    <cc:IconFontWithTip IconValue="fa7-image" ToolTip.Placement="Left">
-                        <cc:IconFontWithTip.Tip><Image Source="../Assets/Images/TileIcon_OFF_ON_x1.5.png"/></cc:IconFontWithTip.Tip>
-                    </cc:IconFontWithTip>
+                    <st:IconFontWithTip IconValue="fa7-image" ToolTip.Placement="Left">
+                        <st:IconFontWithTip.Tip><Image Source="../Assets/Images/TileIcon_OFF_ON_x1.5.png"/></st:IconFontWithTip.Tip>
+                    </st:IconFontWithTip>
                 </TextBlock>
                 <TextBlock TextWrapping="Wrap" Margin="3,0">
-                    <Run Text="{x:Static lc:resSettingsWindow.blcTileIco2_A}"/>
+                    <Run Text="{x:Static tl:resSettingsWindow.blcTileIco2_A}"/>
                     <InlineUIContainer BaselineAlignment="Bottom" FontFamily="{Binding $parent.FontFamily}" 
                                        FontSize="{Binding $parent.FontSize}" FontWeight="Bold">
                         <HyperlinkButton Margin="0" Padding="0" Content="{StaticResource TileIconifierCli}" NavigateUri="{StaticResource TileIconifierNetUrl}"/>
                     </InlineUIContainer>
-                    <Run Text="{x:Static lc:resSettingsWindow.blcTileIco2_B}"/>
+                    <Run Text="{x:Static tl:resSettingsWindow.blcTileIco2_B}"/>
                 </TextBlock>
                 <Rectangle Height="14"/>
                 
                 <StackPanel x:Name="panelTileIconifierSelect">
                     <TextBlock Margin="3,0">
-                        <Run Text="{x:Static lc:resSettingsWindow.txtTileIco_A}"/>
+                        <Run Text="{x:Static tl:resSettingsWindow.txtTileIco_A}"/>
                         <Run Text="{StaticResource TileIconifierCli}"/>
-                        <Run Text="{x:Static lc:resSettingsWindow.txtTileIco_B}"/>
+                        <Run Text="{x:Static tl:resSettingsWindow.txtTileIco_B}"/>
                     </TextBlock>
                     <Grid ColumnDefinitions="*,Auto" Margin="3,2">
                         <TextBox x:Name="txtTileIco" Grid.Column="0" PlaceholderText="tileico.exe" Text="{Binding ParentWindow.NewSettings.TileIcoPath}"/>

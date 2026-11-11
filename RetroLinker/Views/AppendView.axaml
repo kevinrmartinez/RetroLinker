@@ -2,13 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:st="clr-namespace:RetroLinker.Styles"
+             xmlns:tl="clr-namespace:RetroLinker.Translations"
              xmlns:vw="clr-namespace:RetroLinker.Views"
-             xmlns:pc="clr-namespace:RetroLinker.Styles"
-             xmlns:lc="clr-namespace:RetroLinker.Translations"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.AppendView"
-             x:DataType="vw:AppendView"
-             x:CompileBindings="True">
+             x:DataType="vw:AppendView" DataContext="{Binding $self}">
     
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -16,36 +15,41 @@
     
     <Grid x:Name="gridContent" RowDefinitions="Auto,*">
         <!--Top-->
-        <pc:MainWindowHeader Grid.Row="0" Classes="Header" Title="{x:Static lc:resMainExtras.titleAppendConfig}"/>
+        <st:MainWindowHeader Grid.Row="0" Classes="Header" Title="{x:Static tl:resMainExtras.titleAppendConfig}"/>
         <!-- Header -->
         
         <!-- Body -->
-        <Grid x:Name="gridBody" Grid.Row="1" RowDefinitions="Auto,Auto,*,Auto" Margin="3">
+        <DockPanel x:Name="gridBody" Grid.Row="1" Margin="3">
             
-            <!-- ROW0 - Spacing -->
-            <Rectangle Grid.Row="0" Height="8"/>
+            <!-- Top Spacing -->
+            <Rectangle DockPanel.Dock="Top" Height="8"/>
             
-            <!-- ROW1 - Controls Tittle  -->
-            <StackPanel Grid.Row="1" Orientation="Vertical">
+            <!-- Controls Tittle  -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
                 <DockPanel>
-                    <Label DockPanel.Dock="Left" VerticalAlignment="Center" Content="{x:Static lc:resMainExtras.lblAppendCurrentConf}"/>
+                    <Label DockPanel.Dock="Left" VerticalAlignment="Center" Content="{x:Static tl:resMainExtras.lblAppendCurrentConf}"/>
                     <TextBox Text="{Binding SelectedConfigFile, TargetNullValue=???}" IsEnabled="False"/>
                 </DockPanel>
                 <Rectangle Height="8"/>
-                <Label Content="{x:Static lc:resMainExtras.lblAppendPath}"/>
             </StackPanel>
             
-            <!-- ROW2 - Append Controls -->
-            <Border Grid.Row="2" Classes="AppendControls">
-                <pc:UserStringList x:Name="ItemsControlPaths" Items="{Binding AppendPaths}" AddItemClick="BtnConfigPathBrowse_OnClick"/>
-            </Border>
+            <!-- Divider -->
+            <st:DashDivider DockPanel.Dock="Top" Margin="0,3"/>
             
-            <!-- ROW3 - Return Controls -->
-            <Grid Grid.Row="3" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
-                <pc:ViewControlButton x:Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
-                <pc:ViewControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
+            <!-- Return Controls -->
+            <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" ColumnDefinitions="*, *" Margin="3,5">
+                <st:ViewControlButton x:Name="btnSaveAppend" Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="BtnSaveAppend_OnClick"/>
+                <st:ViewControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
             </Grid>
             
-        </Grid>
+            <!-- Append Controls -->
+            <DockPanel>
+                <Label DockPanel.Dock="Top" Content="{x:Static tl:resMainExtras.lblAppendPath}"/>
+                <Border Classes="AppendControls">
+                    <st:UserStringList x:Name="ItemsControlPaths" Items="{Binding AppendPaths}" AddItemClick="BtnConfigPathBrowse_OnClick"/>
+                </Border>
+            </DockPanel>
+            
+        </DockPanel>
     </Grid>
 </UserControl>

@@ -39,7 +39,7 @@ public partial class MoreRaOptionsView : UserControl
             view => view.NewEnvVar_Key,
             (view, value) => view.NewEnvVar_Key = value);
     public string? NewEnvVar_Key { get; set => SetAndRaise(NewEnvVar_KeyProperty, ref field, value); }
-    
+
     public static readonly DirectProperty<MoreRaOptionsView, string?> NewEnvVar_ValueProperty =
         AvaloniaProperty.RegisterDirect<MoreRaOptionsView, string?>(
             nameof(NewEnvVar_Value),
@@ -54,11 +54,11 @@ public partial class MoreRaOptionsView : UserControl
             (view, value) => view.NewEnvVar_Valid = value);
     [MemberNotNullWhen(returnValue: true, nameof(NewEnvVar_Key))]
     public bool NewEnvVar_Valid { get; set => SetAndRaise(NewEnvVar_ValidProperty, ref field, value); }
-    
+
     // Normal Props
     public IUserLinkBuilder LinkBuilder { get; }
     public RememberedUserChoices UserChoices { get; }
-    
+
     public MoreRaOptionsView()
     {
         // Constructor for Designer
@@ -79,7 +79,6 @@ public partial class MoreRaOptionsView : UserControl
                                         An empty argument "" will disable automatic shader presets.
            -e, --entryslot=NUMBER       Slot from which to load an entry state.
          */
-        DataContext = this;
     }
 
     public MoreRaOptionsView(PopUpWindow popUpWindow, MoreOptPopUpHelper moreOptParams)
@@ -88,17 +87,16 @@ public partial class MoreRaOptionsView : UserControl
         _popUpWindow = popUpWindow;
         LinkBuilder = moreOptParams.LinkObject;
         UserChoices = moreOptParams.SettingsObject.UserChoices;
-        DataContext = this;
     }
-    
+
     // Fields
     private PopUpWindow _popUpWindow;
-    
+
     private void LockControls(bool value) => ((DockPanel?)Content)?.IsEnabled = !value;
-    
+
     // LogFile
     private void SetRaLogFile(string? logFile) => LinkBuilder.RaLogFile = logFile;
-    
+
     private async void BtnRaLogFile_OnClickAsync()
     {
         try

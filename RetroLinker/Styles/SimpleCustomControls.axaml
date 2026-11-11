@@ -12,6 +12,7 @@
                     <Button Classes="trash"/>
                     <Button Classes="clear_text"/>
                     <Button Classes="add"/>
+                    <st:DashDivider/>
                     <Button Classes="clear_list"/>
                     <Button Classes="restore"/>
                     <Button Classes="browseFolder"/>
@@ -19,8 +20,10 @@
                     <ToggleButton Classes="LockToggle"/>
                     <st:IconFontWithTip IconValue="fa7-x" Tip="biiiiiii"/>
                 </StackPanel>
+                <st:DashDivider/>
                 <st:CheckBoxWithLock Text="biiiiiii"/>
                 <st:TextBoxWithLock Label="LOL" Text="bibibi"/>
+                <st:DashDivider Margin="0,6"/>
                 <st:ViewControlButton Classes="ExtraControl"/>
             </StackPanel>
         </Border>
@@ -162,6 +165,28 @@
                 <Setter Property="FontSize" Value="18"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+        </Style>
+    </Style>
+    
+    <Style Selector="st|DashDivider">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Rectangle x:Name="PART_MainRect"/>
+            </ControlTemplate>
+        </Setter>
+        <!-- Height="1" Stroke="Gray" StrokeThickness="1" StrokeDashArray="6" -->
+        <Style Selector="^ /template/ Rectangle#PART_MainRect">
+            <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="StrokeDashArray" Value="6"/>
+        </Style>
+        
+        <Style Selector="^.VerticalStack /template/ Rectangle#PART_MainRect">
+            <Setter Property="Height" Value="1"/>
+        </Style>
+        
+        <Style Selector="^.HorizontalStack /template/ Rectangle#PART_MainRect">
+            <Setter Property="Width" Value="1"/>
         </Style>
     </Style>
     

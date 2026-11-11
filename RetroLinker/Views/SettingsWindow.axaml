@@ -2,13 +2,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:pc="clr-namespace:RetroLinker.Styles"
-        xmlns:lc="clr-namespace:RetroLinker.Translations"
+        xmlns:st="clr-namespace:RetroLinker.Styles"
+        xmlns:tl="clr-namespace:RetroLinker.Translations"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
         Width="750" Height="550" MinWidth="600" MinHeight="530"
         x:Class="RetroLinker.Views.SettingsWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="{x:Static lc:resSettingsWindow.wndTitle}"
+        Title="{x:Static tl:resSettingsWindow.wndTitle}"
         WindowStartupLocation="CenterOwner"
 		ScrollViewer.AllowAutoHide="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
 	
@@ -27,17 +27,17 @@
 		<!--	- On the 'LockControls()' functions-->
 		<!--	- On Buttons modifying content on TextBoxes -->
 		<TabControl Grid.Row="1">
-			<TabItem Header="{x:Static lc:resSettingsWindow.tabGeneral}">
+			<TabItem Header="{x:Static tl:resSettingsWindow.tabGeneral}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl x:Name="CCTab1" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
 			</TabItem>
-			<TabItem Header="{x:Static lc:resSettingsWindow.tabPaths}">
+			<TabItem Header="{x:Static tl:resSettingsWindow.tabPaths}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl x:Name="CCTab2" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
 			</TabItem>
-			<TabItem Header="{x:Static lc:resSettingsWindow.tabOutput}">
+			<TabItem Header="{x:Static tl:resSettingsWindow.tabOutput}">
 				<ScrollViewer AllowAutoHide="True" VerticalScrollBarVisibility="Auto">
 					<ContentControl x:Name="CCTab3" Margin="0,0,8,0" AttachedToVisualTree="CCTab_OnAttachedToVisualTree"/>
 				</ScrollViewer>
@@ -46,9 +46,9 @@
 		
 		<!-- CONTROLS -->
 		<Grid Grid.Row="2" Height="48" Margin="3" HorizontalAlignment="Stretch" ColumnDefinitions="*,*,*">
-			<pc:ViewControlButton Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="btnSAVESettings_OnClick"/>
-			<pc:ViewControlButton Grid.Column="1" ButtonFunction="Default" Classes="ExtraControl" Click="btnDEFSettings_Click"/>
-			<pc:ViewControlButton Grid.Column="2" ButtonFunction="Discard" Classes="ExtraControl" Click="btnDISSettings_OnClick"/>
+			<st:ViewControlButton Grid.Column="0" ButtonFunction="Save" Classes="ExtraControl" Click="btnSAVESettings_OnClick"/>
+			<st:ViewControlButton Grid.Column="1" ButtonFunction="Default" Classes="ExtraControl" Click="btnDEFSettings_Click"/>
+			<st:ViewControlButton Grid.Column="2" ButtonFunction="Discard" Classes="ExtraControl" Click="btnDISSettings_OnClick"/>
 		</Grid>
 
 		<!--BOTTOM-->
