@@ -102,6 +102,7 @@
 					<!-- Config -->
 					<StackPanel Name="panelCONFIG" Grid.Column="2" Margin="0,5">
 						<Label Content="{x:Static tl:resMainView.lblConfig}"/>
+						<!-- TODO: BINDINGS! -->
 						<Grid ColumnDefinitions="*, Auto">
 							<ComboBox Name="comboConfig" Grid.Column="0" HorizontalAlignment="Stretch" IsTextSearchEnabled="False"
 							          SelectionChanged="comboConfig_SelectionChanged"/>

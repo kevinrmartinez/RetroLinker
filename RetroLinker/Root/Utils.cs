@@ -29,22 +29,22 @@ public static class Utils
     private const char WinEscapeChar = '^';
     private const char LinIllegalNameChar = '/';
     private static readonly char[] WinIllegalNameChars = [ '|', '\\', '/', '*', '?', '<', '>' ];
-    
-    private static readonly char[] LinuxProblemChars = [ ' ', '`', '#', '$', 
-                                                         '&', '*', '(', ')', 
-                                                         '[', ']', '|', ';', 
+
+    private static readonly char[] LinuxProblemChars = [ ' ', '`', '#', '$',
+                                                         '&', '*', '(', ')',
+                                                         '[', ']', '|', ';',
                                                          '?', '<', '>', '\'' ];
 
     private static readonly char[] WindowsProblemChars = [ ' ', '!', '%', '^', '&', '|' ];
 
     private static bool HasSingleQuotes(string text) => text.StartsWith(SQ) && text.EndsWith(SQ);
     private static bool HasDoubleQuotes(string text) => text.StartsWith(DQ) && text.EndsWith(DQ);
-        
+
     public static string WrapStringBetweenQuotes(this string str, bool doubleQuotes = true)
     {
         var quote = (doubleQuotes) ? DQ : SQ;
         Func<string, bool> DoesHaveQuotes = (doubleQuotes) ? HasDoubleQuotes : HasSingleQuotes;
-        
+
         if (string.IsNullOrWhiteSpace(str) || DoesHaveQuotes(str)) return str;
         str = quote + str;
         str += quote;
@@ -55,7 +55,7 @@ public static class Utils
     {
         // var quote = (doubleQuotes) ? DQ : SQ;
         Func<string, bool> DoesHaveQuotes = (doubleQuotes) ? HasDoubleQuotes : HasSingleQuotes;
-        
+
         if (string.IsNullOrWhiteSpace(str) || !DoesHaveQuotes(str)) return str;
         // path = path.Trim(quote);
         const int ZeroIndex = 0;
@@ -68,19 +68,20 @@ public static class Utils
     public static string TwoDoubleQuotes(this string text) => text.Replace(DQ.ToString(), $"{DQ}{DQ}");
     public static string UndoTwoDoubleQuotes(this string text) => text.Replace($"{DQ}{DQ}", DQ.ToString());
 
-    public static string ConditionallyQuoteString(string text, bool os, bool doubleQuotes = true)
+    public static string ConditionallyQuoteString(this string text, bool? os = null, bool doubleQuotes = true)
     {
+        os ??= App.PlatformOs;
         if (string.IsNullOrWhiteSpace(text) || HasDoubleQuotes(text) || HasSingleQuotes(text)) return text;
-        
-        if (os)
+
+        if (os.Value)
         {
             if (!text.ContainsAny(WindowsProblemChars)) return text;
-            if (doubleQuotes) return WrapStringBetweenQuotes(text);
+            if (doubleQuotes) return text.WrapStringBetweenQuotes();
         }
         else
         {
             if (!text.ContainsAny(LinuxProblemChars)) return text;
-            if (doubleQuotes) return WrapStringBetweenQuotes(text);
+            if (doubleQuotes) return text.WrapStringBetweenQuotes();
             string escapeSQ = "'\\''";
             if (text.Contains(SQ)) text = text.Replace(SQ.ToString(), escapeSQ);
         }
@@ -99,14 +100,14 @@ public static class Utils
     //     
     //     return members;
     // }
-        
+
     public static string GenerateBase64(string objectString)
     {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
         var objectBytes = Encoding.UTF8.GetBytes(objectString);
         var object64 = Convert.ToBase64String(objectBytes);
         return object64;
     }
-        
+
     public static List<string> ParseSingleLineArguments(string args, char separator = ' ')
     {
         var results = new List<string>();
@@ -114,14 +115,14 @@ public static class Utils
         // var sqEnd = $"{SQ}{separator}";
         var dqStart = $"{separator}{DQ}";
         // var dqEnd = $"{DQ}{separator}";
-            
+
         var wrk = args.Insert(0, separator.ToString());
         wrk += separator.ToString();
 
         if (wrk.Contains(sqStart) || wrk.Contains(dqStart))
-        { 
+        {
             var newSep = $"-_{Random.Shared.Next().ToString()}_-";
-            wrk = wrk.Replace(sqStart, newSep); 
+            wrk = wrk.Replace(sqStart, newSep);
             wrk = wrk.Replace(dqStart, newSep);
             var split = wrk.Split(newSep, StringSplitOptions.RemoveEmptyEntries);
             foreach (var s in split)
@@ -133,19 +134,19 @@ public static class Utils
 
         return results;
     }
-        
+
     // Source - https://stackoverflow.com/a/33776103
     // Posted by arviman, modified by community.
     // Retrieved 2026-08-26, License - CC BY-SA 4.0
     private static readonly HashSet<Type> NumericTypes =
     [
         typeof(int), typeof(long), typeof(Int128),
-        typeof(short), typeof(sbyte), typeof(double), 
-        typeof(decimal), typeof(float), typeof(Half), 
-        typeof(uint), typeof(ulong), typeof(ushort), 
+        typeof(short), typeof(sbyte), typeof(double),
+        typeof(decimal), typeof(float), typeof(Half),
+        typeof(uint), typeof(ulong), typeof(ushort),
         typeof(byte), typeof(UInt128)
     ];
-        
+
     public static bool IsNumericType(Type type) => NumericTypes.Contains(Nullable.GetUnderlyingType(type) ?? type);
 
     public static bool GetNumberFromObject<T>(object? obj, IFormatProvider? parserFormat, out T? numberOrDefault) where T : INumber<T?>
@@ -164,7 +165,7 @@ public static class Utils
                 if (T.TryParse(str, parserFormat, out var result)) {
                     numberOrDefault = result;
                     return true;
-                } 
+                }
         }
         numberOrDefault = default;
         return false;

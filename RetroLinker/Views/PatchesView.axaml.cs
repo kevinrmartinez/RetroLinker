@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -29,8 +30,44 @@ namespace RetroLinker.Views;
 
 public partial class PatchesView : UserControl
 {
+    #region AvaloniaProperties
+
+    public static readonly DirectProperty<PatchesView, bool> AutoSelectProperty =
+        AvaloniaProperty.RegisterDirect<PatchesView, bool>(
+            nameof(AutoSelect),
+            view => view.AutoSelect,
+            (view, value) => view.AutoSelect = value,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
+    public bool AutoSelect { get; set => SetAndRaise(AutoSelectProperty, ref field, value); }
+
+    public static readonly DirectProperty<PatchesView, RomPatchType> SelectedPatchTypeProperty =
+        AvaloniaProperty.RegisterDirect<PatchesView, RomPatchType>(
+            nameof(SelectedPatchType),
+            view => view.SelectedPatchType,
+            (view, value) => view.SelectedPatchType = value,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
+    public RomPatchType SelectedPatchType
+    {
+        get;
+        set => SetAndRaise(SelectedPatchTypeProperty, ref field, value);
+    } = RomPatchType.None;
+
+    public static readonly DirectProperty<PatchesView, string?> TxtPatchPathProperty =
+        AvaloniaProperty.RegisterDirect<PatchesView, string?>(
+            nameof(TxtPatchPath),
+            view => view.TxtPatchPath,
+            (view, value) => view.TxtPatchPath = value,
+            defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
+
+    public string? TxtPatchPath { get; set => SetAndRaise(TxtPatchPathProperty, ref field, value); }
+
+    #endregion
+
     // == Props ==
     public string CoreContent { get; }
+    public static string ChkNoPatchTip => resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
 
     public PatchesView()
     {
@@ -39,8 +76,6 @@ public partial class PatchesView : UserControl
 
         _parentWindow = new MainWindow(true);
         CoreContent = "\"path/to/rom.bin\"";
-        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
-        CompleteSetup();
     }
 
     public PatchesView(MainWindow mainWindow)
@@ -50,60 +85,23 @@ public partial class PatchesView : UserControl
         _parentWindow = mainWindow;
         IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
         CoreContent = buildingLink.RaRom;
-        _patchArgs = buildingLink.RaRomPatch;
-        _patchRadioButtons.AddRange([rdoUPSPatch, rdoBPSPatch, rdoIPSPatch, rdoXDPatch, rdoNoPatch]);
-        CompleteSetup();
+        var patchArgs = buildingLink.RaRomPatch;
+        if (patchArgs is null) return;
+        SelectedPatchType = patchArgs.PatchType;
+        if (SelectedPatchType is RomPatchType.None or RomPatchType.No_Patch) return;
+        TxtPatchPath = patchArgs.PatchArg;
     }
 
     // == Window Object ==
     private readonly MainWindow _parentWindow;
 
     // == FIELDS ==
-    private PatchOpts _patchOpts;
-    private readonly RomPatchArgs? _patchArgs;
-    private readonly List<RadioButton> _patchRadioButtons = new();
-
-
-    // == LOAD EVENTS ==
-    private void CompleteSetup()
-    {
-        string tip = resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
-        ToolTip.SetTip(chkNoPatch, tip);
-        rdoNoPatch.IsChecked = true;    // For proper behavior, rdoNoPatch must always change states on loading
-
-        rdoUPSPatch.Tag = RomPatchType.UPS;
-        rdoBPSPatch.Tag = RomPatchType.BPS;
-        rdoIPSPatch.Tag = RomPatchType.IPS;
-        rdoXDPatch.Tag  = RomPatchType.XDelta;
-        rdoNoPatch.Tag  = RomPatchType.None;
-        chkNoPatch.Tag  = RomPatchType.No_Patch;
-
-        if (_patchArgs is null) return;
-        var file = _patchArgs.PatchArg;
-        var patchType = _patchArgs.PatchType;
-        switch (patchType)
-        {
-            case RomPatchType.None:
-                break;
-            case RomPatchType.No_Patch:
-                chkNoPatch.IsChecked = true;
-                break;
-            default:
-                var rdo = _patchRadioButtons.Find(rdo => Equals(rdo.Tag, patchType));
-                if (rdo is not null) {
-                    rdo.IsChecked = true;
-                    txtPatchPath.Text = file;
-                }
-                break;
-        }
-    }
 
     // == FUNCTIONS ==
     private RomPatchType GetPatchTypeByExtension(string filePath)
     {
         if (string.IsNullOrEmpty(filePath)) return RomPatchType.None;
-        var fileExtension = FileOps.GetFileExtFromPath(filePath);
-        fileExtension = fileExtension.Trim('.').ToLower();
+        var fileExtension = FileOps.GetFileExtFromPath(filePath).Trim('.').ToLower();
         Enum.TryParse(typeof(RomPatchType), fileExtension, ignoreCase: true, out var result);
         return (RomPatchType?)result ?? RomPatchType.None;
     }
@@ -113,8 +111,8 @@ public partial class PatchesView : UserControl
         if (patchType is RomPatchType.None) return null;
         var arg = patchType switch
         {
-            RomPatchType.UPS or RomPatchType.BPS or RomPatchType.IPS or RomPatchType.XDelta
-                => Utils.WrapStringBetweenQuotes(patchFile),
+            RomPatchType.UPS or RomPatchType.BPS or
+                RomPatchType.IPS or RomPatchType.XDelta => patchFile.ConditionallyQuoteString(),
             _ => string.Empty   // <= RomPatchType.No_Patch goes with an empty 'arg'
         };
         return new RomPatchArgs(patchType, arg);
@@ -124,65 +122,33 @@ public partial class PatchesView : UserControl
 
     private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
 
-    [Obsolete("Replace with some binding")]
-    private void ControlsEnabled(bool enable)
+    public async void BrowsePatch_Async()
     {
-        txtPatchPath.IsEnabled = enable;
-        btnPatchPath.IsEnabled = enable;
-        chkNoPatch.IsChecked = false;
-        chkNoPatch.IsEnabled = !enable;
-    }
-
-    private void RadioButtonPatch_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
-    {
-        if (rdoNoPatch is not null) ControlsEnabled(!rdoNoPatch.IsChecked.GetValueOrDefault());
-        if (e.Source is not RadioButton radioButton) return;
-        // if (radioButton.Tag is not SoftPatch softPatch) return;
-        var softPatch = radioButton.Tag as RomPatchType?;
-        _patchOpts = softPatch switch
+        try
         {
-            RomPatchType.UPS => PatchOpts.UPS,
-            RomPatchType.BPS => PatchOpts.BPS,
-            RomPatchType.IPS => PatchOpts.IPS,
-            RomPatchType.XDelta => PatchOpts.XD,
-            _ => PatchOpts.Auto
-        };
-    }
-
-    private async void BtnPatchPath_ClickAsycn()
-    {
-        try {
             LockControls(true);
-            var openOptions = PickerOpt.PatchOpenOptions(_patchOpts);
+            var openOptions = PickerOpt.PatchOpenOptions(SelectedPatchType);
             string file = await FileDialogOps.OpenFileAsync(openOptions, _parentWindow);
-            if (!string.IsNullOrEmpty(file)) txtPatchPath.Text = file;
+            if (string.IsNullOrEmpty(file)) return;
+
+            if (SelectedPatchType is RomPatchType.Any) SelectedPatchType = GetPatchTypeByExtension(file);
+            TxtPatchPath = file;
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
-    private void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e) => BtnPatchPath_ClickAsycn();
+    // private void BtnPatchPath_OnClick(object? sender, RoutedEventArgs e) => BtnPatchPath_ClickAsycn();
 
     // == VIEW CONTROLS ==
-    private void BtnSavePatch_OnClick(object? sender, RoutedEventArgs e)
+    public void SavePatch()
     {
-        RomPatchArgs? patchComm;
-        RomPatchType selectedPatch = RomPatchType.None;
-        foreach (var radioButton in _patchRadioButtons)
-        {
-            if (!radioButton.IsChecked.GetValueOrDefault()) continue;
-            if (radioButton.Tag is not RomPatchType softPatch) continue;
-            selectedPatch = softPatch;
-            break;
-        }
+        var patchPath = TxtPatchPath ?? string.Empty;
+        if (SelectedPatchType is RomPatchType.Any) SelectedPatchType = GetPatchTypeByExtension(patchPath);
+        var patchComm = CreateSoftPatchingArg(patchPath, SelectedPatchType);
 
-        var patchPath = txtPatchPath.Text ?? string.Empty;
-        if (rdoAutoPatch.IsChecked.GetValueOrDefault()) selectedPatch = GetPatchTypeByExtension(patchPath);
-        if (chkNoPatch.IsChecked.GetValueOrDefault()) selectedPatch = RomPatchType.No_Patch;
-        patchComm = CreateSoftPatchingArg(patchPath, selectedPatch);
-
-        if (string.IsNullOrEmpty(patchPath)) {
-            if (selectedPatch is not RomPatchType.None and not RomPatchType.No_Patch) {
+        if (string.IsNullOrWhiteSpace(patchPath)) {
+            if (SelectedPatchType is not RomPatchType.None and not RomPatchType.No_Patch) {
                 var msBoxContent = new PopUpGenericContent(resMainExtras.popNonSelected_Msg, resMainExtras.popNonSelected_Tittle);
                 _ = this.PopUpGenericMessageBox(msBoxContent, GenericPopUpType.Info);
                 patchComm = null;
@@ -192,5 +158,5 @@ public partial class PatchesView : UserControl
         _parentWindow.ReturnToMainView(this, patchComm);
     }
 
-    private void BtnDiscPatch_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
+    public void DiscPatch() => _parentWindow.ReturnToMainView();
 }

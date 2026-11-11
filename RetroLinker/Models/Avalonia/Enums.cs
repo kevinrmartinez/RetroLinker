@@ -24,6 +24,6 @@ public enum OpenFolderOpts { Other, UserAssets, ROMParent, IconParent, IcoOutput
 
 public enum SaveOpts { WINlnk, LINdesktop }
 
-public enum PatchOpts { Auto, UPS, BPS, IPS, XD }
+// public enum PatchOpts { Auto, UPS, BPS, IPS, XD, No, ExNo }
 
 public enum GenericPopUpType { Error, Warning, Question, Info, Success }

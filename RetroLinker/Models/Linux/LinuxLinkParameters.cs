@@ -80,7 +80,7 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
     {
         // Quotes are needed if the path to the executable has problematic shell characters
         // Double quotes will be used to more easily handle the reading of the file
-        var correctedBin = Utils.ConditionallyQuoteString(linkWriter.RaExecutable, false);
+        var correctedBin = linkWriter.RaExecutable.ConditionallyQuoteString(os: false);
         if (HashedEnvironmentVariables.Count < 1) return correctedBin;
         else
         {

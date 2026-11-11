@@ -75,8 +75,8 @@ public class ObservableAppendedConfigs : ObservableCollection<string>, IReadOnly
 
 public record EnvironmentVariable(string Key, string Value) {
     public override string ToString() =>  $"{Key}{EnvSeparator}{Value}"; // Compatible with Windows and POSIX
-    public string ToStringPws() =>  $"{Manager.PwsEnvSetter}{Key}{EnvSeparator}{Utils.ConditionallyQuoteString(Value, os: true, doubleQuotes: false)}";
-    public string ToStringBash() =>  $"{Key}{EnvSeparator}{Utils.ConditionallyQuoteString(Value, os: false, doubleQuotes: false)}";
+    public string ToStringPws() =>  $"{Manager.PwsEnvSetter}{Key}{EnvSeparator}{Value.ConditionallyQuoteString(os: true, doubleQuotes: false)}";
+    public string ToStringBash() =>  $"{Key}{EnvSeparator}{Value.ConditionallyQuoteString(os: false, doubleQuotes: false)}";
     public override int GetHashCode() => Key.GetHashCode();
 
     private const char EnvSeparator = '=';

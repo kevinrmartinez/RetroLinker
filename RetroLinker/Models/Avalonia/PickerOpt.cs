@@ -34,7 +34,7 @@ public static class PickerOpt
     static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
     static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };
     static readonly FilePickerFileType lin_lnk        = new(resAvaloniaOps.pckFileTypeLinLnk) { Patterns = [$"*{FileOps.LinLinkExt}"] };
-        
+
     static readonly List<string> PatchesExtensions    = [$"*.{UpsExt}",$"*.{BpsExt}", $"*.{IpsExt}",$"*.{XdExt}"];
     static readonly FilePickerFileType ups_patch      = new(resAvaloniaOps.pckFileTypeUPS) { Patterns = [PatchesExtensions[0]] };
     static readonly FilePickerFileType bps_patch      = new(resAvaloniaOps.pckFileTypeBPS) { Patterns = [PatchesExtensions[1]] };
@@ -49,8 +49,8 @@ public static class PickerOpt
     static readonly List<FilePickerFileType> ICONfileTypes2     = [lin_icon_files];
     static readonly List<FilePickerFileType> WinShorTypes       = [win_lnk];
     static readonly List<FilePickerFileType> LinShorTypes       = [lin_lnk];
-        
-        
+
+
     public static FilePickerOpenOptions OpenPickerOpt(OpenOpts template)
     {
         var options = new FilePickerOpenOptions {
@@ -114,10 +114,10 @@ public static class PickerOpt
             Title = resAvaloniaOps.dlgFileLINKDir,
             SuggestedStartLocation = Operations.DesktopFolder
         };
-        switch (template) 
+        switch (template)
         {
             // Windows .lnk
-            case SaveOpts.WINlnk:                 
+            case SaveOpts.WINlnk:
                 options.DefaultExtension = FileOps.GetOutputExt(true);
                 options.FileTypeChoices = WinShorTypes;
                 break;
@@ -127,7 +127,7 @@ public static class PickerOpt
                 options.DefaultExtension = FileOps.GetOutputExt(false);
                 options.FileTypeChoices = LinShorTypes;
                 break;
-                
+
             // This part should never happen...
             default:
                 options.Title = resAvaloniaOps.dlgFileOutFallback;
@@ -135,19 +135,19 @@ public static class PickerOpt
         }
         return options;
     }
-        
-        
-    public static FilePickerOpenOptions PatchOpenOptions(PatchOpts patchType)
+
+
+    public static FilePickerOpenOptions PatchOpenOptions(RomPatchType patchType)
     {
         var fileType = patchType switch
         {
-            PatchOpts.UPS => ups_patch,
-            PatchOpts.BPS => bps_patch,
-            PatchOpts.IPS => ips_patch,
-            PatchOpts.XD => xd_patch,
+            RomPatchType.UPS => ups_patch,
+            RomPatchType.BPS => bps_patch,
+            RomPatchType.IPS => ips_patch,
+            RomPatchType.XDelta => xd_patch,
             _ => all_patch
         };
-            
+
         return new FilePickerOpenOptions() {
             AllowMultiple = false,
             Title = resAvaloniaOps.dlgFilePatch,

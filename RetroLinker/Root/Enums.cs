@@ -21,5 +21,6 @@ namespace RetroLinker;
 public enum RomPatchType {
     None,
     UPS, BPS, IPS,
-    XDelta, No_Patch
+    XDelta, No_Patch,
+    Any
 }
