@@ -34,7 +34,7 @@ public static partial class ShortcutManager
         var desktopEntry = IniSerialization.DeserializeDocument<DesktopEntry>(doc);
         return new LinuxLinkParameters(desktopEntry, linkPath);
     }
-    
+
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
     public static async Task CreateShortcut(LinkParameters linkBase)
@@ -51,13 +51,13 @@ public static partial class ShortcutManager
             Icon = link.IconPath,
             Name = link.FriendlyName
         };
-        
+
         IniDocument doc = IniSerialization.SerializeObjectToNewDocument(desktopEntry);
         // Some Desktop Environments don't recognize bool values that start with a capital letter
         doc[MainEntry][nameof(DesktopEntry.StartupNotify)].Value = false.ToString().ToLowerInvariant();
         doc[MainEntry][nameof(DesktopEntry.Terminal)].Value = link.RaVerbose.ToString().ToLowerInvariant();
         var iniString = doc.ToString().ReplaceLineEndings();
-        
+
         await FileOps.WriteAllBytesToFileAsync(link.OutputPath, System.Text.Encoding.UTF8.GetBytes(iniString));
         // If file write is successful (doesn't throw), set execution permissions
         _ = SetExecPermissions(link.OutputPath);

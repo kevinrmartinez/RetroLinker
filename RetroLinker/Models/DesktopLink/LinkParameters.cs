@@ -47,17 +47,15 @@ public abstract class LinkParameters : ILinkParametersBase
 
     protected async Task<LinkWriterResult> CreateShortcut(Func<LinkParameters, Task> osCreateShortcut)
     {
-        var result = new LinkWriterResult(OutputPath);
-        Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
+        Logger.LogInfo($"Creating \"{OutputPath}\"...");
         try {
             await osCreateShortcut(this);
-            result.ResultSuccess();
+            return new LinkWriterResult(OutputPath);
         }
         catch (Exception ex) {
-            Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
+            Logger.LogWarn($"\"{OutputPath}\" could not be created!");
             Logger.LogErro(ex);
-            result.ResultFailure(ex.Message);
+            return new LinkWriterResult(OutputPath, ResultSuccess: false, ex.Message);
         }
-        return result;
     }
 }

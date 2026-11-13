@@ -534,7 +534,7 @@ public partial class MainView : UserControl
             // Single Shortcut created
             case 1:
                 var onlyResult = results[Index.Start];
-                return (!onlyResult.Error)
+                return (onlyResult.ResultSuccess)
                     ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
                     : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{onlyResult.ExMessage}",
                         resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
@@ -543,7 +543,7 @@ public partial class MainView : UserControl
             {
                 bool hasErrors = false;
                 foreach (var r in results) {
-                    if (!r.Error) continue;
+                    if (r.ResultSuccess) continue;
                     hasErrors = true;
                     break;
                 }
@@ -560,9 +560,9 @@ public partial class MainView : UserControl
                     {
                         string output = R.OutputPath + ": ";
                         content = string.Concat(content, output);
-                        content = string.Concat(content, R.Message);
+                        content = string.Concat(content, resMainView.popLinkFailure); // <= Depends on success
                         content = string.Concat(content, "\n");
-                        if (R.Error)
+                        if (!R.ResultSuccess)
                         {
                             content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
                             content = string.Concat(content, "\n");

@@ -38,12 +38,12 @@ public interface IDesktopEntry
 public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
 {
     public bool RaVerbose { get; init; }
-    
+
     public LinuxLinkParameters(IShortcutBase linkWriter)
     {
         EnvironmentVariables = linkWriter.EnvironmentVariables;
         UpdateHashedVariables();
-        
+
         RaExecutable = CreateExecutableLine(linkWriter);
         RaArguments = linkWriter.RaArguments;
         Description = linkWriter.Description;
@@ -61,7 +61,7 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
         RaArguments = bashWrapper.RealTargetArguments;
         HashedEnvironmentVariables = bashWrapper.EnvironmentVariables;
         EnvironmentVariables = new List<EnvironmentVariable>(HashedEnvironmentVariables);
-        
+
         Description = desktopEntry.Comment;
         IconPath = desktopEntry.Icon ?? string.Empty;
         RaVerbose = desktopEntry.Terminal;

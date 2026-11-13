@@ -84,10 +84,7 @@ public class LinkWriter : IShortcutBase
     }
 
 
-    /// <summary>
-    /// Finalizes the object and build all shortcut files for the current OS.
-    /// </summary>
-    /// <param name="os">The OS identifier</param>
+    /// <summary> Finalizes the object and build all shortcut files for the current OS. </summary>
     /// <returns>A list of <see cref="LinkWriterResult"/>.</returns>
     public async Task<List<LinkWriterResult>> BuildShortcut()
     {
@@ -109,10 +106,10 @@ public class LinkWriter : IShortcutBase
                 }
             }
         }
-        catch (Exception ex) {
-            var error = new LinkWriterResult(outputPath);
-            error.ResultFailure(ex.Message);
-            results.Add(error);
+        catch (Exception ex)
+        {
+            Logger.LogErro(ex);
+            results.Add(new LinkWriterResult(outputPath, ResultSuccess: false, ex.Message));
         }
         return results;
     }
@@ -122,26 +119,4 @@ public class LinkWriter : IShortcutBase
 /// A simple structure to inform if the Link was written correctly or not.
 /// </summary>
 /// <param name="OutputPath">The full path of link being handled.</param>
-public record struct LinkWriterResult(string OutputPath)
-{
-    // TODO: Replace
-    public string OutputPath { get; } = OutputPath;
-    public string? Message { get; private set; }
-    public bool Error { get; private set; }
-    public string? ExMessage { get; private set; }
-
-    private static readonly string Success1 = Translations.resMainView.popLinkSucces;
-    private static readonly string Failure1 = Translations.resMainView.popLinkFailure;
-
-    public void ResultSuccess() {
-        Message = Success1;
-        Error = false;
-        ExMessage = null;
-    }
-
-    public void ResultFailure(string? exMessage = null) {
-        Message = Failure1;
-        Error = true;
-        ExMessage = exMessage;
-    }
-}
+public record LinkWriterResult(string OutputPath, bool ResultSuccess = true, string? ExMessage = null);
