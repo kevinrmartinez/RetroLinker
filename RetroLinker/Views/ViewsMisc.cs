@@ -46,62 +46,62 @@ public interface IMainViewPopUp;
 
 
 /* == Dynamic Classes == */
+public sealed record ObservableConfigItem(string FilePath) : IFileItem
+{
+    public string FileName => IFileItem.GetFileName(this);
+    public string FileExt => IFileItem.GetFileExt(this);
+    public bool IsDefault => Equals(DefaultInstance);
+
+    public static ObservableConfigItem DefaultInstance { get; } = new(Translations.resGeneric.btnDefault);
+
+    public override string ToString() => FileName;
+}
+
 /// <summary> An individual Item for <see cref="F:MainView.comboIcon"/>. It notifies changes to the UI, and holds the access to the icon data. </summary>
 /// <remarks>A static default instance exist to represent the 'Default' option in the control.</remarks>
-public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
+public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposable
 {
-    public string FilePath
-    {
-        get;
-        private set {
-            SetAndNotify(value, ref field);
-            ManuallyNotify(nameof(FileName));
-            ManuallyNotify(nameof(FileExt));
-        }
-    }
+    // public string FilePath
+    // public string FileName
+    // public string FileExt
 
     // private string? FilePathPreConversion { get; init; }
     //
     // [MemberNotNullWhen(true, nameof(FilePathPreConversion))]
     public bool ConversionRequired { get; private set => SetAndNotify(value, ref field); }
 
-    public string FileName => IIconItem.GetFileName(this);
-
-    public string FileExt => IIconItem.GetFileExt(this);
-
     public AvaloniaBitmap? ImageBitmap { get; private set => SetAndNotify(value, ref field); }
 
-    private bool IsDefault { get; }
+    private bool IsDefault => Equals(DefaultInstance);
 
     private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
 
 
-    public static ViewableIconItem DefaultInstance { get; } = new();
+    public static ObservableIconItem DefaultInstance { get; } = new();
 
     /// <summary> Constructor dedicated to static instances. </summary>
     /// <param name="caller">The name of the caller member, annotaded with <see cref="CallerMemberNameAttribute"/>.</param>
     /// <exception cref="InvalidOperationException">If the <paramref name="caller"/> is not recognized.</exception>
-    private ViewableIconItem([CallerMemberName] string? caller = null) {
+    private ObservableIconItem([CallerMemberName] string? caller = null) {
         switch (caller)
         {
             case nameof(DefaultInstance):
                 FilePath = Translations.resGeneric.btnDefault;
                 ConversionRequired = false;
-                IsDefault = true;
-                _ = SetBitmapAsync();
+                // _ = SetBitmapAsync();    <= It doesn't work during construction
                 break;
             default:
-                throw new InvalidOperationException($"[{nameof(ViewableIconItem)}] Unknown caller '{caller}'");
+                throw new InvalidOperationException($"[{nameof(ObservableIconItem)}] Unknown caller '{caller}'");
         }
     }
 
-    public ViewableIconItem(string filePath, bool? conversionRequired = null) {
+    public ObservableIconItem(string filePath, bool? conversionRequired = null) {
         FilePath = filePath;
         ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
         _ = SetBitmapAsync();
     }
 
-    public static ViewableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
+    public static ObservableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
 
     public void SetBitmap(System.IO.Stream newImageStream) => ImageBitmap = GetBitmap(newImageStream);
     public async Task SetBitmapAsync(string newImagePath) => ImageBitmap = await GetBitmap(newImagePath);
@@ -117,7 +117,7 @@ public class ViewableIconItem : NotifyPropertyBase, IIconItem, IDisposable
 
     public void Dispose() {
         if (IsDefault) {
-            Logger.LogWarn($"'{nameof(Dispose)}' was called on '{nameof(ViewableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
+            Logger.LogWarn($"'{nameof(Dispose)}' was called on '{nameof(ObservableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
             return;
         }
         FilePath = string.Empty;

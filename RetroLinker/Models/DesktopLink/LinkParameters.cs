@@ -30,7 +30,7 @@ public abstract class LinkParameters : ILinkParametersBase
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; protected init; } = new List<EnvironmentVariable>();
     public HashSet<EnvironmentVariable> HashedEnvironmentVariables { get; protected init; } = new();
     protected string _ogOutputPath = string.Empty;
-    
+
     /// <summary>
     /// An OS-agnostic command to write the shortcut to file
     /// </summary>
@@ -44,8 +44,8 @@ public abstract class LinkParameters : ILinkParametersBase
         foreach (var variable in EnvironmentVariables)  // Trace failed additions
             HashedEnvironmentVariables.Add(variable);
     }
-    
-    protected async Task<LinkWriterResult> CreateShortcut(System.Func<LinkParameters, Task> osCreateShortcut)
+
+    protected async Task<LinkWriterResult> CreateShortcut(Func<LinkParameters, Task> osCreateShortcut)
     {
         var result = new LinkWriterResult(OutputPath);
         Logger.LogInfo($"Creating \"{result.OutputPath}\"...");
@@ -53,7 +53,7 @@ public abstract class LinkParameters : ILinkParametersBase
             await osCreateShortcut(this);
             result.ResultSuccess();
         }
-        catch (System.Exception ex) {
+        catch (Exception ex) {
             Logger.LogWarn($"\"{result.OutputPath}\" could not be created!");
             Logger.LogErro(ex);
             result.ResultFailure(ex.Message);

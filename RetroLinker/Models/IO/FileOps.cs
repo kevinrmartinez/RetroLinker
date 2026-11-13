@@ -39,25 +39,25 @@ public static class FileOps
 
 
     public static List<string> ConfigDir { get; private set; } = new();
-        
+
     public static readonly char OsDirSeparator = Path.DirectorySeparatorChar;
     public static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
     // private static string PathToSettingFileBin = Path.Combine(BaseDir, SettingFileBin);
     private static readonly string PathToSettingFileJson = Path.Combine(BaseDir, SettingFileJson);
     public static readonly string DefUserAssetsDir = Path.Combine(BaseDir, DefUserAssets);
     public static readonly string DefLicensesDir = Path.Combine(BaseDir, DefLicenses);
-        
-        
+
+
     public static readonly List<string> WinExtraIconsExt = ["*.png", "*.jpg", "*.jpeg", "*.svg", "*.svgz"];
     public static readonly List<string> WinAllIconsExt = [$"*{WinIcoExt}", $"*{WinPeExtExe}", $"*{WinPeExtDll}", ..WinExtraIconsExt];
     public static readonly List<string> LinIconsExt = [$"*{WinIcoExt}", "*.png", "*.xpm", "*.svg", "*.svgz"];
-        
+
     public static readonly string UserProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
     public static readonly string UserDesktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     public static readonly string UserData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
     public static readonly string UserTemp = Path.Combine(Path.GetTempPath(), Translations.resGeneric.GenAppName);
     // Solution for cross-OS path separators thanks to Vilmir @ stackoverflow.com
-        
+
     public static readonly string WINPublicUser = Path.Combine("C:", "Users", "Public");
     public static readonly string WINPublicDesktop = Path.Combine(WINPublicUser, "Desktop");
     public static readonly string WINUserStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
@@ -65,7 +65,7 @@ public static class FileOps
 
     private static readonly DirectoryInfo LicensesDir = new(DefLicensesDir);
     public static readonly FileInfo[] LicensesFiles = (LicensesDir.Exists) ? LicensesDir.GetFiles() : [ ];
-        
+
     public static string[] WinLinkPathCandidates { get; } =
     [
         UserDesktop,
@@ -73,7 +73,7 @@ public static class FileOps
         WINUserStartMenu,
         WINSystemStartMenu
     ];  // Source: https://en.wikipedia.org/wiki/Start_menu
-        
+
     public static string[] LinLinkPathCandidates { get; } =
     [
         UserDesktop,
@@ -81,12 +81,12 @@ public static class FileOps
         CombineMultipleInputs("/", "usr", "local", "share", "applications"),
         CombineMultipleInputs("/", "usr", "share", "applications")
     ];  // Source: https://askubuntu.com/questions/117341/how-can-i-find-desktop-files
-        
+
     public static Dictionary<bool, string> TileIconOutDirs { get; } = new() {
         [false] = WINUserStartMenu,
         [true] = WINSystemStartMenu
     };
-        
+
     private static Settings.Settings _loadedSettings = new();
 
 
@@ -102,21 +102,19 @@ public static class FileOps
         return _loadedSettings;
     }
 
-    public static Settings.Settings LoadCachedSettingsFO()
-    {
+    public static Settings.Settings LoadCachedSettingsFO() {
         _loadedSettings = SettingsOps.GetCachedSettings();
         BuildConfigDir(_loadedSettings);
         return _loadedSettings;
     }
 
-    public static Settings.Settings SetNewSettings(Settings.Settings settings)
-    {
+    public static Settings.Settings SetNewSettings(Settings.Settings settings) {
         _loadedSettings = settings;
         return _loadedSettings;
     }
 
     public static Task<string> ReadSettingsFile() => ReadFileTextToEndAsync(PathToSettingFileJson);
-        
+
     public static async void WriteSettingsFile(string settingString)
     {
         try {
@@ -129,11 +127,8 @@ public static class FileOps
         }
     }
 
-    private static void BuildConfigDir(Settings.Settings loadedSettings)
-    {
-        const string NormalRAconfig = "Default";
-        ConfigDir = new List<string>() { NormalRAconfig };
-        if (loadedSettings.PrevConfig) ConfigDir.AddRange(SettingsOps.PrevConfigs);
+    private static void BuildConfigDir(Settings.Settings loadedSettings) {
+        if (loadedSettings.PrevConfig) ConfigDir = new(SettingsOps.PrevConfigs);
     }
 
     #endregion
@@ -152,7 +147,7 @@ public static class FileOps
             }
             catch (Exception ex) {
                 Logger.LogErro(ex);
-                return false; 
+                return false;
             }
         }
         else
@@ -167,7 +162,7 @@ public static class FileOps
         }
         return true;
     }
-        
+
     public static bool GetCoreFile(out string file)
     {
         var externalCores = Path.Combine(_loadedSettings.UserAssetsPath, CoresFile);
@@ -178,7 +173,7 @@ public static class FileOps
         file = externalCores;
         return true;
     }
-        
+
     public static async Task<string[]> LoadCores(string filePath)
     {
         try
@@ -203,14 +198,14 @@ public static class FileOps
         var extList = (App.PlatformOs) ? WinAllIconsExt : LinIconsExt;
         var filesList = new DirectoryInfo(dir).GetFiles();
         Logger.LogInfo($"Searching for Icons at \"{dir}\".");
-            
+
         foreach (var file in filesList)
             if (extList.Contains("*" + file.Extension.ToLowerInvariant())) validIcons.Add(new IconItem(file.FullName));
 
         Logger.LogInfo(validIcons.Count == 0
             ? "No icons found."
             : $"{validIcons.Count} icons were found.");
-            
+
         return validIcons;
     }
     #endregion
@@ -220,29 +215,29 @@ public static class FileOps
     public static MemoryStream BytesToStream(byte[] bytes) => new(bytes);
 
     public static string GetAbsolutePath(string path) => Path.GetFullPath(path);
-        
+
     public static string? GetDirFromPath(string path) => Path.GetDirectoryName(path);
-    
+
     public static string ForceGetDirFromPath(string path) => GetDirFromPath(path) ?? BaseDir;
-        
+
     public static string GetFileNameFromPath(string pathToFile) => Path.GetFileName(pathToFile);
-        
+
     public static string GetFileNameNoExtFromPath(string pathToFile) => Path.GetFileNameWithoutExtension(pathToFile);
-        
+
     public static string GetFileExtFromPath(string pathToFile) => Path.GetExtension(pathToFile);
-    
+
     [return: NotNullIfNotNull("pathToFile")]
     public static string? ChangeFileExtension(string? pathToFile, string? newExtension) => Path.ChangeExtension(pathToFile, newExtension);
-        
+
     public static string CombineMultipleInputs(params string[] paths) => Path.Combine(paths);
-        
+
     public static bool PathAlreadyExists(string path) => Path.Exists(path);
 
     public static bool PathAlreadyExistsAndNotEmpty(string path) {
         if (!Path.Exists(path)) return true;
         else return (GetFileInfo(path).Length > 0);
     }
-    
+
     public static Task<string[]> ReadFileLinesToEndAsync(string filePath) => File.ReadAllLinesAsync(filePath);
     public static async Task<string> ReadFileTextToEndAsync(string filePath) => await File.ReadAllTextAsync(filePath);
     public static async Task<byte[]> ReadFileBytesToEndAsync(string filePath) => await File.ReadAllBytesAsync(filePath);
@@ -259,8 +254,8 @@ public static class FileOps
     /// <remarks>Use this when the UI is running.</remarks>
     public static async Task MoveFileAsync(string source, string destination, bool overwrite = false) {
         await Task.Run(() => File.Move(source, destination, overwrite));
-    } 
-        
+    }
+
     /// <summary>
     /// A wrapper for <see cref="File.Delete"/>
     /// </summary>
@@ -271,24 +266,24 @@ public static class FileOps
     /// An async wrapper for <see cref="File.Delete"/>
     /// </summary>
     /// <remarks>Use this when calling fron the UI.</remarks>
-    public static async Task DeleteFileAsync(string filePath) 
+    public static async Task DeleteFileAsync(string filePath)
         => await Task.Run(() => File.Delete(filePath));
-        
+
     /// <summary>
     /// A wrapper for <see cref="M:File.WriteAllBytesAsync(string,byte[],System.Threading.CancellationToken)"/>.
     /// </summary>
     /// <param name="filePath">Path of the file to write.</param>
     /// <param name="bytes">The bytes to be written.</param>
     /// <remarks>Use this when calling fron the UI.</remarks>
-    public static async Task WriteAllBytesToFileAsync(string filePath, byte[] bytes) 
+    public static async Task WriteAllBytesToFileAsync(string filePath, byte[] bytes)
         => await File.WriteAllBytesAsync(filePath, bytes);
-        
-        
+
+
     public static FileInfo GetFileInfo(string filePath) => new(filePath);
-        
+
     public static DirectoryInfo GetDirectoryInfo(string dirPath) => new(dirPath);
 
-    public static List<FileInfo> GetFilesInDirectory(string dirPath, string searchPattern = "*", 
+    public static List<FileInfo> GetFilesInDirectory(string dirPath, string searchPattern = "*",
         EnumerationOptions? enumerationOptions = null)
     {
         enumerationOptions ??= new EnumerationOptions() {
@@ -297,7 +292,7 @@ public static class FileOps
             RecurseSubdirectories = false
         };
         var dirInfo = new DirectoryInfo(dirPath);
-        return (dirInfo.Exists) ? new List<FileInfo>(dirInfo.GetFiles(searchPattern, enumerationOptions)) 
+        return (dirInfo.Exists) ? new List<FileInfo>(dirInfo.GetFiles(searchPattern, enumerationOptions))
             : new List<FileInfo>();
     }
 
@@ -316,8 +311,8 @@ public static class FileOps
         newFileName.Append(extension);
         return newFileName.ToString();
     }
-    
-    public static string GenerateTempFileFullName(string? extension = null) 
+
+    public static string GenerateTempFileFullName(string? extension = null)
         => CombineMultipleInputs(UserTemp, GenerateTempFileName(extension));
 
     public static string GetOutputExt(bool os) => (os) ? WinLinkExt : LinLinkExt;
@@ -334,7 +329,7 @@ public static class FileOps
             return false;
         }
     }
-        
+
     public static async Task<string> DumpStreamToFile(Stream fileStream, string? fileName = null)
     {
         if (string.IsNullOrWhiteSpace(fileName)) fileName = GenerateTempFileName();
@@ -352,19 +347,19 @@ public static class FileOps
         fileExt = GetFileExtFromPath(filePath);
         return (fileExt.ToLowerInvariant() is ".txt" or ".cfg");
     }
-        
+
     public static string SeparateFileNameFromPath(string path, out string fileNameNoExt, out string fileExt)
     {
         // File Name Without Extension
         fileNameNoExt = GetFileNameNoExtFromPath(path);
-                
+
         // Extension
         fileExt = GetFileExtFromPath(path);
-            
+
         // File Name
         return GetFileNameFromPath(path);
     }
-        
+
     #endregion
 
     #region ICONS
@@ -399,7 +394,7 @@ public static class FileOps
             extList.AddRange(WinIcoExt, WinPeExtExe, WinPeExtDll);
         }
         else extList.AddRange(LinIconsExt);
-        
+
         fileExt = GetFileExtFromPath(filePath).ToLowerInvariant();
         return extList.Contains(fileExt);
     }
@@ -409,9 +404,9 @@ public static class FileOps
 
     #region Windows Only Ops
 
-    public static bool IsExtWinPE(string ext) => ext.Equals(WinPeExtExe, StringComparison.OrdinalIgnoreCase) || 
+    public static bool IsExtWinPE(string ext) => ext.Equals(WinPeExtExe, StringComparison.OrdinalIgnoreCase) ||
                                                  ext.Equals(WinPeExtDll, StringComparison.OrdinalIgnoreCase);
-    
+
     public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
     [SupportedOSPlatform(App.PlatformWin)]
@@ -419,11 +414,11 @@ public static class FileOps
     {
         // TODO: test
         if (IsExtWinPE(selectedIconItem.FileExt) && !_loadedSettings.ExtractIco) return selectedIconItem.FilePath;
-        
+
         var romIcoSave = (string.IsNullOrEmpty(raRom) || raRom == CommandLine.Manager.Contentless)
             ? linkParameters.RaExecutable
             : raRom;
-        
+
         var newPath = GetFileNameNoExtFromPath(selectedIconItem.FileName) + WinIcoExt;
         if (_loadedSettings.IcoLinkName) {
             var dir = ForceGetDirFromPath(linkParameters.IconPath);
@@ -453,7 +448,7 @@ public static class FileOps
     #endregion
 
     #region Linux Only Ops
-        
+
     [UnsupportedOSPlatform(App.PlatformWin)]
     public static void MakeUnixFileExecutable(string filePath, bool forAll = false)
     {

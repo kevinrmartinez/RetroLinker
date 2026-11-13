@@ -27,7 +27,7 @@ namespace RetroLinker.Models.DesktopLink;
 public class LinkWriter : IShortcutBase
 {
     // Some setters may not be necessary
-    public string RaExecutable { get; set; } 
+    public string RaExecutable { get; set; }
     public string RaArguments { get; set; }
     public string? Description { get; set; }
     public string IconPath { get; set; }
@@ -42,7 +42,7 @@ public class LinkWriter : IShortcutBase
     public bool TileIcoOverwrite { get; set; }
     public string? TileIcoImagePath { get; set; }
     public bool RaVerbose { get; set; }
-    
+
     public List<string> OutputPaths { get; } = new();
 
     // private LinkWriter() { }
@@ -64,32 +64,32 @@ public class LinkWriter : IShortcutBase
         TileIcoOverwrite = builder.TileIcoOverwrite;
         TileIcoImagePath = builder.TileIcoImagePath;
         RaVerbose = builder.RaVerbose;
-        
+
         foreach (var copyDirectory in SettingsOps.GetCachedSettings().SavedCopyPaths)
             OutputPaths.Add(GetNewOutputPath(copyDirectory));
     }
-    
-    public string GetNewOutputPath(string outputDirectory) 
+
+    public string GetNewOutputPath(string outputDirectory)
         => FileOps.CombineMultipleInputs(outputDirectory, OutputFileName);
-    
+
     public void SetOutputPath(string fullPath) {
         OutputPath = fullPath;
         OutputFileName = FileOps.GetFileNameFromPath(OutputPath);
         FriendlyName = FileOps.GetFileNameNoExtFromPath(OutputFileName);
     }
-    
+
     public void SetOutputPathAndFriendlyName(string fullPath, string friendlyName) {
         SetOutputPath(fullPath);
         FriendlyName = friendlyName;
     }
-    
-    
+
+
     /// <summary>
     /// Finalizes the object and build all shortcut files for the current OS.
     /// </summary>
     /// <param name="os">The OS identifier</param>
     /// <returns>A list of <see cref="LinkWriterResult"/>.</returns>
-    public async Task<List<LinkWriterResult>> BuildShortcut(bool os) 
+    public async Task<List<LinkWriterResult>> BuildShortcut()
     {
         var results = new List<LinkWriterResult>();
         var outputPath = OutputPath;
@@ -99,7 +99,7 @@ public class LinkWriter : IShortcutBase
             ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
             var settings = SettingsOps.GetCachedSettings();
             // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
-            LinkParameters parameters = (os) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
+            LinkParameters parameters = (App.PlatformOs) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
             results.Add(await parameters.CreateOsShortcut());
             if (settings.MakeLinkCopy) {
                 foreach (var path in OutputPaths) {
@@ -124,11 +124,12 @@ public class LinkWriter : IShortcutBase
 /// <param name="OutputPath">The full path of link being handled.</param>
 public record struct LinkWriterResult(string OutputPath)
 {
+    // TODO: Replace
     public string OutputPath { get; } = OutputPath;
     public string? Message { get; private set; }
     public bool Error { get; private set; }
     public string? ExMessage { get; private set; }
-        
+
     private static readonly string Success1 = Translations.resMainView.popLinkSucces;
     private static readonly string Failure1 = Translations.resMainView.popLinkFailure;
 

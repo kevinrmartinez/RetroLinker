@@ -42,6 +42,7 @@ public partial class MainView : UserControl
 
     #region AvaloniaProperties
 
+    // == Link Params ==
     public static readonly DirectProperty<MainView, bool> ContentlessRomProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
             nameof(ContentlessRom),
@@ -79,6 +80,21 @@ public partial class MainView : UserControl
         }
     }
 
+    public static readonly DirectProperty<MainView, ObservableConfigItem> ConfigSelectedItemProperty =
+        AvaloniaProperty.RegisterDirect<MainView, ObservableConfigItem>(
+            nameof(ConfigSelectedItem),
+            view => view.ConfigSelectedItem,
+            (view, value) => view.ConfigSelectedItem = value);
+
+    public ObservableConfigItem ConfigSelectedItem {
+        get;
+        set {
+            BuildingLink.RaConfig = (value.IsDefault) ? null : value.FilePath;
+            SetAndRaise(ConfigSelectedItemProperty, ref field, value);
+        }
+    } = ObservableConfigItem.DefaultInstance;
+
+    // == Output File ==
     public static readonly DirectProperty<MainView, string> OutputFullPathProperty =
         AvaloniaProperty.RegisterDirect<MainView, string>(
             nameof(OutputFullPath),
@@ -142,7 +158,7 @@ public partial class MainView : UserControl
     }
 
     /* 
-     * This one bellow gets raised by 'TileIconEnabled' and 'TileIconAllUsers' so the control gets updated.
+     * This one bellow gets raised by 'UpdateAndNotifyFixedOutputDir()' so the control gets updated.
      * My alternatives are subscribing to each observable, or to the view's OnPropertyChanged,
      * and in the end those are the same
      */
@@ -153,13 +169,14 @@ public partial class MainView : UserControl
 
     public string FixedOutputDir => (!TileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[TileIconAllUsers];
 
-    public static readonly DirectProperty<MainView, ViewableIconItem> IconSelectedItemProperty =
-        AvaloniaProperty.RegisterDirect<MainView, ViewableIconItem>(
+    // == Icon ==
+    public static readonly DirectProperty<MainView, ObservableIconItem> IconSelectedItemProperty =
+        AvaloniaProperty.RegisterDirect<MainView, ObservableIconItem>(
             nameof(IconSelectedItem),
             view => view.IconSelectedItem,
             (view, value) => view.IconSelectedItem = value);
 
-    public ViewableIconItem IconSelectedItem
+    public ObservableIconItem IconSelectedItem
     {
         get;
         set {
@@ -171,7 +188,7 @@ public partial class MainView : UserControl
             }
             SetAndRaise(IconSelectedItemProperty, ref field, value);
         }
-    } = ViewableIconItem.DefaultInstance;
+    } = ObservableIconItem.DefaultInstance;
 
     public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
@@ -183,7 +200,7 @@ public partial class MainView : UserControl
     {
         get;
         set {
-            if (!value) IconSelectedItem = ViewableIconItem.DefaultInstance;
+            if (!value) IconSelectedItem = ObservableIconItem.DefaultInstance;
             SetAndRaise(CustomIconSourceProperty, ref field, value);
         }
     }
@@ -206,7 +223,8 @@ public partial class MainView : UserControl
     public static string OutputDescTip => (App.PlatformOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
     public Settings Settings { get; private set; }
     public UserLinkBuilder BuildingLink { get; } = new();
-    public ObservableCollection<ViewableIconItem> IconItems { get; } = [ViewableIconItem.DefaultInstance];
+    public ObservableCollection<ObservableConfigItem> ConfigItems { get; } = [ObservableConfigItem.DefaultInstance];
+    public ObservableCollection<ObservableIconItem> IconItems { get; } = [ObservableIconItem.DefaultInstance];
 
 
     public MainView()
@@ -296,13 +314,9 @@ public partial class MainView : UserControl
         Logger.LogInfo($"{cores.Length} cores were imported.");
      }
 
-    private void Prepare_comboConfig()
-    {
-        comboConfig.Items.Clear();
+    private void Prepare_comboConfig() {
         foreach (var config in FileOps.ConfigDir)
-            comboConfig.Items.Add(config);
-
-        comboConfig.SelectedIndex = 0;
+            ConfigItems.Add(new ObservableConfigItem(config));
     }
 
     private async Task Prepare_comboIcon()
@@ -311,7 +325,7 @@ public partial class MainView : UserControl
         {
             var iconsList = await Task.Run(FileOps.LoadIcons);
             foreach (var iconFile in iconsList)
-                IconItems.Add(ViewableIconItem.FromIIconItem(iconFile));
+                IconItems.Add(ObservableIconItem.FromIIconItem(iconFile));
             Logger.LogInfo("Icons list imported");
         }
         catch (Exception e)
@@ -321,6 +335,7 @@ public partial class MainView : UserControl
             var content = new PopUpGenericContent(message, resMainView.popIconsError_Title);
             _ = this.PopUpGenericMessageBox(content, GenericPopUpType.Error);
         }
+        IconSelectedItem.ResetBitmap(); // <= Default entry gets its icon data
     }
 
     private void ApplyDragDropEvents()
@@ -469,7 +484,7 @@ public partial class MainView : UserControl
 
     private async Task SetFinalIconPath(UserLinkBuilder outputLink)
     {
-        if (IconSelectedItem.Equals(ViewableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
+        if (IconSelectedItem.Equals(ObservableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
         else
         {
             outputLink.IconPath = IconSelectedItem.FilePath;    // It's set to the selected icon file by default
@@ -599,6 +614,7 @@ public partial class MainView : UserControl
 
                 if (DesktopOS && IconSelectedItem.ConversionRequired)
                 {
+                    // TODO: test again
                     if (!FileOps.IsFileWinPE(outputLink.IconPath))
                     {
                         var wrkIconItem = IconSelectedItem;
@@ -613,7 +629,7 @@ public partial class MainView : UserControl
                             IconSelectedItem = IconItems[Index.Start];
                             IconItems.RemoveAt(index);
                             wrkIconItem.Dispose();
-                            wrkIconItem = new ViewableIconItem(outputLink.IconPath, conversionRequired: false);
+                            wrkIconItem = new ObservableIconItem(outputLink.IconPath, conversionRequired: false);
                             IconItems.Insert(index, wrkIconItem);
                             IconSelectedItem = wrkIconItem;
                         }
@@ -621,7 +637,7 @@ public partial class MainView : UserControl
                 }
 
                 // Create Shortcuts
-                var opsResult = await outputLink.BuildShortcut(DesktopOS);
+                var opsResult = await outputLink.BuildShortcut();
                 (popUpContent, popUpType) = HandleExecutionReturn(opsResult);
             }
             else {
@@ -668,7 +684,7 @@ public partial class MainView : UserControl
     void IconPath_Set(string filePath) {
         var existing = IconItems.FirstOrDefault(i => i.FilePath == filePath);
         if (existing is null) {
-            var newIcon = new ViewableIconItem(filePath);
+            var newIcon = new ObservableIconItem(filePath);
             IconItems.Add(newIcon);
             IconSelectedItem = newIcon;
         }
@@ -767,11 +783,12 @@ public partial class MainView : UserControl
 
     void comboConfig_Set(string filePath)
     {
-        if (!comboConfig.Items.Contains(filePath)) {
-            comboConfig.Items.Add(filePath);
+        var input = new ObservableConfigItem(filePath);
+        if (!ConfigItems.Contains(input)) {
+            ConfigItems.Add(input);
             if (Settings.PrevConfig) SettingsOps.PrevConfigs.Add(filePath);
         }
-        comboConfig.SelectedItem = filePath;
+        ConfigSelectedItem = input;
     }
 
     async void btnCONFIGDir_ClickAsync()
@@ -779,7 +796,7 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-            string currentFile = (comboConfig.SelectedIndex > 0) ? (string)comboConfig.SelectedItem! : string.Empty;
+            var currentFile = (ConfigSelectedItem.IsDefault) ? string.Empty : ConfigSelectedItem.FilePath;
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAcfg, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
             comboConfig_Set(file);
@@ -789,16 +806,6 @@ public partial class MainView : UserControl
     }
 
     void btnCONFIGDir_OnClick(object sender, RoutedEventArgs e) => btnCONFIGDir_ClickAsync();
-
-    [Obsolete("Replace with binding?")]
-    void comboConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        BuildingLink.RaConfig = comboConfig.SelectedIndex switch {
-            -1 => null,
-            0 => string.Empty,
-            _ => (string)comboConfig.SelectedItem!
-        };
-    }
 
     void btnAppendConfig_OnClick(object sender, RoutedEventArgs e) {
         ParentWindow.ChangeOut(MainViewTypes.AppendView);
@@ -828,8 +835,8 @@ public partial class MainView : UserControl
         {
             LockControls(true);
             var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
-            string currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
-            string file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
+            var currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
+            var file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
             if (!string.IsNullOrEmpty(file))
             {
                 if (!DesktopOS)
@@ -838,7 +845,6 @@ public partial class MainView : UserControl
                     if (!helper.ValidOutput) throw new Exception("Output path could not be resolved.");
                     BuildingLink.SetOutputPathAndFriendlyName(helper.NewPath, helper.NewFriendlyName);
                     BuildingLink.CustomEntryName = helper.CustomEntry;
-                    // file = BuildingLink.OutputPath;
                 }
                 else BuildingLink.SetOutputPath(file);
                 UpdateAndNotifyFixedOutputDir();
@@ -987,7 +993,7 @@ public partial class MainView : UserControl
 
     // CLOSING
     public void DisposeResources() {
-        IconSelectedItem = ViewableIconItem.DefaultInstance;
+        IconSelectedItem = ObservableIconItem.DefaultInstance;
         foreach (var iconItem in IconItems) iconItem.Dispose();
         IconItems.Clear();
     }

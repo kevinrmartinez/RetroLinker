@@ -32,15 +32,15 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     public bool TileIcoOverwrite { get; }
     public string? TileIcoImagePath { get; }
     private WindowsBuildOptions BuildOption { get; set; }
-    
+
     private string _iconFallabckPath;
     private enum WindowsBuildOptions { Shell, TileIco }
-    
+
     public WindowsLinkParameters(IShortcutBase linkWriter)
     {
         EnvironmentVariables = linkWriter.EnvironmentVariables;
         UpdateHashedVariables();
-        
+
         if (HashedEnvironmentVariables.Count < 1) {
             RaExecutable = linkWriter.RaExecutable;
             RaArguments = linkWriter.RaArguments;
@@ -49,7 +49,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
             RaExecutable = CommandLine.Manager.GetPowershellExecutable();
             RaArguments = CommandLine.Manager.CreatePowershellArguments(linkWriter, HashedEnvironmentVariables);
         }
-        
+
         RaWorkDir = linkWriter.RaWorkDir ?? FileOps.GetDirFromPath(linkWriter.RaExecutable); // <= By default
         Description = linkWriter.Description;
         IconPath = linkWriter.IconPath;
@@ -62,20 +62,20 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         TileIcoAllUsers = linkWriter.TileIcoAllUsers;
         TileIcoOverwrite = linkWriter.TileIcoOverwrite;
         TileIcoImagePath = linkWriter.TileIcoImagePath;
-        BuildOption = (SettingsOps.GetCachedSettings().TileIcoPath is null) 
+        BuildOption = (SettingsOps.GetCachedSettings().TileIcoPath is null)
             ? WindowsBuildOptions.Shell : WindowsBuildOptions.TileIco;
-        
+
         _iconFallabckPath = linkWriter.RaExecutable;
     }
 
     public WindowsLinkParameters(SharpShellLink.Shortcut shortcut, string linkPath)
     {
-        System.ArgumentException.ThrowIfNullOrEmpty(shortcut.StringData?.CommandLineArguments);
+        ArgumentException.ThrowIfNullOrEmpty(shortcut.StringData?.CommandLineArguments);
         string targetPath;
         if (shortcut.LinkTargetIDList is not null) targetPath = shortcut.LinkTargetIDList.Path;
         else if (shortcut.ExtraData.EnvironmentVariableDataBlock is not null)
             targetPath = shortcut.ExtraData.EnvironmentVariableDataBlock.TargetUnicode;
-        else throw new System.ArgumentException("Can't get target program from shortcut");
+        else throw new ArgumentException("Can't get target program from shortcut");
 
         var rawArguments = shortcut.StringData.CommandLineArguments;
         if (!rawArguments.Contains($"-{CommandLine.Manager.PwsCommandOpt}")) {
@@ -90,7 +90,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
             HashedEnvironmentVariables = pwsWrapper.EnvironmentVariables;
             EnvironmentVariables = new List<EnvironmentVariable>(HashedEnvironmentVariables);
         }
-        
+
         Description = shortcut.StringData.NameString;
         IconPath = shortcut.StringData.IconLocation;
         OutputFileName = shortcut.LinkTargetIDList?.DisplayName ?? FileOps.GetFileNameFromPath(linkPath);
@@ -98,7 +98,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         OutputPath = linkPath;
         _ogOutputPath = linkPath;
         TileIcoImagePath = null; // <= It can be done, but this app can't handle all the things a Tile Icon has
-        
+
         _iconFallabckPath = RaExecutable;
     }
 
@@ -111,8 +111,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     public override async Task<LinkWriterResult> CreateOsShortcut() {
         return BuildOption switch {
             WindowsBuildOptions.Shell => await BuildWinShortcut_WindowsShell(),
-            WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco(),
-            _ => throw new System.ArgumentOutOfRangeException(nameof(BuildOption), BuildOption, null)
+            WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco()
         };
     }
 
@@ -121,6 +120,6 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         return await CreateShortcut(ShortcutManager.CreateShortcut);
     }
 
-    private async Task<LinkWriterResult> BuildWinShortcut_TileIco() 
+    private async Task<LinkWriterResult> BuildWinShortcut_TileIco()
         => await CreateShortcut(ShortcutManager.CreateTileIcoShortcut);
 }
