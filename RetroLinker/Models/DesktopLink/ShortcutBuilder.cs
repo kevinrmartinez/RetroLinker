@@ -21,7 +21,7 @@ using RetroLinker.Models.Settings;
 
 namespace RetroLinker.Models.DesktopLink;
 
-public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuilder
+public class ShortcutBuilder : NotifyPropertyBase, IShortcut, IShortcutBuilder
 {
     public string RaExecutable { get; set => SetAndNotify(value, ref field); }
     public string RaRom { get; set => SetAndNotify(value, ref field); }
@@ -48,7 +48,7 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     public string FriendlyName { get; private set => SetAndNotify(value, ref field); }
     public string OutputFileName { get; private set => SetAndNotify(value, ref field); }
     public string OutputPath { get; private set => SetAndNotify(value, ref field); }
-    public string OutputDir => ILinkParametersBase.GetOutputDir(this);
+    public string OutputDir => IOsLinkParameters.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
 
     private ObservableAppendedConfigs? ObservableRaAppendedConfig { get; set => SetAndNotify(value, ref field); }
@@ -58,7 +58,7 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
     public string RaArguments { get; }
     public string? RaWorkDir { get; }
 
-    public UserLinkBuilder()
+    public ShortcutBuilder()
     {
         RaExecutable = string.Empty;
 
@@ -77,7 +77,7 @@ public class UserLinkBuilder : NotifyPropertyBase, IShortcutBase, IUserLinkBuild
         if (!App.PlatformOs) CustomEntryName = false;
     }
 
-    public UserLinkBuilder(ILinkParametersBase linkParam)
+    public ShortcutBuilder(IOsLinkParameters linkParam)
     {
         RaExecutable = linkParam.RaExecutable;
 

@@ -18,7 +18,7 @@
 
 namespace RetroLinker.Models.DesktopLink;
 
-public abstract class LinkParameters : ILinkParametersBase
+public abstract class OsLinkParameters : IOsLinkParameters
 {
     public string RaExecutable { get; protected init; } = string.Empty;
     public string RaArguments { get; protected init; } = string.Empty;
@@ -34,8 +34,8 @@ public abstract class LinkParameters : ILinkParametersBase
     /// <summary>
     /// An OS-agnostic command to write the shortcut to file
     /// </summary>
-    /// <returns>A <see cref="LinkWriterResult"/> indicating if the file was whether written successfully or not.</returns>
-    public abstract Task<LinkWriterResult> CreateOsShortcut();
+    /// <returns>A <see cref="ShortcutWriterResult"/> indicating if the file was whether written successfully or not.</returns>
+    public abstract Task<ShortcutWriterResult> CreateOsShortcut();
 
     public virtual void SetToCopyOutputPath(string outputPath) => OutputPath = outputPath;
 
@@ -45,17 +45,17 @@ public abstract class LinkParameters : ILinkParametersBase
             HashedEnvironmentVariables.Add(variable);
     }
 
-    protected async Task<LinkWriterResult> CreateShortcut(Func<LinkParameters, Task> osCreateShortcut)
+    protected async Task<ShortcutWriterResult> CreateShortcut(Func<OsLinkParameters, Task> osCreateShortcut)
     {
         Logger.LogInfo($"Creating \"{OutputPath}\"...");
         try {
             await osCreateShortcut(this);
-            return new LinkWriterResult(OutputPath);
+            return new ShortcutWriterResult(OutputPath);
         }
         catch (Exception ex) {
             Logger.LogWarn($"\"{OutputPath}\" could not be created!");
             Logger.LogErro(ex);
-            return new LinkWriterResult(OutputPath, ResultSuccess: false, ex.Message);
+            return new ShortcutWriterResult(OutputPath, ResultSuccess: false, ex.Message);
         }
     }
 }

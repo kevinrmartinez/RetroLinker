@@ -27,7 +27,7 @@ namespace RetroLinker.Models.Linux;
 public static partial class ShortcutManager
 {
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
-    public static async Task<LinkParameters> ReadShortcut(string linkPath)
+    public static async Task<OsLinkParameters> ReadShortcut(string linkPath)
     {
         var iniData = await FileOps.ReadFileTextToEndAsync(linkPath);
         var doc = IniDocument.Parse(iniData);
@@ -37,7 +37,7 @@ public static partial class ShortcutManager
 
     // FreeDesktop Spec: https://specifications.freedesktop.org/desktop-entry/latest/
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DesktopEntry))]
-    public static async Task CreateShortcut(LinkParameters linkBase)
+    public static async Task CreateShortcut(OsLinkParameters linkBase)
     {
         var link = linkBase as LinuxLinkParameters;
         ArgumentNullException.ThrowIfNull(link);

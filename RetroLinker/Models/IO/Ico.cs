@@ -27,38 +27,38 @@ public static partial class IconProc
     private const int IcoMaxRes = 256;
     private const int IconDirEntryOffset = sizeof(short) * 3;
     private const int IconDirEntrySize = 16;
-    
+
     private enum IcoType {
         ICO = (short)1,
         CUR = (short)2
     }
-    
+
     /// <summary> A data Structure representing a valid .ico file. </summary>
     /// <remarks> Working with this may be inneficient, but it's done for undenstanding what's going on here in the future. </remarks>
-    private class IcoContainer
+    private sealed class IcoContainer
     {
-        
+
         // https://en.wikipedia.org/wiki/ICO_(file_format)#Structure
         // ICONDIR structure
-        
+
         /// <summary> Reserved. Must be 0. </summary>
         public short IdReserved { get; }
-        
+
         /// <summary> Image type: 1 for ICO image, 2 for CUR image. Other values are invalid. </summary>
         public IcoType IdType { get; }
-        
+
         /// <summary> Number of images in the file. </summary>
         public short IdCount { get; }
-        
+
         /// <summary> Array of <see cref="IconDirEntry"/>. Each entry represents an image. </summary>
         public IconDirEntry[] IdEntries { get; }
 
         /// <summary> Collection of Bitmaps present in this file, in exception to the 256×256 frame. </summary>
         public BitmapStructure[] BitmapFrames { get; }
-        
+
         /// <summary> An embedded PNG image for the 256×256 frame. </summary>
         public byte[]? PngFrame { get; }
-        
+
         /// <summary> Construct an ICO file with the provided image and sizes. </summary>
         /// <param name="initialBitmap">The image to convert, provided as a <see cref="SKBitmap"/>.</param>
         /// <param name="sizes">
@@ -70,7 +70,7 @@ public static partial class IconProc
             IdReserved = IcoReserved;
             IdType = IcoType.ICO;
             IdCount = (short)sizes.Count;
-            
+
             var bitmaps = new List<BitmapStructure>();
             var entries = new List<IconDirEntry>();
             var offset = IconDirEntryOffset + (IconDirEntrySize * IdCount);
@@ -79,7 +79,7 @@ public static partial class IconProc
                 using var resizedBitmap = ResizeAndPad(initialBitmap, size);
                 int structureLenght = 0;
                 if (size < IcoMaxRes) {
-                    var bitmapStructure = new BitmapStructure(resizedBitmap); 
+                    var bitmapStructure = new BitmapStructure(resizedBitmap);
                     bitmaps.Add(bitmapStructure);
                     structureLenght = bitmapStructure.SizeInBytes();
                 }
@@ -89,11 +89,11 @@ public static partial class IconProc
                 }
                 entries.Add(new IconDirEntry(size, structureLenght, ref offset));
             }
-            
+
             IdEntries = entries.ToArray();
             BitmapFrames = bitmaps.ToArray();
         }
-        
+
         public MemoryStream ToStream()
         {
             var stream = new MemoryStream();
@@ -109,35 +109,35 @@ public static partial class IconProc
             stream.Position = 0;
             return stream;
         }
-        
+
         public byte[] ToBytes() => ToStream().ToArray();
     }
-    
-    private struct IconDirEntry
+
+    private readonly struct IconDirEntry
     {
         // ICONDIRENTRY structure
-        
+
         /// <summary> Image width in pixels. Can be any number between 0 and 255. 0 means width is 256. </summary>
         public byte Width { get; }
-        
+
         /// <summary> Image height in pixels. Can be any number between 0 and 255. 0 means height is 256. </summary>
         public byte Height { get; }
-        
+
         /// <summary> Number of colors in the color table. For paletted depths: 2 for 1 bpp, 16 for 4 bpp; 0 for 8 bpp and above. </summary>
         public byte ColorCount { get; }
-        
+
         /// <summary> Reserved. Must be 0. </summary>
         public byte Reserved { get; }
-        
+
         /// <summary> In icon format: Specifies color planes. Should be 0 or 1. </summary>
         public short Planes { get; }
-        
+
         /// <summary> In icon format: Specifies bits per pixel. </summary>
         public short BitCount { get; }
-        
+
         /// <summary> Image data size in bytes. </summary>
         public int BytesInRes { get; }
-        
+
         /// <summary> Specifies the offset of the DIB or PNG data from the beginning of the file. </summary>
         public int ImageOffset { get; }
 
@@ -172,19 +172,19 @@ public static partial class IconProc
 
         public byte[] ToBytes() => ToStream().ToArray();
     }
-    
-    private struct BitmapStructure
+
+    private sealed class BitmapStructure
     {
         // BITMAPINFOHEADER structure
         // https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
-        
+
         /// <summary> Specifies the number of bytes required by the structure. </summary>
         /// <remarks> Is the sum of the size of all properties aside from image data. </remarks>
         public uint Size { get; }
-        
+
         /// <summary> Specifies the width of the bitmap, in pixels. </summary>
         public int  Width { get; }
-        
+
         /// <summary>
         /// Specifies the height of the bitmap, in pixels.
         /// <list type="bullet">
@@ -198,15 +198,15 @@ public static partial class IconProc
         /// </list>
         /// </summary>
         public int Height { get; }
-        
+
         /// <summary> Specifies the number of planes for the target device. This value must be set to 1. </summary>
         public ushort Planes { get; }
-        
+
         /// <summary> Specifies the number of bits per pixel (bpp). </summary>
         /// <remarks> For uncompressed formats, this value is the average number of bits per pixel. For compressed
         /// formats, this value is the implied bit depth of the uncompressed image, after the image has been decoded. </remarks>
         public ushort BitCount { get; }
-        
+
         /// <summary>
         /// For uncompressed RGB formats, the following values are possible:
         /// <list type="table">
@@ -221,29 +221,29 @@ public static partial class IconProc
         /// </list>
         /// </summary>
         public uint Compression { get; }
-        
+
         /// <summary> Specifies the size, in bytes, of the image. This can be set to 0 for uncompressed RGB bitmaps. </summary>
         public uint SizeImage { get; }
-        
+
         /// <summary> Specifies the horizontal resolution, in pixels per meter, of the target device for the bitmap. </summary>
         public int XPelsPerMeter { get; }
-        
+
         /// <summary> Specifies the vertical resolution, in pixels per meter, of the target device for the bitmap. </summary>
         public int YPelsPerMeter { get; }
-        
+
         /// <summary> Specifies the number of color indices in the color table that are actually used by the bitmap. </summary>
         public uint ClrUsed { get; }
-        
+
         /// <summary> Specifies the number of color indices that are considered important for displaying the bitmap. </summary>
         public uint ClrImportant { get; }
-        
+
         /// <summary> Bitmap color data (XOR mask) in RBGA order. </summary>
         public byte[] RawColorData { get; }
-        
+
         /// <summary> Bitmap transparency data (AND mask) for older ICO parsers. </summary>
         /// <remarks> This can be all zeroes and still be rendered, but not valid. Some older parsers still present on current Windows will still access this. </remarks>
-        public byte[] RawTransparencyData { get; } 
-        
+        public byte[] RawTransparencyData { get; }
+
         private const uint BI_RGB = 0;
         private const uint BI_BITFIELDS = 3;
         private const ushort IcoPlanesValue = 1;
@@ -255,17 +255,17 @@ public static partial class IconProc
             const ushort bpp8 = 32;                 // <= Not working with less here
             int squareSize = resizedBitmap.Width;   // <= All bitmaps are forced to be squares (Width = Height)
             // int maskStride = ((squareSize + MaskResolver) / bpp8) * MaskAlingment;
-            
-            Size = (sizeof(int) * 9) + (sizeof(short) * 2); 
+
+            Size = (sizeof(int) * 9) + (sizeof(short) * 2);
             Width = squareSize;
             Height = squareSize * 2;    // Part of the specification
             Planes = IcoPlanesValue;
             BitCount = bpp8;
             Compression = BI_RGB;
-            
+
             (RawColorData, RawTransparencyData) = GenerateMasksData(resizedBitmap);
             SizeImage = (uint)(RawColorData.Length + RawTransparencyData.Length);
-            
+
             // Not using these
             XPelsPerMeter = 0;
             YPelsPerMeter = 0;
@@ -304,12 +304,12 @@ public static partial class IconProc
                     }
                 }
             }
-            
+
             xorWriter.Flush();
             andWriter.Flush();
             return (xorStream.ToArray(), andStream.ToArray());
         }
-        
+
         public int SizeInBytes() => (int)Size + RawColorData.Length + RawTransparencyData.Length;
 
         public MemoryStream ToStream()
@@ -329,11 +329,11 @@ public static partial class IconProc
             writer.Write(ClrImportant);
             writer.Write(RawColorData);
             writer.Write(RawTransparencyData);
-            
+
             stream.Position = 0;
             return stream;
         }
-        
+
         public byte[] ToBytes() => ToStream().ToArray();
     }
 }

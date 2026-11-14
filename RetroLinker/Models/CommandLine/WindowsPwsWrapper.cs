@@ -40,7 +40,7 @@ public static partial class Manager
     }
 
     [SupportedOSPlatform(App.PlatformWin)]
-    public static string CreatePowershellArguments(IShortcutBase link, HashSet<EnvironmentVariable> environmentVariables) {
+    public static string CreatePowershellArguments(IShortcut link, HashSet<EnvironmentVariable> environmentVariables) {
         var wrapper = new WindowsPwsWrapper(link.RaExecutable, link.RaArguments, environmentVariables);
         return wrapper.BuildCommandLineArg();
     }

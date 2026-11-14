@@ -20,7 +20,7 @@ using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models.DesktopLink;
 
-public interface IUserLinkParameters
+public interface IShortcutParameters
 {
     public string RaRom { get; }
     public string RaRomName => GetRomName(this);
@@ -36,10 +36,10 @@ public interface IUserLinkParameters
     public string? RaLogFile { get; }
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
-    protected static string GetRomName(IUserLinkParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
+    protected static string GetRomName(IShortcutParameters u) => FileOps.GetFileNameNoExtFromPath(u.RaRom);
 }
 
-public interface IUserLinkBuilder : IUserLinkParameters
+public interface IShortcutBuilder : IShortcutParameters
 {
     // IUserLinkParameters but with setters
     public new string RaRom { get; set; }
@@ -53,14 +53,14 @@ public interface IUserLinkBuilder : IUserLinkParameters
     public new bool RaAccessibility { get; set; }
     public new bool RaVerbose { get; set; }
     public new string? RaLogFile { get; set; }
-    
+
     // IUserLinkBuilder
     public bool? CustomEntryName { get; set; }
-    
+
     public bool AddAppendedConfig(string appendedConfigPath);
     public bool RemoveAppendedConfig(string appendedConfigPath);
     public bool ClearAppendedConfig();
-    
+
     public bool AddEnvironmentVariable(EnvironmentVariable envVar);
     public bool RemoveEnvironmentVariable(EnvironmentVariable envVar);
     public bool ClearEnvironmentVariables();

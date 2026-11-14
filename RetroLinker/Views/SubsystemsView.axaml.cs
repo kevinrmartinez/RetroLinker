@@ -77,7 +77,7 @@ public partial class SubsystemsView : UserControl
     {
         InitializeComponent();
         _parentWindow = mainWindow;
-        IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
+        IShortcutParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new ShortcutBuilder();
         // Core = buildingLink.ROMcore;
         Core = mainWindow.PermaView?.comboCore.Text ?? string.Empty;    // Temporal solution
         CoreContent = buildingLink.RaRom;

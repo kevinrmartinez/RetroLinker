@@ -27,7 +27,7 @@ namespace RetroLinker.Models.Windows;
 [SupportedOSPlatform(App.PlatformWin)]
 public static class ShortcutManager
 {
-    public static async Task CreateShortcut(LinkParameters linkBase)
+    public static async Task CreateShortcut(OsLinkParameters linkBase)
     {
         var link = (WindowsLinkParameters)linkBase;
         const int iconIndex = 0;    // This may be changeable in the future
@@ -42,13 +42,13 @@ public static class ShortcutManager
         Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
     }
     
-    public static async Task<LinkParameters> ReadShortcut(string linkPath)
+    public static async Task<OsLinkParameters> ReadShortcut(string linkPath)
     {
         var inputFile = await Task.Run(() => Shortcut.ReadFromFile(linkPath));
         return new WindowsLinkParameters(inputFile, linkPath);
     }
     
-    public static async Task CreateTileIcoShortcut(LinkParameters linkBase)
+    public static async Task CreateTileIcoShortcut(OsLinkParameters linkBase)
     {
         var link = (WindowsLinkParameters)linkBase;
         var tileIcoArguments = new HashSet<TileicoArgument>();

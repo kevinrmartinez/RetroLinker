@@ -32,7 +32,7 @@ public static partial class Manager
     public const string IpsExt = "ips";
     public const string XdExt = "xdelta";
 
-    private static IUserLinkParameters? _userLinkParameters;
+    private static IShortcutParameters? _userLinkParameters;
     
     /// <summary>
     /// General purpose parser.
@@ -61,7 +61,7 @@ public static partial class Manager
     
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
                        | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
-    public static string RetroArchCommandBuilder(IUserLinkParameters link)
+    public static string RetroArchCommandBuilder(IShortcutParameters link)
     {
         _userLinkParameters = link;
         var g1 = Task.Run(BuildCommandRaG1);
@@ -86,11 +86,11 @@ public static partial class Manager
         return command;
     }
 
-    public static IUserLinkParameters RetroArchCommandParser(string command) => RetroArchCommandParser(command.SplitArgs());
+    public static IShortcutParameters RetroArchCommandParser(string command) => RetroArchCommandParser(command.SplitArgs());
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
                        | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
-    public static IUserLinkParameters RetroArchCommandParser(string[] commandArray)
+    public static IShortcutParameters RetroArchCommandParser(string[] commandArray)
     {
         var parsed = RetroLinkerParser.ParseArguments<RetroArch>(commandArray);
         if (parsed.Tag == ParserResultType.NotParsed)

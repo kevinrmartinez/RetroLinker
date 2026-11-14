@@ -35,11 +35,11 @@ public interface IDesktopEntry
 }
 
 [SupportedOSPlatform(App.PlatformLin)]
-public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
+public sealed class LinuxLinkParameters : OsLinkParameters, ILinuxLinkParameters
 {
     public bool RaVerbose { get; init; }
 
-    public LinuxLinkParameters(IShortcutBase linkWriter)
+    public LinuxLinkParameters(IShortcut linkWriter)
     {
         EnvironmentVariables = linkWriter.EnvironmentVariables;
         UpdateHashedVariables();
@@ -71,12 +71,12 @@ public class LinuxLinkParameters : LinkParameters, ILinuxLinkParameters
         _ogOutputPath = entryFilePath;
     }
 
-    public override async Task<LinkWriterResult> CreateOsShortcut() {
+    public override async Task<ShortcutWriterResult> CreateOsShortcut() {
         if (string.IsNullOrEmpty(IconPath)) IconPath = FileOps.DotDesktopRAIcon;
         return await CreateShortcut(ShortcutManager.CreateShortcut);
     }
 
-    private string CreateExecutableLine(IShortcutBase linkWriter)
+    private string CreateExecutableLine(IShortcut linkWriter)
     {
         // Quotes are needed if the path to the executable has problematic shell characters
         // Double quotes will be used to more easily handle the reading of the file

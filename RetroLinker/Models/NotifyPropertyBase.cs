@@ -27,7 +27,7 @@ namespace RetroLinker.Models;
 public abstract class NotifyPropertyBase : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
     /// <summary>
     /// All properties that wishes to notify their changes should use this generic setter.
     /// </summary>
@@ -49,6 +49,6 @@ public abstract class NotifyPropertyBase : INotifyPropertyChanged
     /// <summary> Manually notify that a property has its value updated. </summary>
     /// <param name="propertyName">The name of the property.</param>
     /// <remarks>This is useful to notify when getter-only properties had the value they depend on updated.</remarks>
-    protected void ManuallyNotify(string propertyName) 
+    protected void ManuallyNotify(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

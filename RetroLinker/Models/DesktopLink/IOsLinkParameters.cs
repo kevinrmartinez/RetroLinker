@@ -20,7 +20,7 @@ using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models.DesktopLink;
 
-public interface ILinkParametersBase
+public interface IOsLinkParameters
 {
     /// <summary>
     /// RetroArch's executable, should be a path to a file, or a command
@@ -35,10 +35,10 @@ public interface ILinkParametersBase
     public string OutputDir => GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables { get; }
 
-    protected static string GetOutputDir(ILinkParametersBase l) => FileOps.GetDirFromPath(l.OutputPath) ?? string.Empty;
+    protected static string GetOutputDir(IOsLinkParameters l) => FileOps.GetDirFromPath(l.OutputPath) ?? string.Empty;
 }
 
-public interface IWindowsLinkParameters : ILinkParametersBase
+public interface IWindowsLinkParameters : IOsLinkParameters
 {
     public string? RaWorkDir { get; }
     public bool TileIcoNameVisible { get; }
@@ -48,9 +48,9 @@ public interface IWindowsLinkParameters : ILinkParametersBase
     public string? TileIcoImagePath { get; }
 }
 
-public interface ILinuxLinkParameters : ILinkParametersBase
+public interface ILinuxLinkParameters : IOsLinkParameters
 {
     public bool RaVerbose { get; }
 }
 
-public interface IShortcutBase : IWindowsLinkParameters, ILinuxLinkParameters;
+public interface IShortcut : IWindowsLinkParameters, ILinuxLinkParameters;

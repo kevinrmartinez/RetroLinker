@@ -24,7 +24,7 @@ using RetroLinker.Models.Windows;
 
 namespace RetroLinker.Models.DesktopLink;
 
-public class LinkWriter : IShortcutBase
+public class ShortcutWriter : IShortcut
 {
     // Some setters may not be necessary
     public string RaExecutable { get; set; }
@@ -47,7 +47,7 @@ public class LinkWriter : IShortcutBase
 
     // private LinkWriter() { }
 
-    public LinkWriter(UserLinkBuilder builder)
+    public ShortcutWriter(ShortcutBuilder builder)
     {
         RaExecutable = builder.RaExecutable;
         RaArguments = Manager.RetroArchCommandBuilder(builder);
@@ -85,10 +85,10 @@ public class LinkWriter : IShortcutBase
 
 
     /// <summary> Finalizes the object and build all shortcut files for the current OS. </summary>
-    /// <returns>A list of <see cref="LinkWriterResult"/>.</returns>
-    public async Task<List<LinkWriterResult>> BuildShortcut()
+    /// <returns>A list of <see cref="ShortcutWriterResult"/>.</returns>
+    public async Task<List<ShortcutWriterResult>> BuildShortcut()
     {
-        var results = new List<LinkWriterResult>();
+        var results = new List<ShortcutWriterResult>();
         var outputPath = OutputPath;
         try
         {
@@ -96,7 +96,7 @@ public class LinkWriter : IShortcutBase
             ArgumentException.ThrowIfNullOrEmpty(RaArguments);   // ...but let's check just in case
             var settings = SettingsOps.GetCachedSettings();
             // TODO: Add a '[SupportedOSPlatformGuard("xxx")]' element/guard (0.10)
-            LinkParameters parameters = (App.PlatformOs) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
+            OsLinkParameters parameters = (App.PlatformOs) ? new WindowsLinkParameters(this) : new LinuxLinkParameters(this);
             results.Add(await parameters.CreateOsShortcut());
             if (settings.MakeLinkCopy) {
                 foreach (var path in OutputPaths) {
@@ -109,7 +109,7 @@ public class LinkWriter : IShortcutBase
         catch (Exception ex)
         {
             Logger.LogErro(ex);
-            results.Add(new LinkWriterResult(outputPath, ResultSuccess: false, ex.Message));
+            results.Add(new ShortcutWriterResult(outputPath, ResultSuccess: false, ex.Message));
         }
         return results;
     }
@@ -119,4 +119,4 @@ public class LinkWriter : IShortcutBase
 /// A simple structure to inform if the Link was written correctly or not.
 /// </summary>
 /// <param name="OutputPath">The full path of link being handled.</param>
-public record LinkWriterResult(string OutputPath, bool ResultSuccess = true, string? ExMessage = null);
+public record ShortcutWriterResult(string OutputPath, bool ResultSuccess = true, string? ExMessage = null);

@@ -410,7 +410,7 @@ public static class FileOps
     public static bool IsFileWinPE(string file) => IsExtWinPE(GetFileExtFromPath(file));
 
     [SupportedOSPlatform(App.PlatformWin)]
-    public static string GetConvertedIcoPath(DesktopLink.IShortcutBase linkParameters, string raRom, IIconItem selectedIconItem)
+    public static string GetConvertedIcoPath(DesktopLink.IShortcut linkParameters, string raRom, IIconItem selectedIconItem)
     {
         // TODO: test
         if (IsExtWinPE(selectedIconItem.FileExt) && !_loadedSettings.ExtractIco) return selectedIconItem.FilePath;

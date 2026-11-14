@@ -130,7 +130,7 @@ public static partial class Manager
         
         
         // Methods
-        public static RetroArch? GetGroup1(IUserLinkParameters? link)
+        public static RetroArch? GetGroup1(IShortcutParameters? link)
         {
             if (link is null) return null;
             return new RetroArch() {
@@ -141,12 +141,12 @@ public static partial class Manager
             };
         }
 
-        public static RetroArch? GetGroup2(IUserLinkParameters? link) {
+        public static RetroArch? GetGroup2(IShortcutParameters? link) {
             if (link is not { RaLogFile: not null}) return null;
             return new RetroArch() { G2_LogFile = link.RaLogFile };
         }
 
-        public static RetroArch? GetGroup3(IUserLinkParameters? link)
+        public static RetroArch? GetGroup3(IShortcutParameters? link)
         {
             if (link is null) return null;
             return new RetroArch() {
@@ -155,7 +155,7 @@ public static partial class Manager
             };
         }
 
-        public static RetroArch? GetGroup4(IUserLinkParameters? link)
+        public static RetroArch? GetGroup4(IShortcutParameters? link)
         {
             if (link is null) return null;
             List<string> coreAndRom = [link.RaCore];
@@ -166,7 +166,7 @@ public static partial class Manager
             };
         }
 
-        public static RetroArch? GetGroup5(IUserLinkParameters? link)
+        public static RetroArch? GetGroup5(IShortcutParameters? link)
         {
             if (link is not { RaRomPatch: not null }) return null;
             var patchArgs = link.RaRomPatch;
@@ -195,7 +195,7 @@ public static partial class Manager
             return retroArch;
         }
 
-        public static RetroArch? GetGroup6(IUserLinkParameters? link)
+        public static RetroArch? GetGroup6(IShortcutParameters? link)
         {
             if (link is not { RaCoreSubsystem: not null}) return null;
             List<string> subsystemAndArgs = new();

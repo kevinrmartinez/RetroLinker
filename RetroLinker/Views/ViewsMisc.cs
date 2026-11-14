@@ -172,8 +172,8 @@ public class RenamePopUpHelper(string givenPath, string givenName, string? given
 /// <summary> Structure for the MoreOptions PopUp. </summary>
 /// <param name="linkObject">The working Link to modify.</param>
 /// <param name="settings">The current Settings to reference and modify.</param>
-public class MoreOptPopUpHelper(IUserLinkBuilder linkObject, Settings settings) : IMainViewPopUp
+public class MoreOptPopUpHelper(IShortcutBuilder linkObject, Settings settings) : IMainViewPopUp
 {
-    public IUserLinkBuilder LinkObject { get; } =  linkObject;
+    public IShortcutBuilder LinkObject { get; } =  linkObject;
     public Settings SettingsObject { get; } = settings;
 }

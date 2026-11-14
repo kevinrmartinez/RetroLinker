@@ -222,7 +222,7 @@ public partial class MainView : UserControl
     public static string OutputDescLabel => (App.PlatformOs) ? resMainView.lblDesc_Win : resMainView.lblDesc_Lin;
     public static string OutputDescTip => (App.PlatformOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
     public Settings Settings { get; private set; }
-    public UserLinkBuilder BuildingLink { get; } = new();
+    public ShortcutBuilder BuildingLink { get; } = new();
     public ObservableCollection<ObservableConfigItem> ConfigItems { get; } = [ObservableConfigItem.DefaultInstance];
     public ObservableCollection<ObservableIconItem> IconItems { get; } = [ObservableIconItem.DefaultInstance];
 
@@ -482,7 +482,7 @@ public partial class MainView : UserControl
 
     // private void HandleLinkOutput(string userInput, UserLinkBuilder linkBuilder)
 
-    private async Task SetFinalIconPath(UserLinkBuilder outputLink)
+    private async Task SetFinalIconPath(ShortcutBuilder outputLink)
     {
         if (IconSelectedItem.Equals(ObservableIconItem.DefaultInstance)) outputLink.IconPath = string.Empty; // RA binary icon (Default)
         else
@@ -524,20 +524,30 @@ public partial class MainView : UserControl
         }
     }
 
-    private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<LinkWriterResult> results)
+    private (PopUpGenericContent, GenericPopUpType) HandleExecutionReturn(List<ShortcutWriterResult> results)
     {
+        GenericPopUpType popUpType;
+        PopUpGenericContent popUpContent;
         switch (results.Count)
         {
             // Very erroneous behavior
             case 0:
-                return (new PopUpGenericContent(resMainView.popNoOutput_Mess), GenericPopUpType.Error);
+                popUpContent = new PopUpGenericContent(resMainView.popNoOutput_Mess);
+                popUpType = GenericPopUpType.Error;
+                break;
             // Single Shortcut created
             case 1:
                 var onlyResult = results[Index.Start];
-                return (onlyResult.ResultSuccess)
-                    ? (new PopUpGenericContent(resMainView.popSingleOutput1_Mess), GenericPopUpType.Success)
-                    : (new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{onlyResult.ExMessage}",
-                        resMainView.popSingleOutput0_Head), GenericPopUpType.Error);
+                if (onlyResult.ResultSuccess) {
+                    popUpContent = new PopUpGenericContent(resMainView.popSingleOutput1_Mess);
+                    popUpType = GenericPopUpType.Success;
+                }
+                else {
+                    popUpContent = new PopUpGenericContent($"{resMainView.popSingleOutput0_Mess}\n{onlyResult.ExMessage}",
+                        resMainView.popSingleOutput0_Head);
+                    popUpType = GenericPopUpType.Error;
+                }
+                break;
             // Multiple Shortcuts created
             default:
             {
@@ -549,31 +559,29 @@ public partial class MainView : UserControl
                 }
 
                 if (!hasErrors) {
-                    return (new(resMainView.popMultiOutput1_Mess, resGeneric.genSucces),
-                        GenericPopUpType.Success);
+                    popUpContent = new PopUpGenericContent(resMainView.popMultiOutput1_Mess, resGeneric.genSucces);
+                    popUpType = GenericPopUpType.Success;
                 }
                 else
                 {
                     int successCount = 0;
-                    string content = string.Empty;
+                    var content = new System.Text.StringBuilder();
                     foreach (var R in results)
                     {
-                        string output = R.OutputPath + ": ";
-                        content = string.Concat(content, output);
-                        content = string.Concat(content, resMainView.popLinkFailure); // <= Depends on success
-                        content = string.Concat(content, "\n");
-                        if (!R.ResultSuccess)
-                        {
-                            content = string.Concat(content, $"=> \"{R.ExMessage}\" <=");
-                            content = string.Concat(content, "\n");
-                        }
+                        content.Append(R.OutputPath);
+                        content.Append(": ");
+                        content.Append((R.ResultSuccess) ? resMainView.popLinkSucces : resMainView.popLinkFailure);
+                        content.AppendLine();
+                        if (!R.ResultSuccess) content.AppendLine($"=> \"{R.ExMessage}\" <=");
                         else successCount++;
                     }
-                    return (new PopUpGenericContent(content, null, resMainView.popMultiOutput0_Head),
-                        (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error);
+                    popUpContent = new PopUpGenericContent(content.ToString(), Header: resMainView.popMultiOutput0_Head);
+                    popUpType = (successCount > 0) ? GenericPopUpType.Warning : GenericPopUpType.Error;
                 }
+                break;
             }
         }
+        return (popUpContent, popUpType);
     }
 
     async void RunExecution()
@@ -581,9 +589,6 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-
-            // Validate there's an executable (Linux)
-            // BuildingLink.RaExecutable = ValidateLINBin(BuildingLink.RaExecutable);
 
             // Validating contentless or not
             BuildingLink.RaRom = (ContentlessRom) ? Manager.Contentless : BuildingLink.RaRom;
@@ -600,7 +605,7 @@ public partial class MainView : UserControl
                 && (!string.IsNullOrEmpty(BuildingLink.OutputPath)))
             {
                 Logger.LogDebg("All fields for link creation have been accepted.");
-                var outputLink = new LinkWriter(BuildingLink);
+                var outputLink = new ShortcutWriter(BuildingLink);
 
                 // Check for overwriting
                 if (!IsRenameInactive()) {

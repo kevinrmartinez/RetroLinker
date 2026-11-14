@@ -56,7 +56,7 @@ public partial class MoreRaOptionsView : UserControl
     public bool NewEnvVar_Valid { get; set => SetAndRaise(NewEnvVar_ValidProperty, ref field, value); }
 
     // Normal Props
-    public IUserLinkBuilder LinkBuilder { get; }
+    public IShortcutBuilder LinkBuilder { get; }
     public RememberedUserChoices UserChoices { get; }
 
     public MoreRaOptionsView()
@@ -64,7 +64,7 @@ public partial class MoreRaOptionsView : UserControl
         // Constructor for Designer
         InitializeComponent();
         _popUpWindow = new PopUpWindow(isDesigner: true);
-        LinkBuilder = new UserLinkBuilder();
+        LinkBuilder = new ShortcutBuilder();
         UserChoices = new RememberedUserChoices();
         /* TO ADD
          * -N, --nodevice=PORT          Disconnects controller device connected to PORT (1 to 16).

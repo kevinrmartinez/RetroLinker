@@ -25,8 +25,8 @@ namespace RetroLinker.Models.IO;
 public static partial class IconProc
 {
     // TODO: give the user an option for Nearest sampling
-    private static readonly SKSamplingOptions NearestResampler = new(SKFilterMode.Nearest, SKMipmapMode.Nearest); 
-    private static readonly SKSamplingOptions LinearResampler = new(SKFilterMode.Linear, SKMipmapMode.Linear); 
+    private static readonly SKSamplingOptions NearestResampler = new(SKFilterMode.Nearest, SKMipmapMode.Nearest);
+    private static readonly SKSamplingOptions LinearResampler = new(SKFilterMode.Linear, SKMipmapMode.Linear);
     // https://learn.microsoft.com/en-us/windows/win32/uxguide/vis-icons
     private static readonly IReadOnlyList<int> _icoAppSizes = [ 16, 32, 48, 256 ];
 
@@ -36,39 +36,39 @@ public static partial class IconProc
         if (sourceBitmap.Height == sourceBitmap.Width) {
             return sourceBitmap.Resize(new SKSizeI(targetHeightWidth, targetHeightWidth), LinearResampler);
         }
-        
+
         /* Disclosure: This part was mostly provided by Gemini (the LLM) */
         // 1. Calculate scale factors to fit maintaining aspect ratio
         float scaleX = (float)targetHeightWidth / sourceBitmap.Width;
         float scaleY = (float)targetHeightWidth / sourceBitmap.Height;
         float scale = Math.Min(scaleX, scaleY);
-        
+
         // 2. Compute the scaled dimensions
         float scaledWidth = sourceBitmap.Width * scale;
         float scaledHeight = sourceBitmap.Height * scale;
-        
+
         // 3. Compute padding offsets to center the image
         float left = (targetHeightWidth - scaledWidth) / 2;
         float top = (targetHeightWidth - scaledHeight) / 2;
-        
+
         // 4. Create the target bitmap with the exact requested dimensions
         var info = new SKImageInfo(targetHeightWidth, targetHeightWidth, SKColorType.Bgra8888, SKAlphaType.Premul);
         var targetBitmap = new SKBitmap(info);
-        
+
         // 5. Prepare a Canvas and Rectangle for drawing the target at the center of the Canvas
         using var canvas = new SKCanvas(targetBitmap);
         canvas.Clear(SKColors.Transparent);
         var destRect = new SKRect(left, top, left + scaledWidth, top + scaledHeight);
-        
+
         // 6. Resized the original bitmap with Linear filtering
         using var resized = sourceBitmap.Resize(new SKSizeI((int)scaledWidth, (int)scaledHeight), LinearResampler);
-        
+
         // 7. Draw the source bitmap into the destination rectangle
         canvas.DrawBitmap(resized, destRect);
 
         return targetBitmap;
     }
-    
+
     public static MemoryStream EncodeAsPngMk2(SKBitmap bitmap)
     {
         // This method bellow is confirmed to run ~4x faster than the method above, even with a little extra compression
@@ -101,9 +101,9 @@ public static partial class IconProc
 
     #region Windows Only
 
-    public static bool IsIcoConversionRequired(string fileExtension) 
+    public static bool IsIcoConversionRequired(string fileExtension)
         => !fileExtension.Equals(FileOps.WinIcoExt, StringComparison.OrdinalIgnoreCase);
-    
+
     [SupportedOSPlatform(App.PlatformWin)]
     public static MemoryStream ExtractIco(string path, int index)
     {
@@ -112,7 +112,7 @@ public static partial class IconProc
         if (index >= icoCount) index -= icoCount;
         return icoExtractor.GetIcon(index);
     }
-    
+
     public static async Task<string> ResolveImageForTileico(string iconFile, string? tileIcoImage, IIconItem iconItem)
     {
         MemoryStream? memoryStream = null;
@@ -173,3 +173,5 @@ public static partial class IconProc
 
     #endregion
 }
+
+public record IconItem (string FilePath, bool ConversionRequired = false) : IIconItem;

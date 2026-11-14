@@ -28,11 +28,7 @@ using RetroLinker.Translations;
 
 namespace RetroLinker.Models.Avalonia;
 
-public readonly struct PopUpGenericContent(string message, string? title = null, string? header = null) {
-    public readonly string? Title = title;
-    public readonly string? Header = header;
-    public readonly string Message =  message;
-}
+public record PopUpGenericContent(string Message, string? Title = null, string? Header = null);
 
 public static class PopUpDialogOps
 {
@@ -43,7 +39,7 @@ public static class PopUpDialogOps
 
     private static void GetContentFromStruct(this AbstractMessageBoxParams @params, PopUpGenericContent content, GenericPopUpType type)
     {
-        (string bakTitle, string bakHeader) = type switch
+        var (bakTitle, bakHeader) = type switch
         {
             GenericPopUpType.Error => (resGeneric.genError, resGeneric.popUnError_Head0),
             GenericPopUpType.Warning => (resGeneric.genWarning, ""),

@@ -23,7 +23,7 @@ using RetroLinker.Models.Settings;
 namespace RetroLinker.Models.Windows;
 
 [SupportedOSPlatform(App.PlatformWin)]
-public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
+public sealed class WindowsLinkParameters : OsLinkParameters, IWindowsLinkParameters
 {
     public string? RaWorkDir { get; }
     public bool TileIcoNameVisible { get; }
@@ -36,7 +36,7 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
     private string _iconFallabckPath;
     private enum WindowsBuildOptions { Shell, TileIco }
 
-    public WindowsLinkParameters(IShortcutBase linkWriter)
+    public WindowsLinkParameters(IShortcut linkWriter)
     {
         EnvironmentVariables = linkWriter.EnvironmentVariables;
         UpdateHashedVariables();
@@ -108,18 +108,19 @@ public class WindowsLinkParameters : LinkParameters, IWindowsLinkParameters
         base.SetToCopyOutputPath(outputPath);
     }
 
-    public override async Task<LinkWriterResult> CreateOsShortcut() {
+    public override async Task<ShortcutWriterResult> CreateOsShortcut() {
         return BuildOption switch {
             WindowsBuildOptions.Shell => await BuildWinShortcut_WindowsShell(),
-            WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco()
+            WindowsBuildOptions.TileIco => await BuildWinShortcut_TileIco(),
+            _ => throw new ArgumentOutOfRangeException(nameof(BuildOption), actualValue: BuildOption, message: null)
         };
     }
 
-    private async Task<LinkWriterResult> BuildWinShortcut_WindowsShell() {
+    private async Task<ShortcutWriterResult> BuildWinShortcut_WindowsShell() {
         if (string.IsNullOrEmpty(IconPath)) IconPath = _iconFallabckPath;
         return await CreateShortcut(ShortcutManager.CreateShortcut);
     }
 
-    private async Task<LinkWriterResult> BuildWinShortcut_TileIco()
+    private async Task<ShortcutWriterResult> BuildWinShortcut_TileIco()
         => await CreateShortcut(ShortcutManager.CreateTileIcoShortcut);
 }

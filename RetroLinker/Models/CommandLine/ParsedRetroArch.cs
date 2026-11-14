@@ -23,7 +23,7 @@ namespace RetroLinker.Models.CommandLine;
 
 public static partial class Manager
 {
-    private class ParsedRetroArch : IUserLinkParameters
+    private class ParsedRetroArch : IShortcutParameters
     {
         public string RaRom { get; } = string.Empty;
         public RomPatchArgs? RaRomPatch { get; }

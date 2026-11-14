@@ -83,7 +83,7 @@ public partial class PatchesView : UserControl
         InitializeComponent();
 
         _parentWindow = mainWindow;
-        IUserLinkParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new UserLinkBuilder();
+        IShortcutParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new ShortcutBuilder();
         CoreContent = buildingLink.RaRom;
         var patchArgs = buildingLink.RaRomPatch;
         if (patchArgs is null) return;

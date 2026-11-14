@@ -108,7 +108,7 @@ public partial class MainWindow : Window
     public void ReturnToMainView(UserControl view, IExtraArguments? args)
     {
         if (PermaView is not { } mainView) return;
-        IUserLinkBuilder buildingRef = mainView.BuildingLink;
+        IShortcutBuilder buildingRef = mainView.BuildingLink;
         GoBackToMainView();
         switch (view)
         {
