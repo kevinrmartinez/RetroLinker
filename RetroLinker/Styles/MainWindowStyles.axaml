@@ -94,7 +94,7 @@
         </Style>
     </Style>
     
-    <Style Selector="Grid.Expandable">
+    <Style Selector="Grid.Expandable, Border.Expandable">
         <Setter Property="Transitions">
             <Transitions>
                 <DoubleTransition Property="Width" Duration="0:00:00.27" Easing="CubicEaseOut"/>

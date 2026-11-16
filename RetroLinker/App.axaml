@@ -35,7 +35,6 @@
         <!-- Strings -->
         <st:TextToUpper x:Key="TextToUpperConverter"/>
         <st:TextToLower x:Key="TextToLowerConverter"/>
-        <st:TextToFullPath x:Key="TextToFullPathConverter"/>
         <!-- Numbers -->
         <st:NumberGreaterThan x:Key="NumberGreaterThanConverter"/>
         <st:NumberLowerThan x:Key="NumberLowerThanConverter"/>

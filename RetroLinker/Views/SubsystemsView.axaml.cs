@@ -23,13 +23,27 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.DesktopLink;
-using RetroLinker.Models.IO;
 
 namespace RetroLinker.Views;
 
 public partial class SubsystemsView : UserControl
 {
-    // Avalonia Props
+    #region AvaloniaProperties
+
+    public static readonly DirectProperty<SubsystemsView, string> CoreProperty =
+        AvaloniaProperty.RegisterDirect<SubsystemsView, string>(
+            nameof(Core),
+            view => view.Core);
+
+    public string Core { get; init => SetAndRaise(CoreProperty, ref field, value); }
+
+    public static readonly DirectProperty<SubsystemsView, string> CoreContentProperty =
+        AvaloniaProperty.RegisterDirect<SubsystemsView, string>(
+            nameof(CoreContent),
+            view => view.CoreContent);
+
+    public string CoreContent { get; init => SetAndRaise(CoreContentProperty, ref field, value); }
+
     public static readonly DirectProperty<SubsystemsView, string> SubSystemProperty =
         AvaloniaProperty.RegisterDirect<SubsystemsView, string>(
             nameof(SubSystem),
@@ -38,6 +52,21 @@ public partial class SubsystemsView : UserControl
             defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
     public string SubSystem { get; set => SetAndRaise(SubSystemProperty, ref field, value); }
+
+    public static readonly DirectProperty<SubsystemsView, bool> AddingNewArgumentProperty =
+        AvaloniaProperty.RegisterDirect<SubsystemsView, bool>(
+            nameof(AddingNewArgument),
+            view => view.AddingNewArgument,
+            (view, obj) => view.AddingNewArgument = obj);
+
+    public bool AddingNewArgument
+    {
+        get;
+        set {
+            if (!value) NewArgument = null;
+            SetAndRaise(AddingNewArgumentProperty, ref field, value);
+        }
+    }
 
     public static readonly DirectProperty<SubsystemsView, ICollection<string>> ArgumentsProperty =
         AvaloniaProperty.RegisterDirect<SubsystemsView, ICollection<string>>(
@@ -57,9 +86,7 @@ public partial class SubsystemsView : UserControl
 
     public string? NewArgument { get; set => SetAndRaise(NewArgumentProperty, ref field, value); }
 
-    // Props
-    public string Core { get; init; }
-    public string CoreContent { get; init; }
+    #endregion
 
     // Designer Constructor
     public SubsystemsView()
@@ -68,7 +95,7 @@ public partial class SubsystemsView : UserControl
         Core = "[CORE]";
         CoreContent = "rom.zip";
         SubSystem = "[SUBSYSTEM]";
-        Arguments = FillListTest();
+        Arguments = RetroLinker.Styles.DummyData.DummyPathsList;
         _parentWindow = new MainWindow(true);
     }
 
@@ -78,8 +105,7 @@ public partial class SubsystemsView : UserControl
         InitializeComponent();
         _parentWindow = mainWindow;
         IShortcutParameters buildingLink = _parentWindow.PermaView?.BuildingLink ?? new ShortcutBuilder();
-        // Core = buildingLink.ROMcore;
-        Core = mainWindow.PermaView?.comboCore.Text ?? string.Empty;    // Temporal solution
+        Core = buildingLink.RaCore;
         CoreContent = buildingLink.RaRom;
         var subsystemArgs = buildingLink.RaCoreSubsystem;
 
@@ -101,14 +127,8 @@ public partial class SubsystemsView : UserControl
 
     private void LockControls(bool locked) => gridContent.IsEnabled = !locked;
 
-    private void AddNewArgument(bool addNew) {
-        if (ArgsList is null) return;
-        ArgsList.AddButton?.IsEnabled = !addNew;
-        BorderNewArg.IsVisible = addNew;
-    }
-
     private void ArgsList_OnAddItemClick(object? sender, RoutedEventArgs e) {
-        AddNewArgument(true);
+        AddingNewArgument = true;
         TextBoxNewArg.Focus();
     }
 
@@ -119,7 +139,7 @@ public partial class SubsystemsView : UserControl
             LockControls(true);
             var file = await FileDialogOps.OpenFileAsync(OpenOpts.RAroms, _parentWindow);
             if (string.IsNullOrEmpty(file)) return;
-            TextBoxNewArg.Text = file;
+            NewArgument = file;
         }
         catch (Exception ex) { await this.PopUpGenericError(ex); }
         finally { LockControls(false); }
@@ -128,25 +148,20 @@ public partial class SubsystemsView : UserControl
     private void ButtonNewArgBrowse_OnClick(object? sender, RoutedEventArgs e) => ButtonNewArgBrowse_ClickAsync();
 
     private void ButtonNewArgDiscard_OnClick(object? sender, RoutedEventArgs e) {
-        TextBoxNewArg.Text = null;
-        AddNewArgument(false);
+        AddingNewArgument = false;
     }
 
     private void ButtonNewArgAccept_OnClick(object? sender, RoutedEventArgs e) {
         if (!string.IsNullOrWhiteSpace(NewArgument)) Arguments.Add(NewArgument);
-        TextBoxNewArg.Text = null;
-        AddNewArgument(false);
+        AddingNewArgument = false;
     }
 
     private void ArgsList_OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (sender is not Styles.UserStringList stringList) return;
-        switch (e.Property.Name) {
-            case "IsEnabled":
-                if (!stringList.IsEnabled) AddNewArgument(false);
-                break;
-            default:
-                break;
+        if (e.Property == IsEnabledProperty)
+        {
+            if (!stringList.IsEnabled) AddingNewArgument = false;
         }
     }
 
@@ -160,16 +175,4 @@ public partial class SubsystemsView : UserControl
     }
 
     private void BtnDiscSubsystem_OnClick(object? sender, RoutedEventArgs e) => _parentWindow.ReturnToMainView();
-
-    // Designer Only
-    private ObservableCollection<string> FillListTest()
-    {
-        var arguments = new ObservableCollection<string>();
-        var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
-        for (int i = 0; i < 16; i++) {
-            var testPath = FileOps.CombineMultipleInputs(pfx, $"rom{i}.bin");
-            arguments.Add(testPath);
-        }
-        return arguments;
-    }
 }

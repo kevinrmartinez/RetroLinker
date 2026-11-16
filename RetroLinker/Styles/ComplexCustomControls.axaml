@@ -20,9 +20,7 @@
                     </st:MainWindowHeader.LeftControl>
                 </st:MainWindowHeader>
                 
-                <st:UserStringList Height="180">
-                    Hello World!
-                </st:UserStringList>
+                <st:UserStringList Height="180" Items="{x:Static st:DummyData.DummyStrings}" CanAdd="False"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -121,8 +119,8 @@
                     <Rectangle Grid.Row="1"/>
                     <!-- Controls for Append Paths List -->
                     <StackPanel Grid.Row="2">
-                        <Button x:Name="PART_ButtonClr" Classes="clear_list"/>
-                        <Button x:Name="PART_ButtonAdd" Classes="add"/>
+                        <Button x:Name="PART_ButtonClr" Classes="clear_list" IsEnabled="{TemplateBinding CanClear}"/>
+                        <Button x:Name="PART_ButtonAdd" Classes="add" IsEnabled="{TemplateBinding CanAdd}"/>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>
@@ -180,8 +178,10 @@
                     <Border Classes="Item">
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0" Text="{Binding $parent.DataContext}"/>
-                            <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash" 
-                                    ToolTip.Tip="{x:Static tl:resGeneric.btnDeleteItem}"/>
+                            <Button x:Name="PART_ButtonDel" Grid.Column="1" Classes="trash"
+                                    ToolTip.Tip="{x:Static tl:resGeneric.btnDeleteItem}"
+                                    IsEnabled="{Binding CanRemoveAny, 
+                                    RelativeSource={RelativeSource AncestorType=st:UserStringList}}"/>
                         </Grid>
                     </Border>
                 </DataTemplate>

@@ -14,11 +14,10 @@
     </UserControl.Styles>
     
     <Grid x:Name="gridContent" RowDefinitions="Auto, *, Auto">
-        <!--Top-->
+        <!-- Top/Header -->
         <st:MainWindowHeader Grid.Row="0" Title="{x:Static tl:resMainExtras.titleSubsystems}" Classes="Header"/>
-        <!-- Header -->
     
-        <!--Body-->
+        <!-- Body -->
         <DockPanel x:Name="gridBody" Grid.Row="1">
     
             <!-- Top Spacing -->
@@ -51,33 +50,40 @@
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
                 <Border Grid.Column="1" Grid.Row="4" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <st:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
-                                       IsEnabled="{Binding #txtSubsys.Text, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                       CanAdd="{Binding !AddingNewArgument}"
+                                       IsEnabled="{Binding SubSystem, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                 </Border>
                 
-                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="5" IsVisible="False"
-                        BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
-                    <!-- TODO: Add expandable transition -->
+                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="5" Classes="Expandable"
+                        BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3"
+                        Classes.Expanded="{Binding AddingNewArgument, Mode=OneWay}">
+                    <Border.Styles>
+                        <Style Selector="Border.Expanded">
+                            <Setter Property="Height" Value="62"/>
+                        </Style>
+                    </Border.Styles>
+                    
                     <StackPanel Orientation="Vertical">
                         <Label Content="{x:Static tl:resMainExtras.lblSubsysNewArg}"/>
-                        <Grid ColumnDefinitions="*,Auto" Margin="2">
-                            <TextBox x:Name="TextBoxNewArg" Grid.Column="0" Text="{Binding NewArgument, Mode=TwoWay}"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Classes="textbox_inline browseFile" Click="ButtonNewArgBrowse_OnClick"/>
-                                <Button Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
-                                        ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgDis_Tip}"/>
-                                <Button Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
-                                        ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgAdd_Tip}"/>
-                            </StackPanel>
-                        </Grid>
+                        <DockPanel Margin="2">
+                            <Button DockPanel.Dock="Right" Classes="textbox_inline check" Click="ButtonNewArgAccept_OnClick"
+                                    IsEnabled="{Binding NewArgument, 
+                                    Converter={x:Static st:StringsBindingConverters.IsNotNullOrWhiteSpace}}"
+                                    ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgAdd_Tip}"/>
+                            <Button DockPanel.Dock="Right" Classes="textbox_inline clear_text" Click="ButtonNewArgDiscard_OnClick"
+                                    ToolTip.Tip="{x:Static tl:resMainExtras.btnSubsysArgDis_Tip}"/>
+                            <Button DockPanel.Dock="Right" Classes="textbox_inline browseFile" Click="ButtonNewArgBrowse_OnClick"/>
+                            
+                            <TextBox x:Name="TextBoxNewArg" Text="{Binding NewArgument, Mode=TwoWay}"/>
+                        </DockPanel>
                     </StackPanel>
                 </Border>
             </Grid>
             
         </DockPanel>
     
-        <!--Bottom-->
+        <!-- Bottom -->
         <!-- <Grid Name="gridBOTTOM" Grid.Row="2" Height="40" ColumnDefinitions="Auto, *, Auto" Background="Gray"> -->
-        <!--      -->
         <!-- </Grid> -->
     </Grid>
 </UserControl>

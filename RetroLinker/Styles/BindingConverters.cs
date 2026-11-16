@@ -25,6 +25,14 @@ namespace RetroLinker.Styles;
 
 #region Strings
 
+public static class StringsBindingConverters
+{
+    public static readonly IValueConverter IsNullOrWhiteSpace = new FuncValueConverter<string?, bool>(string.IsNullOrWhiteSpace);
+    public static readonly IValueConverter IsNotNullOrWhiteSpace = new FuncValueConverter<string?, bool>(x => !string.IsNullOrEmpty(x));
+    public static readonly IValueConverter GetAbsolutePath = new FuncValueConverter<string?, string?>(
+        x => string.IsNullOrEmpty(x) ? null : FileOps.GetAbsolutePath(x));
+}
+
 public class TextToUpper : IValueConverter
 {
     public static readonly TextToUpper Instance = new();
@@ -61,19 +69,6 @@ public class TextToLower : IValueConverter
     }
 }
 
-public class TextToFullPath : IValueConverter
-{
-    public static readonly TextToFullPath Instance = new();
-
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is string str && targetType.IsInstanceOfType(str)) return FileOps.GetAbsolutePath(str);
-        return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => value;
-}
-
 #endregion
 
 #region Numbers
@@ -88,10 +83,10 @@ public class NumberGreaterThan : IValueConverter
         {
             var valueParsed = Utils.GetNumberFromObject<double>(value, culture, out var realValue);
             var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
-            
+
             if (valueParsed && paramParsed) return realValue > realParam;
         }
-        
+
         // converter used for the wrong type
         return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
     }
@@ -110,17 +105,17 @@ public class NumberGreaterThan : IValueConverter
 public class NumberLowerThan : IValueConverter
 {
     public static readonly NumberLowerThan Instance = new();
-    
+
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (targetType.IsAssignableFrom(typeof(bool)))
         {
             var valueParsed = Utils.GetNumberFromObject<double>(value, culture, out var realValue);
             var paramParsed = Utils.GetNumberFromObject<double>(parameter, culture, out var realParam);
-            
+
             if (valueParsed && paramParsed) return realValue < realParam;
         }
-        
+
         // converter used for the wrong type
         return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
     }
@@ -143,18 +138,18 @@ public class NumberLowerThan : IValueConverter
 public class DateToLocal : IValueConverter
 {
     public static readonly DateToLocal Instance = new();
-    private DateTime ogDateTime; 
-    
+    private DateTime _ogDateTime;
+
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is DateTime dt)
         {
-            ogDateTime = dt;
+            _ogDateTime = dt;
             dt = dt.ToLocalTime();
             if (targetType.IsAssignableTo(typeof(DateTime)) || targetType == typeof(object)) return dt;
             else if (targetType.IsAssignableTo(typeof(string))) return dt.ToString(culture);
         }
-        
+
         // converter used for the wrong type
         return new BindingNotification(new InvalidCastException($"targetType is '{targetType.Name}'"), BindingErrorType.Error);
     }
@@ -163,8 +158,8 @@ public class DateToLocal : IValueConverter
     {
         // throw new NotSupportedException();
         // I think this is correct
-        if (targetType.IsAssignableTo(typeof(DateTime))) return ogDateTime;
-        else if (targetType.IsAssignableTo(typeof(string))) return ogDateTime.ToString(culture);
+        if (targetType.IsAssignableTo(typeof(DateTime))) return _ogDateTime;
+        else if (targetType.IsAssignableTo(typeof(string))) return _ogDateTime.ToString(culture);
         return value;
     }
 }

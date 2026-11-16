@@ -27,7 +27,7 @@
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox x:Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
 						         Text="{Binding ParentWindow.NewSettings.UserAssetsPath, 
-						         Converter={StaticResource TextToFullPathConverter}}"
+						         Converter={x:Static st:StringsBindingConverters.GetAbsolutePath}}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
 							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtUserAssets}" 

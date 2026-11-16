@@ -26,22 +26,11 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
 namespace RetroLinker.Styles;
-
-public static class DummyData
-{
-    public static ObservableCollection<EnvironmentVariable> DummyEnvVars { get; } = new()
-    {
-        new EnvironmentVariable("Key_A", "Value_A"),
-        new EnvironmentVariable("Key_B", "Value_B"),
-        new EnvironmentVariable("LongKey_A", "LongValue_A"),
-    };
-}
 
 // All this file requires some documentation!!
 public class LinkCopyItemGrid
@@ -191,7 +180,7 @@ public class ViewControlButton : Button
         var yesColor = new SolidColorBrush(Colors.Green);
         var yesText = resGeneric.btnConfirm;
 
-        var noIcon = "fa7-x";
+        var noIcon = "fa7-xmark";
         var noColor = new SolidColorBrush(Colors.Crimson);
         var noText = resGeneric.btnDiscard;
 
