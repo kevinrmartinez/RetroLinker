@@ -38,9 +38,16 @@ public class App : Application
 {
     public static AppInformation LocalInformation { get; private set; }
         = new(string.Empty, string.Empty,  string.Empty, false);
+
+    // TODO: This has to be a enum or something, as it needs to include macOS. (>=0.10)
+    //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
+    //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
+    // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
+    // true = Windows; false = Linux.
     public static bool PlatformOs { get; } = OperatingSystem.IsWindows();
     public static string[]? Args { get; private set; }
 
+    public const string NullStr = "NULL";
     public const string RetroBin = "retroarch";
     public const string PlatformWin = "windows";
     public const string PlatformLin = "linux";
@@ -53,10 +60,8 @@ public class App : Application
         {
             CompleteStartup();
             Args = desktop.Args;
-            desktop.MainWindow = new MainWindow(false)
-            {
-                Title = LocalInformation.ToString(),
-                DataContext = null,
+            desktop.MainWindow = new MainWindow(false) {
+                Title = LocalInformation.ToString()
             };
         }
         else {

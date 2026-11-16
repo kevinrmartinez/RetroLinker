@@ -32,7 +32,7 @@ public static class FileDialogOps
         opt.Title = newDialogTitle ?? opt.Title;
         if (!string.IsNullOrEmpty(currentFile)) {
             var currentDir = FileOps.GetDirFromPath(currentFile);
-            if (!string.IsNullOrEmpty(currentDir)) 
+            if (!string.IsNullOrEmpty(currentDir))
                 opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentDir, topLevel);
         }
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(opt);
@@ -65,7 +65,7 @@ public static class FileDialogOps
         };
         if (!string.IsNullOrEmpty(currentFolder))
             opt.SuggestedStartLocation = await Operations.GetStorageFolder(currentFolder, topLevel);
-        
+
         var dirList = await topLevel.StorageProvider.OpenFolderPickerAsync(opt);
         var dir = dirList.Count > 0 ? FileOps.GetAbsolutePath(dirList[0].Path.LocalPath) : string.Empty;
         return dir.TrimEnd(FileOps.OsDirSeparator);

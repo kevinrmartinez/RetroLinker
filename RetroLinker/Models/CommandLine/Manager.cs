@@ -26,14 +26,14 @@ public static partial class Manager
     public const string Contentless = "Contentless";
     public const char SepWhiteSpace = ' ';
     public const char SepPipe = '|';
-        
+
     public const string UpsExt = "ups";
     public const string BpsExt = "bps";
     public const string IpsExt = "ips";
     public const string XdExt = "xdelta";
 
     private static IShortcutParameters? _userLinkParameters;
-    
+
     /// <summary>
     /// General purpose parser.
     /// </summary>
@@ -55,11 +55,11 @@ public static partial class Manager
         settings.UseEqualToken = false;
         settings.SkipDefault = true;
     }
-    
-    private static string InvalidArgumentsMessage(string argument) 
+
+    private static string InvalidArgumentsMessage(string argument)
         => $"Invalid arguments, or not formatted correctly: '{argument}'";
-    
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties
                        | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
     public static string RetroArchCommandBuilder(IShortcutParameters link)
     {
@@ -72,23 +72,23 @@ public static partial class Manager
         var g6 = Task.Run(BuildCommandRaG6);
         Task.WaitAll(g1, g2, g3, g4, g5, g6);
         string[] resultsArray = [g1.Result, g2.Result, g3.Result, g4.Result, g5.Result, g6.Result];
-        
+
         var correctedResults = new List<string>();
         foreach (var result in resultsArray) {
             // Discard empty results, and shave leading and trailing white-spaces
             if (string.IsNullOrWhiteSpace(result)) continue;
             correctedResults.Add(result.Trim());
         }
-        
+
         var command = string.Join(SepWhiteSpace, correctedResults);
-        
+
         _userLinkParameters = null;
         return command;
     }
 
     public static IShortcutParameters RetroArchCommandParser(string command) => RetroArchCommandParser(command.SplitArgs());
 
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties
                        | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
     public static IShortcutParameters RetroArchCommandParser(string[] commandArray)
     {

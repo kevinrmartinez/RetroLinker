@@ -29,12 +29,12 @@ public static partial class Manager
             [Option(PwsCommandOpt, Required = true)]
             public string Command { get; set; } = string.Empty;
         }
-        
+
         private class PwsStartProcess
         {
             [Option(PwsStartFilePath, Required = true)]
             public string FilePath { get; set; } = string.Empty;
-            
+
             [Option(PwsStartArgumentList, Required = true)]
             public string ArgumentList { get; set; } = string.Empty;
         }

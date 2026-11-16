@@ -54,12 +54,12 @@ public static class PopUpDialogOps
 
     private static async Task<T> CallMessageBox<T>(Window msboxOwner, AbstractMessageBoxParams someParams)
     {
-        var typeT = typeof(T); 
+        var typeT = typeof(T);
         var typeBr = typeof(ButtonResult);
         var typeStr = typeof(string);
-        if (typeT != typeBr && typeT != typeStr) 
+        if (typeT != typeBr && typeT != typeStr)
             throw new InvalidOperationException($"Invalid Type was used: {typeT.Name}. Only the types '{typeBr.Name}' and '{typeStr.Name}' are supported.");
-        
+
         if (msboxOwner.Icon is {} wIcon) someParams.WindowIcon = wIcon;
         var msBox = someParams switch {
             MessageBoxStandardParams stdParams => (IMsBox<T>)MessageBoxManager.GetMessageBoxStandard(stdParams),
@@ -68,14 +68,14 @@ public static class PopUpDialogOps
         };
         return await msBox.ShowWindowDialogAsync(msboxOwner);
     }
-    
-    
+
+
     // App extension
     public static async Task PopUpCriticalError(this App app, Exception exception)
     {
         Logger.LogCrit($"{nameof(app)} has re-threw a critical exception:");
         Logger.LogCrit(exception);
-        
+
         var applicationLifetime = app.ApplicationLifetime;
         if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;;
         var msBoxParams = new MessageBoxStandardParams()
@@ -89,13 +89,13 @@ public static class PopUpDialogOps
         };
         await mainWindow.PopUpMessageBox<ButtonResult>(msBoxParams);
     }
-    
-    
+
+
     // Window extensions
     public static async Task<T> PopUpMessageBox<T>(this Window window, AbstractMessageBoxParams someParams) {
         return await CallMessageBox<T>(window, someParams);
     }
-    
+
     public static async Task<ButtonResult> PopUpGenericMessageBox(this Window window, PopUpGenericContent content, GenericPopUpType type)
     {
         var msBoxParams = GetCommonStdParams();
@@ -114,7 +114,7 @@ public static class PopUpDialogOps
         };
         return await CallMessageBox<ButtonResult>(window, msBoxParams);
     }
-    
+
     public static async Task PopUpGenericError(this Window window, Exception exception, string? customTitle = null,  string? customHeader = null)
     {
         var missingComponentEx = (exception is System.IO.FileNotFoundException fnf) && (fnf.Message.Contains("assembly", StringComparison.OrdinalIgnoreCase));
@@ -129,8 +129,8 @@ public static class PopUpDialogOps
         var content = new PopUpGenericContent(exception.Message,  customTitle, customHeader);
         await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
     }
-    
-    
+
+
     // UserControl extensions
     public static async Task<T> PopUpMessageBox<T>(this UserControl view, AbstractMessageBoxParams someParams) {
         var window = GetParentWindow(view);

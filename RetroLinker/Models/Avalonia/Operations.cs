@@ -32,12 +32,12 @@ public static class Operations
     private const string CoreList = "avares://RetroLinkerLib/Assets/cores.txt";
     private const string DEFicon1 = "avares://RetroLinkerLib/Assets/Icons/retroarch.png";
     private const string NaN = "avares://RetroLinkerLib/Assets/Images/NaN.png";
-    
+
     public static IStorageFolder? DesktopFolder { get; private set; }
     public static IStorageFolder? ROMParentDir { get; private set; }
     public static IStorageFolder? IconParentDir { get; private set; }
 
-    
+
     public static async Task<string[]> GetCoresArray()
     {
         if (Cores.Length >= 1) return Cores;
@@ -52,7 +52,7 @@ public static class Operations
     }
 
     private static Uri GetDefaultCores() => new(CoreList);
-    
+
     public static Uri GetDefaultIcon() => new(DEFicon1);
 
     public static Uri GetMissingImage() => new(NaN);
@@ -63,11 +63,11 @@ public static class Operations
     }
 
     public static AvaloniaBitmap GetBitmap(System.IO.Stream imgStream) => new(imgStream);
-    
-    public static async Task<IStorageFile?> GetStorageFile(string path, TopLevel topLevel) => 
+
+    public static async Task<IStorageFile?> GetStorageFile(string path, TopLevel topLevel) =>
         await topLevel.StorageProvider.TryGetFileFromPathAsync(path);
 
-    public static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>  
+    public static async Task<IStorageFolder?> GetStorageFolder(string dir, TopLevel topLevel) =>
         await topLevel.StorageProvider.TryGetFolderFromPathAsync(dir);
 
     public static async void SetDesktopStorageFolder(TopLevel topLevel)
@@ -85,7 +85,7 @@ public static class Operations
             DesktopFolder = null;
         }
     }
-    
+
     public static async void SetROMParentStorageFolder(string? dir, TopLevel topLevel)
     {
         try

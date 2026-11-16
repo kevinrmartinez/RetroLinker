@@ -73,7 +73,7 @@ public partial class MainView : UserControl
         set
         {
             BuildingLink.RaCore = value;
-            if (DesktopOS || string.IsNullOrWhiteSpace(BuildingLink.FriendlyName) ||
+            if (DesktopOs || string.IsNullOrWhiteSpace(BuildingLink.FriendlyName) ||
                 BuildingLink.CustomEntryName.GetValueOrDefault()) return;
             OutputFriendlyName = BuildingLink.FriendlyName;
             RaisePropertyChanged(UserRaCoreProperty, string.Empty, value);
@@ -121,7 +121,7 @@ public partial class MainView : UserControl
     {
         get => BuildingLink.FriendlyName;
         set {
-            if (!IsRenameInactive() || !DesktopOS) BuildingLink.UpdateOutputPathFromFriendlyName(value, FixedOutputDir);
+            if (!IsRenameInactive() || !DesktopOs) BuildingLink.UpdateOutputPathFromFriendlyName(value, FixedOutputDir);
             RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
             RaisePropertyChanged(OutputFriendlyNameProperty, string.Empty, value);
         }
@@ -182,7 +182,7 @@ public partial class MainView : UserControl
         set {
             // if (value is null) return;
             if (!IconItems.Contains(value)) {
-                Logger.LogWarn($"IconItem '{value} [{value?.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
+                Logger.LogWarn($"IconItem '{value.ToString() ?? App.NullStr} [{value?.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
                                $"but it's not in the {nameof(IconItems)} list.");
                 return;
             }
@@ -219,8 +219,8 @@ public partial class MainView : UserControl
     public MainWindow ParentWindow { get; }
 
     // Props
-    public static string OutputDescLabel => (App.PlatformOs) ? resMainView.lblDesc_Win : resMainView.lblDesc_Lin;
-    public static string OutputDescTip => (App.PlatformOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
+    public static string OutputDescLabel => (DesktopOs) ? resMainView.lblDesc_Win : resMainView.lblDesc_Lin;
+    public static string OutputDescTip => (DesktopOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
     public Settings Settings { get; private set; }
     public ShortcutBuilder BuildingLink { get; } = new();
     public ObservableCollection<ObservableConfigItem> ConfigItems { get; } = [ObservableConfigItem.DefaultInstance];
@@ -251,20 +251,14 @@ public partial class MainView : UserControl
 
 
     // Fields
+    private static readonly bool DesktopOs = App.PlatformOs;
+    private readonly bool _isDesingner;   // Debug
     public const string RomPlaceholder = "Super_Tilt_Bro_(E).nes";
     public const string RenamePlaceholder = "Super Tilt Bro";
-    public static readonly string RaExecPlaceholder = (App.PlatformOs) ? App.RetroBin + FileOps.WinPeExtExe : App.RetroBin;
-    public static readonly string OutputPlaceholder = RenamePlaceholder + FileOps.GetOutputExt(App.PlatformOs);
-    private readonly bool _isDesingner;   // Debug
-    private string OldDefRaExec = string.Empty;
+    public static readonly string RaExecPlaceholder = (DesktopOs) ? App.RetroBin + FileOps.WinPeExtExe : App.RetroBin;
+    public static readonly string OutputPlaceholder = RenamePlaceholder + FileOps.GetOutputExt(DesktopOs);
+    private string _oldDefRaExec = string.Empty;
     // private string DefLinRAIcon;
-
-    // TODO: This has to be a enum or something, as it needs to include macOS. And move to App. (>=0.10)
-    //  We can use [SupportedOSPlatform("xxx")] for methods exclusive to xxx platform,
-    //  and [SupportedOSPlatformGuard("xxx")] to denote a condition that tells the compiler that the method is guarded
-    // https://learn.microsoft.com/en-us/dotnet/standard/analyzers/platform-compat-analyzer
-    // true = Windows; false = Linux.
-    private readonly bool DesktopOS = App.PlatformOs;
 
 
     #region LOAD OPS
@@ -272,7 +266,7 @@ public partial class MainView : UserControl
     private void CompleteSetup()
     {
         BuildingLink.RestoreRemembered(Settings.UserChoices);
-        if (!DesktopOS) {
+        if (!DesktopOs) {
             Settings.TileIcoPath = null; // Disable 'TileIcoPath' when is not Windows
             Settings.DEFRADir = App.RetroBin;
         }
@@ -398,9 +392,9 @@ public partial class MainView : UserControl
 
     void ApplySettingsToControls()
     {
-        if (!OldDefRaExec.Equals(Settings.DEFRADir) && BuildingLink.RaExecutable.Equals(OldDefRaExec)) {
+        if (!_oldDefRaExec.Equals(Settings.DEFRADir) && BuildingLink.RaExecutable.Equals(_oldDefRaExec)) {
             BuildingLink.RaExecutable = Settings.DEFRADir;
-            OldDefRaExec = Settings.DEFRADir;
+            _oldDefRaExec = Settings.DEFRADir;
         }
 
         if (!_isDesingner && !ParentWindow.IsDesigner) {
@@ -434,7 +428,7 @@ public partial class MainView : UserControl
         bool tileIconEnabled = Settings.TileIcoPath is not null;
         TileIconEnabled = tileIconEnabled;
         panelLINKRename.IsVisible = !askOutput || tileIconEnabled;
-        btnLINKRename.IsVisible = !DesktopOS;
+        btnLINKRename.IsVisible = !DesktopOs;
         panelTileIcon.IsVisible = tileIconEnabled;
         // FixedOutputDir = (!tileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[BuildingLink.TileIcoAllUsers];
         // UpdateAndNotifyFixedOutputDir();
@@ -488,7 +482,7 @@ public partial class MainView : UserControl
         else
         {
             outputLink.IconPath = IconSelectedItem.FilePath;    // It's set to the selected icon file by default
-            if (DesktopOS)
+            if (DesktopOs)
             {
                 // If it's Windows, the images may need to be converted to .ico
                 if (IconSelectedItem.ConversionRequired) {
@@ -617,9 +611,8 @@ public partial class MainView : UserControl
                     }
                 }
 
-                if (DesktopOS && IconSelectedItem.ConversionRequired)
+                if (DesktopOs && IconSelectedItem.ConversionRequired)
                 {
-                    // TODO: test again
                     if (!FileOps.IsFileWinPE(outputLink.IconPath))
                     {
                         var wrkIconItem = IconSelectedItem;
@@ -704,7 +697,7 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-            var opt = DesktopOS ? OpenOpts.WINico : OpenOpts.LINico;
+            var opt = DesktopOs ? OpenOpts.WINico : OpenOpts.LINico;
             var currentFile = IconSelectedItem.FilePath;
             var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile);
             if (string.IsNullOrEmpty(file)) return;
@@ -731,7 +724,7 @@ public partial class MainView : UserControl
             LockControls(true);
             OpenOpts opt;
             string currentFile = string.Empty;
-            if (DesktopOS) {
+            if (DesktopOs) {
                 opt = OpenOpts.WinExe;
                 currentFile = BuildingLink.RaExecutable;
             }
@@ -839,12 +832,12 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-            var opt = (DesktopOS) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
+            var opt = (DesktopOs) ? SaveOpts.WINlnk : SaveOpts.LINdesktop;
             var currentFile = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             var file = await FileDialogOps.SaveFileAsync(opt, currentFile, ParentWindow);
             if (!string.IsNullOrEmpty(file))
             {
-                if (!DesktopOS)
+                if (!DesktopOs)
                 {
                     var helper = await ResolveRenamePopUp(file, string.Empty, BuildingLink.RaCore);
                     if (!helper.ValidOutput) throw new Exception("Output path could not be resolved.");
@@ -884,7 +877,7 @@ public partial class MainView : UserControl
                 var validInput = (string.IsNullOrWhiteSpace(textBox.Text)) ? null : textBox.Text;
                 var properFileName = (validInput is null)
                     ? Models.Linux.DesktopEntryOps.NamePlaceHolder
-                    : textBox.Text + FileOps.GetOutputExt(DesktopOS);
+                    : textBox.Text + FileOps.GetOutputExt(DesktopOs);
                 var fullPath = FileOps.CombineMultipleInputs(Settings.DEFLinkOutput, properFileName);
                 helper = await ResolveRenamePopUp(fullPath, validInput ?? string.Empty, BuildingLink.RaCore);
             }
@@ -948,7 +941,7 @@ public partial class MainView : UserControl
     bool ControlBox_HandleDrop(AvaloniaTemplatedControl sender, string droppedPath)
     {
         if (sender.Equals(comboIcon)) {
-            if (!FileOps.IsFileAnIcon(droppedPath, DesktopOS, out _)) return false;
+            if (!FileOps.IsFileAnIcon(droppedPath, DesktopOs, out _)) return false;
             IconPath_Set(droppedPath);
         }
         else if (sender.Equals(txtRADir)) RaExecutable_Set(droppedPath);
@@ -967,7 +960,7 @@ public partial class MainView : UserControl
     {
         // if (pastedPath.Length > 255) return false;
         if (sender.Equals(comboIcon)) {
-            if (!FileOps.IsFileAnIcon(pastedPath, DesktopOS, out _)) return false;
+            if (!FileOps.IsFileAnIcon(pastedPath, DesktopOs, out _)) return false;
             IconPath_Set(pastedPath);
         }
         else if (sender.Equals(txtRADir)) RaExecutable_Set(pastedPath);

@@ -32,7 +32,36 @@ namespace RetroLinker.Views;
 
 public partial class MoreRaOptionsView : UserControl
 {
-    // Avalonia Props
+    #region AvaloniaProperties
+
+    public static readonly DirectProperty<MoreRaOptionsView, IShortcutBuilder> LinkBuilderProperty =
+        AvaloniaProperty.RegisterDirect<MoreRaOptionsView, IShortcutBuilder>(
+            nameof(LinkBuilder),
+            view => view.LinkBuilder);
+
+    public IShortcutBuilder LinkBuilder
+    {
+        get;
+        init {
+            field = value;
+            RaisePropertyChanged(LinkBuilderProperty, value, value);
+        }
+    }
+
+    public static readonly DirectProperty<MoreRaOptionsView, RememberedUserChoices> UserChoicesProperty =
+        AvaloniaProperty.RegisterDirect<MoreRaOptionsView, RememberedUserChoices>(
+            nameof(UserChoices),
+            view => view.UserChoices);
+
+    public RememberedUserChoices UserChoices
+    {
+        get;
+        init {
+            field = value;
+            RaisePropertyChanged(UserChoicesProperty, value, value);
+        }
+    }
+
     public static readonly DirectProperty<MoreRaOptionsView, string?> NewEnvVar_KeyProperty =
         AvaloniaProperty.RegisterDirect<MoreRaOptionsView, string?>(
             nameof(NewEnvVar_Key),
@@ -55,9 +84,7 @@ public partial class MoreRaOptionsView : UserControl
     [MemberNotNullWhen(returnValue: true, nameof(NewEnvVar_Key))]
     public bool NewEnvVar_Valid { get; set => SetAndRaise(NewEnvVar_ValidProperty, ref field, value); }
 
-    // Normal Props
-    public IShortcutBuilder LinkBuilder { get; }
-    public RememberedUserChoices UserChoices { get; }
+    #endregion
 
     public MoreRaOptionsView()
     {
@@ -90,7 +117,7 @@ public partial class MoreRaOptionsView : UserControl
     }
 
     // Fields
-    private PopUpWindow _popUpWindow;
+    private readonly PopUpWindow _popUpWindow;
 
     private void LockControls(bool value) => ((DockPanel?)Content)?.IsEnabled = !value;
 
@@ -107,7 +134,7 @@ public partial class MoreRaOptionsView : UserControl
             if (string.IsNullOrEmpty(file)) return;
             SetRaLogFile(file);
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 
@@ -172,7 +199,7 @@ public partial class MoreRaOptionsView : UserControl
             if (string.IsNullOrEmpty(folder)) return;
             NewEnvVar_Value = folder;
         }
-        catch (System.Exception e) { await this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
     }
 

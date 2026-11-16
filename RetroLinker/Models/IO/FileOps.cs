@@ -412,7 +412,6 @@ public static class FileOps
     [SupportedOSPlatform(App.PlatformWin)]
     public static string GetConvertedIcoPath(DesktopLink.IShortcut linkParameters, string raRom, IIconItem selectedIconItem)
     {
-        // TODO: test
         if (IsExtWinPE(selectedIconItem.FileExt) && !_loadedSettings.ExtractIco) return selectedIconItem.FilePath;
 
         var romIcoSave = (string.IsNullOrEmpty(raRom) || raRom == CommandLine.Manager.Contentless)

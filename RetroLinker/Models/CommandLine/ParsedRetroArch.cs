@@ -36,10 +36,10 @@ public static partial class Manager
         public bool RaAccessibility { get; }
         public bool RaVerbose { get; }
         public string? RaLogFile { get; }
-        
+
         public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => [];   // Prop not used
 
-        
+
         public ParsedRetroArch(RetroArch retroArch)
         {
             var libretro = retroArch.G4_Libretro?.ToList();
@@ -52,7 +52,7 @@ public static partial class Manager
             RaAccessibility = retroArch.G1_Accessibility;
             RaVerbose = retroArch.G1_Verbose;
             RaLogFile = retroArch.G2_LogFile;
-            
+
             if (retroArch.G5_NoPatch) RaRomPatch = new RomPatchArgs(RomPatchType.No_Patch, string.Empty);
             else
             {

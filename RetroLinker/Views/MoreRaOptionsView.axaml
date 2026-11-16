@@ -78,16 +78,19 @@
                     </DockPanel>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!-- TODO: Try a grid for the sliding animation -->
-                        <Viewbox HorizontalAlignment="Right" Classes="Expandable" Tag="{Binding #btnClearList.Bounds.Height}"
-                                 Classes.Expanded="{Binding NewEnvVar_Valid, Mode=OneWay}">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Classes="textbox_inline add" CommandParameter="{x:Static vw:UserListActions.Add}"
-                                        Click="BtnEnvVars_OnClick"/>
-                                <Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
-                                        Click="BtnEnvVars_OnClick"/>
-                            </StackPanel>
-                        </Viewbox>
+                        <Grid ColumnDefinitions="*,Auto,Auto" HorizontalAlignment="Right" Classes="Expandable" 
+                              Classes.Expanded="{Binding NewEnvVar_Valid, Mode=OneWay}">
+                            <Grid.Styles>
+                                <Style Selector="Grid.Expanded">
+                                    <Setter Property="Width" Value="100"/>
+                                </Style>
+                            </Grid.Styles>
+                            <Rectangle Grid.Column="0"/><!-- Padding -->
+                            <Button Grid.Column="1" Classes="textbox_inline add" CommandParameter="{x:Static vw:UserListActions.Add}"
+                                    Click="BtnEnvVars_OnClick"/>
+                            <Button Grid.Column="2" Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
+                                    Click="BtnEnvVars_OnClick"/>
+                        </Grid>
                         <Button x:Name="btnClearList" Classes="textbox_inline clear_list" CommandParameter="{x:Static vw:UserListActions.Clear}"
                                 Click="BtnEnvVars_OnClick"/>
                     </StackPanel>
