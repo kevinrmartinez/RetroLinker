@@ -27,7 +27,7 @@ public static class SettingsOps
     public const string IcoSavROM = "_ROM";
     private const string InvalidDataMessage = "The setting file could not be serialized.";
     private static Settings CachedSettings = new();
-        
+
     public static List<string> PrevConfigs { get; set; } = new();
     public static List<string> LinkCopyPaths { get; set; } = new();
     public static IReadOnlyList<string> RaEnvironmentVariables { get; } = [
@@ -37,12 +37,12 @@ public static class SettingsOps
         "LIBRETRO_DATABASE_DIRECTORY",
         "LIBRETRO_DIRECTORY",
         "LIBRETRO_SYSTEM_DIRECTORY",
-        "LIBRETRO_VIDEO_FILTER_DIRECTORY", 
+        "LIBRETRO_VIDEO_FILTER_DIRECTORY",
         "LIBRETRO_VIDEO_SHADER_DIRECTORY"
     ];
-        
+
     public static Settings GetCachedSettings() => CachedSettings;
-        
+
     // Load & Save
     public static async Task<Settings> LoadSettings()
     {
@@ -63,7 +63,7 @@ public static class SettingsOps
                 settings = new();
                 Logger.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
                 WriteSettings(settings);
-            }  
+            }
         }
         else WriteSettings(settings);
         return settings;
@@ -71,10 +71,13 @@ public static class SettingsOps
 
     public static void WriteSettings(Settings savingSettings)
     {
-        if (!savingSettings.PrevConfig) PrevConfigs = new();
-        if (!savingSettings.MakeLinkCopy) LinkCopyPaths = new(); 
+        if (!savingSettings.PrevConfig) {
+            PrevConfigs.Clear();
+            savingSettings.SavedAppendedConfigs.Clear();
+        }
+        if (!savingSettings.MakeLinkCopy) LinkCopyPaths.Clear();
         savingSettings.SavedConfigs = PrevConfigs;
-        savingSettings.SavedCopyPaths =  LinkCopyPaths;
+        savingSettings.SavedCopyPaths = LinkCopyPaths;
         CachedSettings = savingSettings;
         var serializedSettings = JsonHelper.SerializeProxy(savingSettings);
         if (!string.IsNullOrEmpty(serializedSettings)) FileOps.WriteSettingsFile(serializedSettings);

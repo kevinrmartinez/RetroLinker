@@ -7,7 +7,8 @@
              xmlns:vw="clr-namespace:RetroLinker.Views"
              mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
              x:Class="RetroLinker.Views.AppendView"
-             x:DataType="vw:AppendView" DataContext="{Binding $self}">
+             x:DataType="vw:AppendView" DataContext="{Binding $self}"
+             Unloaded="Control_OnUnloaded">
     
     <UserControl.Styles>
         <StyleInclude Source="../Styles/MainWindowStyles.axaml"/>
@@ -42,11 +43,31 @@
                 <st:ViewControlButton x:Name="btnDiscAppend" Grid.Column="1" ButtonFunction="Discard" Classes="ExtraControl" Click="BtnDiscAppend_OnClick"/>
             </Grid>
             
+            <Border DockPanel.Dock="Bottom" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="3"
+                    IsVisible="{Binding StoredConfigList.Count}">
+                <StackPanel Orientation="Vertical" Margin="4,2">
+                    <Label Content="Stored configs"/>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Classes="textbox_inline add" Command="{Binding TryAddSavedConfig}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="#ItemsControlPaths.CanAdd"/>
+                                    <Binding Path="StoredConfigCanAdd"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
+                        <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding StoredConfigList}"
+                                  MaxDropDownHeight="400" SelectedItem="{Binding StoredConfigSelected}"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+            
             <!-- Append Controls -->
             <DockPanel>
                 <Label DockPanel.Dock="Top" Content="{x:Static tl:resMainExtras.lblAppendPath}"/>
                 <Border Classes="AppendControls">
-                    <st:UserStringList x:Name="ItemsControlPaths" Items="{Binding AppendPaths}" AddItemClick="BtnConfigPathBrowse_OnClick"/>
+                    <st:UserStringList x:Name="ItemsControlPaths" Items="{Binding AppendPaths}" AddItemClick="BtnConfigPathBrowse_OnClick"
+                                       CanClear="{Binding $self.Items.Count}"/>
                 </Border>
             </DockPanel>
             

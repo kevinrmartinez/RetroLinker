@@ -28,7 +28,7 @@ public interface IShortcutParameters
     public string RaCore { get; }
     public SubsystemArgs? RaCoreSubsystem { get; }
     public string? RaConfig { get; }
-    public IReadOnlyAppendedConfigs? RaAppendedConfig { get; }
+    public IReadOnlyAppendedConfigList? RaAppendedConfig { get; }
     public bool RaFullscreen { get; }
     public bool RaMenuOnError { get; }
     public bool RaAccessibility { get; }
@@ -47,7 +47,7 @@ public interface IShortcutBuilder : IShortcutParameters
     public new string RaCore { get; set; }
     public new SubsystemArgs? RaCoreSubsystem { get; set; }
     public new string? RaConfig { get; set; }
-    public new IReadOnlyAppendedConfigs? RaAppendedConfig { get; set; }
+    public new IReadOnlyAppendedConfigList? RaAppendedConfig { get; set; }
     public new bool RaFullscreen { get; set; }
     public new bool RaMenuOnError { get; set; }
     public new bool RaAccessibility { get; set; }

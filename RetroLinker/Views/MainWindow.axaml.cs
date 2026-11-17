@@ -17,6 +17,7 @@
 */
 
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using RetroLinker.Models.DesktopLink;
 using RetroLinker.Models.IO;
 using RetroLinker.Models.Settings;
@@ -28,11 +29,11 @@ public partial class MainWindow : Window
     // Props
     public MainView? PermaView { get; private set; }
     public Settings Settings { get; private set; }
-    
+
     // Fields
     public static readonly string OsDirSeparator = FileOps.OsDirSeparator.ToString();
     public bool IsDesigner = true;
-    
+
     public MainWindow()
     {
         // Constructor for Designer
@@ -44,10 +45,10 @@ public partial class MainWindow : Window
         PermaView = new MainView(this);
         ContBotton.Content = PermaView;
     }
-    
+
     public MainWindow(bool isDesigner)
     {
-        // Constructor used on runtime, this may need a REWRITE 
+        // Constructor used on runtime, this may need a REWRITE
         InitializeComponent();
         IsDesigner = isDesigner;
         if (isDesigner) {
@@ -55,7 +56,7 @@ public partial class MainWindow : Window
             PermaView = null;
             return;
         }
-        
+
         var sTask = Task.Run(FileOps.LoadSettingsFO);
         sTask.Wait();
         Settings = sTask.Result;
@@ -70,7 +71,7 @@ public partial class MainWindow : Window
     }
 
     public void SetSettings(Settings settings) => Settings = settings;
-    
+
     public void ChangeOut(MainViewTypes view)
     {
         ContBotton.IsTransitionReversed = false;
@@ -95,14 +96,14 @@ public partial class MainWindow : Window
         ContTop.Content = ContBotton;
         ContBotton.PageTransition = ogTransition;
     }
-    
+
     private void GoBackToMainView() {
         // Disposal of views only required if the view has native resources
         // https://github.com/AvaloniaUI/Avalonia/discussions/6556
         ContBotton.IsTransitionReversed = true;
         ContBotton.Content = PermaView;
     }
-    
+
     public void ReturnToMainView() => GoBackToMainView();
 
     public void ReturnToMainView(UserControl view, IExtraArguments? args)
@@ -113,7 +114,7 @@ public partial class MainWindow : Window
         switch (view)
         {
             case AppendView:
-                buildingRef.RaAppendedConfig = args?.GetArgument<IReadOnlyAppendedConfigs>();
+                buildingRef.RaAppendedConfig = args?.GetArgument<IReadOnlyAppendedConfigList>();
                 break;
             case PatchesView:
                 buildingRef.RaRomPatch = args?.GetArgument<RomPatchArgs>();
@@ -127,5 +128,9 @@ public partial class MainWindow : Window
                 Logger.LogWarn($"A view of type '{viewType}' tried to update arguments");
                 break;
         }
+    }
+
+    private void MainWindow_OnUnloaded(object? sender, RoutedEventArgs e) {
+        SettingsOps.WriteSettings(Settings);
     }
 }

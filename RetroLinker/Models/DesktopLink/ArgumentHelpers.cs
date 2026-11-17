@@ -23,13 +23,13 @@ namespace RetroLinker.Models.DesktopLink;
 public interface IExtraArguments
 {
     public T? GetArgument<T>()  where T : IExtraArguments {
-        if (this is T specificArgument) 
+        if (this is T specificArgument)
             return specificArgument;
         return default;
     }
 }
 
-public interface IReadOnlyAppendedConfigs : IReadOnlyList<string>, IExtraArguments;
+public interface IReadOnlyAppendedConfigList : IReadOnlyList<string>, IExtraArguments;
 
 public class RomPatchArgs(RomPatchType patchType, string patchPath) : IExtraArguments
 {
@@ -55,22 +55,22 @@ public class SubsystemArgs(string subsystem, IReadOnlyList<string> args) : IExtr
     public override string ToString() => $"{Subsystem} {string.Join(" ", Args)}";
 }
 
-public class AppendedConfigs : List<string>, IReadOnlyAppendedConfigs
+public class AppendedConfigList : List<string>, IReadOnlyAppendedConfigList
 {
-    public AppendedConfigs() : base() {}
-    public AppendedConfigs(IEnumerable<string> collection) : base(collection) {}
-    public AppendedConfigs(int capacity) : base(capacity) {}
-    
+    public AppendedConfigList() : base() {}
+    public AppendedConfigList(IEnumerable<string> collection) : base(collection) {}
+    public AppendedConfigList(int capacity) : base(capacity) {}
+
     public override string ToString() => string.Join("|", this);
 }
 
-public class ObservableAppendedConfigs : ObservableCollection<string>, IReadOnlyAppendedConfigs
+public class ObservableAppendedConfigList : ObservableCollection<string>, IReadOnlyAppendedConfigList
 {
-    public ObservableAppendedConfigs() : base() {}
-    public ObservableAppendedConfigs(IEnumerable<string> collection) : base(collection) {}
-    public ObservableAppendedConfigs(List<string> list) : base(list) {}
-    
-    public override string ToString() => string.Join("|", this);
+    public ObservableAppendedConfigList() : base() {}
+    public ObservableAppendedConfigList(IEnumerable<string> collection) : base(collection) {}
+    public ObservableAppendedConfigList(List<string> list) : base(list) {}
+
+    public override string ToString() => string.Join('|', this);
 }
 
 public record EnvironmentVariable(string Key, string Value) {
@@ -82,7 +82,7 @@ public record EnvironmentVariable(string Key, string Value) {
     private const char EnvSeparator = '=';
     private const int KeyIndex = 0;
     private const int ValueIndex = 1;
-    
+
     public static EnvironmentVariable? FromPwsArgument(string pwsArgument)
     {
         pwsArgument = pwsArgument.Replace(Manager.PwsEnvSetter, "").Trim();

@@ -12,8 +12,7 @@
              x:DataType="vw:MainView"
              TileIconAllUsers="{Binding BuildingLink.TileIcoAllUsers}"
              IconImage="{Binding IconSelectedItem.ImageBitmap, Mode=OneWay,
-             TargetNullValue={StaticResource NaNImage}}"
-             Unloaded="View1_Unloaded">
+             TargetNullValue={StaticResource NaNImage}}">
 	
 	<UserControl.Resources>
 		<x:String x:Key="GroupIconSource">IconSource</x:String>

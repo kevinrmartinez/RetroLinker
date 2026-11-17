@@ -237,7 +237,7 @@ public partial class MainView : UserControl
         // Settings.TileIcoPath = "mmmmmmm";
         BuildingLink.RaRomPatch = new RomPatchArgs(RomPatchType.UPS, "\"path/to/romPatch.ups\"");
         BuildingLink.RaCoreSubsystem = new SubsystemArgs("abc", new List<string>() { "\"path/to/rom_a.bin\"", "\"path/to/rom_b.bin\"" });
-        BuildingLink.RaAppendedConfig = new ObservableAppendedConfigs() { "/path/to/config1.conf", "/path/to/config2.conf", "/path/to/config3.conf" };
+        BuildingLink.RaAppendedConfig = new ObservableAppendedConfigList() { "/path/to/config1.conf", "/path/to/config2.conf", "/path/to/config3.conf" };
         CompleteSetup();
     }
 
@@ -994,10 +994,5 @@ public partial class MainView : UserControl
         IconSelectedItem = ObservableIconItem.DefaultInstance;
         foreach (var iconItem in IconItems) iconItem.Dispose();
         IconItems.Clear();
-    }
-
-    void View1_Unloaded(object sender, RoutedEventArgs e) {
-        // Save changes outside SettingsOps
-        SettingsOps.WriteSettings(Settings);
     }
 }

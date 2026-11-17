@@ -117,7 +117,7 @@ public partial class SettingsWindow : Window
             SettingsOps.WriteSettings(GetDefSettings());
             CloseWindow(GetDefSettings());
         }
-        catch (System.Exception e) { _ = this.PopUpGenericError(e); }
+        catch (Exception e) { await this.PopUpGenericError(e); }
     }
 
     void btnDEFSettings_Click(object sender, RoutedEventArgs e) => btnDEFSettings_Click();
@@ -132,5 +132,6 @@ public partial class SettingsWindow : Window
     }
 
     void CloseWindow(Settings? retSettings) => Close(retSettings);
+
     #endregion
 }

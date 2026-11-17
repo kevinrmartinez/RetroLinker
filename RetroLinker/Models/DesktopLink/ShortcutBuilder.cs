@@ -29,8 +29,8 @@ public class ShortcutBuilder : NotifyPropertyBase, IShortcut, IShortcutBuilder
     public string RaCore { get; set => SetAndNotify(value, ref field); }
     public SubsystemArgs? RaCoreSubsystem { get; set => SetAndNotify(value, ref field); }
     public string? RaConfig { get; set => SetAndNotify(value, ref field); }
-    public IReadOnlyAppendedConfigs? RaAppendedConfig { get => ObservableRaAppendedConfig;
-        set => SetRaAppendedConfigStub(value); }
+    public IReadOnlyAppendedConfigList? RaAppendedConfig { get => ObservableRaAppendedConfig;
+        set => SetRaAppendedConfig(value); }
     public bool RaFullscreen { get; set => SetAndNotify(value, ref field); }
     public bool RaMenuOnError { get; set => SetAndNotify(value, ref field); }
     public bool RaAccessibility { get; set => SetAndNotify(value, ref field); }
@@ -51,7 +51,7 @@ public class ShortcutBuilder : NotifyPropertyBase, IShortcut, IShortcutBuilder
     public string OutputDir => IOsLinkParameters.GetOutputDir(this);
     public IReadOnlyList<EnvironmentVariable> EnvironmentVariables => ObservableEnvironmentVariables;
 
-    private ObservableAppendedConfigs? ObservableRaAppendedConfig { get; set => SetAndNotify(value, ref field); }
+    private ObservableAppendedConfigList? ObservableRaAppendedConfig { get; set => SetAndNotify(value, ref field); }
     private ObservableCollection<EnvironmentVariable> ObservableEnvironmentVariables { get; set => SetAndNotify(value, ref field); }
 
     // These two are required by the contract, but not used here
@@ -116,9 +116,10 @@ public class ShortcutBuilder : NotifyPropertyBase, IShortcut, IShortcutBuilder
         if (!App.PlatformOs) CustomEntryName = !Linux.DesktopEntryOps.ReverseDesktopEntryName(OutputFileName, stripExt: true, out _);
     }
 
-    private void SetRaAppendedConfigStub(IReadOnlyList<string>? list) {
-        if (list is not ObservableAppendedConfigs observableCollection) return;
+    private void SetRaAppendedConfig(IReadOnlyList<string>? list) {
+        if (list is not ObservableAppendedConfigList observableCollection) return;
         ObservableRaAppendedConfig = observableCollection;
+        ManuallyNotify(nameof(RaAppendedConfig));
     }
 
     /* == Inherited Methods == */

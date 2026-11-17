@@ -1,0 +1,90 @@
+Subject: [PATCH] Added list of Stored config files in SettingsView
+---
+Index: RetroLinker/Views/SettingsView.axaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RetroLinker/Views/SettingsView.axaml b/RetroLinker/Views/SettingsView.axaml
+--- a/RetroLinker/Views/SettingsView.axaml	(revision b6109a3feb656a9fbe5637ef0142ee79213c0e46)
++++ b/RetroLinker/Views/SettingsView.axaml	(date 1794944490614)
+@@ -67,16 +67,28 @@
+ 		</Border>
+ 		
+ 		<!-- OTHER SETTINGS -->
+-		<Border Classes="SettingCatg">
++		<Border Classes="SettingCatg" MaxHeight="400">
++			<DockPanel>
++				<Label DockPanel.Dock="Top" Content="Stored Config Files"/>
++				<Rectangle DockPanel.Dock="Top" HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
++				<CheckBox x:Name="chkPrevCONFIG" DockPanel.Dock="Top" Classes="SettingCatg" Content="{x:Static tl:resSettingsWindow.chkPrevCONFIG}" 
++				          IsChecked="{Binding ParentWindow.NewSettings.PrevConfig}"/>
++				
++				<TabControl IsVisible="{Binding ParentWindow.NewSettings.PrevConfig}">
++					<TabItem Header="Config Files" FontSize="16">
++						<st:UserStringList CanAdd="False" MinHeight="200" Items="{Binding ParentWindow.NewSettings.SavedConfigs}"/>
++					</TabItem>
++					<TabItem Header="Append Configs" FontSize="16">
++						<st:UserStringList CanAdd="False" MinHeight="200" Items="{Binding ParentWindow.NewSettings.SavedAppendedConfigs}"/>
++					</TabItem>
++				</TabControl>
++			</DockPanel>
++		</Border>
++		
++		<Border Classes="SettingCatg" IsVisible="False">
+ 			<StackPanel>
+ 				<Label Content="{x:Static tl:resSettingsWindow.lblCat_OtherGeneral}"/>
+ 				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+-				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
+-					<StackPanel Grid.Column="0" Orientation="Vertical">
+-						<CheckBox x:Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static tl:resSettingsWindow.chkPrevCONFIG}" 
+-						          IsChecked="{Binding ParentWindow.NewSettings.PrevConfig}"/>
+-					</StackPanel>
+-				</Grid>
+ 			</StackPanel>
+ 		</Border>
+ 
+Index: RetroLinker/Views/SettingsView.axaml.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/RetroLinker/Views/SettingsView.axaml.cs b/RetroLinker/Views/SettingsView.axaml.cs
+--- a/RetroLinker/Views/SettingsView.axaml.cs	(revision b6109a3feb656a9fbe5637ef0142ee79213c0e46)
++++ b/RetroLinker/Views/SettingsView.axaml.cs	(date 1794945173252)
+@@ -18,6 +18,8 @@
+ 
+ using Avalonia;
+ using Avalonia.Controls;
++using Avalonia.Controls.Primitives;
++using Avalonia.Input;
+ using Avalonia.Interactivity;
+ using Avalonia.Styling;
+ using RetroLinker.Models.Settings;
+@@ -46,6 +48,9 @@
+ 
+     private void CompleteConstructor()
+     {
++        // AddHandler(PointerPressedEvent, SettingsView_OnPointerPressed, RoutingStrategies.Bubble, handledEventsToo: true);
++        AddHandler(Button.ClickEvent, SettingsView_OnControlsClicked, RoutingStrategies.Bubble, handledEventsToo: true);
++        // AddHandler(ToggleButton.IsCheckedChangedEvent, SettingsView_OnControlsClicked, RoutingStrategies.Bubble, handledEventsToo: true);
+         FillComboLocale();
+         LoadTheme(ParentWindow.NewSettings.ChosenTheme);
+         comboLocale.SelectedIndex = LanguageManager.GetLocaleIndex(ParentWindow.NewSettings);
+@@ -126,4 +131,15 @@
+         var locale = LanguageManager.ResolveLocale(comboLocale.SelectedIndex);
+         ParentWindow.NewSettings.LanguageLocale = locale.Culture.Name;
+     }
++
++    private void SettingsView_OnControlsClicked(object? sender, RoutedEventArgs e) {
++        Logger.LogDebg(nameof(SettingsView_OnControlsClicked));
++        Logger.LogDebg($"[{e.Source?.GetType().Name}] {e.RoutedEvent?.Name}");
++        UpdateContext();
++    }
++
++    private void UpdateContext() {
++        DataContext = null;
++        DataContext = this;
++    }
+ }
+\ No newline at end of file

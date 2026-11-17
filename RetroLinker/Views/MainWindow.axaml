@@ -6,7 +6,8 @@
 		Width="850" Height="550" MinWidth="790" MinHeight="530"
         x:Class="RetroLinker.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen"
+        Unloaded="MainWindow_OnUnloaded">
 	
 	<TransitioningContentControl Name="ContTop">
 		<!-- Props -->

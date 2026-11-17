@@ -30,7 +30,7 @@ public static partial class Manager
         public string RaCore { get; }
         public SubsystemArgs? RaCoreSubsystem { get; }
         public string? RaConfig { get; }
-        public IReadOnlyAppendedConfigs? RaAppendedConfig { get; }
+        public IReadOnlyAppendedConfigList? RaAppendedConfig { get; }
         public bool RaFullscreen { get; }
         public bool RaMenuOnError { get; }
         public bool RaAccessibility { get; }
@@ -68,7 +68,7 @@ public static partial class Manager
             }
 
             if (retroArch.G3_AppendConfig is not null && retroArch.G3_AppendConfig.Any()) {
-                RaAppendedConfig = new AppendedConfigs(retroArch.G3_AppendConfig);
+                RaAppendedConfig = new AppendedConfigList(retroArch.G3_AppendConfig);
             }
         }
     }

@@ -17,11 +17,14 @@
 */
 
 using RetroLinker.Models.DesktopLink;
+using RetroLinker.Models.IO;
 
 namespace RetroLinker.Styles;
 
 public static class DummyData
 {
+    private const string DummyFileName = "dummy.bin";
+
     public static ObservableCollection<string> DummyStrings { get; } = new()
     {
         "Lorem",
@@ -44,12 +47,23 @@ public static class DummyData
 
     public static ObservableCollection<string> DummyPathsList { get; } = FillPathsList();
 
-    private static ObservableCollection<string> FillPathsList()
+    public static ObservableCollection<string> FillPathsList(string fileNameTemplete = DummyFileName)
     {
+        var wrkTemplate = string.Empty;
+        string fileName;
+        string fileExt;
+        do
+        {
+            if (fileNameTemplete == wrkTemplate) fileNameTemplete = DummyFileName;
+            fileName = FileOps.GetFileNameNoExtFromPath(fileNameTemplete);
+            fileExt = FileOps.GetFileExtFromPath(fileNameTemplete);
+            wrkTemplate = fileNameTemplete;
+        } while (string.IsNullOrEmpty(fileExt));
+
         var arguments = new ObservableCollection<string>();
-        var pfx = Models.IO.FileOps.CombineMultipleInputs(Models.IO.FileOps.UserDesktop, "testing");
+        var pfx = FileOps.CombineMultipleInputs(FileOps.UserDesktop, "testing");
         for (int i = 0; i < 16; i++) {
-            var testPath = Models.IO.FileOps.CombineMultipleInputs(pfx, $"rom{i}.bin");
+            var testPath = FileOps.CombineMultipleInputs(pfx, $"{fileName}{i}{fileExt}");
             arguments.Add(testPath);
         }
         return arguments;

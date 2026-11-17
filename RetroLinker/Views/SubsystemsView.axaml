@@ -50,7 +50,7 @@
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
                 <Border Grid.Column="1" Grid.Row="4" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
                     <st:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
-                                       CanAdd="{Binding !AddingNewArgument}"
+                                       CanAdd="{Binding !AddingNewArgument}" CanClear="{Binding $self.Items.Count}"
                                        IsEnabled="{Binding SubSystem, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                 </Border>
                 
