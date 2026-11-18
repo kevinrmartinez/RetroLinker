@@ -91,13 +91,19 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         IconProvider.Current.Register<FontAwesome7IconProvider>();
-        return AppBuilder.Configure<App>()
+        var builder = AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .AfterSetup(AppCallback)
 #if DEBUG
             .LogToTrace()
 #endif
             .WithInterFont();
+
+        if (OperatingSystem.IsLinux() && Environment.GetEnvironmentVariable("WAYLAND_EXPERIMENTAL") is not null) {
+            builder = builder.UseWayland();
+        }
+
+        return builder;
     }
 
     private static void AppCallback(AppBuilder obj) {
