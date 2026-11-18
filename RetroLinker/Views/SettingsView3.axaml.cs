@@ -62,7 +62,7 @@ public partial class SettingsView3 : UserControl
     // LOAD
     private void View_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        // TODO: Move to Binding, requiring to practically rewrite this whole view (>= 0.9)
+        // TODO: Move to Binding, requiring to practically rewrite this whole view (=0.10)
         if (IsDesigner) lsboxLinkCopies.Items.Insert(NextCopyItemIndex(), AddLinkCopyItem(FileOps.UserDesktop)); // For Designer
         if (FirstTimeLoad)
         {

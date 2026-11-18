@@ -343,6 +343,13 @@ public static class FileOps
         return destFile;
     }
 
+    public static async Task<DesktopLink.IOsLinkParameters> ParseExistingLink(string linkPath)
+    {
+        return (App.PlatformOs)
+            ? await Windows.ShortcutManager.ReadShortcut(linkPath)
+            : await Linux.ShortcutManager.ReadShortcut(linkPath);
+    }
+
     public static bool IsConfigFile(string filePath, out string fileExt) {
         fileExt = GetFileExtFromPath(filePath);
         return (fileExt.ToLowerInvariant() is ".txt" or ".cfg");

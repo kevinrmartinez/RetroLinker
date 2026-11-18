@@ -35,4 +35,6 @@ public abstract class ObservableFileItem : NotifyPropertyBase, IFileItem
     public string FileName => IIconItem.GetFileName(this);
 
     public string FileExt => IIconItem.GetFileExt(this);
+
+    protected string ogFilePath { get; init; }
 }

@@ -24,3 +24,5 @@ public enum RomPatchType {
     XDelta, No_Patch,
     Any
 }
+
+public enum ArgFileType { Invalid, Rom, Link }

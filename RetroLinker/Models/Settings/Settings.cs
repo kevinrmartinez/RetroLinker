@@ -21,7 +21,7 @@ using RetroLinker.Models.IO;
 
 namespace RetroLinker.Models.Settings;
 
-// TODO: Create another Settings class (private setters) for saving the props, making validations in the process 
+// TODO: Create another Settings class (private setters) for saving the props, making validations in the process (0.10)
 public class Settings : ILocalSerializable, ICloneable
 {
     public string UserAssetsPath { get; set; } = FileOps.DefUserAssetsDir;
@@ -42,20 +42,20 @@ public class Settings : ILocalSerializable, ICloneable
     public List<string> SavedConfigs { get; set; } = new();
     public List<string> SavedAppendedConfigs { get; set; } = new();
     public List<string> SavedCopyPaths { get; set; } = new();
-    public RememberedUserChoices UserChoices { get; 
-        init => field = value ?? new(); // To handle JSON files with this feature missing 
+    public RememberedUserChoices UserChoices { get;
+        init => field = value ?? new(); // To handle JSON files with this feature missing
     } = new();
-    
+
     private static readonly string DefaultLanguage = LanguageManager.ENLocale.Name;
 
     public Settings() {
-        IcoSavPath = UserAssetsPath; 
+        IcoSavPath = UserAssetsPath;
     }
 
     public object Clone() => this.MemberwiseClone();
 
     public void SetDefaultLanguage() => LanguageLocale = DefaultLanguage;
-    
+
     public string? GetBase64()
     {   // Solution thanks to Kevin Driedger @ Stackoverflow.com
         var jsonString = JsonHelper.SerializeProxy(this);

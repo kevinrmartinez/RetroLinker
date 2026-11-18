@@ -59,6 +59,14 @@ public static partial class Manager
     private static string InvalidArgumentsMessage(string argument)
         => $"Invalid arguments, or not formatted correctly: '{argument}'";
 
+    public static ArgFileType ResolveRetroLinkerArg(string arg)
+    {
+        var fileInfo = IO.FileOps.GetFileInfo(arg);
+        if (!fileInfo.Exists) return ArgFileType.Invalid;
+        return fileInfo.Extension.Equals(IO.FileOps.GetOutputExt(App.PlatformOs), StringComparison.OrdinalIgnoreCase)
+            ? ArgFileType.Link : ArgFileType.Rom;
+    }
+
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties
                        | DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RetroArch))]
     public static string RetroArchCommandBuilder(IShortcutParameters link)

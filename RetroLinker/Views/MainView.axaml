@@ -51,7 +51,7 @@
 					<Label Margin="0,5,0,0" Content="{x:Static tl:resMainView.lblRADir}" Classes="ReqField"/>
 					<Grid ColumnDefinitions="*, Auto" Margin="3,0,3,10">
 						<TextBox Name="txtRADir" Grid.Column="0" HorizontalAlignment="Stretch" PlaceholderText="{x:Static vw:MainView.RaExecPlaceholder}"
-						         Text="{Binding BuildingLink.RaExecutable}"
+						         Text="{Binding BuildingLink.RaExecutable, Mode=TwoWay}"
 						         IsReadOnly="{x:Static rl:App.PlatformOs}"/>
 						<Button Name="btnRADir" Grid.Column="1" Classes="textbox_inline browseFile" Click="btnRADir_OnClick"/>
 					</Grid>
@@ -66,7 +66,7 @@
 					</StackPanel>
 					<Grid Name="panelROMDirControl" ColumnDefinitions="*, Auto, Auto" Margin="3,0" IsEnabled="{Binding !ContentlessRom}">
 						<TextBox Name="txtROMDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
-						         Text="{Binding BuildingLink.RaRom}"
+						         Text="{Binding BuildingLink.RaRom, Mode=TwoWay}"
 						         PlaceholderText="{x:Static vw:MainView.RomPlaceholder}"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal">
 							<Button Name="btnROMDir" Click="btnROMDir_OnClick" Classes="textbox_inline browseFile"/>
@@ -241,6 +241,7 @@
 					<Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
 						<StackPanel Orientation="Vertical" Margin="2">
 							<StackPanel Orientation="Horizontal" Spacing="14">
+								<!-- TODO: Replace with EnumToBoolConverter -->
 								<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
 								             IsChecked="{Binding IconCustomSource, Converter={x:Static BoolConverters.Not}}"/>
 								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"/>

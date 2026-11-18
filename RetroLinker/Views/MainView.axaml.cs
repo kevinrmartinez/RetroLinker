@@ -43,6 +43,14 @@ public partial class MainView : UserControl
     #region AvaloniaProperties
 
     // == Link Params ==
+
+    public static readonly DirectProperty<MainView, ShortcutBuilder> BuildingLinkProperty =
+        AvaloniaProperty.RegisterDirect<MainView, ShortcutBuilder>(
+            nameof(BuildingLink),
+            view => view.BuildingLink);
+
+    public ShortcutBuilder BuildingLink { get; private set => SetAndRaise(BuildingLinkProperty, ref field, value); } = new();
+
     public static readonly DirectProperty<MainView, bool> ContentlessRomProperty =
         AvaloniaProperty.RegisterDirect<MainView, bool>(
             nameof(ContentlessRom),
@@ -222,7 +230,6 @@ public partial class MainView : UserControl
     public static string OutputDescLabel => (DesktopOs) ? resMainView.lblDesc_Win : resMainView.lblDesc_Lin;
     public static string OutputDescTip => (DesktopOs) ? resMainView.tipDesc_Win : resMainView.tipDesc_Lin;
     public Settings Settings { get; private set; }
-    public ShortcutBuilder BuildingLink { get; } = new();
     public ObservableCollection<ObservableConfigItem> ConfigItems { get; } = [ObservableConfigItem.DefaultInstance];
     public ObservableCollection<ObservableIconItem> IconItems { get; } = [ObservableIconItem.DefaultInstance];
 
@@ -291,10 +298,10 @@ public partial class MainView : UserControl
         _ = Prepare_comboCore();
         _ = Prepare_comboIcon();
 
+        DataContext = this;
+
         // Arguments should only load when above controls are ready
         ApplyArgs();
-
-        DataContext = this;
 
         // TODO_MAYBE: Tutorial event for new users
     }
@@ -407,15 +414,62 @@ public partial class MainView : UserControl
 
     void ApplyArgs()
     {
-        // TODO: (0.9) Add argument loading support. 2 Cases:
-        // 1. Opening existing links
-        // 2. Starting from a ROM
         var args = App.Args;
-        if (args is null)  return;
-        if (args.Length == 0) Logger.LogDebg("bleh");
-        else {
-            foreach (var arg in args)
-                Logger.LogDebg(arg);
+        if (args is null || args.Length == 0) return;
+        var arg = args[0];
+        var argType = Manager.ResolveRetroLinkerArg(arg);
+        switch (argType)
+        {
+            case ArgFileType.Invalid:
+                Logger.LogWarn($"Invalid argument (file does not exist): {arg}");
+                break;
+            case ArgFileType.Link:
+                Task.Run(() => LoadBuildingLinkFromFile(arg));
+                break;
+            case ArgFileType.Rom:
+                BuildingLink.RaRom = arg;
+                Logger.LogInfo($"Argument applied as ROM: '{BuildingLink.RaRom}'");
+                break;
+        }
+    }
+
+    private async Task LoadBuildingLinkFromFile(string filePath)
+    {
+        var backup = BuildingLink;
+        try
+        {
+            var linkParam = await FileOps.ParseExistingLink(filePath);
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                BuildingLink = new ShortcutBuilder(linkParam);
+                // Binding behavior overwrites the OutputPath on Linux, we force it back here
+                BuildingLink.SetOutputPathAndFriendlyName(linkParam.OutputPath, linkParam.FriendlyName);
+                RaisePropertyChanged(UserRaCoreProperty, string.Empty, string.Empty);
+                RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
+                // Set config
+                if (BuildingLink.RaConfig is not null) {
+                    var loadedConfig = new ObservableConfigItem(BuildingLink.RaConfig);
+                    if (!ConfigItems.Contains(loadedConfig)) ConfigItems.Add(loadedConfig);
+                    ConfigSelectedItem = loadedConfig;
+                }
+                // Set Icon
+                var defaultIcon = (DesktopOs) ? BuildingLink.RaExecutable : App.RetroBin;
+                if (BuildingLink.IconPath == defaultIcon || BuildingLink.IconPath == string.Empty)
+                    IconCustomSource = false;
+                else
+                {
+                    IconCustomSource = true;
+                    var loadedIcon = new ObservableIconItem(BuildingLink.IconPath);
+                    if (!IconItems.Contains(loadedIcon)) IconItems.Add(loadedIcon);
+                    IconSelectedItem = loadedIcon;
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarn($"Could not build Shortcut object from file: {filePath}");
+            Logger.LogErro(ex);
+            BuildingLink = backup;
         }
     }
 
@@ -680,14 +734,13 @@ public partial class MainView : UserControl
     #region Icon Controls
 
     void IconPath_Set(string filePath) {
-        var existing = IconItems.FirstOrDefault(i => i.FilePath == filePath);
-        if (existing is null) {
-            var newIcon = new ObservableIconItem(filePath);
+        var newIcon = new ObservableIconItem(filePath);
+        if (!IconItems.Contains(newIcon)) {
             IconItems.Add(newIcon);
             IconSelectedItem = newIcon;
         }
         else {
-            IconSelectedItem = existing;
+            IconSelectedItem = newIcon;
             IconSelectedItem.ResetBitmap();
         }
     }

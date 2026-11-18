@@ -64,6 +64,7 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
     // public string FilePath
     // public string FileName
     // public string FileExt
+    // protected string ogFilePath
 
     // private string? FilePathPreConversion { get; init; }
     //
@@ -76,8 +77,8 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
 
     private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
 
-
     public static ObservableIconItem DefaultInstance { get; } = new();
+
 
     /// <summary> Constructor dedicated to static instances. </summary>
     /// <param name="caller">The name of the caller member, annotaded with <see cref="CallerMemberNameAttribute"/>.</param>
@@ -89,6 +90,7 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
                 FilePath = Translations.resGeneric.btnDefault;
                 ConversionRequired = false;
                 // _ = SetBitmapAsync();    <= It doesn't work during construction
+                ogFilePath = FilePath;
                 break;
             default:
                 throw new InvalidOperationException($"[{nameof(ObservableIconItem)}] Unknown caller '{caller}'");
@@ -99,6 +101,7 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
         FilePath = filePath;
         ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
         _ = SetBitmapAsync();
+        ogFilePath = FilePath;
     }
 
     public static ObservableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
@@ -114,6 +117,13 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
     public async Task<System.IO.MemoryStream> GetImageStream() => await IIconItem.GenerateImageStream(this);
 
     public override string ToString() => FileName;
+
+    // TODO: Equality works on practice, but FilePath should be init, or ogFilePath should be public
+    public override bool Equals(object? obj) {
+        return obj is ObservableIconItem o && FilePath.Equals(o.FilePath);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(ogFilePath);
 
     public void Dispose() {
         if (IsDefault) {
