@@ -43,7 +43,8 @@ public static partial class Manager
         public ParsedRetroArch(RetroArch retroArch)
         {
             var libretro = retroArch.G4_Libretro?.ToList();
-            ArgumentNullException.ThrowIfNull(libretro);
+            if (libretro is not { Count: > 0 })
+                throw new CommandLineParserException("Required RetroArch Argument was not parsed: --libreto");
             RaCore = libretro[0];
             if (libretro.Count > 1) RaRom = libretro[1];    // <= by default
             RaConfig = retroArch.G3_Config;

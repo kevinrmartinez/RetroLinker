@@ -392,15 +392,12 @@ public static class FileOps
     public static bool IsFileAnIcon(string filePath, bool OS, out string fileExt)
     {
         var extList = new List<string>();
-        if (OS)
-        {
-            foreach (var ext in WinExtraIconsExt) {
-                var fixedExt = ext.Remove(0, 1);
-                extList.Add(fixedExt);
-            }
-            extList.AddRange(WinIcoExt, WinPeExtExe, WinPeExtDll);
+        var sourceList = (OS) ? WinExtraIconsExt :  LinIconsExt;
+        foreach (var ext in sourceList) {
+            var fixedExt = ext.TrimStart('*');
+            extList.Add(fixedExt);
         }
-        else extList.AddRange(LinIconsExt);
+        if (OS) extList.AddRange(WinIcoExt, WinPeExtExe, WinPeExtDll);
 
         fileExt = GetFileExtFromPath(filePath).ToLowerInvariant();
         return extList.Contains(fileExt);

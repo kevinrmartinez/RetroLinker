@@ -178,6 +178,21 @@ public partial class MainView : UserControl
     public string FixedOutputDir => (!TileIconEnabled) ? Settings.DEFLinkOutput : FileOps.TileIconOutDirs[TileIconAllUsers];
 
     // == Icon ==
+    public static readonly DirectProperty<MainView, UserIconSource> CustomIconSourceProperty =
+        AvaloniaProperty.RegisterDirect<MainView, UserIconSource>(
+            nameof(IconSource),
+            view => view.IconSource,
+            (view, value) => view.IconSource = value);
+
+    public UserIconSource IconSource
+    {
+        get;
+        set {
+            if (value == UserIconSource.Default) IconSelectedItem = ObservableIconItem.DefaultInstance;
+            SetAndRaise(CustomIconSourceProperty, ref field, value);
+        }
+    } = UserIconSource.Default;
+
     public static readonly DirectProperty<MainView, ObservableIconItem> IconSelectedItemProperty =
         AvaloniaProperty.RegisterDirect<MainView, ObservableIconItem>(
             nameof(IconSelectedItem),
@@ -197,21 +212,6 @@ public partial class MainView : UserControl
             SetAndRaise(IconSelectedItemProperty, ref field, value);
         }
     } = ObservableIconItem.DefaultInstance;
-
-    public static readonly DirectProperty<MainView, bool> CustomIconSourceProperty =
-        AvaloniaProperty.RegisterDirect<MainView, bool>(
-            nameof(IconCustomSource),
-            view => view.IconCustomSource,
-            (view, value) => view.IconCustomSource = value);
-
-    public bool IconCustomSource
-    {
-        get;
-        set {
-            if (!value) IconSelectedItem = ObservableIconItem.DefaultInstance;
-            SetAndRaise(CustomIconSourceProperty, ref field, value);
-        }
-    }
 
     public static readonly DirectProperty<MainView, AvaloniaBitmap?> IconImageProperty =
         AvaloniaProperty.RegisterDirect<MainView, AvaloniaBitmap?>(
@@ -446,24 +446,19 @@ public partial class MainView : UserControl
                 BuildingLink.SetOutputPathAndFriendlyName(linkParam.OutputPath, linkParam.FriendlyName);
                 RaisePropertyChanged(UserRaCoreProperty, string.Empty, string.Empty);
                 RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
+                // Is Contentless?
+                ContentlessRom = string.IsNullOrWhiteSpace(BuildingLink.RaRom);
                 // Set config
-                if (BuildingLink.RaConfig is not null) {
-                    var loadedConfig = new ObservableConfigItem(BuildingLink.RaConfig);
-                    if (!ConfigItems.Contains(loadedConfig)) ConfigItems.Add(loadedConfig);
-                    ConfigSelectedItem = loadedConfig;
-                }
+                if (BuildingLink.RaConfig is not null) comboConfig_Set(BuildingLink.RaConfig);
                 // Set Icon
                 var defaultIcon = (DesktopOs) ? BuildingLink.RaExecutable : App.RetroBin;
                 if (BuildingLink.IconPath == defaultIcon || BuildingLink.IconPath == string.Empty)
-                    IconCustomSource = false;
-                else
-                {
-                    IconCustomSource = true;
-                    var loadedIcon = new ObservableIconItem(BuildingLink.IconPath);
-                    if (!IconItems.Contains(loadedIcon)) IconItems.Add(loadedIcon);
-                    IconSelectedItem = loadedIcon;
+                    IconSource = UserIconSource.Default;
+                else {
+                    IconSource = UserIconSource.Custom;
+                    IconPath_Set(BuildingLink.IconPath);
                 }
-            });
+            }, Avalonia.Threading.DispatcherPriority.MaxValue);
         }
         catch (Exception ex)
         {
@@ -614,13 +609,13 @@ public partial class MainView : UserControl
                 {
                     int successCount = 0;
                     var content = new System.Text.StringBuilder();
-                    foreach (var R in results)
+                    foreach (var r in results)
                     {
-                        content.Append(R.OutputPath);
+                        content.Append(r.OutputPath);
                         content.Append(": ");
-                        content.Append((R.ResultSuccess) ? resMainView.popLinkSucces : resMainView.popLinkFailure);
+                        content.Append((r.ResultSuccess) ? resMainView.popLinkSucces : resMainView.popLinkFailure);
                         content.AppendLine();
-                        if (!R.ResultSuccess) content.AppendLine($"=> \"{R.ExMessage}\" <=");
+                        if (!r.ResultSuccess) content.AppendLine($"=> \"{r.ExMessage}\" <=");
                         else successCount++;
                     }
                     popUpContent = new PopUpGenericContent(content.ToString(), Header: resMainView.popMultiOutput0_Head);
@@ -958,7 +953,7 @@ public partial class MainView : UserControl
     void btnEXECUTE_OnClick(object sender, RoutedEventArgs e) => RunExecution();
 
 
-    #region Genric Envents
+    #region ViewEvents
 
     void ControlBox_DragEnter(object? sender, DragEventArgs e) {
         if (sender is not AvaloniaTemplatedControl tc) return;
@@ -970,28 +965,38 @@ public partial class MainView : UserControl
         ResetBorderBrush(tc);
     }
 
-    void ControlBox_DropParse(object? sender, DragEventArgs e)
+    async void ControlBox_DropParseAsync(string input, AvaloniaTemplatedControl control)
     {
-        if (sender is not AvaloniaTemplatedControl tc) return;
-        var filesEnum = e.DataTransfer.TryGetFiles();
-        var text = e.DataTransfer.TryGetText();
-        if (filesEnum is { Length: > 0 }) {
-            var file = filesEnum[Index.Start];
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() =>
-                ControlBox_DropResult(ControlBox_HandleDrop(tc, file.Path.LocalPath), tc)
-                );
-            return;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(input)) {
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                    () => ControlBox_DropResult(accepted: false, control),
+                    Avalonia.Threading.DispatcherPriority.Input);
+                return;
+            }
+
+            var parseResult = await ControlBox_HandleInput(control, input);
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                () => ControlBox_DropResult(parseResult, control),
+                Avalonia.Threading.DispatcherPriority.Input);
         }
-        if (!string.IsNullOrWhiteSpace(text)) {
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() =>
-                ControlBox_DropResult(ControlBox_HandlePaste(tc, text), tc)
-                );
-            return;
-        }
-        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => ControlBox_DropResult(accepted: false, tc));
+        catch (Exception ex) { await this.PopUpGenericError(ex); }
     }
 
-    bool ControlBox_HandleDrop(AvaloniaTemplatedControl sender, string droppedPath)
+    void ControlBox_DropParse(object? sender, DragEventArgs e)
+    {
+        if (sender is not AvaloniaTemplatedControl control) return;
+        var filesEnum = e.DataTransfer.TryGetFiles();
+        var text = e.DataTransfer.TryGetText();
+
+        var input = string.Empty;
+        if (filesEnum is { Length: > 0 }) input = filesEnum[Index.Start].Path.LocalPath;
+        else if (!string.IsNullOrWhiteSpace(text)) input = text;
+        ControlBox_DropParseAsync(input, control);
+    }
+
+    async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, string droppedPath)
     {
         if (sender.Equals(comboIcon)) {
             if (!FileOps.IsFileAnIcon(droppedPath, DesktopOs, out _)) return false;
@@ -1004,41 +1009,29 @@ public partial class MainView : UserControl
             if (!FileOps.IsConfigFile(droppedPath, out _)) return false;
             comboConfig_Set(droppedPath);
         }
-        // TODO: else if (sender.Equals(txtLINKDir)) later...
+        else if (sender.Equals(txtLINKDir))
+        {
+            var compare = BuildingLink;
+            if (Manager.ResolveRetroLinkerArg(droppedPath) != ArgFileType.Link) return false;
+            await LoadBuildingLinkFromFile(droppedPath);
+            return compare != BuildingLink;
+        }
 
         return true;
     }
 
-    bool ControlBox_HandlePaste(AvaloniaTemplatedControl sender, string pastedPath)
-    {
-        // if (pastedPath.Length > 255) return false;
-        if (sender.Equals(comboIcon)) {
-            if (!FileOps.IsFileAnIcon(pastedPath, DesktopOs, out _)) return false;
-            IconPath_Set(pastedPath);
-        }
-        else if (sender.Equals(txtRADir)) RaExecutable_Set(pastedPath);
-        else if (sender.Equals(txtROMDir)) ROMDir_Set(pastedPath);
-        else if (sender.Equals(comboConfig)) {
-            if (!FileOps.IsConfigFile(pastedPath, out _)) return false;
-            comboConfig_Set(pastedPath);
-        }
-        // TODO: else if (sender.Equals(txtLINKDir)) later...
-
-        return true;
-    }
-
-    async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl tc)
+    async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl control)
     {
         var resultBrush = accepted ? Brushes.LimeGreen : Brushes.Crimson;
-        tc.BorderBrush = resultBrush;
-        await Task.Delay(1000);
-        ResetBorderBrush(tc);
+        control.BorderBrush = resultBrush;
+        await Task.Delay(1200);
+        ResetBorderBrush(control);
     }
 
-    void ResetBorderBrush(AvaloniaTemplatedControl tc) {
-        // 'tc.ClearValue(BorderBrushProperty);' should do this, but I'm having mixed results
-        // tc.SetValue(BorderBrushProperty, AvaloniaProperty.UnsetValue);
-        tc.BorderBrush = txtLINKRename.BorderBrush;
+    void ResetBorderBrush(AvaloniaTemplatedControl control) {
+        control.ClearValue(BorderBrushProperty); // should do this, but I'm having mixed results
+        // control.SetValue(BorderBrushProperty, AvaloniaProperty.UnsetValue);
+        // control.BorderBrush = txtLINKRename.BorderBrush;
     }
     #endregion
 

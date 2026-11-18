@@ -29,6 +29,7 @@ namespace RetroLinker.Views;
 
 /* == Enums == */
 public enum MainViewTypes { MainView, PatchesView, SubsysView, AppendView }
+public enum UserIconSource { Default, Custom }
 public enum PopUpWindowType { MoreRaOptions, RenameLinux }
 
 public enum TextBoxActions { Browse, Restore, Clear }

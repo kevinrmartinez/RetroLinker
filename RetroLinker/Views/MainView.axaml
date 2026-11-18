@@ -241,13 +241,17 @@
 					<Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
 						<StackPanel Orientation="Vertical" Margin="2">
 							<StackPanel Orientation="Horizontal" Spacing="14">
-								<!-- TODO: Replace with EnumToBoolConverter -->
 								<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
-								             IsChecked="{Binding IconCustomSource, Converter={x:Static BoolConverters.Not}}"/>
-								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"/>
+								             IsChecked="{Binding IconSource,
+								             Converter={StaticResource EnumToBoolConverter},
+								             ConverterParameter={x:Static vw:UserIconSource.Default}}"/>
+								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"
+								             IsChecked="{Binding IconSource,
+								             Converter={StaticResource EnumToBoolConverter},
+								             ConverterParameter={x:Static vw:UserIconSource.Custom}}"/>
 							</StackPanel>
 							<!-- Icon Control -->
-							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding IconCustomSource, Mode=OneWay}">
+							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding IconSource, Mode=OneWay}">
 								<Button DockPanel.Dock="Right" Name="btnIcon" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
 								<ComboBox Name="comboIcon" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
 								          ItemsSource="{Binding IconItems}" SelectedItem="{Binding IconSelectedItem}"

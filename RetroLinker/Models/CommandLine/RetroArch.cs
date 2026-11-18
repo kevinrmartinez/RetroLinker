@@ -188,8 +188,6 @@ public static partial class Manager
                 case RomPatchType.XDelta:
                     retroArch.G5_Xdelta = patchArgs.PatchArg;
                     break;
-                default:            // <= Shouldn't happen, but just in case
-                    return null;
             }
 
             return retroArch;
@@ -198,9 +196,11 @@ public static partial class Manager
         public static RetroArch? GetGroup6(IShortcutParameters? link)
         {
             if (link is not { RaCoreSubsystem: not null}) return null;
-            List<string> subsystemAndArgs = new();
-            subsystemAndArgs.Add(link.RaCoreSubsystem.Subsystem);
-            subsystemAndArgs.AddRange(link.RaCoreSubsystem.Args);
+            List<string> subsystemAndArgs =
+            [
+                link.RaCoreSubsystem.Subsystem,
+                .. link.RaCoreSubsystem.Args
+            ];
             return new RetroArch() { G6_SubSystem = subsystemAndArgs.ToArray() };
         }
     }
