@@ -128,7 +128,7 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
 
     public void Dispose() {
         if (IsDefault) {
-            Logger.LogWarn($"'{nameof(Dispose)}' was called on '{nameof(ObservableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
+            Logger.Warn($"'{nameof(Dispose)}' was called on '{nameof(ObservableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
             return;
         }
         FilePath = string.Empty;
@@ -147,8 +147,8 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
             streamToDecode = await IIconItem.GenerateImageStream(this);
         }
         catch (Exception ex) {
-            Logger.LogWarn($"Icon '{FilePath}' could not be decoded into a bitmap");
-            Logger.LogErro(ex);
+            Logger.Warn($"Icon '{FilePath}' could not be decoded into a bitmap");
+            Logger.Error(ex);
             streamToDecode = new System.IO.MemoryStream();
         }
 

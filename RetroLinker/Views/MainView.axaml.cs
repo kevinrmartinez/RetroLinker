@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System.Linq;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
@@ -205,7 +204,7 @@ public partial class MainView : UserControl
         set {
             // if (value is null) return;
             if (!IconItems.Contains(value)) {
-                Logger.LogWarn($"IconItem '{value.ToString() ?? App.NullStr} [{value?.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
+                Logger.Warn($"IconItem '{value.ToString() ?? App.NullStr} [{value?.FilePath}]' was set as '{nameof(IconSelectedItem)}', " +
                                $"but it's not in the {nameof(IconItems)} list.");
                 return;
             }
@@ -284,7 +283,7 @@ public partial class MainView : UserControl
             ParentWindow.RequestedThemeVariant = LoadThemeVariant();
         }
         catch (Exception ex) {
-            Logger.LogDebg(ex);
+            Logger.Debug(ex);
             TopLevel.GetTopLevel(this)?.RequestedThemeVariant = ThemeVariant.Light;
         }
 #else
@@ -312,7 +311,7 @@ public partial class MainView : UserControl
         var cores = await Operations.GetCoresArray();
         if (cores.Length < 1) ToolTip.SetTip(comboCore, resMainView.lblNoCores);
         else comboCore.ItemsSource = cores;
-        Logger.LogInfo($"{cores.Length} cores were imported.");
+        Logger.Info($"{cores.Length} cores were imported.");
      }
 
     private void Prepare_comboConfig() {
@@ -327,11 +326,11 @@ public partial class MainView : UserControl
             var iconsList = await Task.Run(FileOps.LoadIcons);
             foreach (var iconFile in iconsList)
                 IconItems.Add(ObservableIconItem.FromIIconItem(iconFile));
-            Logger.LogInfo("Icons list imported");
+            Logger.Info("Icons list imported");
         }
         catch (Exception e)
         {
-            Logger.LogErro(e);
+            Logger.Error(e);
             var message = $"{resMainView.popIconsError_Mess}\n\n{resMainView.popIconsError_Mess2}\n'{e.Message}'";
             var content = new PopUpGenericContent(message, resMainView.popIconsError_Title);
             _ = this.PopUpGenericMessageBox(content, GenericPopUpType.Error);
@@ -392,8 +391,8 @@ public partial class MainView : UserControl
             _ => ThemeVariant.Default,
         };
         // CurrentTheme = settings.PreferedTheme;
-        Logger.LogInfo($"The requested theme was: {theme}");
-        Logger.LogDebg($"Index in byte: {Settings.ChosenTheme}");
+        Logger.Info($"The requested theme was: {theme}");
+        Logger.Debug($"Index in byte: {Settings.ChosenTheme}");
         return theme;
     }
 
@@ -418,17 +417,18 @@ public partial class MainView : UserControl
         if (args is null || args.Length == 0) return;
         var arg = args[0];
         var argType = Manager.ResolveRetroLinkerArg(arg);
+        Logger.Trace($"Argument identified as {argType}: {arg}");
         switch (argType)
         {
             case ArgFileType.Invalid:
-                Logger.LogWarn($"Invalid argument (file does not exist): {arg}");
+                Logger.Warn($"Invalid argument (file does not exist): {arg}");
                 break;
             case ArgFileType.Link:
                 Task.Run(() => LoadBuildingLinkFromFile(arg));
                 break;
             case ArgFileType.Rom:
                 BuildingLink.RaRom = arg;
-                Logger.LogInfo($"Argument applied as ROM: '{BuildingLink.RaRom}'");
+                Logger.Info($"Argument applied as ROM: '{BuildingLink.RaRom}'");
                 break;
         }
     }
@@ -462,8 +462,8 @@ public partial class MainView : UserControl
         }
         catch (Exception ex)
         {
-            Logger.LogWarn($"Could not build Shortcut object from file: {filePath}");
-            Logger.LogErro(ex);
+            Logger.Warn($"Could not build Shortcut object from file: {filePath}");
+            Logger.Error(ex);
             BuildingLink = backup;
         }
     }
@@ -485,7 +485,7 @@ public partial class MainView : UserControl
 
     // Pop-ups
     async Task<RenamePopUpHelper> ResolveRenamePopUp(string givenPath, string givenName, string givenCore) {
-        var renameParams = new RenamePopUpHelper(givenPath, givenName, givenCore, BuildingLink.CustomEntryName ?? false);
+        var renameParams = new RenamePopUpHelper(givenPath, givenName, givenCore, BuildingLink.CustomEntryName.GetValueOrDefault());
         var popupWindow = new PopUpWindow(PopUpWindowType.RenameLinux, renameParams);
         return await popupWindow.ShowDialog<RenamePopUpHelper?>(ParentWindow) ?? renameParams;
     }
@@ -549,12 +549,12 @@ public partial class MainView : UserControl
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogErro(ex);
+                        Logger.Error(ex);
                         var content = new PopUpGenericContent(resMainView.wrnIcoToImage_mess,
                             null, resMainView.wrnIcoToImage_header);
                         await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
                         // var ms = await this.PopUpGenericMessageBox(content, GenericPopUpType.Warning);
-                        // Logger.LogDebg(ms.ToString("G"));
+                        // Logger.Debug(ms.ToString("G"));
                     }
                     outputLink.TileIcoImagePath = imagePath;
                 }
@@ -647,7 +647,7 @@ public partial class MainView : UserControl
                 && (!string.IsNullOrEmpty(BuildingLink.RaCore))
                 && (!string.IsNullOrEmpty(BuildingLink.OutputPath)))
             {
-                Logger.LogDebg("All fields for link creation have been accepted.");
+                Logger.Debug("All fields for link creation have been accepted.");
                 var outputLink = new ShortcutWriter(BuildingLink);
 
                 // Check for overwriting
@@ -898,7 +898,7 @@ public partial class MainView : UserControl
 #if DEBUG
             else
             {
-                Logger.LogDebg("Running on debug...");
+                Logger.Debug("Running on debug...");
             }
 #endif
         }

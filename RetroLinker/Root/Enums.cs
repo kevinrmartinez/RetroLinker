@@ -18,6 +18,28 @@
 
 namespace RetroLinker;
 
+internal enum RetroLinkerLogType
+{
+    Information,
+    Warning,
+    Error,
+    Critical,
+    Debug,
+    Trace
+}
+
+internal enum RetroLinkerLogLevel
+{
+    /// <summary> Allows all <see cref="T:RetroLinkerLogType"/> logs. </summary>
+    All,
+    /// <summary> Allows the <see cref="E:RetroLinkerLogType.Information"/> and <see cref="E:RetroLinkerLogType.Warning"/> logs. </summary>
+    Information,
+    /// <summary> Allows the <see cref="E:RetroLinkerLogType.Error"/> and <see cref="E:RetroLinkerLogType.Critical"/> logs. </summary>
+    Error,
+    /// <summary> Allows the <see cref="E:RetroLinkerLogType.Debug"/> and <see cref="E:RetroLinkerLogType.Trace"/> logs. </summary>
+    Debug
+}
+
 public enum RomPatchType {
     None,
     UPS, BPS, IPS,

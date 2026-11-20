@@ -70,8 +70,8 @@ public class App : Application
             // {
             //     DataContext = new MainViewModel()
             // };
-            Logger.LogCrit($"On '{nameof(App)}.{nameof(OnFrameworkInitializationCompleted)}'");
-            Logger.LogCrit($"\tType of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
+            Logger.Crit($"On '{nameof(App)}.{nameof(OnFrameworkInitializationCompleted)}'");
+            Logger.Crit($"\tType of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -80,11 +80,10 @@ public class App : Application
     // Added
     public void SetAppInfo(AppInformation appInformation) {
         LocalInformation = appInformation;
-        Logger.LogDebg("'AppInfo' has been set with the following properties:\n" + LocalInformation.ToStringLines());
+        Logger.Trace($"'{nameof(LocalInformation)}' has been set with the following properties:\n{LocalInformation.ToStringLines()}");
     }
 
-    private void CompleteStartup()
-    {
+    private void CompleteStartup() {
         Dispatcher.UnhandledException += App_OnUnhandledException;
         LanguageManager.FixLocale(LanguageManager.ENLocale);
         UpdateLicenseUri();
@@ -99,8 +98,9 @@ public class App : Application
 
     private void UpdateLicenseUri()
     {
+        const string resourceName = "LicenseUri";
         if (Current is not { } app) return;
-        var licenseUri = app.Resources["LicenseUri"] as Uri;
+        var licenseUri = app.Resources[resourceName] as Uri;
         if (licenseUri is null) return;
         var localLicenseUri = licenseUri;
         try
@@ -116,12 +116,12 @@ public class App : Application
         }
         catch (Exception ex)
         {
-            Logger.LogErro($"{nameof(App)}.{nameof(UpdateLicenseUri)}:)");
-            Logger.LogErro(ex);
+            Logger.Error($"{nameof(App)}.{nameof(UpdateLicenseUri)}:)");
+            Logger.Error(ex);
             localLicenseUri = new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
 
-        app.Resources["LicenseUri"] = localLicenseUri;
+        app.Resources[resourceName] = localLicenseUri;
     }
 
     private async Task ShowCriticalAndQuit()
@@ -136,8 +136,8 @@ public class App : Application
         }
         catch (Exception ex)
         {
-            Logger.LogCrit("An error occured while trying to show a critical message:");
-            Logger.LogCrit(ex);
+            Logger.Crit("An error occured while trying to show a critical message:");
+            Logger.Crit(ex);
         }
         finally { Environment.Exit(1); }
     }

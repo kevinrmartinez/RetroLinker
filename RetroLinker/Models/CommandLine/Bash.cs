@@ -78,7 +78,7 @@ public static partial class Manager
                 if (i == 0) continue;
                 var env = EnvironmentVariable.FromBashArgument(split[i]);
                 if (env is not null) EnvironmentVariables.Add(env);
-                else Logger.LogWarn($"[{nameof(BashWrapper)}] Could not parse environment variable '{split[i]}'");
+                else Logger.Warn($"[{nameof(BashWrapper)}] Could not parse environment variable '{split[i]}'");
             }
 
             var newCommand = split[execIndex..];

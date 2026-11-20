@@ -65,15 +65,15 @@ public static partial class ShortcutManager
 
     private static async Task SetExecPermissions(string filePath)
     {
-        Logger.LogInfo($"Trying to set executable permissions to \"{filePath}\".");
+        Logger.Info($"Trying to set executable permissions to \"{filePath}\".");
 
         try {
             await Task.Run(() => FileOps.MakeUnixFileExecutable(filePath));
-            Logger.LogInfo($"Executable permissions to \"{filePath}\" were set successfully.");
+            Logger.Info($"Executable permissions to \"{filePath}\" were set successfully.");
         }
         catch (Exception e) {
-            Logger.LogWarn($"Failed to set executable permissions to \"{filePath}\".");
-            Logger.LogErro(e);
+            Logger.Warn($"Failed to set executable permissions to \"{filePath}\".");
+            Logger.Error(e);
         }
     }
 }

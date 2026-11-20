@@ -39,15 +39,15 @@ public class AppInformation(
     public string ToStringLines()
     {
         const string noData = "No Data";
-        var finalDate = BuildDate?.ToString("O") ?? noData;
+        var finalDate = BuildDate?.ToString("O", System.Globalization.CultureInfo.InvariantCulture) ?? noData;
         var finalGitHash = GitHash ?? noData;
         return $"""
-                FullName  {FullName}
-                Name      {Name}
-                Version   {Version}
-                Admin     {IsRunningAdmin}
-                BuildDate {finalDate}
-                Git Hash  {finalGitHash}
+                   FullName  {FullName}
+                   Name      {Name}
+                   Version   {Version}
+                   Admin     {IsRunningAdmin}
+                   BuildDate {finalDate}
+                   Git Hash  {finalGitHash}
                """;
     }
 }

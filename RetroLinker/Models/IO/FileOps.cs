@@ -97,7 +97,7 @@ public static class FileOps
     public static async Task<Settings.Settings> LoadSettingsFO()
     {
         _loadedSettings = await SettingsOps.LoadSettings();
-        Logger.LogDebg($"Settings loaded for {nameof(FileOps)}");
+        Logger.Debug($"Settings loaded for {nameof(FileOps)}");
         BuildConfigDir(_loadedSettings);
         return _loadedSettings;
     }
@@ -119,11 +119,11 @@ public static class FileOps
     {
         try {
             await File.WriteAllTextAsync(PathToSettingFileJson, settingString);
-            Logger.LogInfo($"Setting file \"{PathToSettingFileJson}\" written successfully");
+            Logger.Info($"Setting file \"{PathToSettingFileJson}\" written successfully");
         }
         catch (Exception e) {
-            Logger.LogWarn($"Setting file \"{PathToSettingFileJson}\" could not be written!");
-            Logger.LogErro(e);
+            Logger.Debug($"Setting file \"{PathToSettingFileJson}\" could not be written!");
+            Logger.Error(e);
         }
     }
 
@@ -146,7 +146,7 @@ public static class FileOps
                 fsWriter.Close();
             }
             catch (Exception ex) {
-                Logger.LogErro(ex);
+                Logger.Error(ex);
                 return false;
             }
         }
@@ -156,7 +156,7 @@ public static class FileOps
                 File.Create(logFilePath).Close();
             }
             catch (Exception ex) {
-                Logger.LogErro(ex);
+                Logger.Error(ex);
                 return false;
             }
         }
@@ -178,14 +178,14 @@ public static class FileOps
     {
         try
         {
-            Logger.LogInfo($"Starting reading of \"{filePath}\".");
+            Logger.Info($"Starting reading of \"{filePath}\".");
             var cores = await ReadFileLinesToEndAsync(filePath);
-            Logger.LogInfo($"Completed reading of \"{filePath}\".");
+            Logger.Info($"Completed reading of \"{filePath}\".");
             return cores;
         }
         catch (Exception e) {
-            Logger.LogWarn($"The file \"{filePath}\" could not be found!");
-            Logger.LogErro(e);
+            Logger.Warn($"The file \"{filePath}\" could not be found!");
+            Logger.Error(e);
             return Array.Empty<string>();
         }
     }
@@ -197,12 +197,12 @@ public static class FileOps
 
         var extList = (App.PlatformOs) ? WinAllIconsExt : LinIconsExt;
         var filesList = new DirectoryInfo(dir).GetFiles();
-        Logger.LogInfo($"Searching for Icons at \"{dir}\".");
+        Logger.Info($"Searching for Icons at \"{dir}\".");
 
         foreach (var file in filesList)
             if (extList.Contains("*" + file.Extension.ToLowerInvariant())) validIcons.Add(new IconItem(file.FullName));
 
-        Logger.LogInfo(validIcons.Count == 0
+        Logger.Info(validIcons.Count == 0
             ? "No icons found."
             : $"{validIcons.Count} icons were found.");
 
@@ -324,8 +324,8 @@ public static class FileOps
             return true;
         }
         catch (Exception e) {
-            Logger.LogWarn($"The folder \"{path}\" could not be created!");
-            Logger.LogErro(e);
+            Logger.Warn($"The folder \"{path}\" could not be created!");
+            Logger.Error(e);
             return false;
         }
     }

@@ -47,14 +47,14 @@ public abstract class OsLinkParameters : IOsLinkParameters
 
     protected async Task<ShortcutWriterResult> CreateShortcut(Func<OsLinkParameters, Task> osCreateShortcut)
     {
-        Logger.LogInfo($"Creating \"{OutputPath}\"...");
+        Logger.Info($"Creating \"{OutputPath}\"...");
         try {
             await osCreateShortcut(this);
             return new ShortcutWriterResult(OutputPath);
         }
         catch (Exception ex) {
-            Logger.LogWarn($"\"{OutputPath}\" could not be created!");
-            Logger.LogErro(ex);
+            Logger.Warn($"\"{OutputPath}\" could not be created!");
+            Logger.Error(ex);
             return new ShortcutWriterResult(OutputPath, ResultSuccess: false, ex.Message);
         }
     }

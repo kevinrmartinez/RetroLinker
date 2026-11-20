@@ -58,10 +58,10 @@ public static class SettingsOps
             }
             catch (Exception e)
             {
-                Logger.LogWarn($"There was a error while loading \"{FileOps.SettingFileJson}\"");
-                Logger.LogErro(e);
+                Logger.Warn($"There was a error while loading \"{FileOps.SettingFileJson}\"");
+                Logger.Error(e);
                 settings = new();
-                Logger.LogInfo($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
+                Logger.Info($"Creating/Overwriting \"{FileOps.SettingFileJson}\"...");
                 WriteSettings(settings);
             }
         }
@@ -81,6 +81,6 @@ public static class SettingsOps
         CachedSettings = savingSettings;
         var serializedSettings = JsonHelper.SerializeProxy(savingSettings);
         if (!string.IsNullOrEmpty(serializedSettings)) FileOps.WriteSettingsFile(serializedSettings);
-        else Logger.LogErro("Settings could not be serialized into a file");
+        else Logger.Error("Settings could not be serialized into a file");
     }
 }

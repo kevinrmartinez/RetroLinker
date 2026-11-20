@@ -73,8 +73,8 @@ public static class PopUpDialogOps
     // App extension
     public static async Task PopUpCriticalError(this App app, Exception exception)
     {
-        Logger.LogCrit($"{nameof(app)} has re-threw a critical exception:");
-        Logger.LogCrit(exception);
+        Logger.Crit($"{nameof(app)} has re-threw a critical exception:");
+        Logger.Crit(exception);
 
         var applicationLifetime = app.ApplicationLifetime;
         if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;;
@@ -125,7 +125,7 @@ public static class PopUpDialogOps
             await app.ShowCriticalAndQuit(exception);
             return; // The app is dead at this point
         }
-        Logger.LogErro(exception);
+        Logger.Error(exception);
         var content = new PopUpGenericContent(exception.Message,  customTitle, customHeader);
         await window.PopUpGenericMessageBox(content, GenericPopUpType.Error);
     }

@@ -125,7 +125,7 @@ public partial class MainWindow : Window
             default:
                 // Should not happen
                 var viewType = view.GetType();
-                Logger.LogWarn($"A view of type '{viewType}' tried to update arguments");
+                Logger.Warn($"A view of type '{viewType}' tried to update arguments");
                 break;
         }
     }

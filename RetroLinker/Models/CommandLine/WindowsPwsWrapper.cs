@@ -185,7 +185,7 @@ public static partial class Manager
 
                 var env = EnvironmentVariable.FromPwsArgument(command);
                 if (env is not null) environmentVariables.Add(env);
-                else Logger.LogWarn($"[{nameof(WindowsPwsWrapper)}] Could not parse variable '{command}'");
+                else Logger.Warn($"[{nameof(WindowsPwsWrapper)}] Could not parse variable '{command}'");
             }
 
             return strpCandidates;
@@ -199,7 +199,7 @@ public static partial class Manager
                     !candidate.Contains(PwsStartFilePath) ||
                     !candidate.Contains(PwsStartArgumentList))
                 {
-                    Logger.LogWarn($"[{nameof(WindowsPwsWrapper)}] Could not parse argument '{candidate}'");
+                    Logger.Warn($"[{nameof(WindowsPwsWrapper)}] Could not parse argument '{candidate}'");
                     continue;
                 }
 

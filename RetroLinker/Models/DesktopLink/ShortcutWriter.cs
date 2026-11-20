@@ -108,7 +108,7 @@ public class ShortcutWriter : IShortcut
         }
         catch (Exception ex)
         {
-            Logger.LogErro(ex);
+            Logger.Error(ex);
             results.Add(new ShortcutWriterResult(outputPath, ResultSuccess: false, ex.Message));
         }
         return results;

@@ -61,7 +61,7 @@ internal static class JsonHelper
             }
         }
         catch (NotSupportedException ex) {
-            Logger.LogErro($"Serialization Error:\n\tType:{objectToSerialize.GetType().Name} \n\t{ex}");
+            Logger.Error($"Serialization Error:\n\tType:{objectToSerialize.GetType().Name} \n\t{ex}");
             return null;
         }
     }
@@ -77,7 +77,7 @@ internal static class JsonHelper
             throw new NotSupportedException("Deserializer not implemented");
         }
         catch (Exception ex) when  (ex is NotSupportedException or JsonException) {
-            Logger.LogErro($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex}");
+            Logger.Error($"Deserialization Error:\n\tType:{typeof(T).Name} \n\t{ex}");
             return null;
         }
     }

@@ -39,7 +39,7 @@ public static class ShortcutManager
             outputFile.ShowCommand = SharpShellLink.Flags.ShowCommand.SW_SHOWMINNOACTIVE;
         
         await FileOps.WriteAllBytesToFileAsync(link.OutputPath, outputFile.GetBytes());
-        Logger.LogInfo($"\"{link.OutputPath}\" file created successfully.");
+        Logger.Info($"\"{link.OutputPath}\" file created successfully.");
     }
     
     public static async Task<OsLinkParameters> ReadShortcut(string linkPath)

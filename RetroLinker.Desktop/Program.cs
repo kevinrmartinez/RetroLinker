@@ -56,10 +56,10 @@ class Program
     public static int Main(string[] args)
     {
         SetUpLogger();
-        Logger.LogInfo($"{AppName} v{AppVersion}");
 
-        Logger.LogDebg("Starting AvaloniaApp");     // <= Trace, not debug
+        Logger.Info($"{AppName} v{AppVersion}");
 
+        Logger.Trace("Starting AvaloniaApp");
         // TODO: Subscribe to more Avalonia error handlers/detectors
         //  https://docs.avaloniaui.net/docs/app-development/setting-unhandled-exceptions
 #if DEBUG
@@ -129,9 +129,9 @@ class Program
         }
 
 #if DEBUG
-        Logger.DebugTracing = true;
+        Logger.SetDebugTracing(true);
 #else
-        Logger.DebugTracing = IsDebugTracing();
+        Logger.SetDebugTracing(IsDebugTracing());
 #endif
         Logger.AutoFlush = true;
     }
@@ -156,14 +156,14 @@ class Program
             return DateTime.FromBinary(buildDateTicks);     // Date is set in UTC
         }
 
-        Logger.LogWarn("App build bate was requested, but it could not be accessed");
+        Logger.Warn("App build bate was requested, but it could not be accessed");
         return null;
     }
 
     private static string? GetGitHashOfRepo() {
         if (AppVersionSplit.Length > 1) return AppVersionSplit[1];
 
-        Logger.LogWarn("Hash of git repo was requested, but it could not be accessed");
+        Logger.Warn("Hash of git repo was requested, but it could not be accessed");
         return null;
     }
 

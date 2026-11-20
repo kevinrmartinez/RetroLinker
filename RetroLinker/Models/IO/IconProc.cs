@@ -24,7 +24,7 @@ namespace RetroLinker.Models.IO;
 
 public static partial class IconProc
 {
-    // TODO: give the user an option for Nearest sampling
+    // TODO: give the user an option for Nearest sampling (>=idk)
     private static readonly SKSamplingOptions NearestResampler = new(SKFilterMode.Nearest, SKMipmapMode.Nearest);
     private static readonly SKSamplingOptions LinearResampler = new(SKFilterMode.Linear, SKMipmapMode.Linear);
     // https://learn.microsoft.com/en-us/windows/win32/uxguide/vis-icons

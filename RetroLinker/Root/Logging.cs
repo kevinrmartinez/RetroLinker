@@ -17,119 +17,171 @@
 */
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using RetroLinker.Models.IO;
 
 namespace RetroLinker;
 
 public static class Logger
 {
-    /*
-     * TODO: I think this method is too expensive for logging, consider alternatives (=0.9)
-     * https://stackoverflow.com/a/68363461
-     */
-    
     // Props
     public static string LogFile { get; private set; }
-    private static TraceSource TraceDefault { get; }
-    private static TraceSource TraceError { get; }
-    private static TraceSource TraceDebug { get; }
     public static bool AutoFlush { get; set; }
-    public static bool DebugTracing { get; set; }
+    private static bool DebugTracing { get; set; }
 
     // Public Fields
-    
-    
+
+
     // Internal Fields
-    
     private const string _placeholder = "PLACEHOLDER.log";
-    private const string _prefixInfo = "[Info]";
-    private const string _prefixWarn = "[Warn]";
-    private const string _prefixErro = "[Erro]";
-    private const string _prefixCrit = "[Crit]";
-    private const string _prefixDebg = "[Debg]";
+    private const string PrefixInfo = "[Info]";
+    private const string PrefixWarn = "[Warn]";
+    private const string PrefixErro = "[Erro]";
+    private const string PrefixCrit = "[Crit]";
+    private const string PrefixDebg = "[Debug]";
+    private const string PrefixTrac = "[Trace]";
     private const string _null = "NULL";
-    
+
+    private static readonly TraceSource Source = new("RetroLinkerLogger", SourceLevels.All);
+    private static readonly System.Threading.Lock Lock = new();
+    private static bool _isFileInitialized;
+    private static readonly Dictionary<RetroLinkerLogLevel, RetroLinkerLogType[]> LogTypesMap;
+
     static Logger()
     {
         LogFile = _placeholder;
 
-        TraceDefault = new TraceSource("Default", ~SourceLevels.Error);
-        TraceError =   new TraceSource("Error", SourceLevels.Error);
-        TraceDebug = new TraceSource("Debug", SourceLevels.All);
+        LogTypesMap = new()
+        {
+            { RetroLinkerLogLevel.Information, [RetroLinkerLogType.Information, RetroLinkerLogType.Warning] },
+            { RetroLinkerLogLevel.Error, [RetroLinkerLogType.Error, RetroLinkerLogType.Critical] },
+            { RetroLinkerLogLevel.Debug, [RetroLinkerLogType.Debug, RetroLinkerLogType.Trace] }
+        };
 
-        var consoleTracer = new ConsoleTraceListener(false) {
+        var consoleTracer = new ConsoleTraceListener(useErrorStream: false) {
             Name = "mainConsoleTracer",
-            TraceOutputOptions = TraceOptions.None
+            Filter = new RetroLinkerTraceFilter(RetroLinkerLogLevel.Information)
         };
-        var consoleErrorTracer = new ConsoleTraceListener(true) {
+        var consoleErrorTracer = new ConsoleTraceListener(useErrorStream: true) {
             Name = "mainConsoleErrorTracer",
-            TraceOutputOptions = TraceOptions.None
+            Filter = new RetroLinkerTraceFilter(RetroLinkerLogLevel.Error)
         };
-        
-        TraceDefault.Listeners.Add(consoleTracer);
-        TraceError.Listeners.Add(consoleErrorTracer);
-        TraceDebug.Listeners.Add(consoleTracer);
+        var consoleDebugTracer = new ConsoleTraceListener(useErrorStream: false) {
+            Name = "mainConsoleDebugTracer",
+            Filter = new RetroLinkerTraceFilter(RetroLinkerLogLevel.Debug)
+        };
+
+        Source.Listeners.Clear();
+        Source.Listeners.Add(consoleTracer);
+        Source.Listeners.Add(consoleErrorTracer);
+        Source.Listeners.Add(consoleDebugTracer);
     }
+
+    public static void SetDebugTracing(bool value) => DebugTracing = value;
 
     public static void SetLogFile(string logFileName)
     {
+        if (_isFileInitialized) throw new InvalidOperationException("Logger file is already initialized");
+
+        _isFileInitialized = true;
         LogFile = FileOps.CombineMultipleInputs(FileOps.BaseDir, logFileName);
-        var textfileTracer = new TextWriterTraceListener(LogFile) {
+        var textFileTracer = new TextWriterTraceListener(LogFile) {
             Name = "mainTextfileTracer",
-            TraceOutputOptions = TraceOptions.Timestamp | TraceOptions.ThreadId
+            Filter = new RetroLinkerTraceFilter(RetroLinkerLogLevel.All)
         };
-        TraceDefault.Listeners.Add(textfileTracer);
-        TraceError.Listeners.Add(textfileTracer);
-        TraceDebug.Listeners.Add(textfileTracer);
+
+        lock (Lock) {
+            Source.Listeners.Add(textFileTracer);
+        }
     }
-    
+
     private static string ObjToString(object? obj) => obj?.ToString() ?? _null;
-    
-    public static void LogInfo(string message) {
-        
-        foreach (TraceListener listener in TraceDefault.Listeners) {
-            listener.WriteLine(message,  _prefixInfo);
-            if (AutoFlush) listener.Flush();
+
+    private static void WriteToSource(RetroLinkerLogType logType, string message, string category, string? caller)
+    {
+        var fullMessage = (DebugTracing) ? $"[{caller}] {message}" : message;
+        lock (Lock) {
+            foreach (TraceListener listener in Source.Listeners)
+            {
+                var shouldNotLogThis = !((RetroLinkerTraceFilter?)listener.Filter)?.ShouldLog(logType);
+                if (shouldNotLogThis.GetValueOrDefault(defaultValue: true)) continue;
+                listener.WriteLine(fullMessage, category);
+                if (AutoFlush) listener.Flush();
+            }
         }
     }
-    public static void LogInfo(object? obj) => LogInfo(ObjToString(obj));
 
-    public static void LogWarn(string message) {
-        foreach (TraceListener listener in TraceDefault.Listeners) {
-            listener.WriteLine(message, _prefixWarn);
-            if (AutoFlush) listener.Flush();
+    public static void Info(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Information, message ?? _null, PrefixInfo, caller);
+    public static void Info(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Information, ObjToString(obj), PrefixInfo, caller);
+
+
+    public static void Warn(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Warning, message ?? _null, PrefixWarn, caller);
+    public static void Warn(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Warning, ObjToString(obj), PrefixWarn, caller);
+
+
+    public static void Error(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Error, message ?? _null, PrefixErro, caller);
+    public static void Error(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Error, ObjToString(obj), PrefixErro, caller);
+
+
+    public static void Crit(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Critical, message ?? _null, PrefixCrit, caller);
+    public static void Crit(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Critical, ObjToString(obj), PrefixCrit, caller);
+
+
+    public static void Debug(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Debug, message ?? _null, PrefixDebg, caller);
+    public static void Debug(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Debug, ObjToString(obj), PrefixDebg, caller);
+
+
+    public static void Trace(string? message, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Trace, message ?? _null, PrefixTrac, caller);
+    public static void Trace(object? obj, [CallerMemberName] string? caller = null) =>
+        WriteToSource(RetroLinkerLogType.Trace, ObjToString(obj), PrefixTrac, caller);
+
+
+    public static void Close()
+    {
+        lock (Lock)
+        {
+            Source.Flush();
+            Source.Close();
         }
     }
-    public static void LogWarn(object? obj) => LogWarn(ObjToString(obj));
 
-    public static void LogErro(string message) {
-        foreach (TraceListener listener in TraceError.Listeners) {
-            listener.WriteLine(message, _prefixErro);
-            if (AutoFlush) listener.Flush();
+
+    private class RetroLinkerTraceFilter (RetroLinkerLogLevel filterLevel) : TraceFilter
+    {
+        public RetroLinkerLogLevel TraceFilterLevel { get; } = filterLevel;
+
+        public override bool ShouldTrace(
+            TraceEventCache? cache,
+            string source,
+            TraceEventType eventType,
+            int id,
+            [StringSyntax("CompositeFormat")] string? formatOrMessage,
+            object?[]? args,
+            object? data1,
+            object?[]? data) => eventType == TraceEventType.Verbose;    // <= WriteLine() checks for the Verbose type
+
+        public bool ShouldLog(RetroLinkerLogType logType)
+        {
+            switch (TraceFilterLevel)
+            {
+                case RetroLinkerLogLevel.All:
+                    return (logType is not RetroLinkerLogType.Debug and not RetroLinkerLogType.Trace) || DebugTracing;
+                case RetroLinkerLogLevel.Debug:
+                    return DebugTracing && (logType is RetroLinkerLogType.Debug or RetroLinkerLogType.Trace);
+                default:
+                    return LogTypesMap[TraceFilterLevel].Contains(logType);
+            }
         }
-    }
-    public static void LogErro(object? obj) => LogErro(ObjToString(obj));
-
-    public static void LogCrit(string message) {
-        foreach (TraceListener listener in TraceError.Listeners) {
-            listener.WriteLine(message, _prefixCrit);
-            if (AutoFlush) listener.Flush();
-        }
-    }
-    public static void LogCrit(object? obj) => LogCrit(ObjToString(obj));
-
-    public static void LogDebg(string message) {
-        if (!DebugTracing) return;
-        foreach (TraceListener listener in TraceDebug.Listeners) {
-            listener.WriteLine(message, _prefixDebg);
-            if (AutoFlush) listener.Flush();
-        }
-    }
-    public static void LogDebg(object? obj) => LogDebg(ObjToString(obj));
-
-    public static void Close() {
-        TraceDefault.Close();
-        TraceError.Close();
-        TraceDebug?.Close();
     }
 }

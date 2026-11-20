@@ -43,10 +43,10 @@ public static class Operations
         if (Cores.Length >= 1) return Cores;
         if (!FileOps.GetCoreFile(out string coresFile))
         {
-            Logger.LogWarn("'cores.txt' was not found, extracting internal core asset...");
+            Logger.Warn("'cores.txt' was not found, extracting internal core asset...");
             var assetStream = AssetLoader.Open(GetDefaultCores());
             coresFile = await FileOps.DumpStreamToFile(assetStream, "cores.txt");
-            Logger.LogInfo($"Internal core asset extracted to '{coresFile}'");
+            Logger.Info($"Internal core asset extracted to '{coresFile}'");
         }
         return Cores = await FileOps.LoadCores(coresFile);
     }
@@ -78,10 +78,10 @@ public static class Operations
             var dbgOut = (DesktopFolder is null)
                 ? $"{nameof(DesktopFolder)} remained null. Attempted dir: \"{FileOps.UserDesktop}\""
                 : $"{nameof(DesktopFolder)} set to: \"{DesktopFolder.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
+            Logger.Trace(dbgOut);
         }
         catch (Exception ex) {
-            Logger.LogErro(ex);
+            Logger.Error(ex);
             DesktopFolder = null;
         }
     }
@@ -95,10 +95,10 @@ public static class Operations
             var dbgOut = (ROMParentDir is null)
                 ? $"{nameof(ROMParentDir)} remained null. Attempted dir:\"{dir}\""
                 : $"{nameof(ROMParentDir)} set to: \"{ROMParentDir.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
+            Logger.Trace(dbgOut);
         }
         catch (Exception ex) {
-            Logger.LogErro(ex);
+            Logger.Error(ex);
             ROMParentDir = null;
         }
     }
@@ -112,10 +112,10 @@ public static class Operations
             var dbgOut = (IconParentDir is null)
                 ? $"{nameof(IconParentDir)} remained null. Attempted dir:\"{dir}\""
                 : $"{nameof(IconParentDir)} set to: \"{IconParentDir.Path.LocalPath}\"";
-            Logger.LogDebg(dbgOut);  // REWRITE: Move to trace
+            Logger.Trace(dbgOut);
         }
         catch (Exception ex) {
-            Logger.LogErro(ex);
+            Logger.Error(ex);
             IconParentDir = null;
         }
     }

@@ -54,11 +54,11 @@ public partial class AboutWindow : Window
             return uriPath;
         }
         catch (InvalidOperationException) {
-            Logger.LogWarn("The local licence file for LiberationMono was not found, using online link");
+            Logger.Warn("The local licence file for LiberationMono was not found, using online link");
             return new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
         catch (Exception ex) {
-            Logger.LogErro(ex);
+            Logger.Error(ex);
             return new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
     }
