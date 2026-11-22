@@ -42,7 +42,6 @@ public partial class MainView : UserControl
     #region AvaloniaProperties
 
     // == Link Params ==
-
     public static readonly DirectProperty<MainView, ShortcutBuilder> BuildingLinkProperty =
         AvaloniaProperty.RegisterDirect<MainView, ShortcutBuilder>(
             nameof(BuildingLink),
@@ -710,7 +709,7 @@ public partial class MainView : UserControl
         try
         {
             LockControls(true);
-            var settingWindow = new SettingsWindow(ParentWindow, Settings);
+            var settingWindow = new SettingsWindow(Settings);
             var settingReturn =  await settingWindow.ShowDialog<Settings?>(ParentWindow);
             SetSettings((settingReturn is not null) ? FileOps.SetNewSettings(settingReturn) : FileOps.LoadCachedSettingsFO());
             LoadNewSettings();

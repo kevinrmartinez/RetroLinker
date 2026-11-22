@@ -27,9 +27,6 @@ namespace RetroLinker.Views;
 
 public partial class SettingsWindow : Window
 {
-    // Window Obj
-    // private MainWindow mainWindow;
-
     // PROPS/STATICS
     public Settings NewSettings { get; }
 
@@ -43,8 +40,7 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         _oldSettings = new Settings();
         NewSettings = new Settings();
-        // _tabs = [CCTab1, CCTab2, CCTab3];
-        // SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
+        SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
         CCTab1.Content = new SettingsView(this);
         CCTab2.Content = new SettingsView2(this);
         CCTab3.Content = new SettingsView3(this);
@@ -52,21 +48,19 @@ public partial class SettingsWindow : Window
 
     public SettingsWindow(bool isDesigner)
     {
+        // Constructor for other Designers
         InitializeComponent();
         _oldSettings = new Settings();
         NewSettings = new Settings();
-        // _tabs = [CCTab1, CCTab2, CCTab3];
         SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
     }
 
-    public SettingsWindow(MainWindow mainWindow, in Settings settings)
+    public SettingsWindow(in Settings settings)
     {
         InitializeComponent();
-        // this.mainWindow = mainWindow;
         _oldSettings = settings;
         var newSettings = settings.Clone() as Settings;
         NewSettings = newSettings ?? new Settings();
-        // _tabs = [CCTab1, CCTab2, CCTab3];
         SetLinkCopyPaths = SettingsOps.LinkCopyPaths;
         CCTab1.Content = new SettingsView(this);
         CCTab2.Content = new SettingsView2(this);

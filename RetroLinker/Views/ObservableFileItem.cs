@@ -25,16 +25,17 @@ public abstract class ObservableFileItem : NotifyPropertyBase, IFileItem
     public string FilePath
     {
         get;
-        protected set {
-            SetAndNotify(value, ref field);
-            ManuallyNotify(nameof(FileName));
-            ManuallyNotify(nameof(FileExt));
-        }
-    }
+        protected init => SetFilePath(value, ref field);
+    } = string.Empty;
 
     public string FileName => IIconItem.GetFileName(this);
 
     public string FileExt => IIconItem.GetFileExt(this);
 
-    protected string ogFilePath { get; init; }
+    protected void SetFilePath(string newFilePath, ref string field)
+    {
+        SetAndNotify(newFilePath, ref field);
+        ManuallyNotify(nameof(FileName));
+        ManuallyNotify(nameof(FileExt));
+    }
 }

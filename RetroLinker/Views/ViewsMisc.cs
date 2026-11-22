@@ -62,7 +62,11 @@ public sealed record ObservableConfigItem(string FilePath) : IFileItem
 /// <remarks>A static default instance exist to represent the 'Default' option in the control.</remarks>
 public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposable
 {
-    // public string FilePath
+    public new string FilePath
+    {
+        get => !_isDisposed ? field : throw new ObjectDisposedException(nameof(ObservableIconItem));
+        private init => SetFilePath(value, ref field);
+    }
     // public string FileName
     // public string FileExt
     // protected string ogFilePath
@@ -70,10 +74,19 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
     // private string? FilePathPreConversion { get; init; }
     //
     // [MemberNotNullWhen(true, nameof(FilePathPreConversion))]
-    public bool ConversionRequired { get; private set => SetAndNotify(value, ref field); }
+    public bool ConversionRequired
+    {
+        get => !_isDisposed ? field : throw new ObjectDisposedException(nameof(ObservableIconItem));
+        private init => SetAndNotify(value, ref field);
+    }
 
-    public AvaloniaBitmap? ImageBitmap { get; private set => SetAndNotify(value, ref field); }
+    public AvaloniaBitmap? ImageBitmap
+    {
+        get => !_isDisposed ? field : throw new ObjectDisposedException(nameof(ObservableIconItem));
+        private set => SetAndNotify(value, ref field);
+    }
 
+    private bool _isDisposed;
     private bool IsDefault => Equals(DefaultInstance);
 
     private static readonly Uri DefaultIconAsset = Operations.GetDefaultIcon();
@@ -91,7 +104,6 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
                 FilePath = Translations.resGeneric.btnDefault;
                 ConversionRequired = false;
                 // _ = SetBitmapAsync();    <= It doesn't work during construction
-                ogFilePath = FilePath;
                 break;
             default:
                 throw new InvalidOperationException($"[{nameof(ObservableIconItem)}] Unknown caller '{caller}'");
@@ -102,13 +114,9 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
         FilePath = filePath;
         ConversionRequired = conversionRequired ?? IconProc.IsIcoConversionRequired(FileExt);
         _ = SetBitmapAsync();
-        ogFilePath = FilePath;
     }
 
     public static ObservableIconItem FromIIconItem(IIconItem i) => new(i.FilePath, i.ConversionRequired);
-
-    public void SetBitmap(System.IO.Stream newImageStream) => ImageBitmap = GetBitmap(newImageStream);
-    public async Task SetBitmapAsync(string newImagePath) => ImageBitmap = await GetBitmap(newImagePath);
 
     public void ResetBitmap() {
         ImageBitmap?.Dispose();
@@ -119,27 +127,27 @@ public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposa
 
     public override string ToString() => FileName;
 
-    // TODO: Equality works on practice, but FilePath should be init, or ogFilePath should be public
     public override bool Equals(object? obj) {
         return obj is ObservableIconItem o && FilePath.Equals(o.FilePath);
     }
 
-    public override int GetHashCode() => HashCode.Combine(ogFilePath);
+    public override int GetHashCode() => HashCode.Combine(FilePath);
 
     public void Dispose() {
         if (IsDefault) {
             Logger.Warn($"'{nameof(Dispose)}' was called on '{nameof(ObservableIconItem)}.{nameof(DefaultInstance)}', ignoring...");
             return;
         }
-        FilePath = string.Empty;
+
         var holder = ImageBitmap;
         ImageBitmap = null;
         holder?.Dispose();
+        _isDisposed = true;
     }
 
     private async Task SetBitmapAsync() => ImageBitmap = await GetBitmap();
 
-    private async Task<AvaloniaBitmap?> GetBitmap(string? path = null)
+    private async Task<AvaloniaBitmap?> GetBitmap()
     {
         if (IsDefault) return GetBitmap(Avalonia.Platform.AssetLoader.Open(DefaultIconAsset));
         System.IO.MemoryStream streamToDecode;
