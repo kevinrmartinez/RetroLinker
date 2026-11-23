@@ -24,7 +24,7 @@
         </Style>
         
         <Style Selector="Border#BorderDev">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="6,2"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -82,7 +82,7 @@
                 <Style Selector="^ > Border">
                     <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
-                    <Setter Property="CornerRadius" Value="1,4,4,4"/>
+                    <Setter Property="CornerRadius" Value="1,6,6,6"/>
                     <Setter Property="Padding" Value="4"/>
                 </Style>
             </Style>
@@ -90,9 +90,6 @@
         
         <Style Selector="Border#BorderContributors">
             <Setter Property="Padding" Value="2"/>
-            <Setter Property="BorderBrush" Value="Gray"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="ItemsControl#ItemsControlContributors">
             <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -191,7 +188,6 @@
             
             <!-- ROW2: Contributors & Attributions -->
             <TabControl Grid.Row="2" VerticalAlignment="Stretch">
-                
                 <!-- Contributors -->
                 <TabItem Header="{x:Static lc:resAboutWindow.lblContributors}">
                     <Border VerticalAlignment="Stretch">
@@ -204,7 +200,7 @@
                             <Rectangle Grid.Row="1" Height="10"/>
                             <Label Grid.Row="2" Content="{x:Static lc:resAboutWindow.lblContributors}" 
                                    IsVisible="{Binding !!Contributors.Length}"/>
-                            <Border Grid.Row="3" x:Name="BorderContributors" 
+                            <Border x:Name="BorderContributors" Grid.Row="3" Classes="section-box" 
                                     IsVisible="{Binding !!Contributors.Length}">
                                 <ScrollViewer>
                                     <ItemsControl x:Name="ItemsControlContributors" 
@@ -227,19 +223,19 @@
                                 <Rectangle Height="10"/>
                                 
                                 <Label Content="{x:Static lc:resAboutWindow.lblLibraries}"/>
-                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                <Border Classes="section-box">
                                     <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyLibs}"/>
                                 </Border>
                                 <Rectangle Height="10"/>
                                 
                                 <Label Content="{x:Static lc:resAboutWindow.lblResources}"/>
-                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                <Border Classes="section-box">
                                     <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyRes}"/>
                                 </Border>
                                 <Rectangle Height="10"/>
                                 
                                 <Label Content="{x:Static lc:resAboutWindow.lblThanksSp}"/>
-                                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+                                <Border Classes="section-box">
                                     <ItemsControl Classes="ThirdParty" ItemsSource="{Binding ThirdPartyThanks}"/>
                                 </Border>
                             </StackPanel>

@@ -136,7 +136,9 @@ class Program
         Logger.AutoFlush = true;
     }
 
-    private static bool IsDebugTracing() {
+    private static bool IsDebugTracing()
+    {
+        if (AppVersion.Contains("-dev")) return true;
         var files = FileOps.GetFilesInDirectory(FileOps.BaseDir, $"{LogDebug}");
         if (files.Count == 0) return false;
         string[] names = [LogDebug, $"{LogDebug}.txt"];
@@ -169,7 +171,6 @@ class Program
 
     private static AppInformation GetAppInfo()
     {
-        // TODO: Check for '-dev' in AppVersion, if it's present define DEBUG (?), and turn on Logger.DebugTracing
         var isRunningAdmin = OperatingSystem.IsWindows()
             ? Models.Windows.NativeAccess.IsWindowsProcessElevated()
             : Models.Linux.NativeAccess.IsUnixProcessElevated();

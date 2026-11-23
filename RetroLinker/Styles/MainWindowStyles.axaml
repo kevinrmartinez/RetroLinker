@@ -30,7 +30,7 @@
                 <Label>
                     <TextBlock>
                         <Run Text="{TemplateBinding Content}"/>
-                        <Run Text="*" Foreground="Crimson"/>
+                        <Run Text="*" Foreground="{StaticResource BrushRed2}"/>
                     </TextBlock>
                 </Label>
             </ControlTemplate>
@@ -45,7 +45,7 @@
     
     <Style Selector="Label.minor_error">
         <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="DarkRed"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushRed1}"/>
     </Style>
     
     <!-- Icons Viewboxes -->
@@ -139,7 +139,6 @@
     <!-- == Extra Views == -->
     <!-- AppendView -->
     <Style Selector="Border.AppendControls">
-        <Setter Property="BorderBrush" Value="Gray"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>

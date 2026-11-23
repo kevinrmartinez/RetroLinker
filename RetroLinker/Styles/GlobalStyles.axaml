@@ -1,0 +1,14 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Classes="section-box" Margin="1" Padding="18">
+            <Label Content="Hello World!"/>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Border.section-box">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TextControlBorderBrush}"/>
+    </Style>
+</Styles>

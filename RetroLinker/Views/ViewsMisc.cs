@@ -39,14 +39,6 @@ public enum UserListActions { Add, Remove, Clear, Lock }
 public record Contributor(string DisplayName, Uri? OnlinePageUrl);
 public record ThirdParty(string DisplayName, Uri OnlinePageUrl, string? Comment = null);
 
-/* == Interfaces == */
-/// <summary> Represents the Types that can return/modify a value from PopUps called from <see cref="T:MainView"/>. </summary>
-public interface IMainViewPopUp;
-
-/* == Static Classes == */
-
-
-/* == Dynamic Classes == */
 public sealed record ObservableConfigItem(string FilePath) : IFileItem
 {
     public string FileName => IFileItem.GetFileName(this);
@@ -58,6 +50,14 @@ public sealed record ObservableConfigItem(string FilePath) : IFileItem
     public override string ToString() => FileName;
 }
 
+/* == Interfaces == */
+/// <summary> Represents the Types that can return/modify a value from PopUps called from <see cref="T:MainView"/>. </summary>
+public interface IMainViewPopUp;
+
+/* == Static Classes == */
+
+
+/* == Dynamic Classes == */
 /// <summary> An individual Item for <see cref="F:MainView.comboIcon"/>. It notifies changes to the UI, and holds the access to the icon data. </summary>
 /// <remarks>A static default instance exist to represent the 'Default' option in the control.</remarks>
 public sealed class ObservableIconItem : ObservableFileItem, IIconItem, IDisposable

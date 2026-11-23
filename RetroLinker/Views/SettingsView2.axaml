@@ -18,10 +18,10 @@
         <!-- CONTENT -->
         <StackPanel Grid.Row="0">
             <!-- USER ASSETS -->
-			<Border Classes="SettingCatg">
+			<Border Classes="section-box setting-group">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_AserAssets}"/>
-					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<st:LightDivider/>
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
 					           Text="{x:Static lc:resSettingsWindow.blcUserAssets}"/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
@@ -42,10 +42,10 @@
 			</Border>
 
 			<!-- RA EXECUTABLE -->
-			<Border Classes="SettingCatg">
+			<Border Classes="section-box setting-group">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefRADir}"/>
-					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<st:LightDivider/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
 						<TextBox x:Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
 						         Text="{Binding ParentWindow.NewSettings.DEFRADir}"
@@ -64,10 +64,10 @@
 			</Border>
 
 			<!-- ROM PARENT DIRECTORY -->
-			<Border Classes="SettingCatg">
+			<Border Classes="section-box setting-group">
 				<StackPanel>
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
-					<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+					<st:LightDivider/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto">
 						<TextBox x:Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
 						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
@@ -85,13 +85,13 @@
 			</Border>
             
             <!-- ICON PARENT DIRECTORY -->
-            <Border Classes="SettingCatg">
+            <Border Classes="section-box setting-group">
 	            <StackPanel>
 		            <StackPanel Orientation="Horizontal">
 			            <Label Content="{x:Static lc:resSettingsWindow.lblCat_IconParentDir}"/>
 			            <st:IconFontWithTip IconValue="fa7-circle-question" Tip="{x:Static lc:resSettingsWindow.tipIconParentPath}"/>
 		            </StackPanel>
-		            <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+		            <st:LightDivider/>
 		            <Grid Margin="1,3" ColumnDefinitions="*, Auto">
 			            <TextBox x:Name="txtIconParentPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
 			                     Text="{Binding ParentWindow.NewSettings.IconParentPath}" 

@@ -18,28 +18,32 @@
 	<StackPanel x:Name="panelConfigBody" Orientation="Vertical">
 
 		<!-- APPEARANCE -->
-		<Border Classes="SettingCatg">
+		<Border Classes="section-box setting-group">
 			<StackPanel>
 				<Label Content="{x:Static tl:resSettingsWindow.lblCat_Appearance}"/>
-				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<st:LightDivider/>
 				<Grid ColumnDefinitions="*, Auto, *">
-					<StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0, 2">
-						<!-- REWRITE: Use Binding somehow -->
-						<ToggleSwitch x:Name="swtThemeSwitch" Content="{x:Static tl:resSettingsWindow.swtThemeSwitch}" IsCheckedChanged="ThemeSwitch_CheckedChanged" Margin="3,0,0,0"
-						              OnContent="{x:Static tl:resSettingsWindow.swtThemeSwitch_On}" OffContent="{x:Static tl:resSettingsWindow.swtThemeSwitch_Off}"/>
-						<Rectangle Width="18"/>
-						<CheckBox x:Name="chkThemeDefault" Content="{x:Static tl:resSettingsWindow.chkThemeDefault}" VerticalAlignment="Bottom" IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+					<StackPanel Grid.Column="0" Orientation="Vertical">
+						<Label Content="{x:Static tl:resSettingsWindow.swtThemeSwitch}"/>
+						<StackPanel Orientation="Horizontal" Spacing="18">
+							<!-- REWRITE: Use Binding somehow -->
+							<ToggleSwitch x:Name="swtThemeSwitch" IsCheckedChanged="ThemeSwitch_CheckedChanged"
+							              OnContent="{x:Static tl:resSettingsWindow.swtThemeSwitch_On}" 
+							              OffContent="{x:Static tl:resSettingsWindow.swtThemeSwitch_Off}"/>
+							<CheckBox x:Name="chkThemeDefault" Content="{x:Static tl:resSettingsWindow.chkThemeDefault}" 
+							          IsCheckedChanged="ThemeDefault_CheckedChanged"/>
+						</StackPanel>
 					</StackPanel>
 					
-					<Rectangle Grid.Column="1" Stroke="Gray" StrokeThickness="0.5"/>
+					<st:LightDivider Grid.Column="1"/>
 					
 					<StackPanel Grid.Column="2">
 						<Label Margin="3,0,0,0" Content="{x:Static tl:resSettingsWindow.lblLocale}"/>
 						<Grid ColumnDefinitions="*, Auto">
-							<!-- TODO: Show comboLocale content with a DataTemplate (>=0.9) -->
+							<!-- REWRITE: Show comboLocale content with a DataTemplate (>=0.10) -->
 							<ComboBox x:Name="comboLocale" Grid.Column="0" Margin="3,0,0,2" 
 							          VerticalAlignment="Bottom" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
-							<!-- TODO: Make this button obsolete (requires Binding?) -->
+							<!-- REWRITE: Make this button obsolete (requires Binding?) -->
 							<Button x:Name="btnLocale" Grid.Column="1" Margin="3" Click="BtnLocale_OnClick">
 								<i:Icon Value="fa7-check" FontSize="18" Foreground="Green"/>
 							</Button>
@@ -50,7 +54,7 @@
 		</Border>
 
 		<!-- ICONS -->
-		<Border Classes="SettingCatg">
+		<Border Classes="section-box setting-group">
 			<StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<Label Content="{x:Static tl:resSettingsWindow.lblCat_IconsGeneral}"/>
@@ -59,21 +63,21 @@
 					                    IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
 					                    Converter={x:Static ObjectConverters.IsNotNull}}"/>
 				</StackPanel>
-				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-				<CheckBox x:Name="chkCpyUserIcon" Classes="SettingCatg" Content="{x:Static tl:resSettingsWindow.chkCpyUserIcon}"
+				<st:LightDivider/>
+				<CheckBox x:Name="chkCpyUserIcon" Content="{x:Static tl:resSettingsWindow.chkCpyUserIcon}"
 				          IsChecked="{Binding ParentWindow.NewSettings.CpyUserIcon}" ToolTip.Tip="{x:Static tl:resSettingsWindow.tipCpyUserIcon}"
 				          IsEnabled="{Binding !#tipDisableBecauseTileIco.IsVisible}"/>
 			</StackPanel>
 		</Border>
 		
 		<!-- OTHER SETTINGS -->
-		<Border Classes="SettingCatg">
+		<Border Classes="section-box setting-group">
 			<StackPanel>
 				<Label Content="{x:Static tl:resSettingsWindow.lblCat_OtherGeneral}"/>
-				<Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+				<st:LightDivider/>
 				<Grid Margin="0,3" ColumnDefinitions="*,Auto,*" ShowGridLines="False">
 					<StackPanel Grid.Column="0" Orientation="Vertical">
-						<CheckBox x:Name="chkPrevCONFIG" Classes="SettingCatg" Content="{x:Static tl:resSettingsWindow.chkPrevCONFIG}" 
+						<CheckBox x:Name="chkPrevCONFIG" Content="{x:Static tl:resSettingsWindow.chkPrevCONFIG}" 
 						          IsChecked="{Binding ParentWindow.NewSettings.PrevConfig}"/>
 					</StackPanel>
 				</Grid>

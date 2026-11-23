@@ -234,116 +234,114 @@
 			<Rectangle Grid.Column="1" Margin="2,0"/>
 			
 			<!-- Icon Selection -->
-			<Grid Name="gridICON" Grid.Column="2" Width="280" RowDefinitions="Auto, Auto" Margin="2,0">
-				<Rectangle Grid.Row="0" Height="15"/>
-				<StackPanel Grid.Row="1">
-					<Label Content="{x:Static tl:resMainView.lblICON}"/>
-					<Border BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
-						<StackPanel Orientation="Vertical" Margin="2">
-							<StackPanel Orientation="Horizontal" Spacing="14">
-								<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
-								             IsChecked="{Binding IconSource,
-								             Converter={StaticResource EnumToBoolConverter},
-								             ConverterParameter={x:Static vw:UserIconSource.Default}}"/>
-								<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"
-								             IsChecked="{Binding IconSource,
-								             Converter={StaticResource EnumToBoolConverter},
-								             ConverterParameter={x:Static vw:UserIconSource.Custom}}"/>
-							</StackPanel>
-							<!-- Icon Control -->
-							<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding IconSource, Mode=OneWay}">
-								<Button DockPanel.Dock="Right" Name="btnIcon" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
-								<ComboBox Name="comboIcon" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
-								          ItemsSource="{Binding IconItems}" SelectedItem="{Binding IconSelectedItem}"
-								          ToolTip.Tip="{Binding IconSelectedItem.FilePath}"/>
-							</DockPanel>
-
-							<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" 
-							            IsVisible="{Binding IconSelectedItem.ImageBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-										ToolTip.Tip="{x:Static tl:resMainView.tipIconNoImage}">
-								<Label VerticalAlignment="Center" i:Attached.Icon="fa7-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
-								<Label VerticalAlignment="Center" Content="{x:Static tl:resMainView.lblIconNoImage}" FontSize="12"/>
-							</StackPanel>
-
-							<!-- pic256 -->
-							<Viewbox HorizontalAlignment="Left" Classes="FixedExpandable" 
-							         Classes.Expanded="{Binding ParentWindow.Height, 
-							         Converter={StaticResource NumberGreaterThanConverter},
-							         ConverterParameter={StaticResource MinHeightForLargePic},
-							         RelativeSource={RelativeSource AncestorType=vw:MainView}}">
-								<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
-								<Viewbox.Styles>
-									<Style Selector="Viewbox.Expanded">
-										<Setter Property="Width" Value="258"/>
-										<Setter Property="Height" Value="258"/>
-										<Setter Property="Margin" Value="0,4"/>
-									</Style>
-								</Viewbox.Styles>
-								
-								<Border BorderThickness="2" BorderBrush="Gray">
-									<Image Name="pic256" Source="{Binding IconImage}"/>
-								</Border>
-							</Viewbox>
-							<!-- pic128 -->
-							<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
-								<Border BorderThickness="2" BorderBrush="Gray">
-								<Image Name="pic128" Source="{Binding IconImage}"/>
-								</Border>
-							</Viewbox>
-							<!-- pic64 -->
-							<Viewbox Height="66" Width="66" HorizontalAlignment="Left" Margin="0,4">
-								<Border BorderThickness="2" BorderBrush="Gray">
-								<Image Name="pic64" Source="{Binding IconImage}" 
-								       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-								</Border>
-							</Viewbox>
-
-							<StackPanel Orientation="Horizontal">
-								<!-- pic48 -->
-								<Viewbox Height="50" Width="50" HorizontalAlignment="Left" Margin="0,4">
-									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic48" Source="{Binding IconImage}" 
-										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-									</Border>
-								</Viewbox>
-								<!-- pic32 -->
-								<Viewbox Height="34" Width="34" HorizontalAlignment="Left" Margin="2,0">
-									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic32" Source="{Binding IconImage}" 
-										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-									</Border>
-								</Viewbox>
-								<!-- pic16 -->
-								<Viewbox Height="18" Width="18" HorizontalAlignment="Left" Margin="2,0">
-									<Border BorderThickness="2" BorderBrush="Gray">
-										<Image Name="pic16" Source="{Binding IconImage}" 
-										       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-									</Border>
-								</Viewbox>
-							</StackPanel>
-							
-							<Border HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
-							        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
-								<Border.IsVisible>
-									<MultiBinding Converter="{x:Static BoolConverters.And}">
-										<MultiBinding Converter="{x:Static BoolConverters.Or}">
-											<Binding Path="#rdoIconDef.IsChecked"/>
-											<Binding Path="!#comboIcon.SelectedIndex"/>
-										</MultiBinding>
-										<Binding Path="Settings.TileIcoPath" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
-									</MultiBinding>
-								</Border.IsVisible>
-								
-								<DockPanel HorizontalSpacing="6" Margin="3,0">
-									<i:Icon Value="fa7-triangle-exclamation" FontSize="18" DockPanel.Dock="Left" Foreground="Goldenrod"/>
-									<TextBlock TextWrapping="Wrap" FontSize="12" DockPanel.Dock="Right"
-									           Text="{x:Static tl:resMainView.lblDefIconOnTileIco}"/>
-								</DockPanel>
-							</Border>
+			<DockPanel Name="panelICON" Grid.Column="2" Width="280" Margin="2,15">
+				<Label DockPanel.Dock="Top" Content="{x:Static tl:resMainView.lblICON}"/>
+				<Border DockPanel.Dock="Top" Classes="section-box">
+					<StackPanel Orientation="Vertical" Margin="2">
+						<StackPanel Orientation="Horizontal" Spacing="14">
+							<RadioButton Name="rdoIconDef" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnDefault}" 
+							             IsChecked="{Binding IconSource,
+							             Converter={StaticResource EnumToBoolConverter},
+							             ConverterParameter={x:Static vw:UserIconSource.Default}}"/>
+							<RadioButton Name="rdoIconCus" GroupName="{StaticResource GroupIconSource}" Content="{x:Static tl:resGeneric.btnCustom}"
+							             IsChecked="{Binding IconSource,
+							             Converter={StaticResource EnumToBoolConverter},
+							             ConverterParameter={x:Static vw:UserIconSource.Custom}}"/>
 						</StackPanel>
-					</Border>
-				</StackPanel>
-			</Grid>
+						<!-- Icon Control -->
+						<DockPanel Name="panelIconControl" Margin="0,5" IsEnabled="{Binding IconSource, Mode=OneWay}">
+							<Button DockPanel.Dock="Right" Name="btnIcon" Classes="textbox_inline browseFile" Click="btnICONDir_OnClick"/>
+							<ComboBox Name="comboIcon" MaxDropDownHeight="200" HorizontalAlignment="Stretch"
+							          ItemsSource="{Binding IconItems}" SelectedItem="{Binding IconSelectedItem}"
+							          ToolTip.Tip="{Binding IconSelectedItem.FilePath}"/>
+						</DockPanel>
+
+						<StackPanel Name="panelIconNoImage" Orientation="Horizontal" HorizontalAlignment="Center" 
+						            IsVisible="{Binding IconSelectedItem.ImageBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+									ToolTip.Tip="{x:Static tl:resMainView.tipIconNoImage}">
+							<Label VerticalAlignment="Center" i:Attached.Icon="fa7-triangle-exclamation" FontSize="16" Foreground="Yellow"/>
+							<Label VerticalAlignment="Center" Content="{x:Static tl:resMainView.lblIconNoImage}" FontSize="12"/>
+						</StackPanel>
+
+						<!-- pic256 -->
+						<Viewbox HorizontalAlignment="Left" Classes="FixedExpandable" 
+						         Classes.Expanded="{Binding ParentWindow.Height, 
+						         Converter={StaticResource NumberGreaterThanConverter},
+						         ConverterParameter={StaticResource MinHeightForLargePic},
+						         RelativeSource={RelativeSource AncestorType=vw:MainView}}">
+							<!-- RelativeSource is added to prevent a glitch where the Viewbox hides each time the context is updated -->
+							<Viewbox.Styles>
+								<Style Selector="Viewbox.Expanded">
+									<Setter Property="Width" Value="258"/>
+									<Setter Property="Height" Value="258"/>
+									<Setter Property="Margin" Value="0,4"/>
+								</Style>
+							</Viewbox.Styles>
+							
+							<Border BorderThickness="2" BorderBrush="Gray">
+								<Image Name="pic256" Source="{Binding IconImage}"/>
+							</Border>
+						</Viewbox>
+						<!-- pic128 -->
+						<Viewbox Height="130" Width="130" HorizontalAlignment="Left" Margin="0,4">
+							<Border BorderThickness="2" BorderBrush="Gray">
+							<Image Name="pic128" Source="{Binding IconImage}"/>
+							</Border>
+						</Viewbox>
+						<!-- pic64 -->
+						<Viewbox Height="66" Width="66" HorizontalAlignment="Left" Margin="0,4">
+							<Border BorderThickness="2" BorderBrush="Gray">
+							<Image Name="pic64" Source="{Binding IconImage}" 
+							       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+							</Border>
+						</Viewbox>
+
+						<StackPanel Orientation="Horizontal" Spacing="4" Margin="2,4">
+							<!-- pic48 -->
+							<Viewbox Height="50" Width="50" HorizontalAlignment="Left">
+								<Border BorderThickness="2" BorderBrush="Gray">
+									<Image Name="pic48" Source="{Binding IconImage}" 
+									       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+								</Border>
+							</Viewbox>
+							<!-- pic32 -->
+							<Viewbox Height="34" Width="34" HorizontalAlignment="Left">
+								<Border BorderThickness="2" BorderBrush="Gray">
+									<Image Name="pic32" Source="{Binding IconImage}" 
+									       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+								</Border>
+							</Viewbox>
+							<!-- pic16 -->
+							<Viewbox Height="18" Width="18" HorizontalAlignment="Left">
+								<Border BorderThickness="2" BorderBrush="Gray">
+									<Image Name="pic16" Source="{Binding IconImage}" 
+									       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+								</Border>
+							</Viewbox>
+						</StackPanel>
+						
+						<Border HorizontalAlignment="Stretch" Margin="1" CornerRadius="4"
+						        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}">
+							<Border.IsVisible>
+								<MultiBinding Converter="{x:Static BoolConverters.And}">
+									<MultiBinding Converter="{x:Static BoolConverters.Or}">
+										<Binding Path="#rdoIconDef.IsChecked"/>
+										<Binding Path="!#comboIcon.SelectedIndex"/>
+									</MultiBinding>
+									<Binding Path="Settings.TileIcoPath" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+								</MultiBinding>
+							</Border.IsVisible>
+							
+							<DockPanel HorizontalSpacing="6" Margin="3,0">
+								<i:Icon Value="fa7-triangle-exclamation" FontSize="18" DockPanel.Dock="Left" Foreground="Goldenrod"/>
+								<TextBlock TextWrapping="Wrap" FontSize="12" DockPanel.Dock="Right"
+								           Text="{x:Static tl:resMainView.lblDefIconOnTileIco}"/>
+							</DockPanel>
+						</Border>
+					</StackPanel>
+				</Border>
+				<Rectangle/>
+			</DockPanel>
 		</Grid>
 		<!-- BODY END -->
 	</Grid>

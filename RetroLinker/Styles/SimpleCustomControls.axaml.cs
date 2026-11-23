@@ -30,6 +30,8 @@ using RetroLinker.Models.Settings;
 using RetroLinker.Translations;
 using ProjektankerIcon = Optris.Icons.Avalonia.Icon;
 
+using static RetroLinker.Styles.StyleData;
+
 namespace RetroLinker.Styles;
 
 // All this file requires some documentation!!
@@ -56,7 +58,7 @@ public class LinkCopyItemGrid
         ProjektankerIcon trashcan = new()
         {
             Value = "fa7-trash",
-            Foreground = new SolidColorBrush(Colors.Firebrick)
+            Foreground = BrushRed1
         };
         NewItemTrash = new Button()
         {
@@ -141,7 +143,7 @@ public class ViewControlButton : Button
     // Content Properties
     private string ButtonText { get; set; } = blankText;
     private string ButtonIconValue { get; set; } =  blankIcon;
-    private SolidColorBrush? ButtonIconColor { get; set; }
+    private IBrush? ButtonIconColor { get; set; }
 
     public ViewControlButton() {
         RefreshContent();
@@ -177,11 +179,11 @@ public class ViewControlButton : Button
     private void SetButtonFunction(ButtonFunctions function)
     {
         var yesIcon = "fa7-check";
-        var yesColor = new SolidColorBrush(Colors.Green);
+        var yesColor = BrushGreen1;
         var yesText = resGeneric.btnConfirm;
 
         var noIcon = "fa7-xmark";
-        var noColor = new SolidColorBrush(Colors.Crimson);
+        var noColor = BrushRed2;
         var noText = resGeneric.btnDiscard;
 
         var defIcon = "fa7-arrow-rotate-left";
@@ -398,10 +400,12 @@ public class TextBoxWithLock : UserControl
             if (IsLocked) LockedValueOut = (string?)e.NewValue;
         });
 
-        // TODO: Trace this kind of stuff (>=0.10)
-        // LockedValueOutProperty.Changed.AddClassHandler<TextBoxWithLock>((o, e) => {
-        //     Logger.LogDebg("'LockedValueOutProperty' changed: " + e.NewValue);
-        // });
+        if (Logger.DebugTracing)
+        {
+            LockedValueOutProperty.Changed.AddClassHandler<TextBoxWithLock>((o, e) => {
+                Logger.Trace($"'{nameof(LockedValueOutProperty)}' changed: {e.NewValue}");
+            });
+        }
     }
 
     /*  == Class Methods == */
@@ -415,3 +419,6 @@ public class TextBoxWithLock : UserControl
 
 [TemplatePart("PART_MainRect", typeof(Rectangle), IsRequired = true)]
 public class DashDivider : UserControl { }
+
+[TemplatePart("PART_MainRect", typeof(Rectangle), IsRequired = true)]
+public class LightDivider : UserControl { }

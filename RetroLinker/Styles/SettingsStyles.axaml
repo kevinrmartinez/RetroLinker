@@ -1,18 +1,19 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:st="clr-namespace:RetroLinker.Styles">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
           <StackPanel>
-              <Rectangle Height="2" StrokeThickness="1" Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
-              <Border Classes="SettingCatg">
+              <st:LightDivider/>
+              <Border Classes="section-box setting-group">
                   <StackPanel>
-                      <Label Content="MUESTRA"/>
-                      <Button Classes="SettingCatg" Content="BOTON"/>
-                      <CheckBox Classes="SettingCatg" Content="CHECKBOX"/>
+                      <Label Content="Label"/>
+                      <Button Content="Button"/>
+                      <CheckBox Content="CHECKBOX"/>
                   </StackPanel>
               </Border>
-              <Rectangle Height="2" StrokeThickness="1" Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"/>
+              <st:LightDivider/>
           </StackPanel> 
         </Border>
     </Design.PreviewWith>
@@ -21,24 +22,18 @@
     <StyleInclude Source="ComplexCustomControls.axaml"/>
     
     <!-- Add Styles Here -->
-    <Style Selector="Border.SettingCatg">
-        <Setter Property="Padding" Value="1"/>
+    <Style Selector="Border.setting-group">
+        <Setter Property="Padding" Value="2"/>
         <Setter Property="Margin" Value="4,3"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="CornerRadius" Value="9"/>
         
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Vertical"/>
         </Style>
-    </Style>
-    <Style Selector="CheckBox.SettingCatg">
-        <Setter Property="Margin" Value="3"/>
-    </Style>
-    <Style Selector="Button.SettingCatg">
-        <Setter Property="Margin" Value="0,0,3,0"/>
-    </Style>
-    <Style Selector="TextBox.SettingCatg">
-        <Setter Property="Margin" Value="2,0,0,3"/>
+        
+        <Style Selector="^ CheckBox">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
     </Style>
 </Styles>

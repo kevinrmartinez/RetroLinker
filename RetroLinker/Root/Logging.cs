@@ -27,7 +27,7 @@ public static class Logger
     // Props
     public static string LogFile { get; private set; }
     public static bool AutoFlush { get; set; }
-    private static bool DebugTracing { get; set; }
+    public static bool DebugTracing { get; private set; }
 
     // Public Fields
 

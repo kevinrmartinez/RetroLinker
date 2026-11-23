@@ -18,7 +18,7 @@
     <StackPanel x:Name="panelContent" Orientation="Vertical">
 
         <!-- DEFAULT OUTPUT -->
-        <Border Classes="SettingCatg">
+        <Border Classes="section-box setting-group">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
                     <Label Content="{x:Static tl:resSettingsWindow.lblCat_DEFLinkOutput}"/>
@@ -27,9 +27,9 @@
                                         IsVisible="{Binding ParentWindow.NewSettings.TileIcoPath, 
                                         Converter={x:Static ObjectConverters.IsNotNull}}"/>
                 </StackPanel>
-                <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
+                <st:LightDivider/>
                 <StackPanel IsEnabled="{Binding !#tipDisableBecauseTileIco.IsVisible}">
-                    <CheckBox x:Name="chkAlwaysAskOutput" Classes="SettingCatg"
+                    <CheckBox x:Name="chkAlwaysAskOutput"
                               Content="{x:Static tl:resSettingsWindow.chkAlwaysAskOutput}"
                               IsChecked="{Binding ParentWindow.NewSettings.AlwaysAskOutput}"/>
                     <Label Content="{x:Static tl:resSettingsWindow.lblDEFLinkOutput}"/>
@@ -49,18 +49,18 @@
         </Border>
 
         <!-- OUTPUT COPIES -->
-        <Border Classes="SettingCatg">
+        <Border Classes="section-box setting-group">
             <StackPanel>
                 <Label Content="{x:Static tl:resSettingsWindow.lblCat_MakeLinkCopy}"/>
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
-                <CheckBox x:Name="chkMakeLinkCopy" Classes="SettingCatg"
+                <CheckBox x:Name="chkMakeLinkCopy"
                           Content="{x:Static tl:resSettingsWindow.chkMakeLinkCopy}"
                           IsChecked="{Binding ParentWindow.NewSettings.MakeLinkCopy}"/>
-                <Border Classes="SettingCatg">
+                <Border Classes="section-box">
                     <StackPanel>
                         <ListBox x:Name="lsboxLinkCopies" CornerRadius="9"
                                  IsEnabled="{Binding #chkMakeLinkCopy.IsChecked}">
-                            <ListBoxItem x:Name="lsboxaddLinkCopies" CornerRadius="9" Background="ForestGreen">
+                            <ListBoxItem x:Name="lsboxaddLinkCopies" CornerRadius="9" Background="{StaticResource BrushGreen1}">
                                 <Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
                                     <ComboBox x:Name="comboaddLinkCopy" Grid.Column="0" HorizontalAlignment="Stretch"/>
                                     <Button x:Name="btnaddLinkCopy" Grid.Column="1" Height="30"
@@ -76,7 +76,7 @@
 
         <!-- WINDOWS ONLY -->
         <!-- Windows .ico -->
-        <Border Classes="SettingCatg" IsVisible="{Binding DesktopOs}">
+        <Border Classes="section-box setting-group" IsVisible="{Binding DesktopOs}">
             <StackPanel x:Name="panelIcoOutputControls" IsEnabled="{Binding $parent.IsVisible}">
                 <Label Content="{x:Static tl:resSettingsWindow.lblCat_IcoOutput}"/> 
                 <Rectangle HorizontalAlignment="Stretch" Stroke="Gray" StrokeThickness="0.5"/>
@@ -96,7 +96,7 @@
                 </Grid>
                 <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
                     <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="Auto, *">
-                        <CheckBox x:Name="chkUseDefaultIcoSavPath" Grid.Column="0" Classes="SettingCatg"
+                        <CheckBox x:Name="chkUseDefaultIcoSavPath" Grid.Column="0"
                                   VerticalAlignment="Center"
                                   IsCheckedChanged="ChkUseDefaultIcoSavPath_IsCheckedChanged"
                                   ToolTip.Tip="{x:Static tl:resSettingsWindow.tipUseDefaultIcoSavPath}"/>
@@ -104,11 +104,11 @@
                                   HorizontalAlignment="Stretch" Margin="-5,0,5,0"
                                   DropDownClosed="ComboUseDefaultIcoSavPath_DropDownClosed"/>
                     </Grid>
-                    <CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1" Classes="SettingCatg"
+                    <CheckBox x:Name="chkExtractIco" Grid.Row="0" Grid.Column="1"
                               Content="{x:Static tl:resSettingsWindow.chkExtractIco}"
                               IsChecked="{Binding ParentWindow.NewSettings.ExtractIco}"
                               ToolTip.Tip="{x:Static tl:resSettingsWindow.tipExtractIco}"/>
-                    <CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0" Classes="SettingCatg"
+                    <CheckBox x:Name="chkIcoLinkName" Grid.Row="1" Grid.Column="0"
                               Content="{x:Static tl:resSettingsWindow.chkIcoLinkName}"
                               IsChecked="{Binding ParentWindow.NewSettings.IcoLinkName}"/>
                 </Grid>
@@ -116,7 +116,7 @@
         </Border>
 
         <!-- Windows Menu tile icon -->
-        <Border x:Name="borderTemp" Classes="SettingCatg" >
+        <Border x:Name="borderTemp" Classes="section-box setting-group" >
             <!-- IsVisible="{Binding DesktopOS}" -->
             <StackPanel x:Name="panelTileIcon" IsEnabled="{Binding $parent.IsVisible}">
                 <Label Content="{x:Static tl:resSettingsWindow.lblCat_TileIcon}"/>
@@ -153,7 +153,7 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal">
                             <Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtTileIco}"
                                     Click="btnTileIco_OnClick"/>
-                           <Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
+                            <Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
                                     Click="btnTileIco_OnClick"/>
                             <Button Classes="textbox_inline clear_text" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
                                     Click="btnTileIco_OnClick"/>

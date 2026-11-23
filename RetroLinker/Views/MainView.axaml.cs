@@ -79,8 +79,8 @@ public partial class MainView : UserControl
         set
         {
             BuildingLink.RaCore = value;
-            if (DesktopOs || string.IsNullOrWhiteSpace(BuildingLink.FriendlyName) ||
-                BuildingLink.CustomEntryName.GetValueOrDefault()) return;
+            if (DesktopOs || string.IsNullOrWhiteSpace(BuildingLink.FriendlyName)
+                          || BuildingLink.CustomEntryName.GetValueOrDefault()) return;
             OutputFriendlyName = BuildingLink.FriendlyName;
             RaisePropertyChanged(UserRaCoreProperty, string.Empty, value);
         }
@@ -690,7 +690,6 @@ public partial class MainView : UserControl
                 popUpContent = new(resMainView.popMissReq_Mess, resMainView.popMissReq_Title);
                 popUpType = GenericPopUpType.Warning;
             }
-            // The collection of IFs fills 'msbox_params', then it's used to Pop-Up a MessageBox
             await this.PopUpGenericMessageBox(popUpContent, popUpType);
             ResetAfterExecute();
         }
@@ -1021,16 +1020,17 @@ public partial class MainView : UserControl
 
     async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl control)
     {
-        var resultBrush = accepted ? Brushes.LimeGreen : Brushes.Crimson;
+        var resultBrush = accepted ? RetroLinker.Styles.StyleData.BrushGreen2 : RetroLinker.Styles.StyleData.BrushRed2;
         control.BorderBrush = resultBrush;
         await Task.Delay(1200);
         ResetBorderBrush(control);
     }
 
     void ResetBorderBrush(AvaloniaTemplatedControl control) {
-        control.ClearValue(BorderBrushProperty); // should do this, but I'm having mixed results
+        // control.ClearValue(BorderBrushProperty); // should do this, but I'm having mixed results
         // control.SetValue(BorderBrushProperty, AvaloniaProperty.UnsetValue);
-        // control.BorderBrush = txtLINKRename.BorderBrush;
+        control.BorderBrush = txtLINKRename.BorderBrush;
+        control.ClearValue(BorderBrushProperty);
     }
     #endregion
 

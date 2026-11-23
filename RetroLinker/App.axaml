@@ -10,17 +10,20 @@
         <FluentTheme />
         <!-- TODO: Customize accent colors (0.9) -->
         <!-- https://docs.avaloniaui.net/docs/basics/user-interface/styling/themes/fluent -->
+        <StyleInclude Source="Styles/GlobalStyles.axaml"/>
     </Application.Styles>
              
     <Application.Resources>
         <!-- TODO: Import resources from dedicated files; each file for the kind of resource (UI, Binding converter...) -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="Styles/ExtraColors.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
         
         <Bitmap x:Key="NaNImage">./Assets/Images/NaN.png</Bitmap> 
         <!-- Fonts -->
         <FontFamily x:Key="LiberationMonoFont">avares://RetroLinkerLib/Assets/fonts#Liberation Mono</FontFamily>
-        
-        <!-- TODO: Add globally fixed colors (Resources) (0.9) -->
-        <!-- https://docs.avaloniaui.net/docs/app-development/resources -->
         
         <!-- Misc Resources -->
         <x:String x:Key="FounderName">kevinrmartinez</x:String>

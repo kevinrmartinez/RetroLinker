@@ -48,14 +48,13 @@
                     
                 <Label Grid.Column="0" Grid.Row="4" Content="{x:Static tl:resMainExtras.lblSubsysArgs}" 
                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,3"/>
-                <Border Grid.Column="1" Grid.Row="4" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3">
+                <Border Grid.Column="1" Grid.Row="4" Classes="section-box" Margin="0,3">
                     <st:UserStringList x:Name="ArgsList" Items="{Binding Arguments}" AddItemClick="ArgsList_OnAddItemClick" PropertyChanged="ArgsList_OnPropertyChanged"
                                        CanAdd="{Binding !AddingNewArgument}" CanClear="{Binding $self.Items.Count}"
                                        IsEnabled="{Binding SubSystem, Mode=OneWay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                 </Border>
                 
-                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="5" Classes="Expandable"
-                        BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="0,3"
+                <Border x:Name="BorderNewArg" Grid.Column="1" Grid.Row="5" Classes="section-box Expandable" Margin="0,3"
                         Classes.Expanded="{Binding AddingNewArgument, Mode=OneWay}">
                     <Border.Styles>
                         <Style Selector="Border.Expanded">
