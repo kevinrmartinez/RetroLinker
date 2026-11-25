@@ -20,6 +20,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using RetroLinker.Models.Avalonia;
+using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 
 namespace RetroLinker.Views;
 
@@ -41,6 +42,10 @@ public partial class SettingsView2 : UserControl
     public SettingsView2(SettingsWindow settingsWindow) {
         InitializeComponent();
         ParentWindow = settingsWindow;
+
+        AvaloniaTemplatedControl[] controlArray = [ txtUserAssetsDir, txtDefRAPath, txtParentRomDir, txtIconParentPath ];
+        foreach (var control in controlArray)
+            DragDropHandler.AddEventsToControl(control, ControlBox_HandleInput);
     }
 
     // GENERIC
@@ -49,13 +54,13 @@ public partial class SettingsView2 : UserControl
         DataContext = this;
     }
 
-    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();
-
-    // USER ASSETS
     void LockControls(bool locked) {
         gridConfigAll2.IsEnabled = !locked;
         UpdateContext();
     }
+
+    // USER ASSETS
+    void SetUserAssetsPath(string path) => ParentWindow.NewSettings.UserAssetsPath = path;
 
     async void btnUserAssets_ClickAsync(TextBox textBox)
     {
@@ -65,7 +70,7 @@ public partial class SettingsView2 : UserControl
             var currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             var folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.UserAssets, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            ParentWindow.NewSettings.UserAssetsPath = folder;
+            SetUserAssetsPath(folder);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -91,6 +96,8 @@ public partial class SettingsView2 : UserControl
     }
 
     // RA EXECUTABLE
+    void SetDEFRADir(string path) => ParentWindow.NewSettings.DEFRADir = path;
+
     async void btnDefRADir_ClickAsync(TextBox textBox)
     {
         try
@@ -101,7 +108,7 @@ public partial class SettingsView2 : UserControl
             var currentFile = ((string.IsNullOrEmpty(textBox.Text)) || !DesktopOS) ? string.Empty : textBox.Text;
             var file = await FileDialogOps.OpenFileAsync(opt, ParentWindow, currentFile, dlgTitle);
             if (string.IsNullOrWhiteSpace(file)) return;
-            ParentWindow.NewSettings.DEFRADir = file;
+            SetDEFRADir(file);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -127,6 +134,8 @@ public partial class SettingsView2 : UserControl
     }
 
     // DEFAULT ROM PATH
+    void SetDefROMPath(string path) => ParentWindow.NewSettings.DEFROMPath = path;
+
     async void btnDefROMPath_ClickAsync(TextBox textBox)
     {
         try
@@ -135,7 +144,7 @@ public partial class SettingsView2 : UserControl
             string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.ROMParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            ParentWindow.NewSettings.DEFROMPath = folder;
+            SetDefROMPath(folder);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -160,6 +169,9 @@ public partial class SettingsView2 : UserControl
         UpdateContext();
     }
 
+    // IconParentPath
+    void SetIconParentPath(string path) => ParentWindow.NewSettings.IconParentPath = path;
+
     async void btnIconParentPath_OnClickAsync(TextBox textBox)
     {
         try
@@ -168,7 +180,7 @@ public partial class SettingsView2 : UserControl
             string currentFolder = (string.IsNullOrEmpty(textBox.Text)) ? string.Empty : textBox.Text;
             string folder = await FileDialogOps.OpenFolderAsync(OpenFolderOpts.IconParent, ParentWindow, currentFolder);
             if (string.IsNullOrWhiteSpace(folder)) return;
-            ParentWindow.NewSettings.IconParentPath = folder;
+            SetIconParentPath(folder);
         }
         catch (Exception e) { await this.PopUpGenericError(e); }
         finally { LockControls(false); }
@@ -192,4 +204,23 @@ public partial class SettingsView2 : UserControl
         }
         UpdateContext();
     }
+
+    // Views Event
+    private async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, string droppedPath)
+    {
+        // if (!Models.IO.FileOps.PathAlreadyExists(droppedPath)) return false;
+
+        return await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (sender.Equals(txtUserAssetsDir)) SetUserAssetsPath(droppedPath);
+            else if (sender.Equals(txtDefRAPath)) SetDEFRADir(droppedPath);
+            else if (sender.Equals(txtParentRomDir)) SetDefROMPath(droppedPath);
+            else if (sender.Equals(txtIconParentPath)) SetIconParentPath(droppedPath);
+
+            UpdateContext();
+            return true;
+        }, Avalonia.Threading.DispatcherPriority.Input);
+    }
+
+    private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();
 }

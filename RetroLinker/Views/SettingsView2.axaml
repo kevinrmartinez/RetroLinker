@@ -25,17 +25,17 @@
 					<TextBlock TextWrapping="Wrap" FontSize="12" 
 					           Text="{x:Static lc:resSettingsWindow.blcUserAssets}"/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox x:Name="txtUserAssets" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						<TextBox x:Name="txtUserAssetsDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
 						         Text="{Binding ParentWindow.NewSettings.UserAssetsPath, 
 						         Converter={x:Static st:StringsBindingConverters.GetAbsolutePath}}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtUserAssets}" 
+							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtUserAssetsDir}" 
 							        Click="btnUserAssets_OnClick"/>
 							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
 							        Click="btnUserAssets_OnClick"/>
 							<Button Classes="textbox_inline" CommandParameter="{x:Static vw:TextBoxActions.Clear}"
-							        i:Attached.Icon="fa7-repeat" Foreground="Firebrick" Click="btnUserAssets_OnClick"/>
+							        i:Attached.Icon="fa7-repeat" Foreground="{StaticResource BrushRed1}" Click="btnUserAssets_OnClick"/>
 						</StackPanel>
 					</Grid>
 				</StackPanel>
@@ -47,12 +47,12 @@
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefRADir}"/>
 					<st:LightDivider/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto, Auto">
-						<TextBox x:Name="txtDefRADir" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+						<TextBox x:Name="txtDefRAPath" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
 						         Text="{Binding ParentWindow.NewSettings.DEFRADir}"
 						         IsReadOnly="{Binding DesktopOS}"
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtDefRADir}" 
+							<Button Classes="textbox_inline browseFile" CommandParameter="{Binding #txtDefRAPath}" 
 							        Click="btnDefRADir_OnClick"/>
 							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}" 
 							        Click="btnDefRADir_OnClick"/>
@@ -69,11 +69,11 @@
 					<Label Content="{x:Static lc:resSettingsWindow.lblCat_DefROMPath}"/>
 					<st:LightDivider/>
 					<Grid Margin="1,3" ColumnDefinitions="*, Auto">
-						<TextBox x:Name="txtDefROMPath" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
+						<TextBox x:Name="txtParentRomDir" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
 						         Text="{Binding ParentWindow.NewSettings.DEFROMPath}" 
 						         LostFocus="TxtBox_OnLostFocus"/>
 						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtDefROMPath}" 
+							<Button Classes="textbox_inline browseFolder" CommandParameter="{Binding #txtParentRomDir}" 
 							        Click="btnDefROMPath_OnClick"/>
 							<Button Classes="textbox_inline restore" CommandParameter="{x:Static vw:TextBoxActions.Restore}"
 							        Click="btnDefROMPath_OnClick"/>
