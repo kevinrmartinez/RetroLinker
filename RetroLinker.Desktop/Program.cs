@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Optris.Icons.Avalonia;
 using Optris.Icons.Avalonia.FontAwesome7;
@@ -59,9 +60,24 @@ class Program
 
         Logger.Info($"{AppName} v{AppVersion}");
 
+        // For exceptions on non-UI threads that are not task-based
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            var exception = e.ExceptionObject as Exception;
+            var message = $"Unhandled domain exception (terminating: {e.IsTerminating})";
+            Logger.Crit(message, sender.ToString());
+            Logger.Crit(exception);
+            if (e.IsTerminating) Logger.Close();
+        };
+
+        // For exceptions thrown inside Task.Run or other async operations that are never awaited or observed
+        TaskScheduler.UnobservedTaskException += (sender, e) => {
+            Logger.Error("An unobserved task exception occured:");
+            Logger.Error(e.Exception);
+            e.SetObserved();
+        };
+
         Logger.Trace("Starting AvaloniaApp");
-        // TODO: Subscribe to more Avalonia error handlers/detectors
-        //  https://docs.avaloniaui.net/docs/app-development/setting-unhandled-exceptions
 #if DEBUG
         // If the Try-Catch is used during debugging, the program will successfully exit whenever something crashes,
         // Invalidating the purpose of the debugger lol
@@ -69,14 +85,13 @@ class Program
             .StartWithClassicDesktopLifetime(args);
 #else
         int appExit = 1;
-        // Try-Catch is used to print the Exception to log, and then close the log.
-        try {
-            // I think that every exception that happens while the app is running can be capture here, thrusting that
-            // the 'Program' class doesn't cause exceptions.
-            appExit = BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
+        // For exceptions that forces the UI to stop
+        try
+        {
+            appExit = BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Logger.LogCrit($"{AppName} has crashed to desktop with the following error:");
             Logger.LogCrit(e);
         }

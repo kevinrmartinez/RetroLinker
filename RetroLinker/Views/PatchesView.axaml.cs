@@ -32,6 +32,13 @@ public partial class PatchesView : UserControl
 {
     #region AvaloniaProperties
 
+    public static readonly DirectProperty<PatchesView, string> CoreContentProperty =
+        AvaloniaProperty.RegisterDirect<PatchesView, string>(
+            nameof(CoreContent),
+            view => view.CoreContent);
+
+    public string CoreContent { get; init => SetAndRaise(CoreContentProperty, ref field, value); }
+
     public static readonly DirectProperty<PatchesView, bool> AutoSelectProperty =
         AvaloniaProperty.RegisterDirect<PatchesView, bool>(
             nameof(AutoSelect),
@@ -66,7 +73,6 @@ public partial class PatchesView : UserControl
     #endregion
 
     // == Props ==
-    public string CoreContent { get; }
     public static string ChkNoPatchTip => resMainExtras.chkNoPatch_Tip1 + "\n" + resMainExtras.chkNoPatch_Tip2;
 
     public PatchesView()

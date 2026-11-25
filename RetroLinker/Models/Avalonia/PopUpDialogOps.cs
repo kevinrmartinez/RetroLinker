@@ -71,13 +71,19 @@ public static class PopUpDialogOps
 
 
     // App extension
+    public static async Task PopUpGenericError(this App app, Exception exception, string? customTitle = null,  string? customHeader = null) {
+        var applicationLifetime = app.ApplicationLifetime;
+        if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;
+        await mainWindow.PopUpGenericError(exception, customTitle, customHeader);
+    }
+
     public static async Task PopUpCriticalError(this App app, Exception exception)
     {
         Logger.Crit($"{nameof(app)} has re-threw a critical exception:");
         Logger.Crit(exception);
 
         var applicationLifetime = app.ApplicationLifetime;
-        if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;;
+        if (applicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) throw exception;
         var msBoxParams = new MessageBoxStandardParams()
         {
             Icon = Icon.Stop,
@@ -121,8 +127,7 @@ public static class PopUpDialogOps
         if (!missingComponentEx) missingComponentEx = (exception is DllNotFoundException) || (exception.InnerException is DllNotFoundException);
         if (missingComponentEx)
         {
-            if (Application.Current is not App app) throw exception;
-            await app.ShowCriticalAndQuit(exception);
+            await App.Instance.ShowCriticalAndQuit(exception);
             return; // The app is dead at this point
         }
         Logger.Error(exception);

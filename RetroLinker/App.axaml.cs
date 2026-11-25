@@ -36,6 +36,8 @@ namespace RetroLinker;
 
 public class App : Application
 {
+    public static App Instance { get; private set; } = null!;
+
     public static AppInformation LocalInformation { get; private set; }
         = new(string.Empty, string.Empty,  string.Empty, false);
 
@@ -52,7 +54,10 @@ public class App : Application
     public const string PlatformWin = "windows";
     public const string PlatformLin = "linux";
 
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+    public override void Initialize() {
+        AvaloniaXamlLoader.Load(this);
+        Instance = this;
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -70,8 +75,7 @@ public class App : Application
             // {
             //     DataContext = new MainViewModel()
             // };
-            Logger.Crit($"On '{nameof(App)}.{nameof(OnFrameworkInitializationCompleted)}'");
-            Logger.Crit($"\tType of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
+            Logger.Crit($"Type of {nameof(ApplicationLifetime)} is {ApplicationLifetime?.GetType().Name ?? "NULL"}!");
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -116,7 +120,6 @@ public class App : Application
         }
         catch (Exception ex)
         {
-            Logger.Error($"{nameof(App)}.{nameof(UpdateLicenseUri)}:)");
             Logger.Error(ex);
             localLicenseUri = new Uri("https://github.com/liberationfonts/liberation-fonts");
         }
@@ -129,9 +132,11 @@ public class App : Application
         try
         {
             if (_catchException is not { } criticalException) {
-                var errMess = $"'{nameof(ShowCriticalAndQuit)}' was called, but '{nameof(_catchException)}' is not set!";
+                var errMess =
+                    $"'{nameof(ShowCriticalAndQuit)}' was called, but '{nameof(_catchException)}' is not set!";
                 throw new ArgumentException(errMess);
             }
+
             await this.PopUpCriticalError(criticalException);
         }
         catch (Exception ex)
@@ -139,7 +144,11 @@ public class App : Application
             Logger.Crit("An error occured while trying to show a critical message:");
             Logger.Crit(ex);
         }
-        finally { Environment.Exit(1); }
+        finally
+        {
+            Logger.Close();
+            Environment.Exit(1);
+        }
     }
 
     public async Task ShowCriticalAndQuit(Exception criticalException) {

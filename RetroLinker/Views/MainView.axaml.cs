@@ -21,7 +21,6 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Styling;
 using RetroLinker.Models.Avalonia;
 using RetroLinker.Models.CommandLine;
@@ -337,25 +336,10 @@ public partial class MainView : UserControl
         IconSelectedItem.ResetBitmap(); // <= Default entry gets its icon data
     }
 
-    private void ApplyDragDropEvents()
-    {
-        // REWRITE: This can be done with separated border elements
-        var borderTransition = new BrushTransition() {
-            Property = BorderBrushProperty,
-            Duration = TimeSpan.FromMilliseconds(250),
-        };
-
+    private void ApplyDragDropEvents() {
         AvaloniaTemplatedControl[] templatedControls = [comboIcon, txtRADir, txtROMDir, comboConfig, txtLINKDir];
         foreach (var control in templatedControls)
-        {
-            if (control.Transitions is { } transitions) transitions.Add(borderTransition);
-            else control.Transitions = [ borderTransition ];
-            DragDrop.SetAllowDrop(control, true);
-            DragDrop.AddDragOverHandler(control, ControlBox_DragEnter);
-            DragDrop.AddDragLeaveHandler(control, ControlBox_DragLeave);
-            DragDrop.AddDropHandler(control, ControlBox_DropParse);
-            // https://docs.avaloniaui.net/docs/how-to/drag-and-drop-how-to
-        }
+            DragDropHandler.AddEventsToControl(control, ControlBox_HandleInput);
     }
 
     #endregion
@@ -953,47 +937,6 @@ public partial class MainView : UserControl
 
     #region ViewEvents
 
-    void ControlBox_DragEnter(object? sender, DragEventArgs e) {
-        if (sender is not AvaloniaTemplatedControl tc) return;
-        tc.BorderBrush = Brushes.Aqua;
-    }
-
-    void ControlBox_DragLeave(object? sender, DragEventArgs e) {
-        if (sender is not AvaloniaTemplatedControl tc) return;
-        ResetBorderBrush(tc);
-    }
-
-    async void ControlBox_DropParseAsync(string input, AvaloniaTemplatedControl control)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(input)) {
-                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
-                    () => ControlBox_DropResult(accepted: false, control),
-                    Avalonia.Threading.DispatcherPriority.Input);
-                return;
-            }
-
-            var parseResult = await ControlBox_HandleInput(control, input);
-            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
-                () => ControlBox_DropResult(parseResult, control),
-                Avalonia.Threading.DispatcherPriority.Input);
-        }
-        catch (Exception ex) { await this.PopUpGenericError(ex); }
-    }
-
-    void ControlBox_DropParse(object? sender, DragEventArgs e)
-    {
-        if (sender is not AvaloniaTemplatedControl control) return;
-        var filesEnum = e.DataTransfer.TryGetFiles();
-        var text = e.DataTransfer.TryGetText();
-
-        var input = string.Empty;
-        if (filesEnum is { Length: > 0 }) input = filesEnum[Index.Start].Path.LocalPath;
-        else if (!string.IsNullOrWhiteSpace(text)) input = text;
-        ControlBox_DropParseAsync(input, control);
-    }
-
     async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, string droppedPath)
     {
         if (sender.Equals(comboIcon)) {
@@ -1018,20 +961,6 @@ public partial class MainView : UserControl
         return true;
     }
 
-    async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl control)
-    {
-        var resultBrush = accepted ? RetroLinker.Styles.StyleData.BrushGreen2 : RetroLinker.Styles.StyleData.BrushRed2;
-        control.BorderBrush = resultBrush;
-        await Task.Delay(1200);
-        ResetBorderBrush(control);
-    }
-
-    void ResetBorderBrush(AvaloniaTemplatedControl control) {
-        // control.ClearValue(BorderBrushProperty); // should do this, but I'm having mixed results
-        // control.SetValue(BorderBrushProperty, AvaloniaProperty.UnsetValue);
-        control.BorderBrush = txtLINKRename.BorderBrush;
-        control.ClearValue(BorderBrushProperty);
-    }
     #endregion
 
     // CLOSING
