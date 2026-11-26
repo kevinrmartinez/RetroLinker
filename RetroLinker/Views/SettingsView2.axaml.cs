@@ -206,16 +206,20 @@ public partial class SettingsView2 : UserControl
     }
 
     // Views Event
-    private async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, string droppedPath)
+    private async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, Models.PathArgument droppedPath)
     {
         // if (!Models.IO.FileOps.PathAlreadyExists(droppedPath)) return false;
 
         return await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
         {
-            if (sender.Equals(txtUserAssetsDir)) SetUserAssetsPath(droppedPath);
-            else if (sender.Equals(txtDefRAPath)) SetDEFRADir(droppedPath);
-            else if (sender.Equals(txtParentRomDir)) SetDefROMPath(droppedPath);
-            else if (sender.Equals(txtIconParentPath)) SetIconParentPath(droppedPath);
+            if (sender.Equals(txtUserAssetsDir) && (droppedPath.PathType is FileSystemPathType.Folder))
+                SetUserAssetsPath(droppedPath.FullPath);
+            else if (sender.Equals(txtDefRAPath) && (droppedPath.PathType is not FileSystemPathType.Folder))
+                SetDEFRADir(droppedPath.FullPath);
+            else if (sender.Equals(txtParentRomDir) && (droppedPath.PathType is FileSystemPathType.Folder))
+                SetDefROMPath(droppedPath.FullPath);
+            else if (sender.Equals(txtIconParentPath) && (droppedPath.PathType is FileSystemPathType.Folder))
+                SetIconParentPath(droppedPath.FullPath);
 
             UpdateContext();
             return true;

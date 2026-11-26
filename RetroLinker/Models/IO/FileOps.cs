@@ -300,14 +300,21 @@ public static class FileOps
 
     #region FUNCTIONS
 
+    public static FileSystemPathType GetTypeOfPath(string path) {
+        // TODO: Test
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        if (!path.Contains(OsDirSeparator)) return FileSystemPathType.Command;
+        else return !path.EndsWith(OsDirSeparator) ? FileSystemPathType.File : FileSystemPathType.Folder;
+    }
+
     public static string GenerateTempFileName(string? extension = null)
     {
         if (string.IsNullOrWhiteSpace(extension)) extension = ".tmp";
         if (!extension.StartsWith('.')) extension = extension.Insert(0, ".");
         var newFileName = new System.Text.StringBuilder();
-        newFileName.Append(DateTime.Now.ToString("yyyy-MM-dd_HHmmss"));
+        newFileName.Append(DateTime.Now.ToString("yyyy-MM-dd_HHmmss")); // TODO: Culture sensitive
         newFileName.Append('_');
-        newFileName.Append(Random.Shared.GetHexString(4, true));
+        newFileName.Append(Random.Shared.GetHexString(4, lowercase: true));
         newFileName.Append(extension);
         return newFileName.ToString();
     }

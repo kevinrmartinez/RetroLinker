@@ -40,7 +40,10 @@ internal enum RetroLinkerLogLevel
     Debug
 }
 
-public enum RomPatchType {
+public enum FileSystemPathType { File, Folder, Command }
+
+public enum RomPatchType
+{
     None,
     UPS, BPS, IPS,
     XDelta, No_Patch,

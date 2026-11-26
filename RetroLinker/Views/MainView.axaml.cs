@@ -17,7 +17,6 @@
 */
 
 using Avalonia;
-using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -937,24 +936,29 @@ public partial class MainView : UserControl
 
     #region ViewEvents
 
-    async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, string droppedPath)
+    async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, Models.PathArgument droppedPath)
     {
+        if (droppedPath.PathType is FileSystemPathType.Folder) return false;
+
         if (sender.Equals(comboIcon)) {
-            if (!FileOps.IsFileAnIcon(droppedPath, DesktopOs, out _)) return false;
-            IconPath_Set(droppedPath);
+            var filePath = droppedPath.FullPath;
+            if (!FileOps.IsFileAnIcon(filePath, DesktopOs, out _)) return false;
+            IconPath_Set(filePath);
         }
-        else if (sender.Equals(txtRADir)) RaExecutable_Set(droppedPath);
-        else if (sender.Equals(txtROMDir)) ROMDir_Set(droppedPath);
+        else if (sender.Equals(txtRADir)) RaExecutable_Set(droppedPath.FullPath);
+        else if (sender.Equals(txtROMDir) && (droppedPath.PathType is FileSystemPathType.File))
+            ROMDir_Set(droppedPath.FullPath);
         else if (sender.Equals(comboConfig))
         {
-            if (!FileOps.IsConfigFile(droppedPath, out _)) return false;
-            comboConfig_Set(droppedPath);
+            var filePath = droppedPath.FullPath;
+            if (!FileOps.IsConfigFile(filePath, out _)) return false;
+            comboConfig_Set(filePath);
         }
         else if (sender.Equals(txtLINKDir))
         {
             var compare = BuildingLink;
-            if (Manager.ResolveRetroLinkerArg(droppedPath) != ArgFileType.Link) return false;
-            await LoadBuildingLinkFromFile(droppedPath);
+            if (Manager.ResolveRetroLinkerArg(droppedPath.FullPath) != ArgFileType.Link) return false;
+            await LoadBuildingLinkFromFile(droppedPath.FullPath);
             return compare != BuildingLink;
         }
 

@@ -18,6 +18,7 @@
 
 using Avalonia.Animation;
 using Avalonia.Input;
+using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 
@@ -25,7 +26,7 @@ namespace RetroLinker.Views;
 
 public static class DragDropHandler
 {
-    private static readonly Dictionary<AvaloniaTemplatedControl, Func<AvaloniaTemplatedControl, string, Task<bool>>> controlHandlersMap = new();
+    private static readonly Dictionary<AvaloniaTemplatedControl, Func<AvaloniaTemplatedControl, PathArgument, Task<bool>>> controlHandlersMap = new();
 
     private static readonly BrushTransition borderBrushTransition = new()
     {
@@ -37,7 +38,7 @@ public static class DragDropHandler
     /// <param name="control"> The <see cref="T:AvaloniaTemplatedControl"/> that will have the events added to. </param>
     /// <param name="inputHandler"> The function that runs and changes a Control's state with the dropped input. It should also be responsible for refusing an input. </param>
     /// <remarks> If <paramref name="control"/> has gone through this method earlier, no operation will be done. </remarks>
-    public static void AddEventsToControl(AvaloniaTemplatedControl control, Func<AvaloniaTemplatedControl, string, Task<bool>> inputHandler)
+    public static void AddEventsToControl(AvaloniaTemplatedControl control, Func<AvaloniaTemplatedControl, PathArgument, Task<bool>> inputHandler)
     {
         if (!controlHandlersMap.TryAdd(control, inputHandler)) return;    // throw?
         if (control.Transitions is { } transitions) transitions.Add(borderBrushTransition);
@@ -78,8 +79,9 @@ public static class DragDropHandler
             }
 
             async Task HandleAndShowResult() {
+                var path = new PathArgument(input);
                 var handler = controlHandlersMap[control];
-                var parseResult = await handler(control, input);
+                var parseResult = await handler(control, path);
                 await ControlBox_DropResult(parseResult, control);
             }
 
@@ -92,11 +94,11 @@ public static class DragDropHandler
     private static void ControlBox_DropParse(object? sender, DragEventArgs e)
     {
         if (sender is not AvaloniaTemplatedControl control) return;
-        var filesEnum = e.DataTransfer.TryGetFiles();
+        var filesEnum = e.DataTransfer.TryGetFile();    // Single File
         var text = e.DataTransfer.TryGetText();
 
         var input = string.Empty;
-        if (filesEnum is { Length: > 0 }) input = filesEnum[Index.Start].Path.LocalPath;
+        if (filesEnum is not null) input = filesEnum.Path.LocalPath;
         else if (!string.IsNullOrWhiteSpace(text)) input = text;
         ControlBox_DropParseAsync(input, control);
     }
