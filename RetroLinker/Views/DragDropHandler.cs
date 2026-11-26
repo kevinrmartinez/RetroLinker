@@ -18,6 +18,7 @@
 
 using Avalonia.Animation;
 using Avalonia.Input;
+using Avalonia.Threading;
 using RetroLinker.Models;
 using RetroLinker.Models.Avalonia;
 using AvaloniaTemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
@@ -26,9 +27,14 @@ namespace RetroLinker.Views;
 
 public static class DragDropHandler
 {
-    private static readonly Dictionary<AvaloniaTemplatedControl, Func<AvaloniaTemplatedControl, PathArgument, Task<bool>>> controlHandlersMap = new();
+    public static AvaloniaTemplatedControl ActiveControl { get; private set; } = null!;
+    public static PathArgument ActiveArgument { get; private set; } = null!;
 
-    private static readonly BrushTransition borderBrushTransition = new()
+    private static readonly System.Threading.Mutex _mutex = new();
+    private static bool _activeArgumentValid;
+    private static readonly Dictionary<AvaloniaTemplatedControl, Func<Task>> ControlHandlersMap = new();
+
+    private static readonly BrushTransition BorderBrushTransition = new()
     {
         Property = AvaloniaTemplatedControl.BorderBrushProperty,
         Duration = TimeSpan.FromMilliseconds(250)
@@ -38,17 +44,20 @@ public static class DragDropHandler
     /// <param name="control"> The <see cref="T:AvaloniaTemplatedControl"/> that will have the events added to. </param>
     /// <param name="inputHandler"> The function that runs and changes a Control's state with the dropped input. It should also be responsible for refusing an input. </param>
     /// <remarks> If <paramref name="control"/> has gone through this method earlier, no operation will be done. </remarks>
-    public static void AddEventsToControl(AvaloniaTemplatedControl control, Func<AvaloniaTemplatedControl, PathArgument, Task<bool>> inputHandler)
+    public static void AddEventsToControl(AvaloniaTemplatedControl control, Func<Task> inputHandler)
     {
-        if (!controlHandlersMap.TryAdd(control, inputHandler)) return;    // throw?
-        if (control.Transitions is { } transitions) transitions.Add(borderBrushTransition);
-        else control.Transitions = [ borderBrushTransition ];
+        if (!ControlHandlersMap.TryAdd(control, inputHandler)) return;    // throw?
+        if (control.Transitions is { } transitions) transitions.Add(BorderBrushTransition);
+        else control.Transitions = [ BorderBrushTransition ];
         DragDrop.SetAllowDrop(control, true);
         DragDrop.AddDragEnterHandler(control, ControlBox_DragEnter);
         DragDrop.AddDragLeaveHandler(control, ControlBox_DragLeave);
         DragDrop.AddDropHandler(control, ControlBox_DropParse);
         // https://docs.avaloniaui.net/docs/how-to/drag-and-drop-how-to
     }
+
+    public static void ParseSuccessful() => _activeArgumentValid = true;
+    public static void ParseFailure() => _activeArgumentValid = false;
 
     private static void ResetBorderBrush(AvaloniaTemplatedControl control) {
         // control.ClearValue(BorderBrushProperty); // should do this, but I'm having mixed results
@@ -67,45 +76,44 @@ public static class DragDropHandler
         ResetBorderBrush(control);
     }
 
-    private static async void ControlBox_DropParseAsync(string input, AvaloniaTemplatedControl control)
+    private static async Task ControlBox_DropParseAsync() {
+        var handler = ControlHandlersMap[ActiveControl];
+        await handler();
+        await ControlBox_DropResult_UIThread();
+    }
+
+    private static async void ControlBox_DropParse(object? sender, DragEventArgs e)
     {
         try
         {
+            if (sender is not AvaloniaTemplatedControl control) return;
+            var filesEnum = e.DataTransfer.TryGetFile(); // Single File
+            var text = e.DataTransfer.TryGetText();
+
+            var input = string.Empty;
+            if (filesEnum is not null) input = filesEnum.Path.LocalPath;
+            else if (!string.IsNullOrWhiteSpace(text)) input = text;
+
+            _mutex.WaitOne();
+            _activeArgumentValid = false;
             if (string.IsNullOrWhiteSpace(input)) {
-                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
-                    () => ControlBox_DropResult(accepted: false, control),
-                    Avalonia.Threading.DispatcherPriority.Input);
+                await Dispatcher.UIThread.InvokeAsync(ControlBox_DropResult_UIThread, DispatcherPriority.Input);
                 return;
             }
 
-            async Task HandleAndShowResult() {
-                var path = new PathArgument(input);
-                var handler = controlHandlersMap[control];
-                var parseResult = await handler(control, path);
-                await ControlBox_DropResult(parseResult, control);
-            }
+            ActiveControl = control;
+            ActiveArgument = new PathArgument(input);
 
-            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(HandleAndShowResult,
-                Avalonia.Threading.DispatcherPriority.Input);
+            await Dispatcher.UIThread.InvokeAsync(ControlBox_DropParseAsync, DispatcherPriority.Input);
+            _mutex.ReleaseMutex();
         }
         catch (Exception ex) { await App.Instance.PopUpGenericError(ex); }
     }
 
-    private static void ControlBox_DropParse(object? sender, DragEventArgs e)
+    private static async Task ControlBox_DropResult_UIThread()
     {
-        if (sender is not AvaloniaTemplatedControl control) return;
-        var filesEnum = e.DataTransfer.TryGetFile();    // Single File
-        var text = e.DataTransfer.TryGetText();
-
-        var input = string.Empty;
-        if (filesEnum is not null) input = filesEnum.Path.LocalPath;
-        else if (!string.IsNullOrWhiteSpace(text)) input = text;
-        ControlBox_DropParseAsync(input, control);
-    }
-
-    private static async Task ControlBox_DropResult(bool accepted, AvaloniaTemplatedControl control)
-    {
-        var resultBrush = accepted ? Styles.StyleData.BrushGreen2 : Styles.StyleData.BrushRed2;
+        var control = ActiveControl;
+        var resultBrush = _activeArgumentValid ? Styles.StyleData.BrushGreen2 : Styles.StyleData.BrushRed2;
         control.BorderBrush = resultBrush;
         await Task.Delay(1200);
         ResetBorderBrush(control);

@@ -393,6 +393,48 @@ public partial class MainView : UserControl
         OutputControlsMutations();
     }
 
+    private IOsLinkParameters? _newBuildingLinkParams;
+
+    private async Task LoadBuildingLinkFromFile(string filePath) {
+        _newBuildingLinkParams = await FileOps.ParseExistingLink(filePath);
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(LoadBuildingLinkFromFile_UIThread,
+            Avalonia.Threading.DispatcherPriority.MaxValue);
+    }
+
+    private void LoadBuildingLinkFromFile_UIThread()
+    {
+        var backup = BuildingLink;
+        try
+        {
+            ArgumentNullException.ThrowIfNull(_newBuildingLinkParams);
+            BuildingLink = new ShortcutBuilder(_newBuildingLinkParams);
+            // Binding behavior overwrites the OutputPath on Linux, we force it back here
+            BuildingLink.SetOutputPathAndFriendlyName(_newBuildingLinkParams.OutputPath, _newBuildingLinkParams.FriendlyName);
+            RaisePropertyChanged(UserRaCoreProperty, string.Empty, string.Empty);
+            RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
+            // Is Contentless?
+            ContentlessRom = string.IsNullOrWhiteSpace(BuildingLink.RaRom);
+            // Set config
+            if (BuildingLink.RaConfig is not null) comboConfig_Set(BuildingLink.RaConfig);
+            // Set Icon
+            var defaultIcon = (DesktopOs) ? BuildingLink.RaExecutable : App.RetroBin;
+            if (BuildingLink.IconPath == defaultIcon || BuildingLink.IconPath == string.Empty)
+                IconSource = UserIconSource.Default;
+            else {
+                IconSource = UserIconSource.Custom;
+                IconPath_Set(BuildingLink.IconPath);
+            }
+            Logger.Info($"Loaded existing link from file '{BuildingLink.OutputPath}'");
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"Could not build Shortcut object from file '{_newBuildingLinkParams?.OutputPath}'");
+            Logger.Error(ex);
+            BuildingLink = backup;
+        }
+        finally { _newBuildingLinkParams = null; }
+    }
+
     void ApplyArgs()
     {
         var args = App.Args;
@@ -406,47 +448,12 @@ public partial class MainView : UserControl
                 Logger.Warn($"Invalid argument (file does not exist): {arg}");
                 break;
             case ArgFileType.Link:
-                Task.Run(() => LoadBuildingLinkFromFile(arg));
+                _ = LoadBuildingLinkFromFile(arg);
                 break;
             case ArgFileType.Rom:
                 BuildingLink.RaRom = arg;
                 Logger.Info($"Argument applied as ROM: '{BuildingLink.RaRom}'");
                 break;
-        }
-    }
-
-    private async Task LoadBuildingLinkFromFile(string filePath)
-    {
-        var backup = BuildingLink;
-        try
-        {
-            var linkParam = await FileOps.ParseExistingLink(filePath);
-            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                BuildingLink = new ShortcutBuilder(linkParam);
-                // Binding behavior overwrites the OutputPath on Linux, we force it back here
-                BuildingLink.SetOutputPathAndFriendlyName(linkParam.OutputPath, linkParam.FriendlyName);
-                RaisePropertyChanged(UserRaCoreProperty, string.Empty, string.Empty);
-                RaisePropertyChanged(OutputFullPathProperty, string.Empty, string.Empty);
-                // Is Contentless?
-                ContentlessRom = string.IsNullOrWhiteSpace(BuildingLink.RaRom);
-                // Set config
-                if (BuildingLink.RaConfig is not null) comboConfig_Set(BuildingLink.RaConfig);
-                // Set Icon
-                var defaultIcon = (DesktopOs) ? BuildingLink.RaExecutable : App.RetroBin;
-                if (BuildingLink.IconPath == defaultIcon || BuildingLink.IconPath == string.Empty)
-                    IconSource = UserIconSource.Default;
-                else {
-                    IconSource = UserIconSource.Custom;
-                    IconPath_Set(BuildingLink.IconPath);
-                }
-            }, Avalonia.Threading.DispatcherPriority.MaxValue);
-        }
-        catch (Exception ex)
-        {
-            Logger.Warn($"Could not build Shortcut object from file: {filePath}");
-            Logger.Error(ex);
-            BuildingLink = backup;
         }
     }
 
@@ -936,33 +943,55 @@ public partial class MainView : UserControl
 
     #region ViewEvents
 
-    async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, Models.PathArgument droppedPath)
+    async Task ControlBox_HandleInput()
     {
-        if (droppedPath.PathType is FileSystemPathType.Folder) return false;
-
-        if (sender.Equals(comboIcon)) {
-            var filePath = droppedPath.FullPath;
-            if (!FileOps.IsFileAnIcon(filePath, DesktopOs, out _)) return false;
-            IconPath_Set(filePath);
-        }
-        else if (sender.Equals(txtRADir)) RaExecutable_Set(droppedPath.FullPath);
-        else if (sender.Equals(txtROMDir) && (droppedPath.PathType is FileSystemPathType.File))
-            ROMDir_Set(droppedPath.FullPath);
-        else if (sender.Equals(comboConfig))
+        try
         {
-            var filePath = droppedPath.FullPath;
-            if (!FileOps.IsConfigFile(filePath, out _)) return false;
-            comboConfig_Set(filePath);
-        }
-        else if (sender.Equals(txtLINKDir))
-        {
-            var compare = BuildingLink;
-            if (Manager.ResolveRetroLinkerArg(droppedPath.FullPath) != ArgFileType.Link) return false;
-            await LoadBuildingLinkFromFile(droppedPath.FullPath);
-            return compare != BuildingLink;
-        }
+            var result = false;
+            var sender = DragDropHandler.ActiveControl;
+            var droppedPath = DragDropHandler.ActiveArgument;
+            if (droppedPath.PathType is FileSystemPathType.Folder) {
+                DragDropHandler.ParseFailure();
+                return;
+            }
 
-        return true;
+            if (sender.Equals(comboIcon))
+            {
+                var filePath = droppedPath.FullPath;
+                if (FileOps.IsFileAnIcon(filePath, DesktopOs, out _)) {
+                    IconPath_Set(filePath);
+                    result = true;
+                }
+            }
+            else if (sender.Equals(txtRADir)) {
+                RaExecutable_Set(droppedPath.FullPath);
+                result = true;
+            }
+            else if (sender.Equals(txtROMDir) && (droppedPath.PathType is FileSystemPathType.File)) {
+                ROMDir_Set(droppedPath.FullPath);
+                result = true;
+            }
+            else if (sender.Equals(comboConfig))
+            {
+                var filePath = droppedPath.FullPath;
+                if (FileOps.IsConfigFile(filePath, out _)) {
+                    comboConfig_Set(filePath);
+                    result = true;
+                }
+            }
+            else if (sender.Equals(txtLINKDir))
+            {
+                if (Manager.ResolveRetroLinkerArg(droppedPath.FullPath) == ArgFileType.Link) {
+                    var compare = BuildingLink;
+                    await LoadBuildingLinkFromFile(droppedPath.FullPath);
+                    result = compare != BuildingLink;
+                }
+            }
+
+            Action resultReporter = result ? DragDropHandler.ParseSuccessful : DragDropHandler.ParseFailure;
+            resultReporter();
+        }
+        catch (Exception e) { await this.PopUpGenericError(e); }
     }
 
     #endregion

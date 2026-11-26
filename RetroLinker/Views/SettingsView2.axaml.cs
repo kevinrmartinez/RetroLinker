@@ -195,35 +195,41 @@ public partial class SettingsView2 : UserControl
                 btnIconParentPath_OnClickAsync(textBox);
                 break;
             case TextBoxActions action:
-                ParentWindow.NewSettings.IconParentPath = action switch {
+                var newValue = action switch {
                     TextBoxActions.Restore => ParentWindow.GetOldSettings().IconParentPath,
                     TextBoxActions.Clear => string.Empty,
                     _ => ParentWindow.NewSettings.IconParentPath // Shouldn't happen
                 };
+                SetIconParentPath(newValue);
                 break;
         }
         UpdateContext();
     }
 
     // Views Event
-    private async Task<bool> ControlBox_HandleInput(AvaloniaTemplatedControl sender, Models.PathArgument droppedPath)
+    private async Task ControlBox_HandleInput()
     {
-        // if (!Models.IO.FileOps.PathAlreadyExists(droppedPath)) return false;
-
-        return await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        var result = true;
+        var sender = DragDropHandler.ActiveControl;
+        var droppedPath = DragDropHandler.ActiveArgument;
+        if (droppedPath.PathType is FileSystemPathType.Folder)
         {
-            if (sender.Equals(txtUserAssetsDir) && (droppedPath.PathType is FileSystemPathType.Folder))
+            if (sender.Equals(txtUserAssetsDir))
                 SetUserAssetsPath(droppedPath.FullPath);
-            else if (sender.Equals(txtDefRAPath) && (droppedPath.PathType is not FileSystemPathType.Folder))
-                SetDEFRADir(droppedPath.FullPath);
-            else if (sender.Equals(txtParentRomDir) && (droppedPath.PathType is FileSystemPathType.Folder))
+            else if (sender.Equals(txtParentRomDir))
                 SetDefROMPath(droppedPath.FullPath);
-            else if (sender.Equals(txtIconParentPath) && (droppedPath.PathType is FileSystemPathType.Folder))
+            else if (sender.Equals(txtIconParentPath))
                 SetIconParentPath(droppedPath.FullPath);
+            else result = false;
+        }
+        else {
+            if (sender.Equals(txtDefRAPath)) SetDEFRADir(droppedPath.FullPath);
+            else result = false;
+        }
 
-            UpdateContext();
-            return true;
-        }, Avalonia.Threading.DispatcherPriority.Input);
+        UpdateContext();
+        Action resultReporter = result ? DragDropHandler.ParseSuccessful : DragDropHandler.ParseFailure;
+        resultReporter();
     }
 
     private void TxtBox_OnLostFocus(object? sender, FocusChangedEventArgs e) => UpdateContext();

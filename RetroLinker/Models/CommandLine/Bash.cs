@@ -53,7 +53,7 @@ public static partial class Manager
             // Just in case the split failed to keep the bin in the first position
             var argIndex = 0;
             for (int i = 0; i < dividedCommand.Length; i++) {
-                if (!dividedCommand[i].Contains('-')) continue;
+                if (!dividedCommand[i].StartsWith('-')) continue;
                 argIndex = i;
                 break;
             }

@@ -25,11 +25,11 @@ namespace RetroLinker.Models.Avalonia;
 
 public static class PickerOpt
 {
-    static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = ["*.exe", "*.dll" ] };
+    static readonly FilePickerFileType win_exe        = new(resAvaloniaOps.pckFileTypeExe) { Patterns = [$"*{FileOps.WinPeExtExe}", $"*{FileOps.WinPeExtExe}"] };
     static readonly FilePickerFileType appimage       = new(resAvaloniaOps.pckFileTypeAppI) { Patterns = ["*.AppImage"] };
     static readonly FilePickerFileType sh_cripts      = new(resAvaloniaOps.pckFileTypeSh) { Patterns = ["*.sh"] };
     static readonly FilePickerFileType config_file    = new(resAvaloniaOps.pckFileTypeConf) { Patterns = ["*.cfg"] };
-    static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = ["*.ico"]};
+    static readonly FilePickerFileType win_icon_files = new(resAvaloniaOps.pckFileTypeIco) { Patterns = [$"*{FileOps.WinIcoExt}"]};
     static readonly FilePickerFileType conv_icon      = new(resAvaloniaOps.pckFileTypeConvI) { Patterns = FileOps.WinExtraIconsExt };
     static readonly FilePickerFileType lin_icon_files = new(resAvaloniaOps.pckFileTypeIcon) { Patterns = FileOps.LinIconsExt };
     static readonly FilePickerFileType win_lnk        = new(resAvaloniaOps.pckFileTypeWinLnk) { Patterns = [$"*{FileOps.WinLinkExt}"] };

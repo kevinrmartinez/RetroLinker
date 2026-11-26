@@ -80,7 +80,8 @@ public static class Operations
                 : $"{nameof(DesktopFolder)} set to: \"{DesktopFolder.Path.LocalPath}\"";
             Logger.Trace(dbgOut);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Logger.Error(ex);
             DesktopFolder = null;
         }
@@ -97,7 +98,8 @@ public static class Operations
                 : $"{nameof(ROMParentDir)} set to: \"{ROMParentDir.Path.LocalPath}\"";
             Logger.Trace(dbgOut);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Logger.Error(ex);
             ROMParentDir = null;
         }
@@ -114,7 +116,8 @@ public static class Operations
                 : $"{nameof(IconParentDir)} set to: \"{IconParentDir.Path.LocalPath}\"";
             Logger.Trace(dbgOut);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Logger.Error(ex);
             IconParentDir = null;
         }
